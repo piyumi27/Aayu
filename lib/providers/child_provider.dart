@@ -1,0 +1,119 @@
+import 'package:flutter/foundation.dart';
+import '../models/child.dart';
+import '../models/growth_record.dart';
+import '../models/vaccine.dart';
+import '../services/database_service.dart';
+
+class ChildProvider extends ChangeNotifier {
+  final DatabaseService _databaseService = DatabaseService();
+  
+  List<Child> _children = [];
+  Child? _selectedChild;
+  List<GrowthRecord> _growthRecords = [];
+  List<VaccineRecord> _vaccineRecords = [];
+  List<Vaccine> _vaccines = [];
+  
+  List<Child> get children => _children;
+  Child? get selectedChild => _selectedChild;
+  List<GrowthRecord> get growthRecords => _growthRecords;
+  List<VaccineRecord> get vaccineRecords => _vaccineRecords;
+  List<Vaccine> get vaccines => _vaccines;
+
+  Future<void> loadChildren() async {
+    _children = await _databaseService.getChildren();
+    if (_children.isNotEmpty && _selectedChild == null) {
+      _selectedChild = _children.first;
+      await loadChildData(_selectedChild!.id);
+    }
+    notifyListeners();
+  }
+
+  Future<void> loadChildData(String childId) async {
+    _growthRecords = await _databaseService.getGrowthRecords(childId);
+    _vaccineRecords = await _databaseService.getVaccineRecords(childId);
+    notifyListeners();
+  }
+
+  Future<void> loadVaccines() async {
+    _vaccines = await _databaseService.getVaccines();
+    notifyListeners();
+  }
+
+  Future<void> addChild(Child child) async {
+    await _databaseService.insertChild(child);
+    await loadChildren();
+  }
+
+  Future<void> updateChild(Child child) async {
+    await _databaseService.updateChild(child);
+    await loadChildren();
+  }
+
+  Future<void> selectChild(Child child) async {
+    _selectedChild = child;
+    await loadChildData(child.id);
+    notifyListeners();
+  }
+
+  Future<void> addGrowthRecord(GrowthRecord record) async {
+    await _databaseService.insertGrowthRecord(record);
+    if (_selectedChild != null) {
+      await loadChildData(_selectedChild!.id);
+    }
+  }
+
+  Future<void> addVaccineRecord(VaccineRecord record) async {
+    await _databaseService.insertVaccineRecord(record);
+    if (_selectedChild != null) {
+      await loadChildData(_selectedChild!.id);
+    }
+  }
+
+  int calculateAgeInMonths(DateTime birthDate) {
+    final now = DateTime.now();
+    int months = (now.year - birthDate.year) * 12 + now.month - birthDate.month;
+    if (now.day < birthDate.day) {
+      months--;
+    }
+    return months;
+  }
+
+  String getAgeString(DateTime birthDate) {
+    final months = calculateAgeInMonths(birthDate);
+    if (months < 12) {
+      return '$months month${months != 1 ? 's' : ''}';
+    } else {
+      final years = months ~/ 12;
+      final remainingMonths = months % 12;
+      String result = '$years year${years != 1 ? 's' : ''}';
+      if (remainingMonths > 0) {
+        result += ' $remainingMonths month${remainingMonths != 1 ? 's' : ''}';
+      }
+      return result;
+    }
+  }
+
+  List<Vaccine> getUpcomingVaccines() {
+    if (_selectedChild == null) return [];
+    
+    final ageInMonths = calculateAgeInMonths(_selectedChild!.birthDate);
+    final givenVaccineIds = _vaccineRecords.map((r) => r.vaccineId).toSet();
+    
+    return _vaccines.where((vaccine) {
+      return !givenVaccineIds.contains(vaccine.id) &&
+             vaccine.recommendedAgeMonths <= ageInMonths + 3;
+    }).toList();
+  }
+
+  List<Vaccine> getOverdueVaccines() {
+    if (_selectedChild == null) return [];
+    
+    final ageInMonths = calculateAgeInMonths(_selectedChild!.birthDate);
+    final givenVaccineIds = _vaccineRecords.map((r) => r.vaccineId).toSet();
+    
+    return _vaccines.where((vaccine) {
+      return !givenVaccineIds.contains(vaccine.id) &&
+             vaccine.recommendedAgeMonths < ageInMonths;
+    }).toList();
+  }
+}

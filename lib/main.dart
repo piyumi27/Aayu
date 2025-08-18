@@ -10,8 +10,10 @@ import 'screens/learn_screen.dart';
 import 'screens/profile_screen.dart';
 import 'screens/vaccines_screen.dart';
 import 'widgets/bottom_navigation.dart';
+import 'providers/child_provider.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const AayuApp());
 }
 
@@ -22,7 +24,7 @@ class AayuApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        // Add providers here
+        ChangeNotifierProvider(create: (_) => ChildProvider()),
       ],
       child: MaterialApp.router(
         title: 'ආයු',
