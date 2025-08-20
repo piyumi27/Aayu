@@ -177,7 +177,7 @@ class _GrowthScreenState extends State<GrowthScreen> {
                 LineChartData(
                   gridData: const FlGridData(show: true),
                   titlesData: FlTitlesData(
-                    leftTitles: AxisTitles(
+                    leftTitles: const AxisTitles(
                       sideTitles: SideTitles(
                         showTitles: true,
                         reservedSize: 40,
@@ -250,7 +250,7 @@ class _GrowthScreenState extends State<GrowthScreen> {
                     trailing: record.notes != null && record.notes!.isNotEmpty
                         ? const Icon(Icons.note, size: 16)
                         : null,
-                  )),
+                  ),),
             ],
           ],
         ),

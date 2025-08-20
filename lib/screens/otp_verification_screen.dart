@@ -311,18 +311,18 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                           inputFormatters: [
                             FilteringTextInputFormatter.digitsOnly,
                           ],
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                             counterText: '',
-                            border: const UnderlineInputBorder(
+                            border: UnderlineInputBorder(
                               borderSide: BorderSide(color: Color(0xFF6C757D), width: 2),
                             ),
-                            enabledBorder: const UnderlineInputBorder(
+                            enabledBorder: UnderlineInputBorder(
                               borderSide: BorderSide(color: Color(0xFF6C757D), width: 2),
                             ),
-                            focusedBorder: const UnderlineInputBorder(
+                            focusedBorder: UnderlineInputBorder(
                               borderSide: BorderSide(color: Color(0xFF007BFF), width: 3),
                             ),
-                            contentPadding: const EdgeInsets.symmetric(vertical: 16),
+                            contentPadding: EdgeInsets.symmetric(vertical: 16),
                           ),
                           onChanged: (value) => _onOTPDigitChanged(value, index),
                         ),

@@ -330,7 +330,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                         _onAnimationLoaded(index);
                         
                         // Fallback to icon if Lottie fails to load
-                        return Container(
+                        return SizedBox(
                           width: double.infinity,
                           height: double.infinity,
                           child: Center(

@@ -178,9 +178,9 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
 
         return Card(
           child: ListTile(
-            leading: CircleAvatar(
+            leading: const CircleAvatar(
               backgroundColor: Colors.green,
-              child: const Icon(Icons.check, color: Colors.white),
+              child: Icon(Icons.check, color: Colors.white),
             ),
             title: Text(vaccine.name),
             subtitle: Column(
@@ -247,7 +247,7 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
                             ),
                           ],
                         ),
-                      )),
+                      ),),
                 ],
               ),
             ),
@@ -284,7 +284,7 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
                           icon: const Icon(Icons.add),
                           onPressed: () => _addVaccineRecord(context, vaccine),
                         ),
-                      )),
+                      ),),
                 ],
               ),
             ),

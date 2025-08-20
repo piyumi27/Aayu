@@ -1,5 +1,5 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class FirebaseAuthService {
   static final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -127,7 +127,7 @@ class FirebaseAuthService {
         'phoneNumber': phoneNumber,
         'createdAt': FieldValue.serverTimestamp(),
         'updatedAt': FieldValue.serverTimestamp(),
-      }, SetOptions(merge: true));
+      }, SetOptions(merge: true),);
     } catch (e) {
       throw Exception('Failed to save user profile: $e');
     }

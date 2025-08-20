@@ -37,7 +37,7 @@ class _SplashScreenState extends State<SplashScreen>
     ).animate(CurvedAnimation(
       parent: _animationController,
       curve: const Interval(0.0, 0.65, curve: Curves.easeIn),
-    ));
+    ),);
 
     _scaleAnimation = Tween<double>(
       begin: 0.5,
@@ -45,7 +45,7 @@ class _SplashScreenState extends State<SplashScreen>
     ).animate(CurvedAnimation(
       parent: _animationController,
       curve: const Interval(0.0, 0.65, curve: Curves.elasticOut),
-    ));
+    ),);
 
     _gradientRotation = Tween<double>(
       begin: 0,
@@ -53,7 +53,7 @@ class _SplashScreenState extends State<SplashScreen>
     ).animate(CurvedAnimation(
       parent: _gradientController,
       curve: Curves.linear,
-    ));
+    ),);
 
     _animationController.forward();
 

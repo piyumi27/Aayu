@@ -42,7 +42,7 @@ class _PreSixMonthCountdownScreenState extends State<PreSixMonthCountdownScreen>
     ).animate(CurvedAnimation(
       parent: _animationController,
       curve: Curves.easeInOut,
-    ));
+    ),);
     
     _animationController.forward();
   }
@@ -200,9 +200,9 @@ class _PreSixMonthCountdownScreenState extends State<PreSixMonthCountdownScreen>
         final selectedChild = childProvider.selectedChild;
         
         if (selectedChild == null) {
-          return Scaffold(
+          return const Scaffold(
             backgroundColor: Colors.white,
-            body: const Center(
+            body: Center(
               child: CircularProgressIndicator(),
             ),
           );
@@ -255,90 +255,101 @@ class _PreSixMonthCountdownScreenState extends State<PreSixMonthCountdownScreen>
             ],
           ),
           body: SafeArea(
-            child: Padding(
+            child: SingleChildScrollView(
               padding: const EdgeInsets.all(24),
-              child: Column(
-                children: [
-                  const SizedBox(height: 40),
-                  
-                  // Circular Progress Ring
-                  Semantics(
-                    label: '$daysSinceBirth ${texts['remainingDays']}',
-                    child: SizedBox(
-                      width: 280,
-                      height: 280,
-                      child: AnimatedBuilder(
-                        animation: _progressAnimation,
-                        builder: (context, child) {
-                          return CustomPaint(
-                            painter: CircularProgressPainter(
-                              progress: progress * _progressAnimation.value,
-                              progressColor: progressColor,
-                              strokeWidth: 8,
-                            ),
-                            child: Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  // Large day number
-                                  Text(
-                                    '$daysSinceBirth',
-                                    style: TextStyle(
-                                      fontSize: 64,
-                                      fontWeight: FontWeight.w300,
-                                      color: const Color(0xFF1A1A1A),
-                                      fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-                                    ),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: MediaQuery.of(context).size.height - 
+                             MediaQuery.of(context).padding.top - 
+                             MediaQuery.of(context).padding.bottom - 
+                             kToolbarHeight - 48,
+                ),
+                child: IntrinsicHeight(
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 20),
+                      
+                      // Circular Progress Ring
+                      Semantics(
+                        label: '$daysSinceBirth ${texts['remainingDays']}',
+                        child: SizedBox(
+                          width: 260,
+                          height: 260,
+                          child: AnimatedBuilder(
+                            animation: _progressAnimation,
+                            builder: (context, child) {
+                              return CustomPaint(
+                                painter: CircularProgressPainter(
+                                  progress: progress * _progressAnimation.value,
+                                  progressColor: progressColor,
+                                  strokeWidth: 8,
+                                ),
+                                child: Center(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      // Large day number
+                                      Text(
+                                        '$daysSinceBirth',
+                                        style: TextStyle(
+                                          fontSize: 56,
+                                          fontWeight: FontWeight.w300,
+                                          color: const Color(0xFF1A1A1A),
+                                          fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                                        ),
+                                      ),
+                                      // Days completed
+                                      Text(
+                                        texts['daysCompleted'] ?? 'days completed',
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          color: const Color(0xFF6B7280),
+                                          fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 6),
+                                      // Days left
+                                      Text(
+                                        '${180 - daysSinceBirth} ${texts['daysLeft'] ?? 'days left'}',
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          color: const Color(0xFF0086FF),
+                                          fontWeight: FontWeight.w600,
+                                          fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  // Days completed
-                                  Text(
-                                    texts['daysCompleted'] ?? 'days completed',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: const Color(0xFF6B7280),
-                                      fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  // Days left
-                                  Text(
-                                    '${180 - daysSinceBirth} ${texts['daysLeft'] ?? 'days left'}',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: const Color(0xFF0086FF),
-                                      fontWeight: FontWeight.w600,
-                                      fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
+                                ),
+                              );
+                            },
+                          ),
+                        ),
                       ),
-                    ),
+                      
+                      const SizedBox(height: 24),
+                      
+                      // Next milestone
+                      _buildNextMilestone(texts, daysSinceBirth),
+                      
+                      const Spacer(),
+                      
+                      // Tip-of-Day card
+                      if (!_tipDismissed) ...[
+                        _buildTipCard(texts),
+                        const SizedBox(height: 20),
+                      ],
+                      
+                      // Bottom buttons
+                      _buildBottomButtons(texts),
+                      
+                      const SizedBox(height: 12),
+                      
+                      // Go to Dashboard button
+                      _buildGoToDashboardButton(texts),
+                    ],
                   ),
-                  
-                  const SizedBox(height: 32),
-                  
-                  // Next milestone
-                  _buildNextMilestone(texts, daysSinceBirth),
-                  
-                  const Spacer(),
-                  
-                  // Tip-of-Day card
-                  if (!_tipDismissed) _buildTipCard(texts),
-                  
-                  const SizedBox(height: 24),
-                  
-                  // Bottom buttons
-                  _buildBottomButtons(texts),
-                  
-                  const SizedBox(height: 8),
-                  
-                  // Go to Dashboard button
-                  _buildGoToDashboardButton(texts),
-                ],
+                ),
               ),
             ),
           ),
@@ -350,8 +361,9 @@ class _PreSixMonthCountdownScreenState extends State<PreSixMonthCountdownScreen>
   Widget _buildNextMilestone(Map<String, String> texts, int daysSinceBirth) {
     // Calculate next milestone
     int nextMilestoneDay = 60; // Default to day 60
-    if (daysSinceBirth >= 150) nextMilestoneDay = 180;
-    else if (daysSinceBirth >= 120) nextMilestoneDay = 150;
+    if (daysSinceBirth >= 150) {
+      nextMilestoneDay = 180;
+    } else if (daysSinceBirth >= 120) nextMilestoneDay = 150;
     else if (daysSinceBirth >= 90) nextMilestoneDay = 120;
     else if (daysSinceBirth >= 60) nextMilestoneDay = 90;
     else if (daysSinceBirth >= 30) nextMilestoneDay = 60;
@@ -496,13 +508,16 @@ class _PreSixMonthCountdownScreenState extends State<PreSixMonthCountdownScreen>
                   ),
                 ),
                 const SizedBox(width: 8),
-                Text(
-                  texts['progress'] ?? 'Progress',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: const Color(0xFF10B981),
-                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                Flexible(
+                  child: Text(
+                    texts['progress'] ?? 'Progress',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFF10B981),
+                      fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],
@@ -534,13 +549,16 @@ class _PreSixMonthCountdownScreenState extends State<PreSixMonthCountdownScreen>
                   ),
                 ),
                 const SizedBox(width: 8),
-                Text(
-                  texts['achievements'] ?? 'Achievements',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: const Color(0xFF8B5CF6),
-                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                Flexible(
+                  child: Text(
+                    texts['achievements'] ?? 'Achievements',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFF8B5CF6),
+                      fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],

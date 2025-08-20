@@ -106,7 +106,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               'verificationId': verificationId,
               'fullName': _fullNameController.text,
               'isLogin': false,
-            });
+            },);
           }
         },
         onError: (error) {
@@ -151,7 +151,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 'verificationId': credential.verificationId,
                 'fullName': _fullNameController.text,
                 'isLogin': false,
-              });
+              },);
             }
           }
         },

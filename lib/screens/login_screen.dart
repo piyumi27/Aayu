@@ -54,7 +54,7 @@ class _LoginScreenState extends State<LoginScreen> {
               'phoneNumber': _phoneController.text,
               'verificationId': verificationId,
               'isLogin': true,
-            });
+            },);
           }
         },
         onError: (error) {
@@ -90,7 +90,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 'phoneNumber': _phoneController.text,
                 'verificationId': credential.verificationId,
                 'isLogin': true,
-              });
+              },);
             }
           }
         },
@@ -374,8 +374,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: ElevatedButton(
                     onPressed: _isLoading ? null : _login,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF007BFF),
-                      foregroundColor: Colors.white,
+                      backgroundColor: _isLoading ? const Color(0xFFE5E7EB) : const Color(0xFF007BFF),
+                      foregroundColor: _isLoading ? const Color(0xFF9CA3AF) : Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(2),
                       ),
