@@ -21,15 +21,18 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   late AnimationController _lottieController2;
   late AnimationController _lottieController3;
   
-  // Preload flags
-  bool _animationsPreloaded = false;
+  // Individual animation loading states
+  final Map<int, bool> _animationLoadedStates = {
+    0: false,
+    1: false,
+    2: false,
+  };
 
   @override
   void initState() {
     super.initState();
     _loadLanguage();
     _initializeLottieControllers();
-    _preloadAnimations();
   }
 
   void _initializeLottieControllers() {
@@ -47,31 +50,12 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     );
   }
 
-  Future<void> _preloadAnimations() async {
-    // Start preloading animations in the background
-    Future.wait([
-      // Using the same URLs from the user's request
-      precacheImage(
-        NetworkImage('https://lottie.host/5e0ce4d5-3b83-42c8-8db0-4a0dd0e0a23e/E2fg4zXD59.json'),
-        context,
-      ).catchError((_) {}),
-      precacheImage(
-        NetworkImage('https://assets3.lottiefiles.com/packages/lf20_tutvdkg0.json'),
-        context,
-      ).catchError((_) {}),
-      precacheImage(
-        NetworkImage('https://lottie.host/d7e37340-d3a1-4e2e-a6ea-2e3114a59a4f/g2HiG0GxbU.json'),
-        context,
-      ).catchError((_) {}),
-    ]).then((_) {
-      if (mounted) {
-        setState(() {
-          _animationsPreloaded = true;
-        });
-        // Start the first animation once preloading is complete
-        _lottieController1.forward();
-      }
-    });
+  void _onAnimationLoaded(int index) {
+    if (mounted) {
+      setState(() {
+        _animationLoadedStates[index] = true;
+      });
+    }
   }
 
   Future<void> _loadLanguage() async {
@@ -199,20 +183,22 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                         _currentPage = page;
                       });
                       
-                      // Start animation for current page
-                      switch (page) {
-                        case 0:
-                          _lottieController1.reset();
-                          _lottieController1.forward();
-                          break;
-                        case 1:
-                          _lottieController2.reset();
-                          _lottieController2.forward();
-                          break;
-                        case 2:
-                          _lottieController3.reset();
-                          _lottieController3.forward();
-                          break;
+                      // Start animation for current page if it's already loaded
+                      if (_animationLoadedStates[page] == true) {
+                        switch (page) {
+                          case 0:
+                            _lottieController1.reset();
+                            _lottieController1.forward();
+                            break;
+                          case 1:
+                            _lottieController2.reset();
+                            _lottieController2.forward();
+                            break;
+                          case 2:
+                            _lottieController3.reset();
+                            _lottieController3.forward();
+                            break;
+                        }
                       }
                     },
                     itemCount: slides.length,
@@ -279,9 +265,9 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   Widget _buildSlide(String title, String subtitle, int index) {
     // Define Lottie animation URLs - using the user's requested URLs
     final List<String> lottieAnimations = [
-      'https://lottie.host/5e0ce4d5-3b83-42c8-8db0-4a0dd0e0a23e/E2fg4zXD59.json', // Rocket Launch
+      'https://assets9.lottiefiles.com/packages/lf20_5tl1xxnz.json', // Growth tracking - Rocket Launch
       'https://assets3.lottiefiles.com/packages/lf20_tutvdkg0.json', // Medical/vaccine
-      'https://lottie.host/d7e37340-d3a1-4e2e-a6ea-2e3114a59a4f/g2HiG0GxbU.json', // Healthy Food
+      'https://assets5.lottiefiles.com/packages/lf20_ysas4vcp.json', // Nutrition - Healthy or Junk Food
     ];
 
     // Get appropriate controller for the animation
@@ -317,39 +303,20 @@ class _OnboardingScreenState extends State<OnboardingScreen>
               borderRadius: BorderRadius.circular(20),
               child: Stack(
                 children: [
-                  // Loading placeholder
-                  if (!_animationsPreloaded)
-                    Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const CircularProgressIndicator(
-                            color: Color(0xFF1E90FF),
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            'Loading animation...',
-                            style: TextStyle(
-                              color: const Color(0xFF1E90FF),
-                              fontSize: 14,
-                              fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  
                   // Lottie animation
                   Lottie.network(
                     lottieAnimations[index],
                     controller: controller,
                     fit: BoxFit.contain,
-                    animate: _currentPage == index,
+                    animate: _currentPage == index && _animationLoadedStates[index] == true,
                     repeat: true,
                     options: LottieOptions(
                       enableMergePaths: true,
                     ),
                     onLoaded: (composition) {
+                      // Mark animation as loaded
+                      _onAnimationLoaded(index);
+                      
                       // Start animation when loaded and if this is the current page
                       if (_currentPage == index) {
                         controller.duration = composition.duration;
@@ -358,6 +325,9 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                       }
                     },
                     errorBuilder: (context, error, stackTrace) {
+                      // Mark as loaded even on error to hide loading
+                      _onAnimationLoaded(index);
+                      
                       // Fallback to icon if Lottie fails to load
                       return Center(
                         child: Icon(
@@ -372,6 +342,32 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                       );
                     },
                   ),
+                  
+                  // Loading placeholder - only show if this specific animation is not loaded
+                  if (_animationLoadedStates[index] != true)
+                    Container(
+                      color: const Color(0xFF1E90FF).withValues(alpha: 0.05),
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const CircularProgressIndicator(
+                              color: Color(0xFF1E90FF),
+                              strokeWidth: 2,
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              'Loading animation...',
+                              style: TextStyle(
+                                color: const Color(0xFF1E90FF),
+                                fontSize: 14,
+                                fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                 ],
               ),
             ),
