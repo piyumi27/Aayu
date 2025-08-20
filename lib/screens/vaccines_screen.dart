@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../providers/child_provider.dart';
+
 import '../models/vaccine.dart';
+import '../providers/child_provider.dart';
 
 class VaccinesScreen extends StatefulWidget {
   const VaccinesScreen({super.key});
@@ -89,9 +90,9 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
               
               return Card(
                 color: isGiven
-                    ? Colors.green.withOpacity(0.1)
+                    ? Colors.green.withValues(alpha: 0.1)
                     : isOverdue
-                        ? Colors.red.withOpacity(0.1)
+                        ? Colors.red.withValues(alpha: 0.1)
                         : null,
                 child: ListTile(
                   leading: CircleAvatar(
@@ -201,7 +202,7 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
       children: [
         if (overdue.isNotEmpty) ...[
           Card(
-            color: Colors.red.withOpacity(0.1),
+            color: Colors.red.withValues(alpha: 0.1),
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Column(

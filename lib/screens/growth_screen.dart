@@ -1,8 +1,9 @@
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:fl_chart/fl_chart.dart';
-import '../providers/child_provider.dart';
+
 import '../models/growth_record.dart';
+import '../providers/child_provider.dart';
 
 class GrowthScreen extends StatefulWidget {
   const GrowthScreen({super.key});
@@ -201,7 +202,7 @@ class _GrowthScreenState extends State<GrowthScreen> {
                       dotData: const FlDotData(show: true),
                       belowBarData: BarAreaData(
                         show: true,
-                        color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
                       ),
                     ),
                   ],

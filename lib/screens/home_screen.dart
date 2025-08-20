@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
-import '../providers/child_provider.dart';
+import 'package:provider/provider.dart';
 import '../models/child.dart';
+import '../providers/child_provider.dart';
 import 'add_child_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -17,8 +17,10 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     Future.microtask(() {
-      context.read<ChildProvider>().loadChildren();
-      context.read<ChildProvider>().loadVaccines();
+      if (mounted) {
+        context.read<ChildProvider>().loadChildren();
+        context.read<ChildProvider>().loadVaccines();
+      }
     });
   }
 
@@ -40,7 +42,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   Icon(
                     Icons.child_care,
                     size: 100,
-                    color: Theme.of(context).colorScheme.primary.withOpacity(0.5),
+                    color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
                   ),
                   const SizedBox(height: 24),
                   Text(
@@ -242,7 +244,7 @@ class _HomeScreenState extends State<HomeScreen> {
     VoidCallback onTap,
   ) {
     return Card(
-      color: color.withOpacity(0.1),
+      color: color.withValues(alpha: 0.1),
       child: ListTile(
         leading: Icon(icon, color: color),
         title: Text(title),

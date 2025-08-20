@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../providers/child_provider.dart';
+
 import '../models/child.dart';
+import '../providers/child_provider.dart';
 
 class AddChildScreen extends StatefulWidget {
   const AddChildScreen({super.key});
@@ -87,7 +88,7 @@ class _AddChildScreenState extends State<AddChildScreen> {
               const SizedBox(height: 16),
               
               DropdownButtonFormField<String>(
-                value: _gender,
+                initialValue: _gender,
                 decoration: const InputDecoration(
                   labelText: 'Gender',
                   prefixIcon: Icon(Icons.wc),
@@ -137,7 +138,7 @@ class _AddChildScreenState extends State<AddChildScreen> {
               const SizedBox(height: 16),
               
               DropdownButtonFormField<String>(
-                value: _bloodType,
+                initialValue: _bloodType,
                 decoration: const InputDecoration(
                   labelText: 'Blood Type (Optional)',
                   prefixIcon: Icon(Icons.bloodtype),

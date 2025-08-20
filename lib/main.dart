@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'providers/child_provider.dart';
+import 'screens/forgot_password_screen.dart';
 import 'screens/growth_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/language_selection_screen.dart';
@@ -93,6 +94,10 @@ final _router = GoRouter(
           fullName: extra['fullName'],
         );
       },
+    ),
+    GoRoute(
+      path: '/forgot-password',
+      builder: (context, state) => const ForgotPasswordScreen(),
     ),
     ShellRoute(
       builder: (context, state, child) {
