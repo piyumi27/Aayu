@@ -2,6 +2,72 @@
 
 All notable changes to the Aayu project will be documented in this file.
 
+## [2025-08-20] - Pre-6-Month Growth Countdown Screen
+
+### Added
+- **Pre-6-Month Growth Countdown Screen**
+  - Dedicated progression screen for infants under 6 months (0-180 days)
+  - Clean design with white background, no bottom navigation, safe-area padding 32dp top
+  - Top app-bar with back arrow and 'Growth Countdown' title (20sp)
+
+- **Circular Progress Ring**
+  - 240dp diameter with 12dp stroke width
+  - 180-segment progress tracking based on days since birth
+  - Animated gradient color transition: #00B894 (green) at 0 days → #0086FF (blue) at 180 days
+  - Smooth animation with 1.5-second duration and easeInOut curve
+
+- **Progress Display**
+  - Center-aligned day counter (32sp bold) showing current day, e.g., "Day 45"
+  - Subtitle (14sp gray) displaying "of 180"
+  - Real-time progress calculation from birth date to current date
+
+- **Milestone System**
+  - Age-appropriate milestone chips with rounded-pill design (#0086FF background, white text)
+  - Dynamic milestones based on age:
+    - 0-29 days: "Focusing on Faces"
+    - 30-59 days: "Smiles Responsively"  
+    - 60-89 days: "Laughs and Coos"
+    - 90-119 days: "Recognizes Voices"
+    - 120-149 days: "Reaches for Objects"
+    - 150+ days: "Shows Emotions"
+
+- **Tip-of-Day Card**
+  - Elevated card (2dp shadow) with dismissible functionality
+  - Left-aligned colored bar (#00B894) with 0dp border radius
+  - Structured content: bold title "Nutrition Tip" + descriptive body text
+  - Right-aligned close icon for permanent dismissal
+  - State persistence using SharedPreferences
+
+- **Navigation & Auto-redirect Logic**
+  - Automatic redirect to Dashboard when child reaches 181+ days
+  - "Skip to Dashboard" button (text-button #0086FF) for early navigation
+  - Integrated with Add Child screen - automatically navigates based on child age
+  - Proper route configuration outside ShellRoute (no bottom navigation)
+
+### Architecture
+- **Multilingual Support**
+  - Complete localization (English, Sinhala, Tamil) with Noto Serif Sinhala typography
+  - Localized milestones, tips, and interface text
+  - Dynamic font family switching based on selected language
+
+- **Custom Drawing & Animation**
+  - CustomPainter implementation for circular progress ring
+  - Color interpolation for smooth gradient transitions
+  - AnimationController with SingleTickerProviderStateMixin
+  - Responsive design with proper state management
+
+- **Accessibility Features**
+  - TalkBack/VoiceOver support with semantic labels
+  - Announces remaining days until 6 months
+  - Screen reader compatible progress indicators
+  - Proper focus management and navigation
+
+- **State Management**
+  - Provider integration for child data access
+  - SharedPreferences for tip dismissal state
+  - Real-time day calculation with automatic updates
+  - Proper lifecycle management with dispose methods
+
 ## [2025-08-20] - Bug Fixes and OTP Screen Redesign
 
 ### Fixed

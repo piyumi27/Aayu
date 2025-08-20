@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'providers/child_provider.dart';
+import 'screens/add_child_screen.dart';
 import 'screens/forgot_password_screen.dart';
 import 'screens/growth_screen.dart';
 import 'screens/home_screen.dart';
@@ -15,6 +16,7 @@ import 'screens/learn_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/onboarding_screen.dart';
 import 'screens/otp_verification_screen.dart';
+import 'screens/pre_six_month_countdown_screen.dart';
 import 'screens/profile_screen.dart';
 import 'screens/register_screen.dart';
 import 'screens/splash_screen.dart';
@@ -122,6 +124,14 @@ final _router = GoRouter(
     GoRoute(
       path: '/forgot-password',
       builder: (context, state) => const ForgotPasswordScreen(),
+    ),
+    GoRoute(
+      path: '/add-child',
+      builder: (context, state) => const AddChildScreen(),
+    ),
+    GoRoute(
+      path: '/pre-six-month-countdown',
+      builder: (context, state) => const PreSixMonthCountdownScreen(),
     ),
     ShellRoute(
       builder: (context, state, child) {

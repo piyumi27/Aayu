@@ -133,46 +133,105 @@ class _AddChildScreenState extends State<AddChildScreen> {
     final texts = _getLocalizedText();
     
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFFAFAFA),
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF202124)),
+          icon: const Icon(Icons.arrow_back, color: Color(0xFF1A1A1A)),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
           texts['title']!,
           style: TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
-            color: const Color(0xFF202124),
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            color: const Color(0xFF1A1A1A),
             fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
           ),
         ),
-        centerTitle: false,
+        centerTitle: true,
       ),
       body: Column(
         children: [
           Expanded(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.only(bottom: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // Top section with avatar
-                  _buildAvatarSection(texts),
+                  const SizedBox(height: 20),
                   
-                  // Form card
-                  _buildFormCard(texts),
+                  // Avatar section
+                  _buildCleanAvatarSection(texts),
+                  
+                  const SizedBox(height: 40),
+                  
+                  // Form fields
+                  _buildCleanFormFields(texts),
                 ],
               ),
             ),
           ),
           
-          // Bottom fixed action bar
-          _buildBottomActionBar(texts),
+          // Bottom action button
+          _buildCleanBottomButton(texts),
         ],
       ),
+    );
+  }
+
+  Widget _buildCleanAvatarSection(Map<String, String> texts) {
+    return Column(
+      children: [
+        GestureDetector(
+          onTap: _pickImage,
+          child: Container(
+            width: 120,
+            height: 120,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.06),
+                  blurRadius: 20,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: _profileImage != null
+                ? ClipRRect(
+                    borderRadius: BorderRadius.circular(60),
+                    child: Image.file(
+                      _profileImage!,
+                      fit: BoxFit.cover,
+                    ),
+                  )
+                : Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: const Color(0xFF0086FF).withValues(alpha: 0.1),
+                    ),
+                    child: const Icon(
+                      Icons.add_a_photo_outlined,
+                      size: 32,
+                      color: Color(0xFF0086FF),
+                    ),
+                  ),
+          ),
+        ),
+        const SizedBox(height: 12),
+        Text(
+          texts['addPhoto']!,
+          style: TextStyle(
+            fontSize: 14,
+            color: const Color(0xFF6B7280),
+            fontWeight: FontWeight.w500,
+            fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+          ),
+        ),
+      ],
     );
   }
 
@@ -220,6 +279,352 @@ class _AddChildScreenState extends State<AddChildScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildCleanFormFields(Map<String, String> texts) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Child Name
+        _buildCleanTextField(
+          controller: _nameController,
+          label: texts['childName']!,
+          errorText: _nameError,
+        ),
+        
+        const SizedBox(height: 24),
+        
+        // Date of Birth
+        _buildCleanDateField(texts),
+        
+        const SizedBox(height: 24),
+        
+        // Gender Selection
+        _buildCleanGenderSelection(texts),
+        
+        const SizedBox(height: 32),
+        
+        // Optional measurements
+        _buildCleanOptionalMeasurements(texts),
+      ],
+    );
+  }
+
+  Widget _buildCleanTextField({
+    required TextEditingController controller,
+    required String label,
+    String? errorText,
+    TextInputType? keyboardType,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: const Color(0xFF1A1A1A),
+            fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.04),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: TextField(
+            controller: controller,
+            keyboardType: keyboardType,
+            style: TextStyle(
+              fontSize: 16,
+              color: const Color(0xFF1A1A1A),
+              fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+            ),
+            decoration: InputDecoration(
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none,
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none,
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: const BorderSide(color: Color(0xFF0086FF), width: 2),
+              ),
+              errorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: const BorderSide(color: Color(0xFFFF5252), width: 1),
+              ),
+              contentPadding: const EdgeInsets.all(16),
+              filled: true,
+              fillColor: Colors.white,
+            ),
+            onChanged: (_) => _validateForm(),
+          ),
+        ),
+        if (errorText != null) ...[ 
+          const SizedBox(height: 6),
+          Text(
+            errorText,
+            style: TextStyle(
+              fontSize: 14,
+              color: const Color(0xFFFF5252),
+              fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildCleanDateField(Map<String, String> texts) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          texts['dateOfBirth']!,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: const Color(0xFF1A1A1A),
+            fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+          ),
+        ),
+        const SizedBox(height: 8),
+        GestureDetector(
+          onTap: _selectDate,
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.04),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    _birthDate == null
+                        ? texts['selectBirthDate']!
+                        : _birthDate!.toString().split(' ')[0],
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: _birthDate == null ? const Color(0xFF9CA3AF) : const Color(0xFF1A1A1A),
+                      fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                    ),
+                  ),
+                ),
+                const Icon(Icons.calendar_today_outlined, color: Color(0xFF0086FF), size: 20),
+              ],
+            ),
+          ),
+        ),
+        if (_dobError != null) ...[ 
+          const SizedBox(height: 6),
+          Text(
+            _dobError!,
+            style: TextStyle(
+              fontSize: 14,
+              color: const Color(0xFFFF5252),
+              fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildCleanGenderSelection(Map<String, String> texts) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          texts['gender']!,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: const Color(0xFF1A1A1A),
+            fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+          ),
+        ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Expanded(
+              child: _buildCleanGenderChip(
+                label: texts['male']!,
+                value: 'Male',
+                icon: Icons.male_outlined,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: _buildCleanGenderChip(
+                label: texts['female']!,
+                value: 'Female',
+                icon: Icons.female_outlined,
+              ),
+            ),
+          ],
+        ),
+        if (_genderError != null) ...[ 
+          const SizedBox(height: 6),
+          Text(
+            _genderError!,
+            style: TextStyle(
+              fontSize: 14,
+              color: const Color(0xFFFF5252),
+              fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildCleanGenderChip({
+    required String label,
+    required String value,
+    required IconData icon,
+  }) {
+    final isSelected = _gender == value;
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _gender = value;
+        });
+        _validateForm();
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+        decoration: BoxDecoration(
+          color: isSelected ? const Color(0xFF0086FF) : Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected ? const Color(0xFF0086FF) : const Color(0xFFE5E7EB),
+            width: 1.5,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.04),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              color: isSelected ? Colors.white : const Color(0xFF6B7280),
+              size: 20,
+            ),
+            const SizedBox(width: 8),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+                color: isSelected ? Colors.white : const Color(0xFF6B7280),
+                fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCleanOptionalMeasurements(Map<String, String> texts) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: _buildCleanTextField(
+                controller: _birthWeightController,
+                label: texts['birthWeight']!,
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: _buildCleanTextField(
+                controller: _birthHeightController,
+                label: texts['birthHeight']!,
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Text(
+          texts['helperText']!,
+          style: TextStyle(
+            fontSize: 14,
+            color: const Color(0xFF6B7280),
+            fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCleanBottomButton(Map<String, String> texts) {
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        border: Border(
+          top: BorderSide(color: Color(0xFFF3F4F6), width: 1),
+        ),
+      ),
+      child: SizedBox(
+        width: double.infinity,
+        height: 56,
+        child: ElevatedButton(
+          onPressed: _isValid ? _saveChild : null,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFF0086FF),
+            disabledBackgroundColor: const Color(0xFFE5E7EB),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            elevation: 0,
+            shadowColor: Colors.transparent,
+          ),
+          child: Text(
+            texts['saveProfile']!,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: _isValid ? Colors.white : const Color(0xFF9CA3AF),
+              fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -637,12 +1042,11 @@ class _AddChildScreenState extends State<AddChildScreen> {
 
   void _navigateBasedOnAge(Child child) {
     final now = DateTime.now();
-    final ageInMonths = (now.difference(child.birthDate).inDays / 30.44).round();
+    final ageInDays = now.difference(child.birthDate).inDays;
     
-    if (ageInMonths < 6) {
-      // TODO: Navigate to Pre-6-Month Countdown screen
-      // For now, navigate to dashboard
-      context.go('/');
+    if (ageInDays < 181) { // Less than 6 months (approximately 180 days)
+      // Navigate to Pre-6-Month Countdown screen
+      context.go('/pre-six-month-countdown');
     } else {
       // Navigate to Dashboard
       context.go('/');

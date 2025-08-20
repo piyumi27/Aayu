@@ -62,7 +62,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   'phoneNumber': _phoneController.text,
                   'verificationId': verificationId,
                   'isPasswordReset': true,
-                });
+                },);
               }
             });
           }
@@ -80,7 +80,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               'phoneNumber': _phoneController.text,
               'verificationId': credential.verificationId,
               'isPasswordReset': true,
-            });
+            },);
           }
         },
       );
