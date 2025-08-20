@@ -211,8 +211,6 @@ class _PreSixMonthCountdownScreenState extends State<PreSixMonthCountdownScreen>
         final daysSinceBirth = _calculateDaysSinceBirth(selectedChild);
         final progress = _calculateProgress(daysSinceBirth);
         final progressColor = _getProgressColor(daysSinceBirth);
-        final milestone = _getMilestone(daysSinceBirth);
-        final remainingDays = math.max(0, 180 - daysSinceBirth);
 
         return Scaffold(
           backgroundColor: const Color(0xFFF8F9FA),
@@ -363,14 +361,19 @@ class _PreSixMonthCountdownScreenState extends State<PreSixMonthCountdownScreen>
     int nextMilestoneDay = 60; // Default to day 60
     if (daysSinceBirth >= 150) {
       nextMilestoneDay = 180;
-    } else if (daysSinceBirth >= 120) nextMilestoneDay = 150;
-    else if (daysSinceBirth >= 90) nextMilestoneDay = 120;
-    else if (daysSinceBirth >= 60) nextMilestoneDay = 90;
-    else if (daysSinceBirth >= 30) nextMilestoneDay = 60;
-    else nextMilestoneDay = 30;
+    } else if (daysSinceBirth >= 120) {
+      nextMilestoneDay = 150;
+    } else if (daysSinceBirth >= 90) {
+      nextMilestoneDay = 120;
+    } else if (daysSinceBirth >= 60) {
+      nextMilestoneDay = 90;
+    } else if (daysSinceBirth >= 30) {
+      nextMilestoneDay = 60;
+    } else {
+      nextMilestoneDay = 30;
+    }
 
     final daysUntilMilestone = math.max(0, nextMilestoneDay - daysSinceBirth);
-    final nextMilestoneName = _getMilestone(nextMilestoneDay);
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
