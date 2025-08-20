@@ -1,25 +1,28 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-
-import 'screens/growth_screen.dart';
-import 'screens/home_screen.dart';
-import 'screens/learn_screen.dart';
-import 'screens/profile_screen.dart';
-import 'screens/vaccines_screen.dart';
-import 'screens/splash_screen.dart';
-import 'screens/language_selection_screen.dart';
-import 'screens/onboarding_screen.dart';
-import 'screens/login_screen.dart';
-import 'screens/register_screen.dart';
-import 'widgets/bottom_navigation.dart';
-import 'providers/child_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
+import 'providers/child_provider.dart';
+import 'screens/growth_screen.dart';
+import 'screens/home_screen.dart';
+import 'screens/language_selection_screen.dart';
+import 'screens/learn_screen.dart';
+import 'screens/login_screen.dart';
+import 'screens/onboarding_screen.dart';
+import 'screens/otp_verification_screen.dart';
+import 'screens/profile_screen.dart';
+import 'screens/register_screen.dart';
+import 'screens/splash_screen.dart';
+import 'screens/vaccines_screen.dart';
+import 'widgets/bottom_navigation.dart';
+
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(const AayuApp());
 }
 
@@ -79,6 +82,17 @@ final _router = GoRouter(
     GoRoute(
       path: '/register',
       builder: (context, state) => const RegisterScreen(),
+    ),
+    GoRoute(
+      path: '/otp-verification',
+      builder: (context, state) {
+        final extra = state.extra as Map<String, dynamic>;
+        return OTPVerificationScreen(
+          phoneNumber: extra['phoneNumber'],
+          verificationId: extra['verificationId'],
+          fullName: extra['fullName'],
+        );
+      },
     ),
     ShellRoute(
       builder: (context, state, child) {

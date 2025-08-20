@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "928568079354",
+    "project_id": "aayu-mobile",
+    "storage_bucket": "aayu-mobile.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:928568079354:android:2741d94b7692b79ed7aa43",
+        "android_client_info": {
+          "package_name": "dev.aayu"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAa-Cc-qnrqMYIeWuhN6Q_oflyQImAmZrg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

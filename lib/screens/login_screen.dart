@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../services/firebase_auth_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -44,21 +45,70 @@ class _LoginScreenState extends State<LoginScreen> {
       _isLoading = true;
     });
 
-    // Simulate login process
-    await Future.delayed(const Duration(seconds: 2));
+    try {
+      await FirebaseAuthService.sendOTP(
+        phoneNumber: _phoneController.text,
+        onCodeSent: (verificationId) {
+          if (mounted) {
+            context.push('/otp-verification', extra: {
+              'phoneNumber': _phoneController.text,
+              'verificationId': verificationId,
+              'isLogin': true,
+            });
+          }
+        },
+        onError: (error) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(error),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        },
+        onAutoVerification: (credential) async {
+          // Handle auto-verification if possible
+          try {
+            final userCredential = await FirebaseAuthService.verifyOTP(
+              otp: credential.smsCode ?? '',
+            );
 
-    // For demo purposes, accept any credentials
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('user_logged_in', true);
-    await prefs.setString('user_phone', _phoneController.text);
+            if (userCredential != null) {
+              final prefs = await SharedPreferences.getInstance();
+              await prefs.setBool('user_logged_in', true);
+              await prefs.setString('user_phone', _phoneController.text);
 
-    if (mounted) {
-      context.go('/');
+              if (mounted) {
+                context.go('/');
+              }
+            }
+          } catch (e) {
+            // If auto-verification fails, proceed with manual OTP entry
+            if (mounted) {
+              context.push('/otp-verification', extra: {
+                'phoneNumber': _phoneController.text,
+                'verificationId': credential.verificationId,
+                'isLogin': true,
+              });
+            }
+          }
+        },
+      );
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to send OTP: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
-
-    setState(() {
-      _isLoading = false;
-    });
   }
 
   Map<String, String> _getLocalizedText() {

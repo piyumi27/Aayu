@@ -204,7 +204,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 
-  Widget _buildSlide(String title, String subtitle, int index) {
+    Widget _buildSlide(String title, String subtitle, int index) {
     // Define Lottie animation URLs or asset paths for each slide
     final List<String> lottieAnimations = [
       'https://assets9.lottiefiles.com/packages/lf20_5tl1xxnz.json', // Growth tracking - Rocket Launch

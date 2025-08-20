@@ -2,7 +2,7 @@
 
 All notable changes to the Aayu project will be documented in this file.
 
-## [2025-01-20] - Complete Onboarding Flow with Authentication
+## [2025-01-20] - Complete Onboarding Flow with Firebase Phone Authentication
 
 ### Added
 - **Splash Screen**
@@ -44,22 +44,27 @@ All notable changes to the Aayu project will be documented in this file.
   - Automatic redirect to onboarding if not completed
   - Navigation flow: Splash → Language Selection → Onboarding → Home
 
-- **Authentication Screens**
-  - Login Screen with phone number and password fields
-  - Registration Screen with full name, phone, password, and confirm password fields
+- **Firebase Phone Authentication**
+  - Login Screen with phone number field (password removed for phone auth)
+  - Registration Screen with full name and phone number fields
   - Real-time password strength meter with visual feedback (weak/medium/strong)
+  - OTP Verification Screen with 6-digit code input
   - Multi-language support for all authentication screens
-  - Remember me checkbox on registration screen
-  - Form validation with localized error messages
+  - Firebase Auth service with comprehensive phone verification
+  - Auto-verification support for instant login when possible
+  - Manual OTP entry with 60-second resend countdown
+  - User profile storage in Firestore
+  - Error handling with localized messages
   - Loading states during authentication process
   - Privacy policy compliance text
-  - Navigation between login and registration screens
+  - Navigation between login, registration, and OTP screens
 
 - **Navigation Flow Updates**
-  - Complete flow: Splash → Language Selection → Onboarding → Login → Home
+  - Complete flow: Splash → Language Selection → Onboarding → Login → OTP → Home
   - Authentication guard on main app routes
   - Automatic redirects based on user state (language, onboarding, authentication)
-  - Persistent user session management with SharedPreferences
+  - Firebase initialization in main.dart
+  - Persistent user session management with SharedPreferences and Firebase Auth
 
 - **UI Styling**
   - Consistent design system with specified colors:
