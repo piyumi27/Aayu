@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../providers/child_provider.dart';
 import 'add_child_screen.dart';
+import 'add_measurement_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -769,8 +770,11 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _openAddMeasurement(BuildContext context) {
-    // This should open the Add Growth Record sheet from the growth screen
-    context.go('/growth');
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const AddMeasurementScreen(),
+      ),
+    );
   }
 
   void _addChild(BuildContext context) {
