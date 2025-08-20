@@ -3,18 +3,20 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-import 'providers/child_provider.dart';
 import 'screens/growth_screen.dart';
 import 'screens/home_screen.dart';
-import 'screens/language_selection_screen.dart';
 import 'screens/learn_screen.dart';
-import 'screens/onboarding_screen.dart';
 import 'screens/profile_screen.dart';
-import 'screens/splash_screen.dart';
 import 'screens/vaccines_screen.dart';
+import 'screens/splash_screen.dart';
+import 'screens/language_selection_screen.dart';
+import 'screens/onboarding_screen.dart';
+import 'screens/login_screen.dart';
+import 'screens/register_screen.dart';
 import 'widgets/bottom_navigation.dart';
+import 'providers/child_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -70,6 +72,14 @@ final _router = GoRouter(
       path: '/onboarding',
       builder: (context, state) => const OnboardingScreen(),
     ),
+    GoRoute(
+      path: '/login',
+      builder: (context, state) => const LoginScreen(),
+    ),
+    GoRoute(
+      path: '/register',
+      builder: (context, state) => const RegisterScreen(),
+    ),
     ShellRoute(
       builder: (context, state, child) {
         return ScaffoldWithNavBar(child: child);
@@ -82,12 +92,16 @@ final _router = GoRouter(
             final prefs = await SharedPreferences.getInstance();
             final languageSelected = prefs.getBool('language_selected') ?? false;
             final onboardingCompleted = prefs.getBool('onboarding_completed') ?? false;
+            final userLoggedIn = prefs.getBool('user_logged_in') ?? false;
             
             if (!languageSelected) {
               return '/splash';
             }
             if (!onboardingCompleted) {
               return '/onboarding';
+            }
+            if (!userLoggedIn) {
+              return '/login';
             }
             return null;
           },
