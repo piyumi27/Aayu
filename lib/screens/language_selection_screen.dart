@@ -26,7 +26,7 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
     await prefs.setBool('language_selected', true);
 
     if (mounted) {
-      context.go('/');
+      context.go('/onboarding');
     }
   }
 
@@ -48,7 +48,7 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
                   borderRadius: BorderRadius.circular(25),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFF1E90FF).withOpacity(0.08),
+                      color: const Color(0xFF1E90FF).withValues(alpha: 0.08),
                       blurRadius: 20,
                       spreadRadius: 5,
                     ),
@@ -168,7 +168,7 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF1E90FF).withOpacity(0.08) : Colors.grey[50],
+          color: isSelected ? const Color(0xFF1E90FF).withValues(alpha: 0.08) : Colors.grey[50],
           border: Border.all(
             color: isSelected ? const Color(0xFF1E90FF) : Colors.grey[300]!,
             width: isSelected ? 2 : 1,
@@ -221,7 +221,7 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
                     subtitle,
                     style: TextStyle(
                       fontSize: 14,
-                      color: isSelected ? const Color(0xFF1E90FF).withOpacity(0.8) : Colors.black54,
+                      color: isSelected ? const Color(0xFF1E90FF).withValues(alpha: 0.8) : Colors.black54,
                       fontFamily: subtitle.contains('සිංහල')
                           ? 'NotoSerifSinhala'
                           : null,

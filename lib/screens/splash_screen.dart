@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'dart:math' as math;
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -14,7 +15,7 @@ class _SplashScreenState extends State<SplashScreen>
   late AnimationController _gradientController;
   late Animation<double> _fadeAnimation;
   late Animation<double> _scaleAnimation;
-  late Animation<Alignment> _gradientAnimation;
+  late Animation<double> _gradientRotation;
 
   @override
   void initState() {
@@ -25,9 +26,9 @@ class _SplashScreenState extends State<SplashScreen>
     );
 
     _gradientController = AnimationController(
-      duration: const Duration(seconds: 4),
+      duration: const Duration(seconds: 8),
       vsync: this,
-    )..repeat(reverse: true);
+    )..repeat();
 
     _fadeAnimation = Tween<double>(
       begin: 0.0,
@@ -45,12 +46,12 @@ class _SplashScreenState extends State<SplashScreen>
       curve: const Interval(0.0, 0.65, curve: Curves.elasticOut),
     ));
 
-    _gradientAnimation = Tween<Alignment>(
-      begin: Alignment.topLeft,
-      end: Alignment.bottomRight,
+    _gradientRotation = Tween<double>(
+      begin: 0,
+      end: 2 * math.pi,
     ).animate(CurvedAnimation(
       parent: _gradientController,
-      curve: Curves.easeInOut,
+      curve: Curves.linear,
     ));
 
     _animationController.forward();
@@ -75,62 +76,108 @@ class _SplashScreenState extends State<SplashScreen>
       body: AnimatedBuilder(
         animation: _gradientController,
         builder: (context, child) {
+          final rotation = _gradientRotation.value;
           return Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                begin: _gradientAnimation.value,
-                end: Alignment(-_gradientAnimation.value.x, -_gradientAnimation.value.y),
+                begin: Alignment(
+                  math.cos(rotation),
+                  math.sin(rotation),
+                ),
+                end: Alignment(
+                  -math.cos(rotation),
+                  -math.sin(rotation),
+                ),
                 colors: const [
-                  Colors.white,
-                  Color(0xFFE6F3FF),
-                  Color(0xFFD6EBFF),
-                  Colors.white,
+                  Color(0xFF1E90FF), // Dodger Blue
+                  Color(0xFF87CEEB), // Sky Blue
+                  Color(0xFFB0E0E6), // Powder Blue
+                  Color(0xFFE0F6FF), // Light Cyan
+                  Color(0xFFF0F8FF), // Alice Blue
+                  Color(0xFFFFFFFF), // White
+                  Color(0xFFF0F8FF), // Alice Blue
+                  Color(0xFFE0F6FF), // Light Cyan
                 ],
-                stops: const [0.0, 0.3, 0.7, 1.0],
+                stops: const [0.0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 1.0],
               ),
             ),
-            child: Center(
-              child: AnimatedBuilder(
-                animation: _animationController,
-                builder: (context, child) {
-                  return FadeTransition(
-                    opacity: _fadeAnimation,
-                    child: ScaleTransition(
-                      scale: _scaleAnimation,
-                      child: Container(
-                        width: 220,
-                        height: 220,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.9),
-                          borderRadius: BorderRadius.circular(30),
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color(0xFF1E90FF).withOpacity(0.1),
-                              blurRadius: 30,
-                              spreadRadius: 10,
+            child: Stack(
+              children: [
+                // Overlay gradient for depth
+                Container(
+                  decoration: BoxDecoration(
+                    gradient: RadialGradient(
+                      center: Alignment(
+                        math.cos(rotation * 0.5) * 0.5,
+                        math.sin(rotation * 0.5) * 0.5,
+                      ),
+                      radius: 1.5,
+                      colors: [
+                        const Color(0xFF1E90FF).withValues(alpha: 0.1),
+                        const Color(0xFF87CEEB).withValues(alpha: 0.05),
+                        Colors.transparent,
+                      ],
+                    ),
+                  ),
+                ),
+                Center(
+                  child: AnimatedBuilder(
+                    animation: _animationController,
+                    builder: (context, child) {
+                      return FadeTransition(
+                        opacity: _fadeAnimation,
+                        child: ScaleTransition(
+                          scale: _scaleAnimation,
+                          child: Container(
+                            width: 220,
+                            height: 220,
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [
+                                  Colors.white.withValues(alpha: 0.95),
+                                  Colors.white.withValues(alpha: 0.85),
+                                ],
+                              ),
+                              borderRadius: BorderRadius.circular(30),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color(0xFF1E90FF).withValues(alpha: 0.15),
+                                  blurRadius: 40,
+                                  spreadRadius: 10,
+                                  offset: const Offset(0, 10),
+                                ),
+                                BoxShadow(
+                                  color: Colors.white.withValues(alpha: 0.8),
+                                  blurRadius: 20,
+                                  spreadRadius: -5,
+                                  offset: const Offset(0, -5),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(20),
-                          child: Image.asset(
-                            'assets/images/logo.png',
-                            width: 180,
-                            height: 180,
-                            errorBuilder: (context, error, stackTrace) {
-                              return const Icon(
-                                Icons.child_care,
-                                size: 100,
-                                color: Color(0xFF1E90FF),
-                              );
-                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(20),
+                              child: Image.asset(
+                                'assets/images/logo.png',
+                                width: 180,
+                                height: 180,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return const Icon(
+                                    Icons.child_care,
+                                    size: 100,
+                                    color: Color(0xFF1E90FF),
+                                  );
+                                },
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-                  );
-                },
-              ),
+                      );
+                    },
+                  ),
+                ),
+              ],
             ),
           );
         },

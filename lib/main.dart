@@ -10,6 +10,7 @@ import 'screens/growth_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/language_selection_screen.dart';
 import 'screens/learn_screen.dart';
+import 'screens/onboarding_screen.dart';
 import 'screens/profile_screen.dart';
 import 'screens/splash_screen.dart';
 import 'screens/vaccines_screen.dart';
@@ -65,6 +66,10 @@ final _router = GoRouter(
       path: '/language-selection',
       builder: (context, state) => const LanguageSelectionScreen(),
     ),
+    GoRoute(
+      path: '/onboarding',
+      builder: (context, state) => const OnboardingScreen(),
+    ),
     ShellRoute(
       builder: (context, state, child) {
         return ScaffoldWithNavBar(child: child);
@@ -76,8 +81,13 @@ final _router = GoRouter(
           redirect: (context, state) async {
             final prefs = await SharedPreferences.getInstance();
             final languageSelected = prefs.getBool('language_selected') ?? false;
+            final onboardingCompleted = prefs.getBool('onboarding_completed') ?? false;
+            
             if (!languageSelected) {
               return '/splash';
+            }
+            if (!onboardingCompleted) {
+              return '/onboarding';
             }
             return null;
           },
