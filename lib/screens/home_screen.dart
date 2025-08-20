@@ -132,9 +132,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       // App Header
                       _buildAppHeader(texts),
                       
-                      // Child Selector
-                      if (provider.children.length > 1)
-                        _buildCleanChildSelector(provider, texts),
+                      // Child Selector (always show to include Add Child button)
+                      _buildCleanChildSelector(provider, texts),
                       
                       // Main Content Area
                       Expanded(
@@ -850,51 +849,86 @@ class _HomeScreenState extends State<HomeScreen> {
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
-          children: provider.children.map((child) {
-            final isSelected = provider.selectedChild?.id == child.id;
-            return Padding(
-              padding: const EdgeInsets.only(right: 12),
-              child: GestureDetector(
-                onTap: () => provider.selectChild(child),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: isSelected ? const Color(0xFF0086FF) : const Color(0xFFF3F4F6),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      CircleAvatar(
-                        radius: 12,
-                        backgroundColor: isSelected 
-                            ? Colors.white.withValues(alpha: 0.3)
-                            : const Color(0xFF6B7280),
-                        child: Text(
-                          child.name[0].toUpperCase(),
-                          style: TextStyle(
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                            color: isSelected ? Colors.white : Colors.white,
+          children: [
+            // Child selector chips
+            ...provider.children.map((child) {
+              final isSelected = provider.selectedChild?.id == child.id;
+              return Padding(
+                padding: const EdgeInsets.only(right: 12),
+                child: GestureDetector(
+                  onTap: () => provider.selectChild(child),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: isSelected ? const Color(0xFF0086FF) : const Color(0xFFE5E7EB),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        CircleAvatar(
+                          radius: 12,
+                          backgroundColor: isSelected 
+                              ? Colors.white.withValues(alpha: 0.3)
+                              : const Color(0xFF6B7280),
+                          child: Text(
+                            child.name[0].toUpperCase(),
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        child.name,
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: isSelected ? Colors.white : const Color(0xFF374151),
-                          fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                        const SizedBox(width: 8),
+                        Text(
+                          child.name,
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: isSelected ? Colors.white : const Color(0xFF374151),
+                            fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
+              );
+            }).toList(),
+            
+            // Add Child button
+            GestureDetector(
+              onTap: () => _addChild(context),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE5E7EB),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.add,
+                      size: 16,
+                      color: Color(0xFF6B7280),
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      texts['addChild'] ?? 'Add Child',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFF374151),
+                        fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            );
-          }).toList(),
+            ),
+          ],
         ),
       ),
     );
