@@ -2,6 +2,124 @@
 
 All notable changes to the Aayu project will be documented in this file.
 
+## [2025-08-20] - Add Child Profile Screen & Code Guidelines Update
+
+### Updated
+- **Code Guidelines (CLAUDE.md)**
+  - Added strict no-emoji rule: "Never use emojis as icons in UI components"
+  - Mandate use of Material Icons (Icons.*) instead of emoji characters
+  - Emojis only acceptable in user-generated text content
+  - Updated critical rules section for consistency
+
+- **Gender Selection Icons**
+  - Replaced emoji icons (👦👧) with proper Material Icons
+  - Updated to use Icons.male and Icons.female
+  - Improved accessibility and Material Design compliance
+  - Enhanced visual consistency across the app
+
+### Added
+- **Awesome Flutter Packages Documentation (AWESOME.md)**
+  - Comprehensive analysis of relevant packages from awesome-flutter repository
+  - Categorized by functionality: Data Visualization, UI/UX, Security, Offline, etc.
+  - Priority implementation recommendations (High/Medium/Low)
+  - Specific use cases for child nutrition tracking app
+  - 25+ package recommendations with detailed descriptions
+
+## [2025-08-20] - Add Child Profile Screen Implementation
+
+### Added
+- **Complete Add Child Profile Screen**
+  - Vertically scrollable design optimized for 1080 × 1920 mobile screens
+  - White background with Material 3 design principles
+  - Professional form layout with elevated card design (2dp elevation)
+
+- **App Bar Design**
+  - Back arrow navigation with #202124 color
+  - Title "Add Your Child" (22sp, bold, #202124)
+  - Clean white background with zero elevation
+  - Left-aligned title following Material guidelines
+
+- **Photo Upload Section**
+  - 96dp circular avatar placeholder with light-gray stroke
+  - Inner add_a_photo icon with tap functionality
+  - Image picker integration for gallery selection
+  - "Add photo (optional)" label (12sp gray) below avatar
+  - Image compression (800x800, 85% quality) for optimal storage
+
+- **Form Components**
+  - **Child Name**: Single-line outlined text field with left label
+  - **Date of Birth**: Outlined field with trailing calendar icon, opens Material date picker
+  - **Gender Selection**: Two 56dp toggle chips with emoji icons (👦 Male, 👧 Female)
+  - **Optional Measurements**: Birth Weight (kg) and Birth Height (cm) in equal-width fields
+  - Helper text "Leave blank if unknown" for optional fields
+
+- **Validation System**
+  - Required fields: Name, Date of Birth, Gender
+  - Real-time validation with 12sp error text in #FF5252
+  - Form state tracking with automatic button enable/disable
+  - Localized error messages for all supported languages
+
+- **Gender Toggle Design**
+  - Active chip: Primary #0086FF background with white text
+  - Inactive chip: #E0E0E0 background with #555 text
+  - Material Icons (Icons.male, Icons.female) for proper visual identification
+  - Responsive tap interactions following Material Design guidelines
+
+- **Bottom Action Bar**
+  - Fixed position with elevation shadow
+  - Full-width "Save Profile" button (32dp margins, 48dp height)
+  - Disabled state (40% opacity) until validation passes
+  - #0086FF primary color with rounded corners
+
+- **Date Picker Integration**
+  - Material date picker dialog with #0086FF theme
+  - Limited to last 5 years (0-5 years old children)
+  - Proper date formatting and validation
+
+### Features
+- **Multilingual Support**
+  - Complete localization (English, Sinhala, Tamil)
+  - Noto Serif Sinhala typography throughout
+  - Dynamic font family switching based on selected language
+  - Localized form labels, error messages, and success notifications
+
+- **Data Management**
+  - Local storage using SQLite through ChildProvider
+  - Automatic Firebase sync for backup and cross-device access
+  - Success toast: "Profile saved locally – sync later"
+  - Error handling with user-friendly messages
+
+- **Navigation Logic**
+  - Age-based navigation after save completion
+  - Children < 6 months → Pre-6-Month Countdown (placeholder: Dashboard)
+  - Children ≥ 6 months → Main Dashboard
+  - Automatic child selection and provider state update
+
+- **Image Handling**
+  - Gallery image selection with ImagePicker
+  - File compression and optimization
+  - Error handling for image picker failures
+  - Placeholder state with add_a_photo icon
+
+### Architecture
+- **Form Validation**
+  - Real-time validation with state management
+  - Comprehensive error handling and user feedback
+  - Required field validation with visual indicators
+  - Form submission prevention until all requirements met
+
+- **Responsive Design**
+  - Adaptive layout for various screen densities
+  - Proper spacing using dp measurements
+  - ScrollView for content overflow handling
+  - Material 3 design system compliance
+
+- **Data Flow**
+  - ChildProvider integration for state management
+  - Local-first approach with background sync
+  - Optimistic UI updates with error rollback
+  - Toast notifications for user feedback
+
 ## [2025-08-20] - Comprehensive Home Dashboard Implementation
 
 ### Added
@@ -35,7 +153,7 @@ All notable changes to the Aayu project will be documented in this file.
   - Status text localized in selected language
 
 - **Action Grid (2×2)**
-  - Four 160dp square actio buttons with Material symbol icons
+  - Four 160dp square action buttons with Material symbol icons
   - Add Measurement, Growth Charts, Vaccines, Learn functionality
   - Color-coded design: Blue (#0086FF), Green, Orange, Purple
   - Responsive tap interactions with proper navigation

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../models/child.dart';
 import '../providers/child_provider.dart';
 import 'add_child_screen.dart';
 
@@ -585,7 +586,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildActionGridItem(String label, IconData icon, Color color, VoidCallback onTap) {
-    return SizedBox(
+    return Container(
       width: 160,
       height: 160,
       child: Material(
