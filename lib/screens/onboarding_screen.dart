@@ -303,44 +303,50 @@ class _OnboardingScreenState extends State<OnboardingScreen>
               borderRadius: BorderRadius.circular(20),
               child: Stack(
                 children: [
-                  // Lottie animation
-                  Lottie.network(
-                    lottieAnimations[index],
-                    controller: controller,
-                    fit: BoxFit.contain,
-                    animate: _currentPage == index && _animationLoadedStates[index] == true,
-                    repeat: true,
-                    options: LottieOptions(
-                      enableMergePaths: true,
+                  // Lottie animation - centered
+                  Center(
+                    child: Lottie.network(
+                      lottieAnimations[index],
+                      controller: controller,
+                      fit: BoxFit.contain,
+                      animate: _currentPage == index && _animationLoadedStates[index] == true,
+                      repeat: true,
+                      options: LottieOptions(
+                        enableMergePaths: true,
+                      ),
+                      onLoaded: (composition) {
+                        // Mark animation as loaded
+                        _onAnimationLoaded(index);
+                        
+                        // Start animation when loaded and if this is the current page
+                        if (_currentPage == index) {
+                          controller.duration = composition.duration;
+                          controller.reset();
+                          controller.forward();
+                        }
+                      },
+                      errorBuilder: (context, error, stackTrace) {
+                        // Mark as loaded even on error to hide loading
+                        _onAnimationLoaded(index);
+                        
+                        // Fallback to icon if Lottie fails to load
+                        return Container(
+                          width: double.infinity,
+                          height: double.infinity,
+                          child: Center(
+                            child: Icon(
+                              index == 0
+                                  ? Icons.trending_up
+                                  : index == 1
+                                      ? Icons.vaccines
+                                      : Icons.restaurant,
+                              size: 120,
+                              color: const Color(0xFF1E90FF),
+                            ),
+                          ),
+                        );
+                      },
                     ),
-                    onLoaded: (composition) {
-                      // Mark animation as loaded
-                      _onAnimationLoaded(index);
-                      
-                      // Start animation when loaded and if this is the current page
-                      if (_currentPage == index) {
-                        controller.duration = composition.duration;
-                        controller.reset();
-                        controller.forward();
-                      }
-                    },
-                    errorBuilder: (context, error, stackTrace) {
-                      // Mark as loaded even on error to hide loading
-                      _onAnimationLoaded(index);
-                      
-                      // Fallback to icon if Lottie fails to load
-                      return Center(
-                        child: Icon(
-                          index == 0
-                              ? Icons.trending_up
-                              : index == 1
-                                  ? Icons.vaccines
-                                  : Icons.restaurant,
-                          size: 120,
-                          color: const Color(0xFF1E90FF),
-                        ),
-                      );
-                    },
                   ),
                   
                   // Loading placeholder - only show if this specific animation is not loaded
