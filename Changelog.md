@@ -2,6 +2,55 @@
 
 All notable changes to the Aayu project will be documented in this file.
 
+## [2025-01-20] - Splash Screen, Language Selection, and Onboarding
+
+### Added
+- **Splash Screen**
+  - Animated splash screen with logo display (no text titles)
+  - Apple-style rotating gradient background with smooth color transitions
+  - Multi-layer gradient animation with #1E90FF (dodger blue) blending through sky blue, powder blue, and white
+  - Radial gradient overlay for added depth effect
+  - Fade and scale animations for smooth logo entry
+  - Auto-navigation to language selection after 3 seconds
+  - Logo container with gradient background and layered shadows
+  - Fallback icon display if logo image is not found
+
+- **Language Selection Screen**
+  - Language selection interface with three options: Sinhala, English, Tamil
+  - Logo-only display without text titles (since logo contains "Ayu" text)
+  - Radio button style selection with visual feedback using #1E90FF color scheme
+  - Language preference persistence using SharedPreferences
+  - Dynamic button text based on selected language
+  - Consistent color theme throughout with #1E90FF
+
+- **Onboarding Carousel**
+  - Three-slide carousel introducing app's core features
+  - Full-width Lottie animations for visual engagement:
+    - "Track Growth" slide: Rocket Launch animation
+    - "Record Vaccines" slide: Medical/vaccine animation  
+    - "Learn Nutrition" slide: Healthy vs Junk Food animation
+  - Multi-language support (English, Sinhala, Tamil) based on selected language
+  - Slide content: "Track Growth", "Record Vaccines", "Learn Nutrition"
+  - Navigation dots with active/inactive states
+  - Skip button on top-right for quick bypass
+  - Get Started button on final slide
+  - Smooth page transitions and animations
+  - Fallback icons when Lottie animations fail to load
+
+- **Navigation Updates**
+  - Set splash screen as initial route
+  - Added redirect logic to check language selection and onboarding status
+  - Automatic redirect to splash if language not selected
+  - Automatic redirect to onboarding if not completed
+  - Navigation flow: Splash → Language Selection → Onboarding → Home
+
+- **Dependencies**
+  - Added Lottie package (^3.1.3) for animated illustrations
+
+### Fixed
+- Replaced deprecated `withOpacity` method with `withValues(alpha:)` throughout the codebase
+- Updated all color opacity references to use the new Flutter API
+
 ## [2025-08-18] - Migration from Kotlin to Flutter
 
 ### Changed
