@@ -3,14 +3,17 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import 'providers/child_provider.dart';
 import 'screens/growth_screen.dart';
 import 'screens/home_screen.dart';
+import 'screens/language_selection_screen.dart';
 import 'screens/learn_screen.dart';
 import 'screens/profile_screen.dart';
+import 'screens/splash_screen.dart';
 import 'screens/vaccines_screen.dart';
 import 'widgets/bottom_navigation.dart';
-import 'providers/child_provider.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -52,7 +55,16 @@ class AayuApp extends StatelessWidget {
 }
 
 final _router = GoRouter(
+  initialLocation: '/splash',
   routes: [
+    GoRoute(
+      path: '/splash',
+      builder: (context, state) => const SplashScreen(),
+    ),
+    GoRoute(
+      path: '/language-selection',
+      builder: (context, state) => const LanguageSelectionScreen(),
+    ),
     ShellRoute(
       builder: (context, state, child) {
         return ScaffoldWithNavBar(child: child);
@@ -61,6 +73,14 @@ final _router = GoRouter(
         GoRoute(
           path: '/',
           builder: (context, state) => const HomeScreen(),
+          redirect: (context, state) async {
+            final prefs = await SharedPreferences.getInstance();
+            final languageSelected = prefs.getBool('language_selected') ?? false;
+            if (!languageSelected) {
+              return '/splash';
+            }
+            return null;
+          },
         ),
         GoRoute(
           path: '/growth',
