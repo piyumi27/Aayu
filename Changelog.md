@@ -2,6 +2,36 @@
 
 All notable changes to the Aayu project will be documented in this file.
 
+## [2025-08-20] - UI Enhancements and Performance Optimization
+
+### Updated
+- **Authentication Screen Design**
+  - Removed duplicate headers from Login and Register screens (previously showing same title in AppBar and body)
+  - Login screen: Added person outline icon with blue gradient circle background (#0086FF)
+  - Register screen: Added person add icon with green gradient circle background (#32CD32)
+  - Clean AppBar design with only back navigation and no title duplication
+  - Improved visual hierarchy and reduced redundancy in authentication flow
+
+- **Lottie Animation Performance**
+  - Implemented animation preloading in onboarding carousel to eliminate loading delays
+  - Added dedicated AnimationControllers for each slide with proper lifecycle management
+  - Implemented background caching using precacheImage for faster subsequent loads
+  - Added loading indicators with localized "Loading animation..." text during initial load
+  - Controlled animation playback - only animate current visible slide for better performance
+  - Used user-requested Lottie URLs:
+    - Slide 1: Rocket Launch animation (https://lottie.host/5e0ce4d5-3b83-42c8-8db0-4a0dd0e0a23e/E2fg4zXD59.json)
+    - Slide 2: Medical/vaccine animation 
+    - Slide 3: Healthy Food animation (https://lottie.host/d7e37340-d3a1-4e2e-a6ea-2e3114a59a4f/g2HiG0GxbU.json)
+  - Enhanced error handling with fallback icons if animations fail to load
+  - Automatic animation restart when user navigates to each slide
+
+### Architecture
+- **Performance Optimizations**
+  - TickerProviderStateMixin integration for smooth animation control
+  - Memory-efficient animation controller management with proper disposal
+  - Network request batching for concurrent Lottie preloading
+  - Reduced UI blocking during animation loading through background processes
+
 ## [2025-08-20] - Unified Navigation Pattern
 
 ### Updated

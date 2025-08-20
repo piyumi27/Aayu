@@ -195,15 +195,8 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text(
-          texts['title']!,
-          style: TextStyle(
-            fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-          ),
-        ),
         backgroundColor: Colors.white,
         elevation: 0,
-        centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.black87),
       ),
       body: SafeArea(
@@ -214,7 +207,30 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const SizedBox(height: 60),
+                const SizedBox(height: 40),
+                
+                // Welcome Icon
+                Container(
+                  width: 120,
+                  height: 120,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      colors: [
+                        const Color(0xFF0086FF).withValues(alpha: 0.1),
+                        const Color(0xFF0086FF).withValues(alpha: 0.05),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                  ),
+                  child: const Icon(
+                    Icons.person_outline,
+                    size: 60,
+                    color: Color(0xFF0086FF),
+                  ),
+                ),
+                const SizedBox(height: 24),
                 
                 // Header
                 Text(

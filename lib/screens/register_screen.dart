@@ -299,15 +299,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text(
-          texts['title']!,
-          style: TextStyle(
-            fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-          ),
-        ),
         backgroundColor: Colors.white,
         elevation: 0,
-        centerTitle: true,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.go('/login'),
@@ -322,7 +315,30 @@ class _RegisterScreenState extends State<RegisterScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const SizedBox(height: 40),
+                const SizedBox(height: 20),
+                
+                // Sign Up Icon
+                Container(
+                  width: 120,
+                  height: 120,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      colors: [
+                        const Color(0xFF32CD32).withValues(alpha: 0.1),
+                        const Color(0xFF32CD32).withValues(alpha: 0.05),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                  ),
+                  child: const Icon(
+                    Icons.person_add_outlined,
+                    size: 60,
+                    color: Color(0xFF32CD32),
+                  ),
+                ),
+                const SizedBox(height: 24),
                 
                 // Header
                 Text(
