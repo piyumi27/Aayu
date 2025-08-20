@@ -18,7 +18,14 @@ class _GrowthScreenState extends State<GrowthScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Growth Tracking'),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: Colors.white,
+        elevation: 0,
+        centerTitle: true,
+        titleTextStyle: const TextStyle(
+          color: Colors.black87,
+          fontSize: 20,
+          fontWeight: FontWeight.w600,
+        ),
       ),
       body: Consumer<ChildProvider>(
         builder: (context, provider, child) {

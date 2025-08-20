@@ -2,6 +2,38 @@
 
 All notable changes to the Aayu project will be documented in this file.
 
+## [2025-08-20] - Unified Navigation Pattern
+
+### Updated
+- **Bottom Navigation Bar**
+  - Updated with 5 items: Home 🏠, Growth 📈, Medicine 💉, Learn 📚, Profile 👤  
+  - Set fixed height to 56dp as specified
+  - Applied active tint color #0086FF with inactive color #666666
+  - Enabled label visibility for all items
+  - Implemented Noto Serif Sinhala typography for labels (font size 12sp)
+  - Updated Medicine icon from vaccines to medical_services for better clarity
+
+- **Navigation Visibility**
+  - Configured bottom navigation to show only on main 5 screens
+  - Hidden on authentication flow screens (splash, language, onboarding, login, register, OTP, forgot password)
+  - ScaffoldWithNavBar widget automatically detects current route and shows/hides bottom navigation appropriately
+
+- **Screen Configuration**  
+  - All main screens (Home, Growth, Medicine, Learn, Profile) retain their existing AppBar configurations
+  - Authentication flow screens maintain their AppBar-less design for seamless user experience
+  - No changes needed to existing screen AppBars as they already follow the design specification
+
+- **Navigation Transitions**
+  - Implemented slide-right transitions for all main navigation screens  
+  - Added SlideRightTransitionPage with 300ms duration and easeInOut curve
+  - Applied consistent slide animation across Home, Growth, Vaccines, Learn, and Profile screens
+
+### Architecture
+- **Route Structure**
+  - Maintained ShellRoute pattern for persistent bottom navigation on main screens
+  - Routes outside ShellRoute (splash, auth flow) automatically exclude bottom navigation
+  - Clean separation between authenticated and unauthenticated screen navigation patterns
+
 ## [2025-01-20] - Complete Authentication Flow with Password Recovery
 
 ### Added

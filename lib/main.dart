@@ -61,6 +61,30 @@ class AayuApp extends StatelessWidget {
   }
 }
 
+// Custom page transitions
+class SlideRightTransitionPage extends CustomTransitionPage<void> {
+  SlideRightTransitionPage({
+    required LocalKey super.key,
+    required super.child,
+  }) : super(
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            const begin = Offset(1.0, 0.0);
+            const end = Offset.zero;
+            const curve = Curves.easeInOut;
+
+            var tween = Tween(begin: begin, end: end).chain(
+              CurveTween(curve: curve),
+            );
+
+            return SlideTransition(
+              position: animation.drive(tween),
+              child: child,
+            );
+          },
+          transitionDuration: const Duration(milliseconds: 300),
+        );
+}
+
 final _router = GoRouter(
   initialLocation: '/splash',
   routes: [
@@ -106,7 +130,10 @@ final _router = GoRouter(
       routes: [
         GoRoute(
           path: '/',
-          builder: (context, state) => const HomeScreen(),
+          pageBuilder: (context, state) => SlideRightTransitionPage(
+            key: state.pageKey,
+            child: const HomeScreen(),
+          ),
           redirect: (context, state) async {
             final prefs = await SharedPreferences.getInstance();
             final languageSelected = prefs.getBool('language_selected') ?? false;
@@ -127,19 +154,31 @@ final _router = GoRouter(
         ),
         GoRoute(
           path: '/growth',
-          builder: (context, state) => const GrowthScreen(),
+          pageBuilder: (context, state) => SlideRightTransitionPage(
+            key: state.pageKey,
+            child: const GrowthScreen(),
+          ),
         ),
         GoRoute(
           path: '/vaccines',
-          builder: (context, state) => const VaccinesScreen(),
+          pageBuilder: (context, state) => SlideRightTransitionPage(
+            key: state.pageKey,
+            child: const VaccinesScreen(),
+          ),
         ),
         GoRoute(
           path: '/learn',
-          builder: (context, state) => const LearnScreen(),
+          pageBuilder: (context, state) => SlideRightTransitionPage(
+            key: state.pageKey,
+            child: const LearnScreen(),
+          ),
         ),
         GoRoute(
           path: '/profile',
-          builder: (context, state) => const ProfileScreen(),
+          pageBuilder: (context, state) => SlideRightTransitionPage(
+            key: state.pageKey,
+            child: const ProfileScreen(),
+          ),
         ),
       ],
     ),
@@ -148,14 +187,33 @@ final _router = GoRouter(
 
 class ScaffoldWithNavBar extends StatelessWidget {
   final Widget child;
+  final bool showBottomNav;
   
-  const ScaffoldWithNavBar({required this.child, super.key});
+  const ScaffoldWithNavBar({
+    required this.child,
+    this.showBottomNav = true,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
+    // Determine if we should show bottom navigation based on current route
+    final String location = GoRouterState.of(context).uri.path;
+    
+    // List of routes that should show bottom navigation
+    final showNavRoutes = [
+      '/',  // Home Dashboard
+      '/growth',  // Growth Charts
+      '/vaccines',  // Vaccination Calendar (Medicine)
+      '/learn',  // Learning Center
+      '/profile',  // Profile/Settings
+    ];
+    
+    final shouldShowNav = showNavRoutes.contains(location);
+    
     return Scaffold(
       body: child,
-      bottomNavigationBar: const BottomNavigation(),
+      bottomNavigationBar: shouldShowNav ? const BottomNavigation() : null,
     );
   }
 }

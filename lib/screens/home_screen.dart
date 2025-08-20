@@ -30,7 +30,14 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: const Text('ආයු'),
         centerTitle: true,
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: Colors.white,
+        elevation: 0,
+        titleTextStyle: const TextStyle(
+          color: Colors.black87,
+          fontSize: 20,
+          fontWeight: FontWeight.w600,
+          fontFamily: 'NotoSerifSinhala',
+        ),
       ),
       body: Consumer<ChildProvider>(
         builder: (context, provider, child) {

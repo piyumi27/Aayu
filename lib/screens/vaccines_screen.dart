@@ -19,7 +19,14 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Vaccination Schedule'),
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+          backgroundColor: Colors.white,
+          elevation: 0,
+          centerTitle: true,
+          titleTextStyle: const TextStyle(
+            color: Colors.black87,
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+          ),
           bottom: const TabBar(
             tabs: [
               Tab(text: 'Schedule'),

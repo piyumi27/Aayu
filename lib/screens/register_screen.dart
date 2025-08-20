@@ -298,6 +298,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     return Scaffold(
       backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: Text(
+          texts['title']!,
+          style: TextStyle(
+            fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+          ),
+        ),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.go('/login'),
+        ),
+        iconTheme: const IconThemeData(color: Colors.black87),
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
