@@ -156,6 +156,7 @@ class _AddChildScreenState extends State<AddChildScreen> {
         children: [
           Expanded(
             child: SingleChildScrollView(
+              padding: const EdgeInsets.only(bottom: 16),
               child: Column(
                 children: [
                   // Top section with avatar

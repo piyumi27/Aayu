@@ -2,6 +2,34 @@
 
 All notable changes to the Aayu project will be documented in this file.
 
+## [2025-08-20] - Bug Fixes and OTP Screen Redesign
+
+### Fixed
+- **RenderFlex Overflow Error in Add Child Profile Screen**
+  - Added bottom padding to SingleChildScrollView to prevent overflow
+  - Fixed vertical layout constraints that were causing content to exceed available space
+  - Improved scrolling behavior for form content
+
+- **OTP Verification Screen Redesign**
+  - Redesigned with centered 6-box OTP input layout (50×50dp boxes)
+  - Implemented timer display in '00:45 Resend' format (45-second countdown)
+  - Updated to 48dp primary 'Verify' button with full width
+  - Applied specified color scheme: Blue #007BFF (primary), Gray #6C757D (supporting), Green #28A745 (success)
+  - Enhanced typography with 16dp consistent margins and sans-serif fonts
+  - Improved user experience with auto-focus navigation between input boxes
+  - Added proper visual feedback for focused/unfocused states
+
+### Architecture
+- **Form Layout Optimization**
+  - Fixed constraint issues preventing proper scrolling in forms
+  - Implemented responsive design patterns for better mobile experience
+  - Enhanced accessibility with proper focus management
+
+- **Design System Compliance**
+  - Standardized color usage across authentication flows
+  - Applied consistent spacing and typography guidelines
+  - Improved visual hierarchy and user interaction patterns
+
 ## [2025-08-20] - Add Child Profile Screen & Code Guidelines Update
 
 ### Updated

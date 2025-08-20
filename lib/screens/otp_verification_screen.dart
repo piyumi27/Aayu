@@ -45,7 +45,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
 
   void _startResendCountdown() {
     setState(() {
-      _resendCountdown = 60;
+      _resendCountdown = 45; // Start from 45 seconds as per specification
     });
     
     Future.doWhile(() async {
@@ -144,7 +144,7 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(_getLocalizedText()['otpResent']!),
-                backgroundColor: Colors.green,
+                backgroundColor: const Color(0xFF28A745),
               ),
             );
           }
@@ -236,12 +236,20 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
         ),
       ),
       body: SafeArea(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const SizedBox(height: 20),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: MediaQuery.of(context).size.height - 
+                         MediaQuery.of(context).viewInsets.bottom - 
+                         MediaQuery.of(context).padding.top - 
+                         MediaQuery.of(context).padding.bottom - 32,
+            ),
+            child: IntrinsicHeight(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const SizedBox(height: 20),
               
               // Header
               Text(
@@ -279,49 +287,51 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
               ),
               const SizedBox(height: 40),
               
-              // OTP Input Fields
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: List.generate(6, (index) {
-                  return SizedBox(
-                    width: 45,
-                    height: 55,
-                    child: TextField(
-                      controller: _otpControllers[index],
-                      focusNode: _otpFocusNodes[index],
-                      keyboardType: TextInputType.number,
-                      textAlign: TextAlign.center,
-                      maxLength: 1,
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
+              // Responsive OTP Input Fields with underlines
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: List.generate(6, (index) {
+                    return Expanded(
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 4),
+                        child: TextField(
+                          controller: _otpControllers[index],
+                          focusNode: _otpFocusNodes[index],
+                          keyboardType: TextInputType.number,
+                          textAlign: TextAlign.center,
+                          maxLength: 1,
+                          style: const TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                            height: 1.2,
+                          ),
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                          ],
+                          decoration: InputDecoration(
+                            counterText: '',
+                            border: const UnderlineInputBorder(
+                              borderSide: BorderSide(color: Color(0xFF6C757D), width: 2),
+                            ),
+                            enabledBorder: const UnderlineInputBorder(
+                              borderSide: BorderSide(color: Color(0xFF6C757D), width: 2),
+                            ),
+                            focusedBorder: const UnderlineInputBorder(
+                              borderSide: BorderSide(color: Color(0xFF007BFF), width: 3),
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(vertical: 16),
+                          ),
+                          onChanged: (value) => _onOTPDigitChanged(value, index),
+                        ),
                       ),
-                      inputFormatters: [
-                        FilteringTextInputFormatter.digitsOnly,
-                      ],
-                      decoration: InputDecoration(
-                        counterText: '',
-                        filled: true,
-                        fillColor: Colors.grey[50],
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide.none,
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide(color: Colors.grey[300]!),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: const BorderSide(color: Color(0xFF007BFF), width: 2),
-                        ),
-                      ),
-                      onChanged: (value) => _onOTPDigitChanged(value, index),
-                    ),
-                  );
-                }),
+                    );
+                  }),
+                ),
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 24),
               
               // Error Message
               if (_errorMessage != null)
@@ -330,85 +340,97 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                   margin: const EdgeInsets.only(bottom: 16),
                   decoration: BoxDecoration(
                     color: Colors.red.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(4),
                     border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
                   ),
                   child: Text(
                     _errorMessage!,
                     style: TextStyle(
                       color: Colors.red[700],
-                      fontSize: 14,
+                      fontSize: 16,
                       fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                     ),
                     textAlign: TextAlign.center,
                   ),
                 ),
               
-              // Verify Button
-              SizedBox(
-                height: 48,
-                child: ElevatedButton(
-                  onPressed: _isLoading ? null : _verifyOTP,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF007BFF),
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    elevation: 0,
+              // Timer text in '00:45 Resend' format
+              Center(
+                child: Text(
+                  _resendCountdown > 0
+                      ? '${_resendCountdown.toString().padLeft(2, '0')}:00 Resend'
+                      : 'Resend',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    color: Color(0xFF6C757D),
                   ),
-                  child: _isLoading
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            color: Colors.white,
-                            strokeWidth: 2,
-                          ),
-                        )
-                      : Text(
-                          texts['verifyButton']!,
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-                          ),
-                        ),
+                  textAlign: TextAlign.center,
                 ),
               ),
               const SizedBox(height: 24),
               
-              // Resend Code
-              Center(
-                child: _resendCountdown > 0
-                    ? Text(
-                        '${texts['resendIn']} $_resendCountdown ${texts['seconds']}',
-                        style: TextStyle(
-                          color: const Color(0xFF6C757D),
-                          fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-                        ),
-                      )
-                    : TextButton(
-                        onPressed: _isResending ? null : _resendOTP,
-                        child: _isResending
-                            ? const SizedBox(
-                                width: 16,
-                                height: 16,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: Color(0xFF007BFF),
-                                ),
-                              )
-                            : Text(
-                                texts['resendCode']!,
-                                style: TextStyle(
-                                  color: const Color(0xFF007BFF),
-                                  fontWeight: FontWeight.w600,
-                                  fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-                                ),
-                              ),
+              // 48dp Primary Verify Button
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16),
+                child: SizedBox(
+                  height: 48,
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _isLoading ? null : _verifyOTP,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF007BFF),
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(4),
                       ),
+                      elevation: 0,
+                    ),
+                    child: _isLoading
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ),
+                          )
+                        : Text(
+                            texts['verifyButton']!,
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                            ),
+                          ),
+                  ),
+                ),
               ),
+              const SizedBox(height: 16),
+              
+              // Resend Code Button (only when timer expires)
+              if (_resendCountdown <= 0)
+                Center(
+                  child: TextButton(
+                    onPressed: _isResending ? null : _resendOTP,
+                    child: _isResending
+                        ? const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Color(0xFF007BFF),
+                            ),
+                          )
+                        : Text(
+                            texts['resendCode']!,
+                            style: TextStyle(
+                              color: const Color(0xFF007BFF),
+                              fontWeight: FontWeight.w600,
+                              fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                            ),
+                          ),
+                  ),
+                ),
               
               const Spacer(),
               
@@ -427,7 +449,9 @@ class _OTPVerificationScreenState extends State<OTPVerificationScreen> {
                   ),
                 ),
               ),
-            ],
+                ],
+              ),
+            ),
           ),
         ),
       ),
