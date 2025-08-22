@@ -23,6 +23,7 @@ class _VaccinationCalendarScreenState extends State<VaccinationCalendarScreen>
   ScrollController? _scrollController;
   AnimationController? _calendarAnimationController;
   Animation<double>? _calendarAnimation;
+  bool _isScrollAnimating = false;
 
   @override
   void initState() {
@@ -36,7 +37,7 @@ class _VaccinationCalendarScreenState extends State<VaccinationCalendarScreen>
   void _initializeControllers() {
     _scrollController = ScrollController();
     _calendarAnimationController = AnimationController(
-      duration: const Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 250), // Reduced duration for snappier feel
       vsync: this,
     );
     _calendarAnimation = Tween<double>(
@@ -44,7 +45,7 @@ class _VaccinationCalendarScreenState extends State<VaccinationCalendarScreen>
       end: 0.0,
     ).animate(CurvedAnimation(
       parent: _calendarAnimationController!,
-      curve: Curves.easeInOut,
+      curve: Curves.easeOut, // Changed to easeOut for smoother performance
     ));
     
     _scrollController!.addListener(_onScroll);
@@ -58,36 +59,43 @@ class _VaccinationCalendarScreenState extends State<VaccinationCalendarScreen>
   }
   
   void _onScroll() {
-    if (_scrollController == null || _calendarAnimationController == null) return;
+    if (_scrollController == null || _calendarAnimationController == null || _isScrollAnimating) return;
     
     const threshold = 100.0;
     final offset = _scrollController!.offset;
     
-    // Scroll UP minimizes calendar, scroll DOWN expands calendar
+    // Scroll DOWN (offset increases) minimizes calendar, scroll UP (offset decreases) expands calendar
     if (offset > threshold && !_isCalendarCollapsed) {
-      setState(() {
-        _isCalendarCollapsed = true;
+      // Scrolling down past threshold - minimize calendar
+      _isScrollAnimating = true;
+      _isCalendarCollapsed = true;
+      _calendarAnimationController!.forward().then((_) {
+        _isScrollAnimating = false;
       });
-      _calendarAnimationController!.forward();
     } else if (offset <= threshold && _isCalendarCollapsed) {
-      setState(() {
-        _isCalendarCollapsed = false;
+      // Scrolling up to threshold - expand calendar  
+      _isScrollAnimating = true;
+      _isCalendarCollapsed = false;
+      _calendarAnimationController!.reverse().then((_) {
+        _isScrollAnimating = false;
       });
-      _calendarAnimationController!.reverse();
     }
   }
   
   void _toggleCalendar() {
-    if (_calendarAnimationController == null) return;
+    if (_calendarAnimationController == null || _isScrollAnimating) return;
     
-    setState(() {
-      _isCalendarCollapsed = !_isCalendarCollapsed;
-    });
+    _isScrollAnimating = true;
+    _isCalendarCollapsed = !_isCalendarCollapsed;
     
     if (_isCalendarCollapsed) {
-      _calendarAnimationController!.forward();
+      _calendarAnimationController!.forward().then((_) {
+        _isScrollAnimating = false;
+      });
     } else {
-      _calendarAnimationController!.reverse();
+      _calendarAnimationController!.reverse().then((_) {
+        _isScrollAnimating = false;
+      });
     }
   }
 
@@ -269,42 +277,51 @@ class _VaccinationCalendarScreenState extends State<VaccinationCalendarScreen>
             
             // Collapsible Calendar
             SliverToBoxAdapter(
-              child: AnimatedBuilder(
-                animation: _calendarAnimation!,
-                builder: (context, child) {
-                  return AnimatedContainer(
-                    duration: const Duration(milliseconds: 300),
-                    curve: Curves.easeInOut,
-                    height: _getCalendarHeight(),
-                    child: ClipRect(
-                      child: Transform.scale(
-                        scale: 0.7 + (0.3 * (1 - _calendarAnimation!.value)),
-                        child: Opacity(
-                          opacity: 0.3 + (0.7 * (1 - _calendarAnimation!.value)),
-                          child: _buildCalendarView(texts),
+              child: RepaintBoundary(
+                child: AnimatedBuilder(
+                  animation: _calendarAnimation!,
+                  builder: (context, child) {
+                    final animValue = _calendarAnimation!.value;
+                    final scale = 0.7 + (0.3 * (1 - animValue));
+                    final opacity = 0.3 + (0.7 * (1 - animValue));
+                    
+                    return SizedBox(
+                      height: _getCalendarHeight(),
+                      child: ClipRect(
+                        child: Transform.scale(
+                          scale: scale,
+                          child: Opacity(
+                            opacity: opacity,
+                            child: child!,
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                  child: _buildCalendarView(texts), // Pre-built child for performance
+                ),
               ),
             ),
             
             // Legend
             SliverToBoxAdapter(
-              child: AnimatedBuilder(
-                animation: _calendarAnimation!,
-                builder: (context, child) {
-                  return AnimatedContainer(
-                    duration: const Duration(milliseconds: 300),
-                    height: _calendarAnimation!.value > 0.5 ? 0 : null,
-                    child: AnimatedOpacity(
-                      duration: const Duration(milliseconds: 200),
-                      opacity: _calendarAnimation!.value > 0.5 ? 0 : 1,
-                      child: _buildLegend(texts),
-                    ),
-                  );
-                },
+              child: RepaintBoundary(
+                child: AnimatedBuilder(
+                  animation: _calendarAnimation!,
+                  builder: (context, child) {
+                    final animValue = _calendarAnimation!.value;
+                    final isCollapsing = animValue > 0.5;
+                    
+                    return SizedBox(
+                      height: isCollapsing ? 0 : null,
+                      child: Opacity(
+                        opacity: isCollapsing ? 0 : 1,
+                        child: child!,
+                      ),
+                    );
+                  },
+                  child: _buildLegend(texts), // Pre-built child for performance
+                ),
               ),
             ),
             

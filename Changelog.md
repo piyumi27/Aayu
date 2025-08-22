@@ -17,10 +17,13 @@ All notable changes to the Aayu project will be documented in this file.
   - Added loading state while controllers are being initialized
   - Improved state management for animation controllers
 
-- **Scroll Direction Logic**
-  - Corrected scroll behavior: scrolling UP now minimizes calendar, scrolling DOWN expands it
-  - Added proper state tracking for calendar collapsed/expanded status
-  - Improved scroll threshold detection for smooth transitions
+- **Scroll Direction Logic & Performance**
+  - **FIXED**: Corrected scroll behavior to be intuitive: scrolling DOWN minimizes calendar, scrolling UP expands it
+  - Added animation debouncing to prevent multiple simultaneous animations
+  - Optimized animation performance with RepaintBoundary and pre-built child widgets
+  - Reduced animation duration from 300ms to 250ms for snappier response
+  - Changed animation curve from easeInOut to easeOut for smoother performance
+  - Added scroll animation state tracking to prevent conflicting animations
 
 ### Added
 - **Manual Calendar Toggle**
