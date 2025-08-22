@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../providers/child_provider.dart';
 import 'add_child_screen.dart';
 import 'add_measurement_screen.dart';
+import 'growth_charts_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -1149,7 +1150,11 @@ class _HomeScreenState extends State<HomeScreen> {
         'title': texts['growthCharts'] ?? 'Growth Charts',
         'icon': Icons.trending_up,
         'color': const Color(0xFF10B981),
-        'onTap': () => context.go('/growth'),
+        'onTap': () => Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => const GrowthChartsScreen(),
+          ),
+        ),
       },
       {
         'title': texts['vaccines'] ?? 'Vaccines',
