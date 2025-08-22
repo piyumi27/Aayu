@@ -101,6 +101,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
         phoneNumber: _phoneController.text,
         onCodeSent: (verificationId) {
           if (mounted) {
+            setState(() {
+              _isLoading = false;
+            });
             context.push('/otp-verification', extra: {
               'phoneNumber': _phoneController.text,
               'verificationId': verificationId,
@@ -111,6 +114,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
         },
         onError: (error) {
           if (mounted) {
+            setState(() {
+              _isLoading = false;
+            });
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(error),
@@ -158,6 +164,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
       );
     } catch (e) {
       if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Failed to send OTP: $e'),
@@ -165,10 +174,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ),
         );
       }
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
     }
   }
 
@@ -611,21 +616,35 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   child: ElevatedButton(
                     onPressed: _isLoading ? null : _register,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF007BFF),
-                      foregroundColor: Colors.white,
+                      backgroundColor: _isLoading ? const Color(0xFFE5E7EB) : const Color(0xFF007BFF),
+                      foregroundColor: _isLoading ? const Color(0xFF9CA3AF) : Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(2),
                       ),
                       elevation: 0,
                     ),
                     child: _isLoading
-                        ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                              strokeWidth: 2,
-                            ),
+                        ? const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  color: Color(0xFF6B7280),
+                                  strokeWidth: 2,
+                                ),
+                              ),
+                              SizedBox(width: 12),
+                              Text(
+                                'Creating Account...',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF6B7280),
+                                ),
+                              ),
+                            ],
                           )
                         : Text(
                             texts['registerButton']!,

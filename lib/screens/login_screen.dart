@@ -50,6 +50,9 @@ class _LoginScreenState extends State<LoginScreen> {
         phoneNumber: _phoneController.text,
         onCodeSent: (verificationId) {
           if (mounted) {
+            setState(() {
+              _isLoading = false;
+            });
             context.push('/otp-verification', extra: {
               'phoneNumber': _phoneController.text,
               'verificationId': verificationId,
@@ -59,6 +62,9 @@ class _LoginScreenState extends State<LoginScreen> {
         },
         onError: (error) {
           if (mounted) {
+            setState(() {
+              _isLoading = false;
+            });
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(error),
@@ -97,6 +103,9 @@ class _LoginScreenState extends State<LoginScreen> {
       );
     } catch (e) {
       if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Failed to send OTP: $e'),
@@ -104,10 +113,6 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         );
       }
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
     }
   }
 
@@ -382,13 +387,27 @@ class _LoginScreenState extends State<LoginScreen> {
                       elevation: 0,
                     ),
                     child: _isLoading
-                        ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                              strokeWidth: 2,
-                            ),
+                        ? const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  color: Color(0xFF6B7280),
+                                  strokeWidth: 2,
+                                ),
+                              ),
+                              SizedBox(width: 12),
+                              Text(
+                                'Sending OTP...',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF6B7280),
+                                ),
+                              ),
+                            ],
                           )
                         : Text(
                             texts['loginButton']!,

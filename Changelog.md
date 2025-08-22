@@ -2,6 +2,29 @@
 
 All notable changes to the Aayu project will be documented in this file.
 
+## [2025-08-20] - Authentication Loading State Fixes
+
+### Fixed
+- **Login Button Loading State**
+  - Fixed loading state not showing properly when login button is clicked
+  - Removed conflicting finally block that was immediately resetting loading state
+  - Loading state now properly maintained until OTP is sent or error occurs
+  - Added visual feedback with "Sending OTP..." text alongside spinner
+  - Button changes to gray background (#E5E7EB) during loading
+  - Spinner color changed to gray (#6B7280) for better visibility
+
+- **Register Button Loading State**
+  - Applied same loading state fixes to registration screen
+  - Added "Creating Account..." text during loading
+  - Consistent loading behavior across both authentication screens
+  - Loading state properly reset in all callback scenarios (success, error, navigation)
+
+- **Visual Improvements**
+  - Loading buttons now show gray background instead of disabled state
+  - Added descriptive text ("Sending OTP...", "Creating Account...") for better UX
+  - Consistent spinner styling across authentication flows
+  - Proper state management prevents multiple submissions
+
 ## [2025-08-20] - Growth Charts Screen Implementation
 
 ### Added
