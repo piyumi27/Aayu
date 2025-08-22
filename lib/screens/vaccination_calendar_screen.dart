@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:table_calendar/table_calendar.dart';
 import 'package:go_router/go_router.dart';
 
 import '../providers/child_provider.dart';
@@ -17,7 +16,6 @@ class VaccinationCalendarScreen extends StatefulWidget {
 }
 
 class _VaccinationCalendarScreenState extends State<VaccinationCalendarScreen> {
-  CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
   String _selectedLanguage = 'en';
@@ -282,115 +280,212 @@ class _VaccinationCalendarScreenState extends State<VaccinationCalendarScreen> {
   Widget _buildCalendarView(Map<String, String> texts) {
     return Container(
       color: Colors.white,
-      child: TableCalendar(
-        firstDay: DateTime.utc(2020, 1, 1),
-        lastDay: DateTime.utc(2030, 12, 31),
-        focusedDay: _focusedDay,
-        calendarFormat: _calendarFormat,
-        selectedDayPredicate: (day) {
-          return isSameDay(_selectedDay, day);
-        },
-        eventLoader: (day) {
-          return _events[DateTime(day.year, day.month, day.day)] ?? [];
-        },
-        startingDayOfWeek: StartingDayOfWeek.sunday,
-        calendarStyle: CalendarStyle(
-          outsideDaysVisible: true,
-          weekendTextStyle: const TextStyle(color: Color(0xFF6B7280)),
-          holidayTextStyle: const TextStyle(color: Color(0xFF6B7280)),
-          selectedDecoration: BoxDecoration(
-            color: const Color(0xFF0086FF).withValues(alpha: 0.2),
-            shape: BoxShape.circle,
-          ),
-          selectedTextStyle: const TextStyle(
-            color: Color(0xFF0086FF),
-            fontWeight: FontWeight.bold,
-          ),
-          todayDecoration: BoxDecoration(
-            color: const Color(0xFF0086FF).withValues(alpha: 0.1),
-            shape: BoxShape.circle,
-          ),
-          todayTextStyle: const TextStyle(
-            color: Color(0xFF0086FF),
-            fontWeight: FontWeight.w600,
-          ),
-          markersMaxCount: 3,
-          markerDecoration: const BoxDecoration(
-            color: Color(0xFF0086FF),
-            shape: BoxShape.circle,
-          ),
-        ),
-        headerStyle: HeaderStyle(
-          formatButtonVisible: false,
-          titleCentered: true,
-          titleTextStyle: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF1A1A1A),
-          ),
-          leftChevronIcon: const Icon(
-            Icons.chevron_left,
-            color: Color(0xFF6B7280),
-          ),
-          rightChevronIcon: const Icon(
-            Icons.chevron_right,
-            color: Color(0xFF6B7280),
-          ),
-        ),
-        calendarBuilders: CalendarBuilders(
-          markerBuilder: (context, date, events) {
-            if (events.isEmpty) return null;
-            
-            final vaccineEvents = events.cast<VaccineEvent>();
-            final colors = <Color>[];
-            
-            for (final event in vaccineEvents) {
-              if (event.status == 'overdue') {
-                colors.add(const Color(0xFFEF4444));
-              } else if (event.status == 'scheduled') {
-                colors.add(const Color(0xFF0086FF));
-              } else if (event.status == 'completed') {
-                colors.add(const Color(0xFF10B981));
-              }
-            }
-            
-            return Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: colors.take(3).map((color) {
-                return Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 1),
-                  width: 6,
-                  height: 6,
-                  decoration: BoxDecoration(
-                    color: color,
-                    shape: BoxShape.circle,
-                  ),
-                );
-              }).toList(),
-            );
-          },
-        ),
-        onDaySelected: (selectedDay, focusedDay) {
-          setState(() {
-            _selectedDay = selectedDay;
-            _focusedDay = focusedDay;
-          });
+      child: Column(
+        children: [
+          // Calendar Header
+          _buildCalendarHeader(),
           
-          final events = _events[DateTime(selectedDay.year, selectedDay.month, selectedDay.day)];
-          if (events != null && events.isNotEmpty) {
-            _showDayEventsSheet(context, selectedDay, events, texts);
-          }
-        },
-        onFormatChanged: (format) {
-          setState(() {
-            _calendarFormat = format;
-          });
-        },
-        onPageChanged: (focusedDay) {
-          _focusedDay = focusedDay;
-        },
+          // Days of Week
+          _buildDaysOfWeekHeader(),
+          
+          // Calendar Grid
+          _buildCalendarGrid(),
+        ],
       ),
     );
+  }
+
+  Widget _buildCalendarHeader() {
+    final monthNames = [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+    
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          IconButton(
+            onPressed: () {
+              setState(() {
+                _focusedDay = DateTime(_focusedDay.year, _focusedDay.month - 1);
+              });
+            },
+            icon: const Icon(Icons.chevron_left, color: Color(0xFF6B7280)),
+          ),
+          Text(
+            '${monthNames[_focusedDay.month - 1]} ${_focusedDay.year}',
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF1A1A1A),
+            ),
+          ),
+          IconButton(
+            onPressed: () {
+              setState(() {
+                _focusedDay = DateTime(_focusedDay.year, _focusedDay.month + 1);
+              });
+            },
+            icon: const Icon(Icons.chevron_right, color: Color(0xFF6B7280)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDaysOfWeekHeader() {
+    final daysOfWeek = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+    
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        children: daysOfWeek.map((day) {
+          return Expanded(
+            child: Text(
+              day,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFF6B7280),
+              ),
+              textAlign: TextAlign.center,
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  Widget _buildCalendarGrid() {
+    final firstDayOfMonth = DateTime(_focusedDay.year, _focusedDay.month, 1);
+    final lastDayOfMonth = DateTime(_focusedDay.year, _focusedDay.month + 1, 0);
+    final firstDayWeekday = firstDayOfMonth.weekday % 7;
+    final daysInMonth = lastDayOfMonth.day;
+    
+    final weeks = <Widget>[];
+    var dayCounter = 1;
+    
+    // Build weeks
+    for (int week = 0; week < 6; week++) {
+      final days = <Widget>[];
+      
+      for (int day = 0; day < 7; day++) {
+        Widget dayWidget;
+        
+        if (week == 0 && day < firstDayWeekday) {
+          // Previous month days
+          final prevMonthDay = DateTime(_focusedDay.year, _focusedDay.month, 0).day - (firstDayWeekday - day - 1);
+          dayWidget = _buildDayCell(
+            prevMonthDay.toString(),
+            DateTime(_focusedDay.year, _focusedDay.month - 1, prevMonthDay),
+            isCurrentMonth: false,
+          );
+        } else if (dayCounter <= daysInMonth) {
+          // Current month days
+          final currentDate = DateTime(_focusedDay.year, _focusedDay.month, dayCounter);
+          dayWidget = _buildDayCell(
+            dayCounter.toString(),
+            currentDate,
+            isCurrentMonth: true,
+          );
+          dayCounter++;
+        } else {
+          // Next month days
+          final nextMonthDay = dayCounter - daysInMonth;
+          dayWidget = _buildDayCell(
+            nextMonthDay.toString(),
+            DateTime(_focusedDay.year, _focusedDay.month + 1, nextMonthDay),
+            isCurrentMonth: false,
+          );
+          dayCounter++;
+        }
+        
+        days.add(Expanded(child: dayWidget));
+      }
+      
+      weeks.add(Row(children: days));
+      
+      if (dayCounter > daysInMonth && week > 3) break;
+    }
+    
+    return Column(children: weeks);
+  }
+
+  Widget _buildDayCell(String day, DateTime date, {required bool isCurrentMonth}) {
+    final isToday = _isSameDay(date, DateTime.now());
+    final isSelected = _selectedDay != null && _isSameDay(date, _selectedDay!);
+    final events = _events[DateTime(date.year, date.month, date.day)] ?? [];
+    
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedDay = date;
+        });
+        
+        if (events.isNotEmpty) {
+          _showDayEventsSheet(context, date, events, _getLocalizedText());
+        }
+      },
+      child: Container(
+        height: 48,
+        margin: const EdgeInsets.all(2),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? const Color(0xFF0086FF).withValues(alpha: 0.2)
+              : isToday
+                  ? const Color(0xFF0086FF).withValues(alpha: 0.1)
+                  : Colors.transparent,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              day,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: isToday ? FontWeight.bold : FontWeight.normal,
+                color: isCurrentMonth
+                    ? isSelected || isToday
+                        ? const Color(0xFF0086FF)
+                        : const Color(0xFF1A1A1A)
+                    : const Color(0xFF9CA3AF),
+              ),
+            ),
+            if (events.isNotEmpty) ...[
+              const SizedBox(height: 2),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: events.take(3).map((event) {
+                  Color color = const Color(0xFF0086FF);
+                  if (event.status == 'overdue') {
+                    color = const Color(0xFFEF4444);
+                  } else if (event.status == 'completed') {
+                    color = const Color(0xFF10B981);
+                  }
+                  
+                  return Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 1),
+                    width: 4,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: color,
+                      shape: BoxShape.circle,
+                    ),
+                  );
+                }).toList(),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  bool _isSameDay(DateTime a, DateTime b) {
+    return a.year == b.year && a.month == b.month && a.day == b.day;
   }
 
   Widget _buildLegend(Map<String, String> texts) {

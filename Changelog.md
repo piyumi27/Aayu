@@ -2,6 +2,30 @@
 
 All notable changes to the Aayu project will be documented in this file.
 
+## [2025-08-20] - Vaccination Calendar Dependencies Fix
+
+### Fixed
+- **Calendar Implementation**
+  - Replaced table_calendar dependency with custom Flutter calendar
+  - Created custom calendar grid with month navigation
+  - Implemented day cell interactions and event markers
+  - Fixed all import and dependency errors
+
+- **Missing Model Creation**
+  - Created VaccineRecord model with complete structure
+  - Added proper data mapping and serialization
+  - Included all necessary vaccine tracking fields
+
+- **Custom Calendar Features**
+  - Month/year navigation with arrow buttons
+  - Color-coded event dots on dates
+  - Day selection with visual feedback
+  - Today highlighting and selected state
+  - Previous/next month day display
+
+### Removed
+- **table_calendar dependency** - replaced with native implementation
+
 ## [2025-08-20] - Vaccination Calendar Screen Implementation
 
 ### Added
