@@ -2,6 +2,19 @@
 
 All notable changes to the Aayu project will be documented in this file.
 
+## [2025-08-20] - Add Measurement Screen Overflow Fix
+
+### Fixed
+- **Horizontal Overflow in MUAC Field**
+  - Wrapped MUAC hint text in Expanded widget to prevent overflow
+  - Added TextOverflow.ellipsis for long translations
+  - Fixed RenderFlex overflow error in horizontal Row layout
+
+- **Save Button Text Overflow**
+  - Wrapped save button text in Flexible widget
+  - Added overflow handling for long button text in different languages
+  - Ensured button content fits within available space
+
 ## [2025-08-20] - Nutritional Analysis Screen Implementation
 
 ### Added

@@ -323,12 +323,15 @@ class _AddMeasurementScreenState extends State<AddMeasurementScreen> {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  Text(
-                    texts['muacHint']!,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: const Color(0xFF6B7280),
-                      fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                  Expanded(
+                    child: Text(
+                      texts['muacHint']!,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: const Color(0xFF6B7280),
+                        fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                      ),
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 ],
@@ -407,12 +410,15 @@ class _AddMeasurementScreenState extends State<AddMeasurementScreen> {
                               children: [
                                 const Icon(Icons.check, size: 20),
                                 const SizedBox(width: 8),
-                                Text(
-                                  texts['save']!,
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                                Flexible(
+                                  child: Text(
+                                    texts['save']!,
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                      fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
                               ],
