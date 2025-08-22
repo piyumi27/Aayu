@@ -8,19 +8,22 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'providers/child_provider.dart';
 import 'screens/add_child_screen.dart';
+import 'screens/add_health_record_screen.dart';
+import 'screens/add_measurement_screen.dart';
 import 'screens/forgot_password_screen.dart';
-import 'screens/growth_screen.dart';
+import 'screens/growth_charts_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/language_selection_screen.dart';
 import 'screens/learn_screen.dart';
 import 'screens/login_screen.dart';
+import 'screens/nutritional_analysis_screen.dart';
 import 'screens/onboarding_screen.dart';
 import 'screens/otp_verification_screen.dart';
 import 'screens/pre_six_month_countdown_screen.dart';
 import 'screens/profile_screen.dart';
 import 'screens/register_screen.dart';
 import 'screens/splash_screen.dart';
-import 'screens/vaccines_screen.dart';
+import 'screens/vaccination_calendar_screen.dart';
 import 'widgets/bottom_navigation.dart';
 
 void main() async {
@@ -166,14 +169,14 @@ final _router = GoRouter(
           path: '/growth',
           pageBuilder: (context, state) => SlideRightTransitionPage(
             key: state.pageKey,
-            child: const GrowthScreen(),
+            child: const GrowthChartsScreen(),
           ),
         ),
         GoRoute(
           path: '/vaccines',
           pageBuilder: (context, state) => SlideRightTransitionPage(
             key: state.pageKey,
-            child: const VaccinesScreen(),
+            child: const AddHealthRecordScreen(),
           ),
         ),
         GoRoute(

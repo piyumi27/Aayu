@@ -287,59 +287,139 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
   Widget _buildChildSelector(ChildProvider provider, Map<String, String> texts) {
     final selectedChild = provider.selectedChild;
     
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFE5E7EB)),
-      ),
-      child: Row(
-        children: [
-          CircleAvatar(
-            radius: 24,
-            backgroundColor: const Color(0xFF0086FF).withOpacity(0.1),
-            child: selectedChild != null
-                ? Text(
-                    selectedChild.name[0].toUpperCase(),
+    return GestureDetector(
+      onTap: () => _showChildSelectionDialog(provider, texts),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: const Color(0xFFE5E7EB)),
+        ),
+        child: Row(
+          children: [
+            CircleAvatar(
+              radius: 24,
+              backgroundColor: const Color(0xFF0086FF).withOpacity(0.1),
+              child: selectedChild != null
+                  ? Text(
+                      selectedChild.name[0].toUpperCase(),
+                      style: const TextStyle(
+                        color: Color(0xFF0086FF),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    )
+                  : const Icon(Icons.person, color: Color(0xFF0086FF)),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    texts['currentChild']!,
                     style: const TextStyle(
-                      color: Color(0xFF0086FF),
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
+                      fontSize: 12,
+                      color: Color(0xFF6B7280),
+                      fontWeight: FontWeight.w500,
                     ),
-                  )
-                : const Icon(Icons.person, color: Color(0xFF0086FF)),
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      Text(
+                        selectedChild?.name ?? 'No child selected',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: const Color(0xFF1A1A1A),
+                          fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      const Icon(Icons.expand_more, color: Color(0xFF6B7280), size: 20),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+  
+  /// Show child selection dialog
+  void _showChildSelectionDialog(ChildProvider provider, Map<String, String> texts) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(
+          texts['selectChild'] ?? 'Select Child',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
           ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  texts['currentChild']!,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Color(0xFF6B7280),
-                    fontWeight: FontWeight.w500,
+        ),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: ListView.builder(
+            shrinkWrap: true,
+            itemCount: provider.children.length,
+            itemBuilder: (context, index) {
+              final child = provider.children[index];
+              final isSelected = child.id == provider.selectedChild?.id;
+              
+              return ListTile(
+                leading: CircleAvatar(
+                  backgroundColor: isSelected 
+                      ? const Color(0xFF0086FF) 
+                      : const Color(0xFF0086FF).withOpacity(0.1),
+                  child: Text(
+                    child.name[0].toUpperCase(),
+                    style: TextStyle(
+                      color: isSelected ? Colors.white : const Color(0xFF0086FF),
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    Text(
-                      selectedChild?.name ?? 'No child selected',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: const Color(0xFF1A1A1A),
-                        fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    const Icon(Icons.expand_more, color: Color(0xFF6B7280), size: 20),
-                  ],
+                title: Text(
+                  child.name,
+                  style: TextStyle(
+                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                  ),
                 ),
-              ],
+                subtitle: Text(
+                  provider.getAgeString(child.birthDate),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: const Color(0xFF6B7280),
+                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                  ),
+                ),
+                trailing: isSelected 
+                    ? const Icon(Icons.check_circle, color: Color(0xFF0086FF))
+                    : null,
+                onTap: () {
+                  provider.selectChild(child);
+                  Navigator.of(context).pop();
+                },
+              );
+            },
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(
+              texts['cancel'] ?? 'Cancel',
+              style: TextStyle(
+                color: const Color(0xFF6B7280),
+                fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+              ),
             ),
           ),
         ],
@@ -864,6 +944,7 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
       'en': {
         'title': 'Add Health Record',
         'currentChild': 'Current Child',
+        'selectChild': 'Select Child',
         'type': 'Type',
         'vaccine': 'Vaccine',
         'supplement': 'Supplement',
@@ -888,6 +969,7 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
       'si': {
         'title': 'සෞඛ්‍ය වාර්තාව එක් කරන්න',
         'currentChild': 'වත්මන් දරුවා',
+        'selectChild': 'දරුවා තෝරන්න',
         'type': 'වර්ගය',
         'vaccine': 'එන්නත',
         'supplement': 'පරිපූරක',
@@ -912,6 +994,7 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
       'ta': {
         'title': 'சுகாதார பதிவு சேர்க்க',
         'currentChild': 'தற்போதைய குழந்தை',
+        'selectChild': 'குழந்தையை தேர்ந்தெடுக்கவும்',
         'type': 'வகை',
         'vaccine': 'தடுப்பூசி',
         'supplement': 'சப்ளிமெண்ட்',

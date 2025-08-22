@@ -3,6 +3,13 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+// Screen imports for reference (these screens are navigated to via GoRouter)
+// Home (/) -> HomeScreen
+// Growth (/growth) -> GrowthChartsScreen  
+// Medicine (/vaccines) -> AddHealthRecordScreen
+// Learn (/learn) -> LearnScreen
+// Profile (/profile) -> ProfileScreen
+
 class BottomNavigation extends StatefulWidget {
   const BottomNavigation({super.key});
 
@@ -41,19 +48,19 @@ class _BottomNavigationState extends State<BottomNavigation> {
   void _onItemTapped(int index, BuildContext context) {
     switch (index) {
       case 0:
-        context.go('/');
+        context.go('/'); // HomeScreen
         break;
       case 1:
-        context.go('/growth');
+        context.go('/growth'); // GrowthChartsScreen
         break;
       case 2:
-        context.go('/vaccines');
+        context.go('/vaccines'); // AddHealthRecordScreen (Medicine/Health Records)
         break;
       case 3:
-        context.go('/learn');
+        context.go('/learn'); // LearnScreen
         break;
       case 4:
-        context.go('/profile');
+        context.go('/profile'); // ProfileScreen
         break;
     }
   }

@@ -2,6 +2,49 @@
 
 All notable changes to the Aayu project will be documented in this file.
 
+## [2025-08-22] - Code Cleanup and Navigation Corrections
+
+### Removed
+- **Unused Screen Files**
+  - Deleted vaccines_screen.dart (replaced by AddHealthRecordScreen in Medicine tab)
+  - Deleted growth_screen.dart (replaced by GrowthChartsScreen in Growth tab)
+  - Cleaned up all references to these deprecated screens
+
+### Fixed
+- **Navigation Routes**
+  - Updated /growth route to use GrowthChartsScreen instead of GrowthScreen
+  - Ensured /vaccines route properly uses AddHealthRecordScreen
+  - Added missing imports for AddMeasurementScreen, NutritionalAnalysisScreen, and VaccinationCalendarScreen
+  - Removed unused imports for deleted screen files
+
+### Updated
+- **Bottom Navigation Widget**
+  - Added documentation comments showing which screens each tab navigates to
+  - Added inline comments in navigation switch to clarify screen mappings
+  - Bottom navigation properly configured: Home → HomeScreen, Growth → GrowthChartsScreen, Medicine → AddHealthRecordScreen, Learn → LearnScreen, Profile → ProfileScreen
+
+## [2025-08-22] - Navigation Fixes and Child Selector Implementation
+
+### Fixed
+- **Bottom Navigation Integration**
+  - Fixed Medicine tab (3rd icon) to open Add Health Record screen instead of VaccinesScreen
+  - Maintained Growth Charts in 2nd position as specified
+  - Updated route configuration to properly link /vaccines path to AddHealthRecordScreen
+  - Added proper imports for new screen navigation
+
+- **Child Selector Dropdown**
+  - Implemented clickable child selector in Add Health Record screen
+  - Added dropdown dialog showing all available children with avatars
+  - Visual indicators for currently selected child (check icon)
+  - Real-time child switching with provider state update
+  - Added localized "Select Child" text in all languages (English, Sinhala, Tamil)
+
+### Updated
+- **Navigation Flow**
+  - Medicine tab in bottom navigation now directly opens Add Health Record form
+  - Vaccination Calendar remains accessible from home dashboard action grid
+  - Proper separation between health record creation and vaccination calendar views
+
 ## [2025-08-22] - Add Health Record Screen Integration
 
 ### Added
