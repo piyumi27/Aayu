@@ -8,6 +8,7 @@ import '../providers/child_provider.dart';
 import '../models/growth_record.dart';
 import '../models/child.dart';
 import 'add_measurement_screen.dart';
+import 'nutritional_analysis_screen.dart';
 
 class GrowthChartsScreen extends StatefulWidget {
   const GrowthChartsScreen({super.key});
@@ -134,6 +135,16 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
             onPressed: () => Navigator.of(context).pop(),
           ),
           actions: [
+            IconButton(
+              icon: const Icon(Icons.analytics_outlined, color: Color(0xFF3A7AFE)),
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const NutritionalAnalysisScreen(),
+                  ),
+                );
+              },
+            ),
             IconButton(
               icon: const Icon(Icons.share_outlined, color: Color(0xFF3A7AFE)),
               onPressed: _shareChart,
