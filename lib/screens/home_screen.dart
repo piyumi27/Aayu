@@ -6,6 +6,7 @@ import '../providers/child_provider.dart';
 import 'add_child_screen.dart';
 import 'add_measurement_screen.dart';
 import 'growth_charts_screen.dart';
+import 'vaccination_calendar_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -1160,7 +1161,11 @@ class _HomeScreenState extends State<HomeScreen> {
         'title': texts['vaccines'] ?? 'Vaccines',
         'icon': Icons.vaccines_outlined,
         'color': const Color(0xFFF59E0B),
-        'onTap': () => context.go('/vaccines'),
+        'onTap': () => Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => const VaccinationCalendarScreen(),
+          ),
+        ),
       },
       {
         'title': texts['learn'] ?? 'Learn',

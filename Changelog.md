@@ -2,6 +2,76 @@
 
 All notable changes to the Aayu project will be documented in this file.
 
+## [2025-08-20] - Vaccination Calendar Screen Implementation
+
+### Added
+- **Complete Vaccination Calendar Screen**
+  - Full month-view calendar with table_calendar integration
+  - Color-coded event dots: Blue (scheduled), Red (overdue), Green (completed)
+  - Interactive date selection with bottom sheet for vaccine details
+  - List/Calendar view toggle in app bar
+  - Child selector dropdown for multiple children
+
+- **Calendar Features**
+  - Material Design calendar with proper styling
+  - Event markers on vaccination dates
+  - Today and selected date highlighting
+  - Month navigation with left/right arrows
+  - Touch interaction for date selection
+
+- **Upcoming Vaccines Section**
+  - Comprehensive list of upcoming vaccinations
+  - Status badges with proper color coding
+  - Vaccine cards with clinic information
+  - Action buttons: Reschedule, Details, Schedule
+  - View All functionality for complete list
+
+- **Vaccine Status System**
+  - Overdue detection (Red) with reschedule options
+  - Scheduled vaccines (Blue) with details view
+  - Completed vaccines (Green) tracking
+  - Upcoming vaccines (Gray) with schedule options
+
+- **Child Management**
+  - Dropdown selector for multiple children
+  - Child avatar with initials display
+  - Age calculation and display
+  - Context-specific vaccine schedules
+
+- **Interactive Elements**
+  - Floating Action Button for adding vaccines
+  - Bottom sheet for day event details
+  - Modal dialogs for vaccine management
+  - Notification icon in app bar
+
+- **Visual Design**
+  - Clean card-based layout for vaccine entries
+  - Status-based color coding throughout
+  - Location pins for clinic information
+  - Professional medical interface styling
+  - Consistent spacing and typography
+
+- **Data Structure**
+  - VaccineEvent model for calendar events
+  - Sample data for demonstration
+  - Overdue calculation logic
+  - Status mapping and color schemes
+
+- **Navigation Integration**
+  - Connected from dashboard Vaccines action
+  - Proper back navigation
+  - Modal sheet presentations
+  - Floating action button interactions
+
+- **Multilingual Support**
+  - Complete translations for English, Sinhala, Tamil
+  - Medical terminology localization
+  - Date formatting for different locales
+  - Font family support for Sinhala text
+
+### Dependencies
+- **Added table_calendar: ^3.1.2** for calendar functionality
+
 ## [2025-08-20] - Add Measurement Screen Overflow Fix
 
 ### Fixed
