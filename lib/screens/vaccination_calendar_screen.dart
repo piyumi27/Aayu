@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:go_router/go_router.dart';
 
-import '../providers/child_provider.dart';
-import '../models/vaccine.dart';
-import '../models/vaccine_record.dart';
 import '../models/child.dart';
+import '../providers/child_provider.dart';
 
 class VaccinationCalendarScreen extends StatefulWidget {
   const VaccinationCalendarScreen({super.key});
@@ -135,7 +132,6 @@ class _VaccinationCalendarScreenState extends State<VaccinationCalendarScreen> {
   Widget build(BuildContext context) {
     final texts = _getLocalizedText();
     final provider = Provider.of<ChildProvider>(context);
-    final child = provider.selectedChild;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA),
@@ -216,15 +212,15 @@ class _VaccinationCalendarScreenState extends State<VaccinationCalendarScreen> {
           color: const Color(0xFFF3F4F6),
           borderRadius: BorderRadius.circular(8),
         ),
-        child: DropdownButton<Child>(
-          value: provider.selectedChild,
+        child: DropdownButton<String>(
+          value: provider.selectedChild?.id,
           isExpanded: true,
           underline: const SizedBox(),
           icon: const Icon(Icons.expand_more, color: Color(0xFF6B7280)),
           items: provider.children.map((child) {
             final age = provider.getAgeString(child.birthDate);
-            return DropdownMenuItem<Child>(
-              value: child,
+            return DropdownMenuItem<String>(
+              value: child.id,
               child: Row(
                 children: [
                   CircleAvatar(
@@ -267,8 +263,9 @@ class _VaccinationCalendarScreenState extends State<VaccinationCalendarScreen> {
               ),
             );
           }).toList(),
-          onChanged: (Child? child) {
-            if (child != null) {
+          onChanged: (String? childId) {
+            if (childId != null) {
+              final child = provider.children.firstWhere((c) => c.id == childId);
               provider.selectChild(child);
             }
           },
@@ -298,7 +295,7 @@ class _VaccinationCalendarScreenState extends State<VaccinationCalendarScreen> {
   Widget _buildCalendarHeader() {
     final monthNames = [
       'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December'
+      'July', 'August', 'September', 'October', 'November', 'December',
     ];
     
     return Container(
@@ -812,7 +809,7 @@ class _VaccinationCalendarScreenState extends State<VaccinationCalendarScreen> {
                     style: const TextStyle(color: Color(0xFF0086FF)),
                   ),
                 ),
-              )),
+              ),),
             ],
           ),
         );
