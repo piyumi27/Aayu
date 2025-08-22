@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import '../providers/child_provider.dart';
+import 'add_health_record_screen.dart';
 
 /// Professional vaccination calendar screen with smooth scroll animations
 class VaccinationCalendarScreen extends StatefulWidget {
@@ -614,7 +615,7 @@ class _VaccinationCalendarScreenState extends State<VaccinationCalendarScreen>
   /// Build floating action button
   Widget _buildFAB(Map<String, String> texts) {
     return FloatingActionButton(
-      onPressed: () => _showAddVaccineDialog(texts),
+      onPressed: () => _navigateToAddHealthRecord(),
       backgroundColor: const Color(0xFF0086FF),
       child: const Icon(Icons.add, color: Colors.white),
     );
@@ -672,19 +673,11 @@ class _VaccinationCalendarScreenState extends State<VaccinationCalendarScreen>
     );
   }
 
-  /// Show add vaccine dialog
-  void _showAddVaccineDialog(Map<String, String> texts) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(texts['addVaccine']!),
-        content: const Text('Add vaccine functionality would go here'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Close'),
-          ),
-        ],
+  /// Navigate to Add Health Record screen
+  void _navigateToAddHealthRecord() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const AddHealthRecordScreen(),
       ),
     );
   }
