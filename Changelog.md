@@ -2,6 +2,63 @@
 
 All notable changes to the Aayu project will be documented in this file.
 
+## [2025-08-22] - Collapsible Vaccination Calendar with Smooth Animations
+
+### Fixed
+- **RenderFlex Overflow Error Resolution**
+  - Fixed calendar layout overflow by adding proper constraints and clipping
+  - Added SingleChildScrollView with NeverScrollableScrollPhysics to prevent layout conflicts
+  - Implemented fixed heights for calendar components (header: 60px, days header: 40px, grid rows: 48px)
+  - Used ClipRect to prevent visual overflow during animations
+  - Added mainAxisSize.min to Column widgets for better space management
+
+- **LateInitializationError Resolution**
+  - Fixed scroll controller initialization issues with proper null safety
+  - Added loading state while controllers are being initialized
+  - Improved state management for animation controllers
+
+- **Scroll Direction Logic**
+  - Corrected scroll behavior: scrolling UP now minimizes calendar, scrolling DOWN expands it
+  - Added proper state tracking for calendar collapsed/expanded status
+  - Improved scroll threshold detection for smooth transitions
+
+### Added
+- **Manual Calendar Toggle**
+  - Added expand/collapse button in app bar for manual control
+  - Toggle button shows appropriate icon (expand_more/expand_less) based on state
+  - Tooltip support for better accessibility
+
+- **Interactive Calendar Animation**
+  - Calendar minimizes smoothly when scrolling up and expands when scrolling down
+  - Uses NestedScrollView with SliverAppBar for optimal performance
+  - 300ms smooth animations with easeInOut curves
+  - Calendar scales and fades during transitions for visual appeal
+
+- **Enhanced Vaccine Cards**
+  - Full detailed vaccine cards shown when calendar is collapsed
+  - Expanded cards include status icons, clinic details, appointment times, and doctor information
+  - Multiple action buttons for different vaccine statuses (schedule, reschedule, mark complete)
+  - Beautiful card design with shadows and rounded corners
+
+- **Scroll-Based Interactions**
+  - 100px scroll threshold for calendar collapse/expand
+  - Smooth scroll controller integration
+  - Legend fades out when calendar collapses
+  - Upcoming vaccines section gets full focus after scrolling
+
+### Improved
+- **User Experience**
+  - Smooth transitions between calendar and list views
+  - Better information hierarchy when scrolling
+  - More actionable vaccine management interface
+  - Responsive design adapts to scroll position
+
+- **Visual Design**
+  - Enhanced status indicators with custom icons
+  - Color-coded vaccine status (overdue, scheduled, completed)
+  - Professional layout with proper spacing and typography
+  - Consistent Material 3 design language
+
 ## [2025-08-22] - Code Cleanup and Linting Fixes
 
 ### Fixed

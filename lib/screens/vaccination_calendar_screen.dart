@@ -11,13 +11,18 @@ class VaccinationCalendarScreen extends StatefulWidget {
   State<VaccinationCalendarScreen> createState() => _VaccinationCalendarScreenState();
 }
 
-class _VaccinationCalendarScreenState extends State<VaccinationCalendarScreen> {
+class _VaccinationCalendarScreenState extends State<VaccinationCalendarScreen> 
+    with TickerProviderStateMixin {
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
   String _selectedLanguage = 'en';
   bool _isListView = false;
+  bool _isCalendarCollapsed = false;
   
   final Map<DateTime, List<VaccineEvent>> _events = {};
+  ScrollController? _scrollController;
+  AnimationController? _calendarAnimationController;
+  Animation<double>? _calendarAnimation;
 
   @override
   void initState() {
@@ -25,6 +30,65 @@ class _VaccinationCalendarScreenState extends State<VaccinationCalendarScreen> {
     _loadLanguage();
     _selectedDay = DateTime.now();
     _loadVaccineEvents();
+    _initializeControllers();
+  }
+  
+  void _initializeControllers() {
+    _scrollController = ScrollController();
+    _calendarAnimationController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+    _calendarAnimation = Tween<double>(
+      begin: 1.0,
+      end: 0.0,
+    ).animate(CurvedAnimation(
+      parent: _calendarAnimationController!,
+      curve: Curves.easeInOut,
+    ));
+    
+    _scrollController!.addListener(_onScroll);
+  }
+  
+  @override
+  void dispose() {
+    _scrollController?.dispose();
+    _calendarAnimationController?.dispose();
+    super.dispose();
+  }
+  
+  void _onScroll() {
+    if (_scrollController == null || _calendarAnimationController == null) return;
+    
+    const threshold = 100.0;
+    final offset = _scrollController!.offset;
+    
+    // Scroll UP minimizes calendar, scroll DOWN expands calendar
+    if (offset > threshold && !_isCalendarCollapsed) {
+      setState(() {
+        _isCalendarCollapsed = true;
+      });
+      _calendarAnimationController!.forward();
+    } else if (offset <= threshold && _isCalendarCollapsed) {
+      setState(() {
+        _isCalendarCollapsed = false;
+      });
+      _calendarAnimationController!.reverse();
+    }
+  }
+  
+  void _toggleCalendar() {
+    if (_calendarAnimationController == null) return;
+    
+    setState(() {
+      _isCalendarCollapsed = !_isCalendarCollapsed;
+    });
+    
+    if (_isCalendarCollapsed) {
+      _calendarAnimationController!.forward();
+    } else {
+      _calendarAnimationController!.reverse();
+    }
   }
 
   Future<void> _loadLanguage() async {
@@ -132,6 +196,177 @@ class _VaccinationCalendarScreenState extends State<VaccinationCalendarScreen> {
     final texts = _getLocalizedText();
     final provider = Provider.of<ChildProvider>(context);
 
+    if (_isListView) {
+      return _buildListView(provider, texts);
+    }
+
+    // Ensure controllers are initialized
+    if (_scrollController == null || _calendarAnimationController == null) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    return Scaffold(
+      backgroundColor: const Color(0xFFF8F9FA),
+      body: NestedScrollView(
+        controller: _scrollController!,
+        headerSliverBuilder: (context, innerBoxIsScrolled) {
+          return [
+            // App Bar
+            SliverAppBar(
+              backgroundColor: Colors.white,
+              elevation: 0,
+              pinned: true,
+              floating: false,
+              expandedHeight: 0,
+              title: Text(
+                texts['title']!,
+                style: TextStyle(
+                  color: const Color(0xFF1A1A1A),
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                ),
+              ),
+              centerTitle: false,
+              actions: [
+                IconButton(
+                  icon: Icon(
+                    _isCalendarCollapsed ? Icons.expand_more : Icons.expand_less,
+                    color: const Color(0xFF6B7280),
+                  ),
+                  onPressed: _toggleCalendar,
+                  tooltip: _isCalendarCollapsed ? 'Show Calendar' : 'Hide Calendar',
+                ),
+                IconButton(
+                  icon: Icon(
+                    _isListView ? Icons.calendar_month : Icons.list,
+                    color: const Color(0xFF6B7280),
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _isListView = !_isListView;
+                    });
+                  },
+                ),
+                IconButton(
+                  icon: const Icon(Icons.notifications_outlined, color: Color(0xFF6B7280)),
+                  onPressed: () {},
+                ),
+              ],
+              bottom: const PreferredSize(
+                preferredSize: Size.fromHeight(1),
+                child: Divider(height: 1, color: Color(0xFFE5E7EB)),
+              ),
+            ),
+            
+            // Child Selector
+            if (provider.children.length > 1)
+              SliverToBoxAdapter(
+                child: _buildChildSelector(provider, texts),
+              ),
+            
+            // Collapsible Calendar
+            SliverToBoxAdapter(
+              child: AnimatedBuilder(
+                animation: _calendarAnimation!,
+                builder: (context, child) {
+                  return AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                    height: _getCalendarHeight(),
+                    child: ClipRect(
+                      child: Transform.scale(
+                        scale: 0.7 + (0.3 * (1 - _calendarAnimation!.value)),
+                        child: Opacity(
+                          opacity: 0.3 + (0.7 * (1 - _calendarAnimation!.value)),
+                          child: _buildCalendarView(texts),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            
+            // Legend
+            SliverToBoxAdapter(
+              child: AnimatedBuilder(
+                animation: _calendarAnimation!,
+                builder: (context, child) {
+                  return AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    height: _calendarAnimation!.value > 0.5 ? 0 : null,
+                    child: AnimatedOpacity(
+                      duration: const Duration(milliseconds: 200),
+                      opacity: _calendarAnimation!.value > 0.5 ? 0 : 1,
+                      child: _buildLegend(texts),
+                    ),
+                  );
+                },
+              ),
+            ),
+            
+            // Section Header for Upcoming Vaccines
+            SliverToBoxAdapter(
+              child: Container(
+                padding: const EdgeInsets.fromLTRB(16, 20, 16, 8),
+                color: const Color(0xFFF8F9FA),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      texts['upcomingVaccines']!,
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: const Color(0xFF1A1A1A),
+                        fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {},
+                      child: Text(
+                        texts['viewAll']!,
+                        style: TextStyle(
+                          color: const Color(0xFF0086FF),
+                          fontWeight: FontWeight.w600,
+                          fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ];
+        },
+        body: _buildUpcomingVaccinesList(provider, texts),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          _showAddVaccineDialog(context, texts);
+        },
+        backgroundColor: const Color(0xFF0086FF),
+        child: const Icon(Icons.add, color: Colors.white),
+      ),
+    );
+  }
+  
+  double _getCalendarHeight() {
+    // Calculate height based on calendar components
+    final headerHeight = 60.0;        // Calendar header
+    final daysOfWeekHeight = 40.0;     // Days of week header
+    final calendarGridHeight = 288.0;  // 6 weeks * 48px per row
+    final totalHeight = headerHeight + daysOfWeekHeight + calendarGridHeight;
+    final minHeight = headerHeight;    // Just show header when collapsed
+    
+    if (_calendarAnimation == null) return totalHeight;
+    return minHeight + ((totalHeight - minHeight) * (1 - _calendarAnimation!.value));
+  }
+  
+  Widget _buildListView(ChildProvider provider, Map<String, String> texts) {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA),
       appBar: AppBar(
@@ -171,21 +406,8 @@ class _VaccinationCalendarScreenState extends State<VaccinationCalendarScreen> {
       ),
       body: Column(
         children: [
-          // Child Selector
           if (provider.children.length > 1)
             _buildChildSelector(provider, texts),
-          
-          // Calendar or List View
-          if (!_isListView) ...[
-            _buildCalendarView(texts),
-            const Divider(height: 1, color: Color(0xFFE5E7EB)),
-          ],
-          
-          // Legend
-          if (!_isListView)
-            _buildLegend(texts),
-          
-          // Upcoming Vaccines Section
           Expanded(
             child: _buildUpcomingVaccines(provider, texts),
           ),
@@ -276,17 +498,21 @@ class _VaccinationCalendarScreenState extends State<VaccinationCalendarScreen> {
   Widget _buildCalendarView(Map<String, String> texts) {
     return Container(
       color: Colors.white,
-      child: Column(
-        children: [
-          // Calendar Header
-          _buildCalendarHeader(),
-          
-          // Days of Week
-          _buildDaysOfWeekHeader(),
-          
-          // Calendar Grid
-          _buildCalendarGrid(),
-        ],
+      child: SingleChildScrollView(
+        physics: const NeverScrollableScrollPhysics(),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Calendar Header
+            _buildCalendarHeader(),
+            
+            // Days of Week
+            _buildDaysOfWeekHeader(),
+            
+            // Calendar Grid
+            _buildCalendarGrid(),
+          ],
+        ),
       ),
     );
   }
@@ -297,36 +523,39 @@ class _VaccinationCalendarScreenState extends State<VaccinationCalendarScreen> {
       'July', 'August', 'September', 'October', 'November', 'December',
     ];
     
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          IconButton(
-            onPressed: () {
-              setState(() {
-                _focusedDay = DateTime(_focusedDay.year, _focusedDay.month - 1);
-              });
-            },
-            icon: const Icon(Icons.chevron_left, color: Color(0xFF6B7280)),
-          ),
-          Text(
-            '${monthNames[_focusedDay.month - 1]} ${_focusedDay.year}',
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF1A1A1A),
+    return SizedBox(
+      height: 60,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            IconButton(
+              onPressed: () {
+                setState(() {
+                  _focusedDay = DateTime(_focusedDay.year, _focusedDay.month - 1);
+                });
+              },
+              icon: const Icon(Icons.chevron_left, color: Color(0xFF6B7280)),
             ),
-          ),
-          IconButton(
-            onPressed: () {
-              setState(() {
-                _focusedDay = DateTime(_focusedDay.year, _focusedDay.month + 1);
-              });
-            },
-            icon: const Icon(Icons.chevron_right, color: Color(0xFF6B7280)),
-          ),
-        ],
+            Text(
+              '${monthNames[_focusedDay.month - 1]} ${_focusedDay.year}',
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF1A1A1A),
+              ),
+            ),
+            IconButton(
+              onPressed: () {
+                setState(() {
+                  _focusedDay = DateTime(_focusedDay.year, _focusedDay.month + 1);
+                });
+              },
+              icon: const Icon(Icons.chevron_right, color: Color(0xFF6B7280)),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -334,22 +563,25 @@ class _VaccinationCalendarScreenState extends State<VaccinationCalendarScreen> {
   Widget _buildDaysOfWeekHeader() {
     final daysOfWeek = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
     
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        children: daysOfWeek.map((day) {
-          return Expanded(
-            child: Text(
-              day,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: Color(0xFF6B7280),
+    return SizedBox(
+      height: 40,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: Row(
+          children: daysOfWeek.map((day) {
+            return Expanded(
+              child: Text(
+                day,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: Color(0xFF6B7280),
+                ),
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.center,
-            ),
-          );
-        }).toList(),
+            );
+          }).toList(),
+        ),
       ),
     );
   }
@@ -363,7 +595,7 @@ class _VaccinationCalendarScreenState extends State<VaccinationCalendarScreen> {
     final weeks = <Widget>[];
     var dayCounter = 1;
     
-    // Build weeks
+    // Build weeks (limit to 6 weeks max)
     for (int week = 0; week < 6; week++) {
       final days = <Widget>[];
       
@@ -401,12 +633,20 @@ class _VaccinationCalendarScreenState extends State<VaccinationCalendarScreen> {
         days.add(Expanded(child: dayWidget));
       }
       
-      weeks.add(Row(children: days));
+      weeks.add(
+        SizedBox(
+          height: 48, // Fixed height for each week row
+          child: Row(children: days),
+        ),
+      );
       
       if (dayCounter > daysInMonth && week > 3) break;
     }
     
-    return Column(children: weeks);
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: weeks,
+    );
   }
 
   Widget _buildDayCell(String day, DateTime date, {required bool isCurrentMonth}) {
@@ -582,6 +822,31 @@ class _VaccinationCalendarScreenState extends State<VaccinationCalendarScreen> {
       ],
     );
   }
+  
+  Widget _buildUpcomingVaccinesList(ChildProvider provider, Map<String, String> texts) {
+    final upcomingVaccines = _getUpcomingVaccines();
+    
+    if (upcomingVaccines.isEmpty) {
+      return Center(
+        child: Text(
+          texts['noVaccines']!,
+          style: TextStyle(
+            color: const Color(0xFF6B7280),
+            fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+          ),
+        ),
+      );
+    }
+    
+    return ListView.builder(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 100), // Extra bottom padding for FAB
+      itemCount: upcomingVaccines.length,
+      itemBuilder: (context, index) {
+        final vaccine = upcomingVaccines[index];
+        return _buildExpandedVaccineCard(vaccine, texts);
+      },
+    );
+  }
 
   Widget _buildVaccineCard(Map<String, dynamic> vaccine, Map<String, String> texts) {
     final statusColor = _getStatusColor(vaccine['status']);
@@ -712,6 +977,267 @@ class _VaccinationCalendarScreenState extends State<VaccinationCalendarScreen> {
         ),
       ),
     );
+  }
+  
+  Widget _buildExpandedVaccineCard(Map<String, dynamic> vaccine, Map<String, String> texts) {
+    final statusColor = _getStatusColor(vaccine['status']);
+    final statusBgColor = _getStatusBackgroundColor(vaccine['status']);
+    final statusIcon = _getStatusIcon(vaccine['status']);
+    
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE5E7EB)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header with icon and status
+            Row(
+              children: [
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: statusBgColor,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    statusIcon,
+                    color: statusColor,
+                    size: 24,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        vaccine['name'],
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: const Color(0xFF1A1A1A),
+                          fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: statusBgColor,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          texts[vaccine['status']]!,
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: statusColor,
+                            fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            
+            const SizedBox(height: 20),
+            
+            // Details section
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF8F9FA),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                children: [
+                  _buildDetailRow(Icons.calendar_today, texts['dueOn']!, vaccine['date'], texts),
+                  if (vaccine['clinic'] != null) ...[
+                    const SizedBox(height: 12),
+                    _buildDetailRow(Icons.location_on_outlined, 'Clinic', vaccine['clinic'], texts),
+                  ],
+                  const SizedBox(height: 12),
+                  _buildDetailRow(Icons.access_time, 'Time', '2:30 PM', texts),
+                  const SizedBox(height: 12),
+                  _buildDetailRow(Icons.person, 'Doctor', 'Dr. Sarah Johnson', texts),
+                ],
+              ),
+            ),
+            
+            const SizedBox(height: 20),
+            
+            // Action buttons
+            Row(
+              children: [
+                if (vaccine['status'] == 'overdue') ...[
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: () {},
+                      icon: const Icon(Icons.schedule),
+                      label: Text(
+                        texts['reschedule']!,
+                        style: TextStyle(
+                          fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                        ),
+                      ),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: const Color(0xFF0086FF),
+                        side: const BorderSide(color: Color(0xFF0086FF)),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: FilledButton.icon(
+                      onPressed: () {},
+                      icon: const Icon(Icons.check),
+                      label: Text(
+                        texts['markComplete']!,
+                        style: TextStyle(
+                          fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                        ),
+                      ),
+                      style: FilledButton.styleFrom(
+                        backgroundColor: const Color(0xFF0086FF),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    ),
+                  ),
+                ] else if (vaccine['status'] == 'scheduled') ...[
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: () {},
+                      icon: const Icon(Icons.edit_calendar),
+                      label: Text(
+                        texts['reschedule']!,
+                        style: TextStyle(
+                          fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                        ),
+                      ),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: const Color(0xFF0086FF),
+                        side: const BorderSide(color: Color(0xFF0086FF)),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: FilledButton.icon(
+                      onPressed: () {},
+                      icon: const Icon(Icons.info_outline),
+                      label: Text(
+                        texts['details']!,
+                        style: TextStyle(
+                          fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                        ),
+                      ),
+                      style: FilledButton.styleFrom(
+                        backgroundColor: const Color(0xFF0086FF),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    ),
+                  ),
+                ] else ...[
+                  Expanded(
+                    child: FilledButton.icon(
+                      onPressed: () {},
+                      icon: const Icon(Icons.schedule),
+                      label: Text(
+                        texts['schedule']!,
+                        style: TextStyle(
+                          fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                        ),
+                      ),
+                      style: FilledButton.styleFrom(
+                        backgroundColor: const Color(0xFF0086FF),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+  
+  Widget _buildDetailRow(IconData icon, String label, String value, Map<String, String> texts) {
+    return Row(
+      children: [
+        Icon(
+          icon,
+          size: 18,
+          color: const Color(0xFF6B7280),
+        ),
+        const SizedBox(width: 12),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 14,
+            color: const Color(0xFF6B7280),
+            fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+          ),
+        ),
+        const Spacer(),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: const Color(0xFF1A1A1A),
+            fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+          ),
+        ),
+      ],
+    );
+  }
+  
+  IconData _getStatusIcon(String status) {
+    switch (status) {
+      case 'overdue':
+        return Icons.warning;
+      case 'scheduled':
+        return Icons.schedule;
+      case 'completed':
+        return Icons.check_circle;
+      default:
+        return Icons.vaccines;
+    }
   }
 
   List<Map<String, dynamic>> _getUpcomingVaccines() {
