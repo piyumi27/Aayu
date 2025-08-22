@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:go_router/go_router.dart';
-import 'dart:math' as math;
 
 import '../providers/child_provider.dart';
-import '../models/growth_record.dart';
-import '../models/child.dart';
 
 class NutritionalAnalysisScreen extends StatefulWidget {
   const NutritionalAnalysisScreen({super.key});
@@ -18,7 +15,7 @@ class NutritionalAnalysisScreen extends StatefulWidget {
 class _NutritionalAnalysisScreenState extends State<NutritionalAnalysisScreen> {
   String _selectedLanguage = 'en';
   bool _isZScoreExpanded = false;
-  String _selectedMonth = 'July 2023';
+  final String _selectedMonth = 'July 2023';
   
   @override
   void initState() {

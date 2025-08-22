@@ -1,9 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:io';
 
 import '../models/growth_record.dart';
 import '../providers/child_provider.dart';
@@ -189,7 +190,7 @@ class _AddMeasurementScreenState extends State<AddMeasurementScreen> {
       final now = DateTime.now();
       final growthRecord = GrowthRecord(
         id: 'growth_${selectedChild.id}_${now.millisecondsSinceEpoch}',
-        childId: selectedChild.id ?? '',
+        childId: selectedChild.id,
         date: _selectedDate,
         weight: double.parse(_weightController.text),
         height: double.parse(_heightController.text),

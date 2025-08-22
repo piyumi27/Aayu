@@ -235,53 +235,6 @@ class _AddChildScreenState extends State<AddChildScreen> {
     );
   }
 
-  Widget _buildAvatarSection(Map<String, String> texts) {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        children: [
-          const SizedBox(height: 16),
-          GestureDetector(
-            onTap: _pickImage,
-            child: Container(
-              width: 96,
-              height: 96,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: Colors.grey[300]!,
-                  width: 2,
-                ),
-                color: Colors.grey[50],
-              ),
-              child: _profileImage != null
-                  ? ClipRRect(
-                      borderRadius: BorderRadius.circular(48),
-                      child: Image.file(
-                        _profileImage!,
-                        fit: BoxFit.cover,
-                      ),
-                    )
-                  : const Icon(
-                      Icons.add_a_photo,
-                      size: 40,
-                      color: Colors.grey,
-                    ),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            texts['addPhoto']!,
-            style: TextStyle(
-              fontSize: 12,
-              color: Colors.grey[600],
-              fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   Widget _buildCleanFormFields(Map<String, String> texts) {
     return Column(
@@ -629,54 +582,6 @@ class _AddChildScreenState extends State<AddChildScreen> {
     );
   }
 
-  Widget _buildFormCard(Map<String, String> texts) {
-    return Container(
-      margin: const EdgeInsets.only(top: 16, left: 16, right: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Child Name
-              _buildTextField(
-                controller: _nameController,
-                label: texts['childName']!,
-                errorText: _nameError,
-              ),
-              
-              const SizedBox(height: 20),
-              
-              // Date of Birth
-              _buildDateField(texts),
-              
-              const SizedBox(height: 20),
-              
-              // Gender Toggle Chips
-              _buildGenderSelection(texts),
-              
-              const SizedBox(height: 24),
-              
-              // Optional birth measurements
-              _buildOptionalMeasurements(texts),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 
   Widget _buildTextField({
     required TextEditingController controller,
@@ -896,44 +801,6 @@ class _AddChildScreenState extends State<AddChildScreen> {
     );
   }
 
-  Widget _buildBottomActionBar(Map<String, String> texts) {
-    return Container(
-      padding: const EdgeInsets.all(32),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
-            blurRadius: 8,
-            offset: const Offset(0, -2),
-          ),
-        ],
-      ),
-      child: SizedBox(
-        width: double.infinity,
-        height: 48,
-        child: FilledButton(
-          onPressed: _isValid ? _saveChild : null,
-          style: FilledButton.styleFrom(
-            backgroundColor: const Color(0xFF0086FF),
-            disabledBackgroundColor: const Color(0xFF0086FF).withValues(alpha: 0.4),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-          ),
-          child: Text(
-            texts['saveProfile']!,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: Colors.white,
-              fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 
   Future<void> _pickImage() async {
     try {

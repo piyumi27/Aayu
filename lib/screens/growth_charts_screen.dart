@@ -1,8 +1,9 @@
-import 'package:flutter/material.dart';
+import 'dart:math' as math;
+
 import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:math' as math;
 
 import '../providers/child_provider.dart';
 import '../models/growth_record.dart';

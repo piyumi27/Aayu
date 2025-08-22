@@ -2,6 +2,29 @@
 
 All notable changes to the Aayu project will be documented in this file.
 
+## [2025-08-22] - Code Cleanup and Linting Fixes
+
+### Fixed
+- **Import Ordering**
+  - Fixed dart: imports to come before package imports in multiple files
+  - Alphabetized import sections in growth_charts_screen.dart and nutritional_analysis_screen.dart
+  
+- **Unused Code Removal**
+  - Removed unused _buildDashboard method and all helper methods from home_screen.dart
+  - Removed unused _buildAvatarSection, _buildFormCard, _buildBottomActionBar methods from add_child_screen.dart
+  - Removed unused _getMilestone method from pre_six_month_countdown_screen.dart
+  - Removed unused imports: dart:math, ../models/growth_record.dart, ../models/child.dart from nutritional_analysis_screen.dart
+  - Removed unused import: ../models/child.dart from vaccination_calendar_screen.dart
+
+- **Code Quality**
+  - Fixed dead null-aware expression in add_measurement_screen.dart (selectedChild.id ?? '')
+  - Changed _selectedMonth to final field in nutritional_analysis_screen.dart
+  - Improved overall code structure and reduced warnings
+
+### Removed
+- Multiple unused methods and imports across the codebase
+- Redundant null-aware operators where not needed
+
 ## [2025-08-20] - Vaccination Calendar Dependencies Fix
 
 ### Fixed

@@ -103,16 +103,6 @@ class _PreSixMonthCountdownScreenState extends State<PreSixMonthCountdownScreen>
     )!;
   }
 
-  String _getMilestone(int daysSinceBirth) {
-    final milestones = _getLocalizedMilestones();
-    
-    if (daysSinceBirth >= 150) return milestones['150']!;
-    if (daysSinceBirth >= 120) return milestones['120']!;
-    if (daysSinceBirth >= 90) return milestones['90']!;
-    if (daysSinceBirth >= 60) return milestones['60']!;
-    if (daysSinceBirth >= 30) return milestones['30']!;
-    return milestones['0']!;
-  }
 
   Map<String, String> _getLocalizedMilestones() {
     final Map<String, Map<String, String>> milestones = {
