@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -732,16 +733,27 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
 
   Widget _buildDataPointItem(GrowthRecord record, Map<String, String> texts) {
     final percentile = _calculatePercentile(record);
+    final provider = Provider.of<ChildProvider>(context, listen: false);
     
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: const Color(0xFFE5E7EB)),
-      ),
-      child: Row(
+    return GestureDetector(
+      onTap: () {
+        context.push(
+          '/measurement-detail',
+          extra: {
+            'measurementId': record.id,
+            'childId': provider.selectedChild?.id ?? '',
+          },
+        );
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: const Color(0xFFE5E7EB)),
+        ),
+        child: Row(
         children: [
           Expanded(
             child: Column(
@@ -789,6 +801,7 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
             ],
           ),
         ],
+      ),
       ),
     );
   }
