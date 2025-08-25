@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import '../models/growth_record.dart';
 import '../providers/child_provider.dart';
 import '../services/database_service.dart';
+import '../utils/responsive_utils.dart';
 import 'add_measurement_screen.dart';
 
 /// Professional Measurement Detail screen with comprehensive metrics display
@@ -320,7 +321,7 @@ class _MeasurementDetailScreenState extends State<MeasurementDetailScreen> {
                   children: [
                     Expanded(
                       child: SingleChildScrollView(
-                        padding: const EdgeInsets.all(16),
+                        padding: ResponsiveUtils.getResponsivePadding(context),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -550,11 +551,17 @@ class _MeasurementDetailScreenState extends State<MeasurementDetailScreen> {
           ),
           const SizedBox(height: 16),
           Table(
-            columnWidths: const {
-              0: FlexColumnWidth(2),
-              1: FlexColumnWidth(1),
-              2: FlexColumnWidth(1.5),
-            },
+            columnWidths: ResponsiveUtils.isSmallWidth(context)
+                ? const {
+                    0: FlexColumnWidth(1.5),
+                    1: FlexColumnWidth(0.8),
+                    2: FlexColumnWidth(1.2),
+                  }
+                : const {
+                    0: FlexColumnWidth(2),
+                    1: FlexColumnWidth(1),
+                    2: FlexColumnWidth(1.5),
+                  },
             children: [
               TableRow(
                 decoration: BoxDecoration(

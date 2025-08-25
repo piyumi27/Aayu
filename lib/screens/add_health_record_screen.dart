@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../providers/child_provider.dart';
+import '../utils/responsive_utils.dart';
 
 /// Professional Add Health Record screen for vaccines, supplements, and medications
 class AddHealthRecordScreen extends StatefulWidget {
@@ -442,52 +443,98 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
           ),
         ),
         const SizedBox(height: 12),
-        Row(
-          children: HealthRecordType.values.map((type) {
-            final isSelected = _selectedType == type;
-            return Expanded(
-              child: Padding(
-                padding: EdgeInsets.only(
-                  right: type != HealthRecordType.values.last ? 12 : 0,
-                ),
-                child: GestureDetector(
-                  onTap: () => setState(() => _selectedType = type),
-                  child: Container(
-                    height: 80,
-                    decoration: BoxDecoration(
-                      color: isSelected ? const Color(0xFF0086FF).withOpacity(0.1) : Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: isSelected ? const Color(0xFF0086FF) : const Color(0xFFE5E7EB),
-                        width: isSelected ? 2 : 1,
-                      ),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          type.icon,
-                          color: isSelected ? const Color(0xFF0086FF) : const Color(0xFF6B7280),
-                          size: 24,
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          texts[type.name]!,
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            color: isSelected ? const Color(0xFF0086FF) : const Color(0xFF6B7280),
-                            fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+        ResponsiveUtils.isSmallWidth(context)
+            ? Column(
+                children: HealthRecordType.values.map((type) {
+                  final isSelected = _selectedType == type;
+                  return Container(
+                    width: double.infinity,
+                    height: 64,
+                    margin: const EdgeInsets.only(bottom: 12),
+                    child: GestureDetector(
+                      onTap: () => setState(() => _selectedType = type),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: isSelected ? const Color(0xFF0086FF).withValues(alpha: 0.1) : Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: isSelected ? const Color(0xFF0086FF) : const Color(0xFFE5E7EB),
+                            width: isSelected ? 2 : 1,
                           ),
                         ),
-                      ],
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              type.icon,
+                              color: isSelected ? const Color(0xFF0086FF) : const Color(0xFF6B7280),
+                              size: 20,
+                            ),
+                            const SizedBox(width: 12),
+                            Text(
+                              texts[type.name]!,
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                                color: isSelected ? const Color(0xFF0086FF) : const Color(0xFF6B7280),
+                                fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                  ),
-                ),
+                  );
+                }).toList(),
+              )
+            : Row(
+                children: HealthRecordType.values.map((type) {
+                  final isSelected = _selectedType == type;
+                  return Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.only(
+                        right: type != HealthRecordType.values.last 
+                            ? (ResponsiveUtils.isMobile(context) ? 8 : 12) 
+                            : 0,
+                      ),
+                      child: GestureDetector(
+                        onTap: () => setState(() => _selectedType = type),
+                        child: Container(
+                          height: ResponsiveUtils.isSmallHeight(context) ? 70 : 80,
+                          decoration: BoxDecoration(
+                            color: isSelected ? const Color(0xFF0086FF).withValues(alpha: 0.1) : Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: isSelected ? const Color(0xFF0086FF) : const Color(0xFFE5E7EB),
+                              width: isSelected ? 2 : 1,
+                            ),
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                type.icon,
+                                color: isSelected ? const Color(0xFF0086FF) : const Color(0xFF6B7280),
+                                size: ResponsiveUtils.isSmallHeight(context) ? 20 : 24,
+                              ),
+                              SizedBox(height: ResponsiveUtils.isSmallHeight(context) ? 4 : 8),
+                              Text(
+                                texts[type.name]!,
+                                style: TextStyle(
+                                  fontSize: ResponsiveUtils.isSmallHeight(context) ? 12 : 14,
+                                  fontWeight: FontWeight.w500,
+                                  color: isSelected ? const Color(0xFF0086FF) : const Color(0xFF6B7280),
+                                  fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                }).toList(),
               ),
-            );
-          }).toList(),
-        ),
       ],
     );
   }

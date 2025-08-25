@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../providers/child_provider.dart';
+import '../utils/responsive_utils.dart';
 import 'add_child_screen.dart';
 import 'add_measurement_screen.dart';
 import 'growth_charts_screen.dart';
@@ -245,7 +246,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildAppHeader(Map<String, String> texts) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      padding: ResponsiveUtils.getResponsivePadding(context),
       decoration: const BoxDecoration(
         color: Colors.white,
         border: Border(
@@ -632,15 +633,15 @@ class _HomeScreenState extends State<HomeScreen> {
     ];
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      margin: ResponsiveUtils.getResponsivePadding(context),
       child: GridView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          crossAxisSpacing: 12,
-          mainAxisSpacing: 12,
-          childAspectRatio: 1.0,
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: ResponsiveUtils.getResponsiveColumnCount(context),
+          crossAxisSpacing: ResponsiveUtils.isMobile(context) ? 12 : 16,
+          mainAxisSpacing: ResponsiveUtils.isMobile(context) ? 12 : 16,
+          childAspectRatio: ResponsiveUtils.isSmallWidth(context) ? 0.9 : 1.0,
         ),
         itemCount: actions.length,
         itemBuilder: (context, index) {
