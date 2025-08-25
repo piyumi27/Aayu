@@ -1,9 +1,9 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:intl/intl.dart';
 
 import '../models/growth_record.dart';
 import '../providers/child_provider.dart';
@@ -36,7 +36,6 @@ class _MeasurementDetailScreenState extends State<MeasurementDetailScreen> {
   
   // For undo functionality
   GrowthRecord? _deletedMeasurement;
-  bool _showUndoSnackbar = false;
 
   @override
   void initState() {

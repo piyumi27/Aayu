@@ -187,7 +187,7 @@ class _VaccinationCalendarScreenState extends State<VaccinationCalendarScreen>
                 children: [
                   CircleAvatar(
                     radius: 16,
-                    backgroundColor: const Color(0xFF0086FF).withOpacity(0.1),
+                    backgroundColor: const Color(0xFF0086FF).withValues(alpha: 0.1),
                     child: Text(
                       child.name[0].toUpperCase(),
                       style: const TextStyle(
@@ -300,7 +300,7 @@ class _VaccinationCalendarScreenState extends State<VaccinationCalendarScreen>
               shape: BoxShape.circle,
             ),
             todayDecoration: BoxDecoration(
-              color: const Color(0xFF0086FF).withOpacity(0.3),
+              color: const Color(0xFF0086FF).withValues(alpha: 0.3),
               shape: BoxShape.circle,
             ),
             markerDecoration: const BoxDecoration(
@@ -490,7 +490,7 @@ class _VaccinationCalendarScreenState extends State<VaccinationCalendarScreen>
         border: Border.all(color: const Color(0xFFE5E7EB)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),

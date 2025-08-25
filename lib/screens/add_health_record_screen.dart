@@ -301,7 +301,7 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
           children: [
             CircleAvatar(
               radius: 24,
-              backgroundColor: const Color(0xFF0086FF).withOpacity(0.1),
+              backgroundColor: const Color(0xFF0086FF).withValues(alpha: 0.1),
               child: selectedChild != null
                   ? Text(
                       selectedChild.name[0].toUpperCase(),
@@ -377,7 +377,7 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
                 leading: CircleAvatar(
                   backgroundColor: isSelected 
                       ? const Color(0xFF0086FF) 
-                      : const Color(0xFF0086FF).withOpacity(0.1),
+                      : const Color(0xFF0086FF).withValues(alpha: 0.1),
                   child: Text(
                     child.name[0].toUpperCase(),
                     style: TextStyle(
@@ -754,7 +754,7 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
             Switch.adaptive(
               value: _setReminder,
               onChanged: (value) => setState(() => _setReminder = value),
-              activeColor: const Color(0xFF0086FF),
+              activeTrackColor: const Color(0xFF0086FF),
             ),
           ],
         ),

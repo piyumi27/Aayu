@@ -16,7 +16,6 @@ class AddChildScreen extends StatefulWidget {
 }
 
 class _AddChildScreenState extends State<AddChildScreen> {
-  final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _birthWeightController = TextEditingController();
   final _birthHeightController = TextEditingController();
