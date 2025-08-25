@@ -6,6 +6,7 @@ class GrowthRecord {
   final double height;
   final double? headCircumference;
   final String? notes;
+  final String? photoPath;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -17,6 +18,7 @@ class GrowthRecord {
     required this.height,
     this.headCircumference,
     this.notes,
+    this.photoPath,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -30,6 +32,7 @@ class GrowthRecord {
       'height': height,
       'headCircumference': headCircumference,
       'notes': notes,
+      'photoPath': photoPath,
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
     };
@@ -44,6 +47,7 @@ class GrowthRecord {
       height: map['height'].toDouble(),
       headCircumference: map['headCircumference']?.toDouble(),
       notes: map['notes'],
+      photoPath: map['photoPath'],
       createdAt: DateTime.parse(map['createdAt']),
       updatedAt: DateTime.parse(map['updatedAt']),
     );
