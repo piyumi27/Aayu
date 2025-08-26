@@ -24,27 +24,33 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Future<void> _loadPreferences() async {
     final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _selectedLanguage = prefs.getString('language') ?? 'en';
-      _notificationsEnabled = prefs.getBool('notifications_enabled') ?? true;
-      _syncStatus = prefs.getString('sync_status') ?? 'up-to-date';
-    });
+    if (mounted) {
+      setState(() {
+        _selectedLanguage = prefs.getString('language') ?? 'en';
+        _notificationsEnabled = prefs.getBool('notifications_enabled') ?? true;
+        _syncStatus = prefs.getString('sync_status') ?? 'up-to-date';
+      });
+    }
   }
 
   Future<void> _saveLanguagePreference(String language) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('language', language);
-    setState(() {
-      _selectedLanguage = language;
-    });
+    if (mounted) {
+      setState(() {
+        _selectedLanguage = language;
+      });
+    }
   }
 
   Future<void> _saveNotificationPreference(bool enabled) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('notifications_enabled', enabled);
-    setState(() {
-      _notificationsEnabled = enabled;
-    });
+    if (mounted) {
+      setState(() {
+        _notificationsEnabled = enabled;
+      });
+    }
   }
 
   Map<String, String> _getLocalizedText() {

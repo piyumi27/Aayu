@@ -20,12 +20,21 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
     super.initState();
     _loadPreferences();
   }
+  
+  @override
+  void dispose() {
+    // Clear any pending state updates
+    _expandedSections.clear();
+    super.dispose();
+  }
 
   Future<void> _loadPreferences() async {
     final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _selectedLanguage = prefs.getString('language') ?? 'en';
-    });
+    if (mounted) {
+      setState(() {
+        _selectedLanguage = prefs.getString('language') ?? 'en';
+      });
+    }
   }
 
   Map<String, dynamic> _getLocalizedContent() {
@@ -420,9 +429,11 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
         children: [
           InkWell(
             onTap: () {
-              setState(() {
-                _expandedSections['category_$categoryIndex'] = !isExpanded;
-              });
+              if (mounted) {
+                setState(() {
+                  _expandedSections['category_$categoryIndex'] = !isExpanded;
+                });
+              }
             },
             borderRadius: BorderRadius.circular(12),
             child: Container(
@@ -483,9 +494,11 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
       children: [
         InkWell(
           onTap: () {
-            setState(() {
-              _expandedSections[key] = !isExpanded;
-            });
+            if (mounted) {
+              setState(() {
+                _expandedSections[key] = !isExpanded;
+              });
+            }
           },
           child: Container(
             padding: const EdgeInsets.all(16),
