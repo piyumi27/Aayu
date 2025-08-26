@@ -582,99 +582,9 @@ class _AddChildScreenState extends State<AddChildScreen> {
   }
 
 
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String label,
-    String? errorText,
-    TextInputType? keyboardType,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        TextField(
-          controller: controller,
-          keyboardType: keyboardType,
-          style: TextStyle(
-            fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-          ),
-          decoration: InputDecoration(
-            labelText: label,
-            labelStyle: TextStyle(
-              fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-            ),
-            border: const OutlineInputBorder(),
-            enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.grey[300]!),
-            ),
-            focusedBorder: const OutlineInputBorder(
-              borderSide: BorderSide(color: Color(0xFF0086FF), width: 2),
-            ),
-            errorBorder: const OutlineInputBorder(
-              borderSide: BorderSide(color: Color(0xFFFF5252)),
-            ),
-          ),
-          onChanged: (_) => _validateForm(),
-        ),
-        if (errorText != null) ...[
-          const SizedBox(height: 4),
-          Text(
-            errorText,
-            style: TextStyle(
-              fontSize: 12,
-              color: const Color(0xFFFF5252),
-              fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-            ),
-          ),
-        ],
-      ],
-    );
-  }
 
 
 
-  Widget _buildGenderChip({
-    required String label,
-    required String value,
-    required IconData icon,
-  }) {
-    final isSelected = _gender == value;
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          _gender = value;
-        });
-        _validateForm();
-      },
-      child: Container(
-        width: 56,
-        height: 56,
-        decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF0086FF) : const Color(0xFFE0E0E0),
-          borderRadius: BorderRadius.circular(28),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              icon,
-              color: isSelected ? Colors.white : const Color(0xFF555555),
-              size: 20,
-            ),
-            const SizedBox(height: 2),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 10,
-                color: isSelected ? Colors.white : const Color(0xFF555555),
-                fontWeight: FontWeight.w500,
-                fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 
 
 

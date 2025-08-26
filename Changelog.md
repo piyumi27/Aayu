@@ -22,6 +22,15 @@ All notable changes to the Aayu project will be documented in this file.
   - Settings icon in Profile screen AppBar for easy access
   - Proper navigation flow between Profile and Settings screens
 
+- **Profile Management System**
+  - **Edit Parent Profile Screen**: Complete profile editing with avatar upload, form validation, and secure account deletion
+  - **Edit Child Profile Screen**: Child-specific profile editing with gender selection, birth measurements, and age display
+  - **Advanced Image Handling**: Camera/gallery picker with compression and image management
+  - **Form Validation**: Comprehensive client-side validation with localized error messages
+  - **Security Features**: Secure deletion confirmation requiring name/DELETE confirmation
+  - **Real-time Updates**: Live form state tracking and change detection
+  - **Cultural Adaptation**: Gender-specific icons and colors, Sri Lankan naming conventions
+
 ### Fixed
 - **Compilation Errors & Warnings Resolution**
   - Fixed Flutter BorderSide rendering error in notifications screen (hairline borders with BorderRadius)
