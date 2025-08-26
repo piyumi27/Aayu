@@ -277,7 +277,7 @@ class _HomeScreenState extends State<HomeScreen> {
               borderRadius: BorderRadius.circular(8),
             ),
             child: IconButton(
-              onPressed: () {},
+              onPressed: () => context.push('/notifications'),
               icon: const Icon(
                 Icons.notifications_outlined,
                 color: Color(0xFF6B7280),

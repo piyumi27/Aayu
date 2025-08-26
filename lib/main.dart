@@ -16,6 +16,7 @@ import 'screens/language_selection_screen.dart';
 import 'screens/learn_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/measurement_detail_screen.dart';
+import 'screens/notifications_screen.dart';
 import 'screens/onboarding_screen.dart';
 import 'screens/otp_verification_screen.dart';
 import 'screens/pre_six_month_countdown_screen.dart';
@@ -199,6 +200,13 @@ final _router = GoRouter(
           pageBuilder: (context, state) => SlideRightTransitionPage(
             key: state.pageKey,
             child: const ProfileScreen(),
+          ),
+        ),
+        GoRoute(
+          path: '/notifications',
+          pageBuilder: (context, state) => SlideRightTransitionPage(
+            key: state.pageKey,
+            child: const NotificationsScreen(),
           ),
         ),
       ],
