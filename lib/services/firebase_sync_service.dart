@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:workmanager/workmanager.dart';
 
+import '../models/migration_queue.dart';
 import '../models/user_account.dart';
 import 'local_auth_service.dart';
 
@@ -21,6 +22,9 @@ class FirebaseSyncService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final LocalAuthService _localAuth = LocalAuthService();
   
+  // Migration queue storage key
+  static const String _migrationQueueKey = 'migration_queue';
+  
   /// Initialize WorkManager for background sync
   static Future<void> initialize() async {
     await Workmanager().initialize(
@@ -35,10 +39,6 @@ class FirebaseSyncService {
       syncTaskName,
       syncTaskName,
       frequency: const Duration(hours: 1), // Sync every hour when online
-      constraints: Constraints(
-        networkType: NetworkType.connected,
-        requiresBatteryNotLow: true,
-      ),
     );
   }
 
@@ -47,9 +47,6 @@ class FirebaseSyncService {
     await Workmanager().registerOneOffTask(
       'immediateSync',
       syncTaskName,
-      constraints: Constraints(
-        networkType: NetworkType.connected,
-      ),
     );
   }
 
@@ -180,17 +177,270 @@ class FirebaseSyncService {
     }
   }
 
+  /// Add entry to migration queue
+  Future<void> queueForMigration({
+    required String entityType,
+    required String entityId,
+    required String operation,
+    required Map<String, dynamic> data,
+  }) async {
+    final user = await _localAuth.getCurrentUser();
+    
+    // If user is verified, sync immediately instead of queueing
+    if (user?.isSyncGateOpen == true) {
+      await _processImmediateSync(entityType, entityId, operation, data);
+      return;
+    }
+    
+    // Otherwise, add to queue
+    final entry = MigrationQueueEntry.create(
+      entityType: entityType,
+      entityId: entityId,
+      operation: operation,
+      data: data,
+    );
+    
+    final queue = await _getMigrationQueue();
+    queue.add(entry);
+    await _saveMigrationQueue(queue);
+  }
+
+  /// Get migration queue summary
+  Future<MigrationQueueSummary> getMigrationQueueSummary() async {
+    final queue = await _getMigrationQueue();
+    
+    final pending = queue.where((e) => e.status == MigrationStatus.pending).length;
+    final processing = queue.where((e) => e.status == MigrationStatus.processing).length;
+    final completed = queue.where((e) => e.status == MigrationStatus.completed).length;
+    final failed = queue.where((e) => e.status == MigrationStatus.failed).length;
+    
+    final lastProcessed = queue
+        .where((e) => e.processedAt != null)
+        .map((e) => e.processedAt!)
+        .fold<DateTime?>(null, (prev, date) => 
+            prev == null || date.isAfter(prev) ? date : prev);
+    
+    return MigrationQueueSummary(
+      totalEntries: queue.length,
+      pendingEntries: pending,
+      processingEntries: processing,
+      completedEntries: completed,
+      failedEntries: failed,
+      lastProcessedAt: lastProcessed,
+    );
+  }
+
+  /// Process migration queue (called after verification)
+  Future<List<SyncResult>> processMigrationQueue() async {
+    final user = await _localAuth.getCurrentUser();
+    if (user?.isSyncGateOpen != true) {
+      return [SyncResult(
+        success: false,
+        message: 'User not verified - cannot process migration queue',
+        type: SyncType.unknown,
+      )];
+    }
+    
+    final queue = await _getMigrationQueue();
+    final results = <SyncResult>[];
+    
+    // Sort by priority (users first, then children, etc.)
+    queue.sort((a, b) => b.priority.compareTo(a.priority));
+    
+    for (final entry in queue) {
+      if (entry.status == MigrationStatus.pending || entry.canRetry) {
+        final result = await _processMigrationEntry(entry);
+        results.add(result);
+        
+        // Update entry status
+        final updatedEntry = entry.copyWith(
+          status: result.success ? MigrationStatus.completed : MigrationStatus.failed,
+          processedAt: DateTime.now(),
+          retryCount: entry.retryCount + (result.success ? 0 : 1),
+          errorMessage: result.success ? null : result.message,
+        );
+        
+        // Replace entry in queue
+        final index = queue.indexWhere((e) => e.id == entry.id);
+        if (index >= 0) {
+          queue[index] = updatedEntry;
+        }
+      }
+    }
+    
+    // Save updated queue
+    await _saveMigrationQueue(queue);
+    
+    return results;
+  }
+
+  /// Clear completed entries from migration queue
+  Future<void> clearCompletedMigrations() async {
+    final queue = await _getMigrationQueue();
+    final filtered = queue.where((e) => e.status != MigrationStatus.completed).toList();
+    await _saveMigrationQueue(filtered);
+  }
+
+  /// Get migration queue from storage
+  Future<List<MigrationQueueEntry>> _getMigrationQueue() async {
+    final prefs = await SharedPreferences.getInstance();
+    final queueJson = prefs.getString(_migrationQueueKey);
+    
+    if (queueJson == null) return [];
+    
+    try {
+      final List<dynamic> queueList = json.decode(queueJson);
+      return queueList.map((item) => MigrationQueueEntry.fromJson(item)).toList();
+    } catch (e) {
+      return [];
+    }
+  }
+
+  /// Save migration queue to storage
+  Future<void> _saveMigrationQueue(List<MigrationQueueEntry> queue) async {
+    final prefs = await SharedPreferences.getInstance();
+    final queueJson = json.encode(queue.map((e) => e.toJson()).toList());
+    await prefs.setString(_migrationQueueKey, queueJson);
+  }
+
+  /// Process immediate sync for verified users
+  Future<void> _processImmediateSync(
+    String entityType,
+    String entityId,
+    String operation,
+    Map<String, dynamic> data,
+  ) async {
+    try {
+      switch (entityType) {
+        case 'user':
+          await _syncUserData(data);
+          break;
+        case 'child':
+          await _syncChildData(data);
+          break;
+        case 'measurement':
+          await _syncMeasurementData(data);
+          break;
+        case 'vaccination':
+          await _syncVaccinationData(data);
+          break;
+      }
+    } catch (e) {
+      // If immediate sync fails, add to queue
+      final entry = MigrationQueueEntry.create(
+        entityType: entityType,
+        entityId: entityId,
+        operation: operation,
+        data: data,
+      );
+      
+      final queue = await _getMigrationQueue();
+      queue.add(entry);
+      await _saveMigrationQueue(queue);
+    }
+  }
+
+  /// Process individual migration entry
+  Future<SyncResult> _processMigrationEntry(MigrationQueueEntry entry) async {
+    try {
+      switch (entry.entityType) {
+        case 'user':
+          await _syncUserData(entry.data);
+          break;
+        case 'child':
+          await _syncChildData(entry.data);
+          break;
+        case 'measurement':
+          await _syncMeasurementData(entry.data);
+          break;
+        case 'vaccination':
+          await _syncVaccinationData(entry.data);
+          break;
+        default:
+          throw Exception('Unknown entity type: ${entry.entityType}');
+      }
+      
+      return SyncResult(
+        success: true,
+        message: '${entry.entityType} ${entry.operation} successful',
+        type: SyncType.childData,
+      );
+    } catch (e) {
+      return SyncResult(
+        success: false,
+        message: 'Failed to sync ${entry.entityType}: ${e.toString()}',
+        type: SyncType.childData,
+      );
+    }
+  }
+
+  /// Sync user data to Firestore
+  Future<void> _syncUserData(Map<String, dynamic> data) async {
+    final user = _auth.currentUser;
+    if (user == null) throw Exception('No authenticated user');
+    
+    await _firestore.collection('users').doc(user.uid).set(data, SetOptions(merge: true));
+  }
+
+  /// Sync child data to Firestore
+  Future<void> _syncChildData(Map<String, dynamic> data) async {
+    final user = _auth.currentUser;
+    if (user == null) throw Exception('No authenticated user');
+    
+    await _firestore
+        .collection('users')
+        .doc(user.uid)
+        .collection('children')
+        .doc(data['id'])
+        .set(data, SetOptions(merge: true));
+  }
+
+  /// Sync measurement data to Firestore
+  Future<void> _syncMeasurementData(Map<String, dynamic> data) async {
+    final user = _auth.currentUser;
+    if (user == null) throw Exception('No authenticated user');
+    
+    await _firestore
+        .collection('users')
+        .doc(user.uid)
+        .collection('measurements')
+        .doc(data['id'])
+        .set(data, SetOptions(merge: true));
+  }
+
+  /// Sync vaccination data to Firestore
+  Future<void> _syncVaccinationData(Map<String, dynamic> data) async {
+    final user = _auth.currentUser;
+    if (user == null) throw Exception('No authenticated user');
+    
+    await _firestore
+        .collection('users')
+        .doc(user.uid)
+        .collection('vaccinations')
+        .doc(data['id'])
+        .set(data, SetOptions(merge: true));
+  }
+
   /// Check sync status
   Future<Map<String, dynamic>> getSyncStatus() async {
     final needsSync = await _localAuth.needsFirebaseSync();
     final user = await _localAuth.getCurrentUser();
+    final queueSummary = await getMigrationQueueSummary();
     
     return {
-      'needsSync': needsSync,
+      'needsSync': needsSync || queueSummary.hasWork,
       'lastSync': user?.syncedAt?.toIso8601String(),
-      'isVerified': user?.isVerified ?? false,
+      'isVerified': user?.isSyncGateOpen ?? false,
       'userName': user?.fullName,
-      'syncsPending': needsSync ? 1 : 0,
+      'syncsPending': queueSummary.pendingEntries,
+      'queueSummary': {
+        'total': queueSummary.totalEntries,
+        'pending': queueSummary.pendingEntries,
+        'processing': queueSummary.processingEntries,
+        'completed': queueSummary.completedEntries,
+        'failed': queueSummary.failedEntries,
+        'progress': queueSummary.progress,
+      },
     };
   }
 
@@ -203,12 +453,16 @@ class FirebaseSyncService {
   Future<List<SyncResult>> performManualSync() async {
     final results = <SyncResult>[];
     
-    // Sync user authentication
+    // Sync user authentication first
     final authResult = await syncUserAuthentication();
     results.add(authResult);
     
-    // Sync child data if auth sync was successful
+    // If auth sync successful, process migration queue
     if (authResult.success) {
+      final queueResults = await processMigrationQueue();
+      results.addAll(queueResults);
+      
+      // Also sync child data (legacy support)
       final childResult = await syncChildData();
       results.add(childResult);
     }
@@ -294,21 +548,3 @@ enum SyncType {
   unknown,
 }
 
-/// WorkManager constraints
-class Constraints {
-  final NetworkType networkType;
-  final bool requiresBatteryNotLow;
-  final bool requiresCharging;
-
-  const Constraints({
-    this.networkType = NetworkType.connected,
-    this.requiresBatteryNotLow = false,
-    this.requiresCharging = false,
-  });
-}
-
-enum NetworkType {
-  connected,
-  unmetered,
-  notRequired,
-}

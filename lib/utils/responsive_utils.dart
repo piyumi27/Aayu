@@ -32,16 +32,14 @@ class ResponsiveUtils {
   }
   
   /// Get responsive padding based on screen size
-  static EdgeInsets getResponsivePadding(BuildContext context) {
+  static EdgeInsets getResponsivePadding(BuildContext context, {double scale = 1.0}) {
     final screenType = getScreenType(context);
-    switch (screenType) {
-      case ScreenType.mobile:
-        return const EdgeInsets.all(16);
-      case ScreenType.tablet:
-        return const EdgeInsets.all(24);
-      case ScreenType.desktop:
-        return const EdgeInsets.all(32);
-    }
+    final basePadding = switch (screenType) {
+      ScreenType.mobile => 16.0,
+      ScreenType.tablet => 24.0,
+      ScreenType.desktop => 32.0,
+    };
+    return EdgeInsets.all(basePadding * scale);
   }
   
   /// Get responsive margin based on screen size
@@ -54,6 +52,19 @@ class ResponsiveUtils {
         return const EdgeInsets.all(12);
       case ScreenType.desktop:
         return const EdgeInsets.all(16);
+    }
+  }
+
+  /// Get responsive spacing value
+  static double getResponsiveSpacing(BuildContext context, double baseSpacing) {
+    final screenType = getScreenType(context);
+    switch (screenType) {
+      case ScreenType.mobile:
+        return baseSpacing;
+      case ScreenType.tablet:
+        return baseSpacing * 1.25;
+      case ScreenType.desktop:
+        return baseSpacing * 1.5;
     }
   }
   

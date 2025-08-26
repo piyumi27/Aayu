@@ -6,13 +6,14 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'services/firebase_sync_service.dart';
-
 import 'providers/child_provider.dart';
 import 'screens/add_child_screen.dart';
 import 'screens/add_health_record_screen.dart';
+import 'screens/edit_child_profile_screen.dart';
+import 'screens/edit_parent_profile_screen.dart';
 import 'screens/forgot_password_screen.dart';
 import 'screens/growth_charts_screen.dart';
+import 'screens/help_support_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/language_selection_screen.dart';
 import 'screens/learn_screen.dart';
@@ -25,10 +26,9 @@ import 'screens/pre_six_month_countdown_screen.dart';
 import 'screens/profile_screen.dart';
 import 'screens/register_screen.dart';
 import 'screens/settings_screen.dart';
-import 'screens/edit_parent_profile_screen.dart';
-import 'screens/edit_child_profile_screen.dart';
-import 'screens/help_support_screen.dart';
 import 'screens/splash_screen.dart';
+import 'screens/verification_center_screen.dart';
+import 'services/firebase_sync_service.dart';
 import 'widgets/bottom_navigation.dart';
 
 void main() async {
@@ -244,6 +244,10 @@ final _router = GoRouter(
     GoRoute(
       path: '/help-support',
       builder: (context, state) => const HelpSupportScreen(),
+    ),
+    GoRoute(
+      path: '/verification-center',
+      builder: (context, state) => const VerificationCenterScreen(),
     ),
   ],
 );

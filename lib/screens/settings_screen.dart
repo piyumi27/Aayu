@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/user_account.dart';
-import '../services/local_auth_service.dart';
+import '../services/local_auth_service.dart' as auth;
 import '../utils/responsive_utils.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -20,7 +20,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   UserAccount? _currentUser;
   VerificationStatus _verificationStatus = VerificationStatus.notLoggedIn;
   
-  final LocalAuthService _authService = LocalAuthService();
+  final auth.LocalAuthService _authService = auth.LocalAuthService();
   
   @override
   void initState() {
@@ -266,7 +266,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 trailing: Switch(
                   value: _notificationsEnabled,
                   onChanged: _saveNotificationPreference,
-                  activeColor: const Color(0xFF10B981),
+                  activeThumbColor: const Color(0xFF10B981),
                 ),
               ),
               _buildDivider(),
@@ -362,8 +362,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Widget _buildVerificationBadge() {
-    Color badgeColor;
-    String badgeText;
+    Color badgeColor = const Color(0xFF9CA3AF);
+    String badgeText = 'Unknown';
     
     switch (_verificationStatus) {
       case VerificationStatus.verified:
@@ -508,8 +508,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Widget _buildSyncBadge(Map<String, String> texts) {
-    Color badgeColor;
-    String badgeText;
+    Color badgeColor = const Color(0xFF10B981);
+    String badgeText = texts['upToDate']!;
     
     switch (_syncStatus) {
       case 'up-to-date':

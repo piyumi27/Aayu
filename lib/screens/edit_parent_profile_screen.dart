@@ -24,8 +24,8 @@ class _EditParentProfileScreenState extends State<EditParentProfileScreen> {
   bool _isLoading = false;
   
   // Mock data - replace with actual user data
-  bool _emailVerified = true;
-  bool _phoneVerified = true;
+  final bool _emailVerified = true;
+  final bool _phoneVerified = true;
   
   @override
   void initState() {

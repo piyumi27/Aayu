@@ -15,7 +15,7 @@ class LocalAuthService {
   static const String _keyPendingSync = 'pending_sync';
   static const String _keyVerificationStatus = 'verification_status';
   
-  final Uuid _uuid = const Uuid();
+  final Uuid _uuid = Uuid();
 
   /// Register a new user locally
   Future<AuthResult> registerUser({
@@ -324,51 +324,3 @@ class AuthResult {
   });
 }
 
-/// Verification status enum
-enum VerificationStatus {
-  notLoggedIn,
-  pendingSync,
-  unverified,
-  verified,
-}
-
-extension VerificationStatusExtension on VerificationStatus {
-  String get displayText {
-    switch (this) {
-      case VerificationStatus.notLoggedIn:
-        return 'Not Logged In';
-      case VerificationStatus.pendingSync:
-        return 'Pending Sync';
-      case VerificationStatus.unverified:
-        return 'Unverified';
-      case VerificationStatus.verified:
-        return 'Verified';
-    }
-  }
-
-  String get displayTextSinhala {
-    switch (this) {
-      case VerificationStatus.notLoggedIn:
-        return 'ඇතුල් වී නැත';
-      case VerificationStatus.pendingSync:
-        return 'සමමුහුර්ත කිරීම බලාපොරොත්තුවෙන්';
-      case VerificationStatus.unverified:
-        return 'සත්‍යාපනය වී නැත';
-      case VerificationStatus.verified:
-        return 'සත්‍යාපිතයි';
-    }
-  }
-
-  String get displayTextTamil {
-    switch (this) {
-      case VerificationStatus.notLoggedIn:
-        return 'உள்நுழையவில்லை';
-      case VerificationStatus.pendingSync:
-        return 'ஒத்திசைவு நிலுவையில்';
-      case VerificationStatus.unverified:
-        return 'சரிபார்க்கப்படவில்லை';
-      case VerificationStatus.verified:
-        return 'சரிபார்க்கப்பட்டது';
-    }
-  }
-}

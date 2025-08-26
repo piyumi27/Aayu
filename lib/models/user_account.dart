@@ -1,3 +1,26 @@
+/// Authentication methods supported by the app
+enum AuthMethod {
+  email,
+  phone;
+  
+  String getDisplayText(String language) {
+    switch (this) {
+      case AuthMethod.email:
+        switch (language) {
+          case 'si': return 'ඊමේල්';
+          case 'ta': return 'மின்னஞ்சல்';
+          default: return 'Email';
+        }
+      case AuthMethod.phone:
+        switch (language) {
+          case 'si': return 'දුරකථන';
+          case 'ta': return 'தொலைபேசி';
+          default: return 'Phone';
+        }
+    }
+  }
+}
+
 class UserAccount {
   final String id;
   final String fullName;
@@ -11,6 +34,13 @@ class UserAccount {
   final DateTime? lastLoginAt;
   final DateTime? verifiedAt;
   final DateTime? syncedAt;
+  
+  // Enhanced verification tracking
+  final AuthMethod authMethod;
+  final bool isEmailVerified;
+  final bool isPhoneVerified;
+  final String? verificationId; // For phone OTP
+  final DateTime? lastOtpSentAt;
 
   UserAccount({
     required this.id,
@@ -25,6 +55,11 @@ class UserAccount {
     this.lastLoginAt,
     this.verifiedAt,
     this.syncedAt,
+    this.authMethod = AuthMethod.email,
+    this.isEmailVerified = false,
+    this.isPhoneVerified = false,
+    this.verificationId,
+    this.lastOtpSentAt,
   });
 
   UserAccount copyWith({
@@ -40,6 +75,11 @@ class UserAccount {
     DateTime? lastLoginAt,
     DateTime? verifiedAt,
     DateTime? syncedAt,
+    AuthMethod? authMethod,
+    bool? isEmailVerified,
+    bool? isPhoneVerified,
+    String? verificationId,
+    DateTime? lastOtpSentAt,
   }) {
     return UserAccount(
       id: id ?? this.id,
@@ -54,6 +94,11 @@ class UserAccount {
       lastLoginAt: lastLoginAt ?? this.lastLoginAt,
       verifiedAt: verifiedAt ?? this.verifiedAt,
       syncedAt: syncedAt ?? this.syncedAt,
+      authMethod: authMethod ?? this.authMethod,
+      isEmailVerified: isEmailVerified ?? this.isEmailVerified,
+      isPhoneVerified: isPhoneVerified ?? this.isPhoneVerified,
+      verificationId: verificationId ?? this.verificationId,
+      lastOtpSentAt: lastOtpSentAt ?? this.lastOtpSentAt,
     );
   }
 
@@ -71,6 +116,11 @@ class UserAccount {
       'lastLoginAt': lastLoginAt?.toIso8601String(),
       'verifiedAt': verifiedAt?.toIso8601String(),
       'syncedAt': syncedAt?.toIso8601String(),
+      'authMethod': authMethod.name,
+      'isEmailVerified': isEmailVerified,
+      'isPhoneVerified': isPhoneVerified,
+      'verificationId': verificationId,
+      'lastOtpSentAt': lastOtpSentAt?.toIso8601String(),
     };
   }
 
@@ -93,6 +143,16 @@ class UserAccount {
           : null,
       syncedAt: json['syncedAt'] != null 
           ? DateTime.parse(json['syncedAt']) 
+          : null,
+      authMethod: AuthMethod.values.firstWhere(
+        (method) => method.name == json['authMethod'],
+        orElse: () => AuthMethod.email,
+      ),
+      isEmailVerified: json['isEmailVerified'] ?? false,
+      isPhoneVerified: json['isPhoneVerified'] ?? false,
+      verificationId: json['verificationId'],
+      lastOtpSentAt: json['lastOtpSentAt'] != null 
+          ? DateTime.parse(json['lastOtpSentAt']) 
           : null,
     );
   }
@@ -122,6 +182,55 @@ class UserAccount {
            passwordHash.isNotEmpty;
   }
 
+  /// Check if sync gate is open (verified through any method)
+  bool get isSyncGateOpen {
+    return isEmailVerified || isPhoneVerified;
+  }
+
+  /// Check if verification is pending
+  bool get isVerificationPending {
+    return !isSyncGateOpen && (email != null || phoneNumber.isNotEmpty);
+  }
+
+  /// Get primary verification method for display
+  AuthMethod get primaryVerificationMethod {
+    return authMethod;
+  }
+
+  /// Check if OTP can be resent (30 second cooldown)
+  bool get canResendOtp {
+    if (lastOtpSentAt == null) return true;
+    final timeSinceLastOtp = DateTime.now().difference(lastOtpSentAt!);
+    return timeSinceLastOtp.inSeconds >= 30;
+  }
+
+  /// Get seconds remaining for OTP resend
+  int get otpResendCountdown {
+    if (lastOtpSentAt == null) return 0;
+    final timeSinceLastOtp = DateTime.now().difference(lastOtpSentAt!);
+    final remainingSeconds = 30 - timeSinceLastOtp.inSeconds;
+    return remainingSeconds > 0 ? remainingSeconds : 0;
+  }
+
+  /// Get verification status for UI display
+  VerificationStatus get verificationStatus {
+    if (isSyncGateOpen) return VerificationStatus.verified;
+    if (isVerificationPending) return VerificationStatus.pendingSync;
+    return VerificationStatus.unverified;
+  }
+
+  /// Get localized verification prompt message
+  String getVerificationPrompt(String language) {
+    switch (language) {
+      case 'si':
+        return 'ක්ලවුඩ් විශේෂාංග අගුළු ඇරීමට ඔබේ ගිණුම සත්‍යාපනය කරන්න';
+      case 'ta':
+        return 'கிளவுட் அம்சங்களைத் திறக்க உங்கள் கணக்கைச் சரிபார்க்கவும்';
+      default:
+        return 'Please verify your account to unlock cloud features';
+    }
+  }
+
   @override
   String toString() {
     return 'UserAccount{id: $id, fullName: $fullName, phoneNumber: $phoneNumber, isVerified: $isVerified}';
@@ -137,4 +246,53 @@ class UserAccount {
 
   @override
   int get hashCode => id.hashCode ^ phoneNumber.hashCode;
+}
+
+/// Verification status enum
+enum VerificationStatus {
+  notLoggedIn,
+  pendingSync,
+  unverified,
+  verified,
+}
+
+extension VerificationStatusExtension on VerificationStatus {
+  String get displayText {
+    switch (this) {
+      case VerificationStatus.notLoggedIn:
+        return 'Not Logged In';
+      case VerificationStatus.pendingSync:
+        return 'Pending Sync';
+      case VerificationStatus.unverified:
+        return 'Unverified';
+      case VerificationStatus.verified:
+        return 'Verified';
+    }
+  }
+
+  String get displayTextSinhala {
+    switch (this) {
+      case VerificationStatus.notLoggedIn:
+        return 'ඇතුල් වී නැත';
+      case VerificationStatus.pendingSync:
+        return 'සමමුහුර්ත කිරීම බලාපොරොත්තුවෙන්';
+      case VerificationStatus.unverified:
+        return 'සත්‍යාපනය වී නැත';
+      case VerificationStatus.verified:
+        return 'සත්‍යාපිතයි';
+    }
+  }
+
+  String get displayTextTamil {
+    switch (this) {
+      case VerificationStatus.notLoggedIn:
+        return 'உள்நுழையவில்லை';
+      case VerificationStatus.pendingSync:
+        return 'ஒத்திசைவு நிலுவையில்';
+      case VerificationStatus.unverified:
+        return 'சரிபார்க்கப்படவில்லை';
+      case VerificationStatus.verified:
+        return 'சரிபார்க்கப்பட்டது';
+    }
+  }
 }
