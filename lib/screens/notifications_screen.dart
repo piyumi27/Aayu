@@ -21,13 +21,11 @@ class _NotificationsScreenState extends State<NotificationsScreen>
     with TickerProviderStateMixin {
   String _selectedLanguage = 'en';
   NotificationCategory _selectedCategory = NotificationCategory.all;
-  List<AppNotification> _notifications = [];
   List<AppNotification> _filteredNotifications = [];
   final NotificationService _notificationService = NotificationService();
   late TabController _tabController;
   final Map<String, bool> _expandedNotifications = {};
   final Set<String> _selectedForDeletion = {};
-  bool _isSelectionMode = false;
 
   @override
   void initState() {
@@ -83,7 +81,6 @@ class _NotificationsScreenState extends State<NotificationsScreen>
   void _onNotificationUpdate(List<AppNotification> notifications) {
     if (mounted) {
       setState(() {
-        _notifications = notifications;
         _filterNotifications();
       });
     }
@@ -618,7 +615,6 @@ class _NotificationsScreenState extends State<NotificationsScreen>
       case NotificationCategory.systemUpdates:
         return Icons.cloud_done;
       case NotificationCategory.all:
-      default:
         return Icons.notifications_none;
     }
   }
@@ -706,7 +702,6 @@ class _NotificationsScreenState extends State<NotificationsScreen>
       } else {
         _selectedForDeletion.add(notification.id);
       }
-      _isSelectionMode = _selectedForDeletion.isNotEmpty;
     });
   }
 

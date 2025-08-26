@@ -396,9 +396,8 @@ class NotificationService {
 
   /// Calculate BMI
   double _calculateBMI(GrowthRecord record) {
-    if (record.height == null || record.weight == null) return 0;
-    final heightInM = record.height! / 100;
-    return record.weight! / (heightInM * heightInM);
+    final heightInM = record.height / 100;
+    return record.weight / (heightInM * heightInM);
   }
 
   /// Check for growth stagnation
@@ -413,16 +412,12 @@ class NotificationService {
       final current = recent[i];
       final previous = recent[i + 1];
 
-      if (current.weight != null && previous.weight != null) {
-        if (current.weight! - previous.weight! > 0.2) { // 200g gain
-          weightStagnant = false;
-        }
+      if (current.weight - previous.weight > 0.2) { // 200g gain
+        weightStagnant = false;
       }
 
-      if (current.height != null && previous.height != null) {
-        if (current.height! - previous.height! > 1.0) { // 1cm gain
-          heightStagnant = false;
-        }
+      if (current.height - previous.height > 1.0) { // 1cm gain
+        heightStagnant = false;
       }
     }
 

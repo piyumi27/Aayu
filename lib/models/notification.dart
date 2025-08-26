@@ -301,7 +301,6 @@ class NotificationEmptyState {
           messageKey: 'systemEmptyMessage',
         );
       case NotificationCategory.all:
-      default:
         return NotificationEmptyState(
           illustrationAsset: 'assets/images/notifications_empty.png',
           titleKey: 'allNotificationsEmptyTitle',

@@ -78,4 +78,42 @@ class Child {
       updatedAt: updatedAt ?? this.updatedAt,
     );
   }
+
+  /// Calculate age in months from birth date
+  int get ageInMonths {
+    final now = DateTime.now();
+    final years = now.year - birthDate.year;
+    final months = now.month - birthDate.month;
+    final days = now.day - birthDate.day;
+    
+    int totalMonths = years * 12 + months;
+    
+    // If the day of birth hasn't occurred this month, subtract 1
+    if (days < 0) {
+      totalMonths--;
+    }
+    
+    return totalMonths >= 0 ? totalMonths : 0;
+  }
+  
+  /// Calculate age in years
+  int get ageInYears {
+    return (ageInMonths / 12).floor();
+  }
+  
+  /// Get formatted age string
+  String get formattedAge {
+    final months = ageInMonths;
+    if (months < 12) {
+      return '$months months';
+    } else {
+      final years = ageInYears;
+      final remainingMonths = months - (years * 12);
+      if (remainingMonths == 0) {
+        return '$years ${years == 1 ? 'year' : 'years'}';
+      } else {
+        return '$years ${years == 1 ? 'year' : 'years'} $remainingMonths months';
+      }
+    }
+  }
 }
