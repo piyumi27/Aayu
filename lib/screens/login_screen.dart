@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../services/firebase_auth_service.dart';
+
+import '../services/local_auth_service.dart';
+import '../utils/responsive_utils.dart';
+import '../widgets/sri_lanka_phone_field.dart';
+import '../widgets/password_strength_field.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -12,11 +16,13 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _phoneController = TextEditingController();
-  final _passwordController = TextEditingController();
-  bool _isPasswordVisible = false;
+  String _phoneNumber = '';
+  String _password = '';
   bool _isLoading = false;
   String _selectedLanguage = 'en';
+  String? _errorMessage;
+  
+  final LocalAuthService _authService = LocalAuthService();
 
   @override
   void initState() {
@@ -27,91 +33,50 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _loadLanguage() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      _selectedLanguage = prefs.getString('selected_language') ?? 'en';
+      _selectedLanguage = prefs.getString('language') ?? 'en';
     });
-  }
-
-  @override
-  void dispose() {
-    _phoneController.dispose();
-    _passwordController.dispose();
-    super.dispose();
   }
 
   Future<void> _login() async {
     if (!_formKey.currentState!.validate()) return;
-
+    
     setState(() {
       _isLoading = true;
+      _errorMessage = null;
     });
 
     try {
-      await FirebaseAuthService.sendOTP(
-        phoneNumber: _phoneController.text,
-        onCodeSent: (verificationId) {
-          if (mounted) {
-            setState(() {
-              _isLoading = false;
-            });
-            context.push('/otp-verification', extra: {
-              'phoneNumber': _phoneController.text,
-              'verificationId': verificationId,
-              'isLogin': true,
-            },);
-          }
-        },
-        onError: (error) {
-          if (mounted) {
-            setState(() {
-              _isLoading = false;
-            });
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(error),
-                backgroundColor: Colors.red,
-              ),
-            );
-          }
-        },
-        onAutoVerification: (credential) async {
-          // Handle auto-verification if possible
-          try {
-            final userCredential = await FirebaseAuthService.verifyOTP(
-              otp: credential.smsCode ?? '',
-            );
-
-            if (userCredential != null) {
-              final prefs = await SharedPreferences.getInstance();
-              await prefs.setBool('user_logged_in', true);
-              await prefs.setString('user_phone', _phoneController.text);
-
-              if (mounted) {
-                context.go('/');
-              }
-            }
-          } catch (e) {
-            // If auto-verification fails, proceed with manual OTP entry
-            if (mounted) {
-              context.push('/otp-verification', extra: {
-                'phoneNumber': _phoneController.text,
-                'verificationId': credential.verificationId,
-                'isLogin': true,
-              },);
-            }
-          }
-        },
+      final result = await _authService.loginUser(
+        phoneNumber: _phoneNumber,
+        password: _password,
       );
+      
+      if (result.success && mounted) {
+        // Login successful - navigate to verification center if not verified
+        final user = result.user!;
+        if (user.isSyncGateOpen) {
+          // User is verified, go to main app
+          context.go('/');
+        } else {
+          // User needs verification, go to verification center
+          context.go('/verification-center');
+        }
+      } else if (mounted) {
+        setState(() {
+          _errorMessage = result.message;
+        });
+      }
     } catch (e) {
+      if (mounted) {
+        setState(() {
+          _errorMessage = 'Login failed: ${e.toString()}';
+        });
+      }
+    } finally {
       if (mounted) {
         setState(() {
           _isLoading = false;
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to send OTP: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
       }
     }
   }
@@ -120,291 +85,212 @@ class _LoginScreenState extends State<LoginScreen> {
     final Map<String, Map<String, String>> texts = {
       'en': {
         'title': 'Welcome Back',
-        'subtitle': 'Sign in to continue',
+        'subtitle': 'Sign in to continue tracking your child\'s growth',
         'phoneLabel': 'Phone Number',
-        'phoneHint': 'Enter your phone number',
         'passwordLabel': 'Password',
-        'passwordHint': 'Enter your password',
-        'loginButton': 'Login',
+        'loginButton': 'Sign In',
+        'noAccount': 'Don\'t have an account?',
+        'signUp': 'Create Account',
         'forgotPassword': 'Forgot Password?',
-        'createAccount': 'Create New Account',
-        'privacyNote': 'By logging in, you agree to our Terms & Privacy Policy',
-        'phoneRequired': 'Phone number is required',
-        'phoneInvalid': 'Enter a valid phone number',
-        'passwordRequired': 'Password is required',
-        'passwordShort': 'Password must be at least 6 characters',
+        'loading': 'Signing in...',
       },
       'si': {
-        'title': 'නැවත පිළිගනිමු',
-        'subtitle': 'දිගටම කරගෙන යාමට පුරනය වන්න',
+        'title': 'නැවත සාදරයෙන් පිළිගන්නවා',
+        'subtitle': 'ඔබේ දරුවාගේ වර්ධනය නිරීක්ෂණ කිරීම දිගටම කරගෙන යාමට ප්‍රවේශ වන්න',
         'phoneLabel': 'දුරකථන අංකය',
-        'phoneHint': 'ඔබේ දුරකථන අංකය ඇතුළු කරන්න',
         'passwordLabel': 'මුරපදය',
-        'passwordHint': 'ඔබේ මුරපදය ඇතුළු කරන්න',
-        'loginButton': 'පුරනය වන්න',
-        'forgotPassword': 'මුරපදය අමතකද?',
-        'createAccount': 'නව ගිණුමක් සාදන්න',
-        'privacyNote': 'පුරනය වීමෙන්, ඔබ අපගේ කොන්දේසි සහ රහස්‍යතා ප්‍රතිපත්තියට එකඟ වේ',
-        'phoneRequired': 'දුරකථන අංකය අවශ්‍යය',
-        'phoneInvalid': 'වලංගු දුරකථන අංකයක් ඇතුළු කරන්න',
-        'passwordRequired': 'මුරපදය අවශ්‍යය',
-        'passwordShort': 'මුරපදය අවම වශයෙන් අක්ෂර 6ක් විය යුතුය',
+        'loginButton': 'ප්‍රවේශ වන්න',
+        'noAccount': 'ගිණුමක් නැද්ද?',
+        'signUp': 'ගිණුමක් සාදන්න',
+        'forgotPassword': 'මුරපදය අමතක ද?',
+        'loading': 'ප්‍රවේශ වෙමින්...',
       },
       'ta': {
         'title': 'மீண்டும் வரவேற்கிறோம்',
-        'subtitle': 'தொடர உள்நுழையவும்',
+        'subtitle': 'உங்கள் குழந்தையின் வளர்ச்சியைத் தொடர்ந்து கண்காணிக்க உள்நுழையுங்கள்',
         'phoneLabel': 'தொலைபேசி எண்',
-        'phoneHint': 'உங்கள் தொலைபேசி எண்ணை உள்ளிடவும்',
         'passwordLabel': 'கடவுச்சொல்',
-        'passwordHint': 'உங்கள் கடவுச்சொல்லை உள்ளிடவும்',
-        'loginButton': 'உள்நுழையவும்',
-        'forgotPassword': 'கடவுச்சொல் மறந்துவிட்டதா?',
-        'createAccount': 'புதிய கணக்கை உருவாக்கவும்',
-        'privacyNote': 'உள்நுழைவதன் மூலம், எங்கள் விதிமுறைகள் மற்றும் தனியுரிமைக் கொள்கையை ஏற்கிறீர்கள்',
-        'phoneRequired': 'தொலைபேசி எண் தேவை',
-        'phoneInvalid': 'சரியான தொலைபேசி எண்ணை உள்ளிடவும்',
-        'passwordRequired': 'கடவுச்சொல் தேவை',
-        'passwordShort': 'கடவுச்சொல் குறைந்தது 6 எழுத்துகளாக இருக்க வேண்டும்',
+        'loginButton': 'உள்நுழையுங்கள்',
+        'noAccount': 'கணக்கு இல்லையா?',
+        'signUp': 'கணக்கை உருவாக்கு',
+        'forgotPassword': 'கடவுச்சொல்லை மறந்துவிட்டீர்களா?',
+        'loading': 'உள்நுழைகிறது...',
       },
     };
-
     return texts[_selectedLanguage] ?? texts['en']!;
-  }
-
-  String? _validatePhone(String? value) {
-    final texts = _getLocalizedText();
-    if (value == null || value.isEmpty) {
-      return texts['phoneRequired'];
-    }
-    if (value.length < 10) {
-      return texts['phoneInvalid'];
-    }
-    return null;
-  }
-
-  String? _validatePassword(String? value) {
-    final texts = _getLocalizedText();
-    if (value == null || value.isEmpty) {
-      return texts['passwordRequired'];
-    }
-    if (value.length < 6) {
-      return texts['passwordShort'];
-    }
-    return null;
   }
 
   @override
   Widget build(BuildContext context) {
     final texts = _getLocalizedText();
-
+    
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
+          padding: ResponsiveUtils.getResponsivePadding(context),
           child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const SizedBox(height: 40),
+                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 40)),
                 
-                // Welcome Icon
-                Container(
-                  width: 120,
-                  height: 120,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: LinearGradient(
-                      colors: [
-                        const Color(0xFF0086FF).withValues(alpha: 0.1),
-                        const Color(0xFF0086FF).withValues(alpha: 0.05),
-                      ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                  ),
-                  child: const Icon(
-                    Icons.person_outline,
-                    size: 60,
-                    color: Color(0xFF0086FF),
-                  ),
-                ),
-                const SizedBox(height: 24),
-                
-                // Header
-                Text(
-                  texts['title']!,
-                  style: TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  texts['subtitle']!,
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: const Color(0xFF6C757D),
-                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 48),
-                
-                // Phone Number Field
-                Text(
-                  texts['phoneLabel']!,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.black87,
-                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                TextFormField(
-                  controller: _phoneController,
-                  keyboardType: TextInputType.phone,
-                  validator: _validatePhone,
-                  decoration: InputDecoration(
-                    hintText: texts['phoneHint'],
-                    hintStyle: TextStyle(
-                      color: const Color(0xFF6C757D),
-                      fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-                    ),
-                    filled: true,
-                    fillColor: Colors.grey[50],
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide.none,
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(color: Colors.grey[300]!),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(color: Color(0xFF007BFF), width: 2),
-                    ),
-                    errorBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(color: Colors.red),
-                    ),
-                    prefixIcon: const Icon(Icons.phone, color: Color(0xFF6C757D)),
-                  ),
-                ),
-                const SizedBox(height: 24),
-                
-                // Password Field
-                Text(
-                  texts['passwordLabel']!,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.black87,
-                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                TextFormField(
-                  controller: _passwordController,
-                  obscureText: !_isPasswordVisible,
-                  validator: _validatePassword,
-                  decoration: InputDecoration(
-                    hintText: texts['passwordHint'],
-                    hintStyle: TextStyle(
-                      color: const Color(0xFF6C757D),
-                      fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-                    ),
-                    filled: true,
-                    fillColor: Colors.grey[50],
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide.none,
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(color: Colors.grey[300]!),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(color: Color(0xFF007BFF), width: 2),
-                    ),
-                    errorBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(color: Colors.red),
-                    ),
-                    prefixIcon: const Icon(Icons.lock, color: Color(0xFF6C757D)),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                        color: const Color(0xFF6C757D),
+                // Header with icon
+                Column(
+                  children: [
+                    Container(
+                      width: ResponsiveUtils.getResponsiveIconSize(context, 80),
+                      height: ResponsiveUtils.getResponsiveIconSize(context, 80),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: LinearGradient(
+                          colors: [
+                            const Color(0xFF0086FF),
+                            const Color(0xFF0086FF).withValues(alpha: 0.8),
+                          ],
+                        ),
                       ),
-                      onPressed: () {
-                        setState(() {
-                          _isPasswordVisible = !_isPasswordVisible;
-                        });
-                      },
+                      child: Icon(
+                        Icons.person,
+                        color: Colors.white,
+                        size: ResponsiveUtils.getResponsiveIconSize(context, 40),
+                      ),
+                    ),
+                    SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 24)),
+                    Text(
+                      texts['title']!,
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 28),
+                        fontWeight: FontWeight.bold,
+                        color: const Color(0xFF1A1A1A),
+                        fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 8)),
+                    Text(
+                      texts['subtitle']!,
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
+                        color: const Color(0xFF6B7280),
+                        fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+                
+                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 40)),
+                
+                // Error message
+                if (_errorMessage != null) ...[
+                  Container(
+                    padding: ResponsiveUtils.getResponsivePadding(context, scale: 0.75),
+                    decoration: BoxDecoration(
+                      color: Colors.red.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.error_outline,
+                          color: Colors.red,
+                          size: ResponsiveUtils.getResponsiveIconSize(context, 20),
+                        ),
+                        SizedBox(width: ResponsiveUtils.getResponsiveSpacing(context, 8)),
+                        Expanded(
+                          child: Text(
+                            _errorMessage!,
+                            style: TextStyle(
+                              color: Colors.red,
+                              fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
+                              fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ),
-                const SizedBox(height: 16),
+                  SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 16)),
+                ],
                 
-                // Forgot Password Link
+                // Phone number field
+                SriLankaPhoneField(
+                  onChanged: (phone) {
+                    setState(() {
+                      _phoneNumber = phone;
+                    });
+                  },
+                  enabled: !_isLoading,
+                ),
+                
+                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 16)),
+                
+                // Password field
+                PasswordStrengthField(
+                  onChanged: (password) {
+                    setState(() {
+                      _password = password;
+                    });
+                  },
+                  enabled: !_isLoading,
+                ),
+                
+                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 8)),
+                
+                // Forgot password link
                 Align(
                   alignment: Alignment.centerRight,
                   child: TextButton(
-                    onPressed: () {
-                      context.go('/forgot-password');
-                    },
+                    onPressed: _isLoading ? null : () => context.push('/forgot-password'),
                     child: Text(
                       texts['forgotPassword']!,
                       style: TextStyle(
-                        color: const Color(0xFF007BFF),
-                        fontWeight: FontWeight.w500,
+                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
+                        color: const Color(0xFF0086FF),
                         fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                       ),
                     ),
                   ),
                 ),
-                const SizedBox(height: 32),
                 
-                // Login Button
+                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 24)),
+                
+                // Login button
                 SizedBox(
-                  height: 48,
+                  height: ResponsiveUtils.getResponsiveSpacing(context, 48),
                   child: ElevatedButton(
                     onPressed: _isLoading ? null : _login,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: _isLoading ? const Color(0xFFE5E7EB) : const Color(0xFF007BFF),
-                      foregroundColor: _isLoading ? const Color(0xFF9CA3AF) : Colors.white,
+                      backgroundColor: _isLoading ? const Color(0xFFE5E7EB) : const Color(0xFF0086FF),
+                      foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(2),
+                        borderRadius: BorderRadius.circular(8),
                       ),
                       elevation: 0,
                     ),
                     child: _isLoading
-                        ? const Row(
+                        ? Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
+                                width: ResponsiveUtils.getResponsiveIconSize(context, 20),
+                                height: ResponsiveUtils.getResponsiveIconSize(context, 20),
+                                child: const CircularProgressIndicator(
                                   color: Color(0xFF6B7280),
                                   strokeWidth: 2,
                                 ),
                               ),
-                              SizedBox(width: 12),
+                              SizedBox(width: ResponsiveUtils.getResponsiveSpacing(context, 8)),
                               Text(
-                                'Sending OTP...',
+                                texts['loading']!,
                                 style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF6B7280),
+                                  fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
+                                  fontWeight: FontWeight.w600,
+                                  color: const Color(0xFF6B7280),
+                                  fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                                 ),
                               ),
                             ],
@@ -412,43 +298,47 @@ class _LoginScreenState extends State<LoginScreen> {
                         : Text(
                             texts['loginButton']!,
                             style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
+                              fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
+                              fontWeight: FontWeight.w600,
                               fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                             ),
                           ),
                   ),
                 ),
-                const SizedBox(height: 24),
                 
-                // Create Account Link
-                Center(
-                  child: TextButton(
-                    onPressed: () {
-                      context.go('/register');
-                    },
-                    child: Text(
-                      texts['createAccount']!,
+                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 24)),
+                
+                // Sign up link
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      texts['noAccount']!,
                       style: TextStyle(
-                        color: const Color(0xFF007BFF),
-                        fontWeight: FontWeight.w500,
+                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
+                        color: const Color(0xFF6B7280),
                         fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                       ),
                     ),
-                  ),
-                ),
-                const SizedBox(height: 40),
-                
-                // Privacy Note
-                Text(
-                  texts['privacyNote']!,
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: const Color(0xFF6C757D),
-                    height: 1.4,
-                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-                  ),
-                  textAlign: TextAlign.center,
+                    SizedBox(width: ResponsiveUtils.getResponsiveSpacing(context, 4)),
+                    TextButton(
+                      onPressed: _isLoading ? null : () => context.push('/register'),
+                      style: TextButton.styleFrom(
+                        padding: EdgeInsets.zero,
+                        minimumSize: Size.zero,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                      child: Text(
+                        texts['signUp']!,
+                        style: TextStyle(
+                          fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
+                          color: const Color(0xFF0086FF),
+                          fontWeight: FontWeight.w600,
+                          fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),

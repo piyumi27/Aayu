@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../models/user_account.dart';
 import '../providers/child_provider.dart';
+import '../services/local_auth_service.dart';
 import '../utils/responsive_utils.dart';
+import '../widgets/verification_banner.dart';
 import 'add_child_screen.dart';
 import 'add_measurement_screen.dart';
 import 'growth_charts_screen.dart';
@@ -18,11 +22,14 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   String _selectedLanguage = 'en';
+  UserAccount? _currentUser;
+  final LocalAuthService _authService = LocalAuthService();
 
   @override
   void initState() {
     super.initState();
     _loadLanguage();
+    _loadCurrentUser();
     Future.microtask(() {
       if (mounted) {
         context.read<ChildProvider>().loadChildren();
@@ -34,8 +41,21 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _loadLanguage() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      _selectedLanguage = prefs.getString('selected_language') ?? 'en';
+      _selectedLanguage = prefs.getString('language') ?? 'en';
     });
+  }
+  
+  Future<void> _loadCurrentUser() async {
+    try {
+      final user = await _authService.getCurrentUser();
+      if (mounted) {
+        setState(() {
+          _currentUser = user;
+        });
+      }
+    } catch (e) {
+      // Handle error silently
+    }
   }
 
   Map<String, String> _getLocalizedText() {
@@ -138,6 +158,14 @@ class _HomeScreenState extends State<HomeScreen> {
                       
                       // Child Selector (always show to include Add Child button)
                       _buildCleanChildSelector(provider, texts),
+                      
+                      // Verification Banner
+                      if (_currentUser != null && !_currentUser!.isSyncGateOpen)
+                        VerificationBanner(
+                          user: _currentUser,
+                          onVerifyNow: () => context.go('/verification-center'),
+                          isDismissible: false, // Don't allow dismissing from home screen
+                        ),
                       
                       // Main Content Area
                       Expanded(

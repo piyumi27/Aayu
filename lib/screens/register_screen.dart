@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../services/firebase_auth_service.dart';
+
+import '../services/local_auth_service.dart';
+import '../utils/responsive_utils.dart';
+import '../widgets/sri_lanka_phone_field.dart';
+import '../widgets/password_strength_field.dart';
+import '../widgets/gmail_field.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -12,167 +17,79 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _fullNameController = TextEditingController();
-  final _phoneController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
-  
-  bool _isPasswordVisible = false;
-  bool _isConfirmPasswordVisible = false;
-  bool _rememberMe = false;
+  String _fullName = '';
+  String _phoneNumber = '';
+  String _email = '';
+  String _password = '';
+  String _confirmPassword = '';
   bool _isLoading = false;
   String _selectedLanguage = 'en';
+  String? _errorMessage;
   
-  // Password strength variables
-  double _passwordStrength = 0.0;
-  String _passwordStrengthText = '';
-  Color _passwordStrengthColor = Colors.grey;
+  final LocalAuthService _authService = LocalAuthService();
 
   @override
   void initState() {
     super.initState();
     _loadLanguage();
-    _passwordController.addListener(_checkPasswordStrength);
   }
 
   Future<void> _loadLanguage() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      _selectedLanguage = prefs.getString('selected_language') ?? 'en';
-    });
-  }
-
-  @override
-  void dispose() {
-    _fullNameController.dispose();
-    _phoneController.dispose();
-    _passwordController.dispose();
-    _confirmPasswordController.dispose();
-    super.dispose();
-  }
-
-  void _checkPasswordStrength() {
-    final password = _passwordController.text;
-    final texts = _getLocalizedText();
-    
-    if (password.isEmpty) {
-      setState(() {
-        _passwordStrength = 0.0;
-        _passwordStrengthText = '';
-        _passwordStrengthColor = Colors.grey;
-      });
-      return;
-    }
-
-    double strength = 0.0;
-    String strengthText = texts['weak']!;
-    Color strengthColor = Colors.red;
-
-    // Check password criteria
-    if (password.length >= 8) strength += 0.25;
-    if (password.contains(RegExp(r'[A-Z]'))) strength += 0.25;
-    if (password.contains(RegExp(r'[0-9]'))) strength += 0.25;
-    if (password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'))) strength += 0.25;
-
-    if (strength >= 0.75) {
-      strengthText = texts['strong']!;
-      strengthColor = const Color(0xFF28A745);
-    } else if (strength >= 0.5) {
-      strengthText = texts['medium']!;
-      strengthColor = Colors.orange;
-    }
-
-    setState(() {
-      _passwordStrength = strength;
-      _passwordStrengthText = strengthText;
-      _passwordStrengthColor = strengthColor;
+      _selectedLanguage = prefs.getString('language') ?? 'en';
     });
   }
 
   Future<void> _register() async {
     if (!_formKey.currentState!.validate()) return;
-
+    
+    if (_password != _confirmPassword) {
+      setState(() {
+        _errorMessage = 'Passwords do not match';
+      });
+      return;
+    }
+    
     setState(() {
       _isLoading = true;
+      _errorMessage = null;
     });
 
     try {
-      await FirebaseAuthService.sendOTP(
-        phoneNumber: _phoneController.text,
-        onCodeSent: (verificationId) {
-          if (mounted) {
-            setState(() {
-              _isLoading = false;
-            });
-            context.push('/otp-verification', extra: {
-              'phoneNumber': _phoneController.text,
-              'verificationId': verificationId,
-              'fullName': _fullNameController.text,
-              'isLogin': false,
-            },);
-          }
-        },
-        onError: (error) {
-          if (mounted) {
-            setState(() {
-              _isLoading = false;
-            });
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(error),
-                backgroundColor: Colors.red,
-              ),
-            );
-          }
-        },
-        onAutoVerification: (credential) async {
-          // Handle auto-verification if possible
-          try {
-            final userCredential = await FirebaseAuthService.verifyOTP(
-              otp: credential.smsCode ?? '',
-            );
-
-            if (userCredential != null && userCredential.user != null) {
-              // Save user profile
-              await FirebaseAuthService.saveUserProfile(
-                uid: userCredential.user!.uid,
-                phoneNumber: _phoneController.text,
-                fullName: _fullNameController.text,
-              );
-
-              final prefs = await SharedPreferences.getInstance();
-              await prefs.setBool('user_logged_in', true);
-              await prefs.setString('user_phone', _phoneController.text);
-              await prefs.setString('user_name', _fullNameController.text);
-
-              if (mounted) {
-                context.go('/');
-              }
-            }
-          } catch (e) {
-            // If auto-verification fails, proceed with manual OTP entry
-            if (mounted) {
-              context.push('/otp-verification', extra: {
-                'phoneNumber': _phoneController.text,
-                'verificationId': credential.verificationId,
-                'fullName': _fullNameController.text,
-                'isLogin': false,
-              },);
-            }
-          }
-        },
+      final result = await _authService.registerUser(
+        fullName: _fullName,
+        phoneNumber: _phoneNumber,
+        password: _password,
       );
+      
+      if (result.success && mounted) {
+        // Registration successful - navigate to verification center
+        context.go('/verification-center');
+        
+        // Show success message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(result.message),
+            backgroundColor: Colors.green,
+          ),
+        );
+      } else if (mounted) {
+        setState(() {
+          _errorMessage = result.message;
+        });
+      }
     } catch (e) {
+      if (mounted) {
+        setState(() {
+          _errorMessage = 'Registration failed: ${e.toString()}';
+        });
+      }
+    } finally {
       if (mounted) {
         setState(() {
           _isLoading = false;
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to send OTP: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
       }
     }
   }
@@ -181,467 +98,270 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final Map<String, Map<String, String>> texts = {
       'en': {
         'title': 'Create Account',
-        'subtitle': 'Sign up to get started',
+        'subtitle': 'Join Aayu to track your child\'s nutrition and growth',
         'fullNameLabel': 'Full Name',
         'fullNameHint': 'Enter your full name',
+        'emailLabel': 'Email (Optional)',
         'phoneLabel': 'Phone Number',
-        'phoneHint': 'Enter your phone number',
         'passwordLabel': 'Password',
-        'passwordHint': 'Enter your password',
         'confirmPasswordLabel': 'Confirm Password',
-        'confirmPasswordHint': 'Confirm your password',
-        'rememberMe': 'Remember me',
-        'registerButton': 'Register',
-        'alreadyHaveAccount': 'Already have an account? Login',
-        'privacyNote': 'By registering you agree to our Terms & Privacy Policy',
-        'fullNameRequired': 'Full name is required',
-        'phoneRequired': 'Phone number is required',
-        'phoneInvalid': 'Enter a valid phone number',
-        'passwordRequired': 'Password is required',
-        'passwordShort': 'Password must be at least 6 characters',
-        'passwordMismatch': 'Passwords do not match',
-        'weak': 'Weak',
-        'medium': 'Medium',
-        'strong': 'Strong',
+        'registerButton': 'Create Account',
+        'haveAccount': 'Already have an account?',
+        'signIn': 'Sign In',
+        'loading': 'Creating account...',
+        'privacyText': 'By creating an account, you agree to our Terms of Service and Privacy Policy',
       },
       'si': {
         'title': 'ගිණුමක් සාදන්න',
-        'subtitle': 'ආරම්භ කිරීමට ලියාපදිංචි වන්න',
+        'subtitle': 'ඔබේ දරුවාගේ පෝෂණය සහ වර්ධනය නිරීක්ෂණ කිරීමට ආයු වෙත සම්බන්ධ වන්න',
         'fullNameLabel': 'සම්පූර්ණ නම',
-        'fullNameHint': 'ඔබේ සම්පූර්ණ නම ඇතුළු කරන්න',
+        'fullNameHint': 'ඔබේ සම්පූර්ණ නම ඇතුළත් කරන්න',
+        'emailLabel': 'විද්‍යුත් තැපෑල (විකල්පයකි)',
         'phoneLabel': 'දුරකථන අංකය',
-        'phoneHint': 'ඔබේ දුරකථන අංකය ඇතුළු කරන්න',
         'passwordLabel': 'මුරපදය',
-        'passwordHint': 'ඔබේ මුරපදය ඇතුළු කරන්න',
         'confirmPasswordLabel': 'මුරපදය තහවුරු කරන්න',
-        'confirmPasswordHint': 'ඔබේ මුරපදය තහවුරු කරන්න',
-        'rememberMe': 'මතක තබා ගන්න',
-        'registerButton': 'ලියාපදිංචි වන්න',
-        'alreadyHaveAccount': 'දැනටමත් ගිණුමක් තිබේද? පුරනය වන්න',
-        'privacyNote': 'ලියාපදිංචි වීමෙන් ඔබ අපගේ කොන්දේසි සහ රහස්‍යතා ප්‍රතිපත්තියට එකඟ වේ',
-        'fullNameRequired': 'සම්පූර්ණ නම අවශ්‍යය',
-        'phoneRequired': 'දුරකථන අංකය අවශ්‍යය',
-        'phoneInvalid': 'වලංගු දුරකථන අංකයක් ඇතුළු කරන්න',
-        'passwordRequired': 'මුරපදය අවශ්‍යය',
-        'passwordShort': 'මුරපදය අවම වශයෙන් අක්ෂර 6ක් විය යුතුය',
-        'passwordMismatch': 'මුරපද නොගැලපේ',
-        'weak': 'දුර්වල',
-        'medium': 'මධ්‍යම',
-        'strong': 'ශක්තිමත්',
+        'registerButton': 'ගිණුමක් සාදන්න',
+        'haveAccount': 'දැනටමත් ගිණුමක් තිබේද?',
+        'signIn': 'ප්‍රවේශ වන්න',
+        'loading': 'ගිණුම සාදමින්...',
+        'privacyText': 'ගිණුමක් සෑදීමෙන්, ඔබ අපගේ සේවා නියමයන්ට සහ රහස්‍යතා ප්‍රතිපත්තියට එකඟ වේ',
       },
       'ta': {
-        'title': 'கணக்கை உருவாக்கவும்',
-        'subtitle': 'தொடங்க பதிவு செய்யவும்',
+        'title': 'கணக்கை உருவாக்கு',
+        'subtitle': 'உங்கள் குழந்தையின் ஊட்டச்சத்து மற்றும் வளர்ச்சியைக் கண்காணிக்க ஆயுவில் சேரவும்',
         'fullNameLabel': 'முழு பெயர்',
-        'fullNameHint': 'உங்கள் முழு பெயரை உள்ளிடவும்',
+        'fullNameHint': 'உங்கள் முழு பெயரை உள்ளிடுங்கள்',
+        'emailLabel': 'மின்னஞ்சல் (விரும்பினால்)',
         'phoneLabel': 'தொலைபேசி எண்',
-        'phoneHint': 'உங்கள் தொலைபேசி எண்ணை உள்ளிடவும்',
         'passwordLabel': 'கடவுச்சொல்',
-        'passwordHint': 'உங்கள் கடவுச்சொல்லை உள்ளிடவும்',
         'confirmPasswordLabel': 'கடவுச்சொல்லை உறுதிப்படுத்தவும்',
-        'confirmPasswordHint': 'உங்கள் கடவுச்சொல்லை உறுதிப்படுத்தவும்',
-        'rememberMe': 'என்னை நினைவில் கொள்ளுங்கள்',
-        'registerButton': 'பதிவு செய்யவும்',
-        'alreadyHaveAccount': 'ஏற்கனவே கணக்கு உள்ளதா? உள்நுழையவும்',
-        'privacyNote': 'பதிவு செய்வதன் மூலம் எங்கள் விதிமுறைகள் மற்றும் தனியுரிமைக் கொள்கையை ஒப்புக்கொள்கிறீர்கள்',
-        'fullNameRequired': 'முழு பெயர் தேவை',
-        'phoneRequired': 'தொலைபேசி எண் தேவை',
-        'phoneInvalid': 'சரியான தொலைபேசி எண்ணை உள்ளிடவும்',
-        'passwordRequired': 'கடவுச்சொல் தேவை',
-        'passwordShort': 'கடவுச்சொல் குறைந்தது 6 எழுத்துகளாக இருக்க வேண்டும்',
-        'passwordMismatch': 'கடவுச்சொற்கள் பொருந்தவில்லை',
-        'weak': 'பலவீனமான',
-        'medium': 'நடுத்தர',
-        'strong': 'வலுவான',
+        'registerButton': 'கணக்கை உருவாக்கு',
+        'haveAccount': 'ஏற்கனவே கணக்கு உள்ளதா?',
+        'signIn': 'உள்நுழையுங்கள்',
+        'loading': 'கணக்கை உருவாக்குகிறது...',
+        'privacyText': 'கணக்கை உருவாக்குவதன் மூலம், எங்கள் சேவை நிபந்தனைகள் மற்றும் தனியுரிமைக் கொள்கையை ஒப்புக்கொள்கிறீர்கள்',
       },
     };
-
     return texts[_selectedLanguage] ?? texts['en']!;
-  }
-
-  String? _validateFullName(String? value) {
-    final texts = _getLocalizedText();
-    if (value == null || value.trim().isEmpty) {
-      return texts['fullNameRequired'];
-    }
-    return null;
-  }
-
-  String? _validatePhone(String? value) {
-    final texts = _getLocalizedText();
-    if (value == null || value.isEmpty) {
-      return texts['phoneRequired'];
-    }
-    if (value.length < 10) {
-      return texts['phoneInvalid'];
-    }
-    return null;
-  }
-
-  String? _validatePassword(String? value) {
-    final texts = _getLocalizedText();
-    if (value == null || value.isEmpty) {
-      return texts['passwordRequired'];
-    }
-    if (value.length < 6) {
-      return texts['passwordShort'];
-    }
-    return null;
-  }
-
-  String? _validateConfirmPassword(String? value) {
-    final texts = _getLocalizedText();
-    if (value != _passwordController.text) {
-      return texts['passwordMismatch'];
-    }
-    return null;
   }
 
   @override
   Widget build(BuildContext context) {
     final texts = _getLocalizedText();
-
+    
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: Stack(
-          children: [
-            SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+        child: SingleChildScrollView(
+          padding: ResponsiveUtils.getResponsivePadding(context),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Back button
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: IconButton(
+                    onPressed: _isLoading ? null : () => context.pop(),
+                    icon: const Icon(Icons.arrow_back_ios),
+                    style: IconButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      foregroundColor: const Color(0xFF1A1A1A),
+                      elevation: 2,
+                      shadowColor: Colors.black.withValues(alpha: 0.1),
+                    ),
+                  ),
+                ),
+                
+                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 20)),
+                
+                // Header with icon
+                Column(
                   children: [
-                    const SizedBox(height: 60), // Extra space for back button
-                
-                // Sign Up Icon
-                Container(
-                  width: 120,
-                  height: 120,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: LinearGradient(
-                      colors: [
-                        const Color(0xFF32CD32).withValues(alpha: 0.1),
-                        const Color(0xFF32CD32).withValues(alpha: 0.05),
-                      ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                  ),
-                  child: const Icon(
-                    Icons.person_add_outlined,
-                    size: 60,
-                    color: Color(0xFF32CD32),
-                  ),
-                ),
-                const SizedBox(height: 24),
-                
-                // Header
-                Text(
-                  texts['title']!,
-                  style: TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  texts['subtitle']!,
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: const Color(0xFF6C757D),
-                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 32),
-                
-                // Full Name Field
-                Text(
-                  texts['fullNameLabel']!,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.black87,
-                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                TextFormField(
-                  controller: _fullNameController,
-                  validator: _validateFullName,
-                  decoration: InputDecoration(
-                    hintText: texts['fullNameHint'],
-                    hintStyle: TextStyle(
-                      color: const Color(0xFF6C757D),
-                      fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-                    ),
-                    filled: true,
-                    fillColor: Colors.grey[50],
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide.none,
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(color: Colors.grey[300]!),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(color: Color(0xFF007BFF), width: 2),
-                    ),
-                    errorBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(color: Colors.red),
-                    ),
-                    prefixIcon: const Icon(Icons.person, color: Color(0xFF6C757D)),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                
-                // Phone Number Field
-                Text(
-                  texts['phoneLabel']!,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.black87,
-                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                TextFormField(
-                  controller: _phoneController,
-                  keyboardType: TextInputType.phone,
-                  validator: _validatePhone,
-                  decoration: InputDecoration(
-                    hintText: texts['phoneHint'],
-                    hintStyle: TextStyle(
-                      color: const Color(0xFF6C757D),
-                      fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-                    ),
-                    filled: true,
-                    fillColor: Colors.grey[50],
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide.none,
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(color: Colors.grey[300]!),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(color: Color(0xFF007BFF), width: 2),
-                    ),
-                    errorBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(color: Colors.red),
-                    ),
-                    prefixIcon: const Icon(Icons.phone, color: Color(0xFF6C757D)),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                
-                // Password Field
-                Text(
-                  texts['passwordLabel']!,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.black87,
-                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                TextFormField(
-                  controller: _passwordController,
-                  obscureText: !_isPasswordVisible,
-                  validator: _validatePassword,
-                  decoration: InputDecoration(
-                    hintText: texts['passwordHint'],
-                    hintStyle: TextStyle(
-                      color: const Color(0xFF6C757D),
-                      fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-                    ),
-                    filled: true,
-                    fillColor: Colors.grey[50],
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide.none,
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(color: Colors.grey[300]!),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(color: Color(0xFF007BFF), width: 2),
-                    ),
-                    errorBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(color: Colors.red),
-                    ),
-                    prefixIcon: const Icon(Icons.lock, color: Color(0xFF6C757D)),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                        color: const Color(0xFF6C757D),
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _isPasswordVisible = !_isPasswordVisible;
-                        });
-                      },
-                    ),
-                  ),
-                ),
-                
-                // Password Strength Meter
-                if (_passwordController.text.isNotEmpty) ...[
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: LinearProgressIndicator(
-                          value: _passwordStrength,
-                          backgroundColor: Colors.grey[300],
-                          valueColor: AlwaysStoppedAnimation<Color>(_passwordStrengthColor),
-                          minHeight: 4,
+                    Container(
+                      width: ResponsiveUtils.getResponsiveIconSize(context, 80),
+                      height: ResponsiveUtils.getResponsiveIconSize(context, 80),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: LinearGradient(
+                          colors: [
+                            const Color(0xFF32CD32),
+                            const Color(0xFF32CD32).withValues(alpha: 0.8),
+                          ],
                         ),
                       ),
-                      const SizedBox(width: 12),
-                      Text(
-                        _passwordStrengthText,
-                        style: TextStyle(
-                          color: _passwordStrengthColor,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                          fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-                        ),
+                      child: Icon(
+                        Icons.person_add,
+                        color: Colors.white,
+                        size: ResponsiveUtils.getResponsiveIconSize(context, 40),
                       ),
-                    ],
-                  ),
-                ],
-                const SizedBox(height: 16),
-                
-                // Confirm Password Field
-                Text(
-                  texts['confirmPasswordLabel']!,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.black87,
-                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                TextFormField(
-                  controller: _confirmPasswordController,
-                  obscureText: !_isConfirmPasswordVisible,
-                  validator: _validateConfirmPassword,
-                  decoration: InputDecoration(
-                    hintText: texts['confirmPasswordHint'],
-                    hintStyle: TextStyle(
-                      color: const Color(0xFF6C757D),
-                      fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                     ),
-                    filled: true,
-                    fillColor: Colors.grey[50],
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide.none,
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(color: Colors.grey[300]!),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(color: Color(0xFF007BFF), width: 2),
-                    ),
-                    errorBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(color: Colors.red),
-                    ),
-                    prefixIcon: const Icon(Icons.lock, color: Color(0xFF6C757D)),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _isConfirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                        color: const Color(0xFF6C757D),
+                    SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 24)),
+                    Text(
+                      texts['title']!,
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 28),
+                        fontWeight: FontWeight.bold,
+                        color: const Color(0xFF1A1A1A),
+                        fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                       ),
-                      onPressed: () {
-                        setState(() {
-                          _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
-                        });
-                      },
+                      textAlign: TextAlign.center,
                     ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                
-                // Remember Me Checkbox
-                Row(
-                  children: [
-                    Checkbox(
-                      value: _rememberMe,
-                      onChanged: (value) {
-                        setState(() {
-                          _rememberMe = value ?? false;
-                        });
-                      },
-                      activeColor: const Color(0xFF007BFF),
-                    ),
-                    Expanded(
-                      child: Text(
-                        texts['rememberMe']!,
-                        style: TextStyle(
-                          color: const Color(0xFF6C757D),
-                          fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-                        ),
+                    SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 8)),
+                    Text(
+                      texts['subtitle']!,
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
+                        color: const Color(0xFF6B7280),
+                        fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                       ),
+                      textAlign: TextAlign.center,
                     ),
                   ],
                 ),
-                const SizedBox(height: 24),
                 
-                // Register Button
+                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 32)),
+                
+                // Error message
+                if (_errorMessage != null) ...[
+                  Container(
+                    padding: ResponsiveUtils.getResponsivePadding(context, scale: 0.75),
+                    decoration: BoxDecoration(
+                      color: Colors.red.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.error_outline,
+                          color: Colors.red,
+                          size: ResponsiveUtils.getResponsiveIconSize(context, 20),
+                        ),
+                        SizedBox(width: ResponsiveUtils.getResponsiveSpacing(context, 8)),
+                        Expanded(
+                          child: Text(
+                            _errorMessage!,
+                            style: TextStyle(
+                              color: Colors.red,
+                              fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
+                              fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 16)),
+                ],
+                
+                // Full name field
+                TextFormField(
+                  onChanged: (value) => setState(() => _fullName = value.trim()),
+                  enabled: !_isLoading,
+                  style: TextStyle(
+                    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
+                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                  ),
+                  decoration: InputDecoration(
+                    labelText: texts['fullNameLabel']!,
+                    hintText: texts['fullNameHint']!,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: BorderSide(
+                        color: Theme.of(context).dividerColor,
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: BorderSide(
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    ),
+                    contentPadding: ResponsiveUtils.getResponsivePadding(context),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Please enter your full name';
+                    }
+                    return null;
+                  },
+                ),
+                
+                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 16)),
+                
+                // Email field (optional)
+                GmailField(
+                  onChanged: (email) => setState(() => _email = email),
+                  enabled: !_isLoading,
+                  helperText: 'Optional - for account recovery',
+                ),
+                
+                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 16)),
+                
+                // Phone number field
+                SriLankaPhoneField(
+                  onChanged: (phone) => setState(() => _phoneNumber = phone),
+                  enabled: !_isLoading,
+                ),
+                
+                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 16)),
+                
+                // Password field
+                PasswordStrengthField(
+                  onChanged: (password) => setState(() => _password = password),
+                  enabled: !_isLoading,
+                ),
+                
+                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 16)),
+                
+                // Confirm password field
+                PasswordStrengthField(
+                  isConfirmField: true,
+                  passwordToMatch: _password,
+                  onChanged: (password) => setState(() => _confirmPassword = password),
+                  enabled: !_isLoading,
+                ),
+                
+                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 24)),
+                
+                // Register button
                 SizedBox(
-                  height: 48,
+                  height: ResponsiveUtils.getResponsiveSpacing(context, 48),
                   child: ElevatedButton(
                     onPressed: _isLoading ? null : _register,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: _isLoading ? const Color(0xFFE5E7EB) : const Color(0xFF007BFF),
-                      foregroundColor: _isLoading ? const Color(0xFF9CA3AF) : Colors.white,
+                      backgroundColor: _isLoading ? const Color(0xFFE5E7EB) : const Color(0xFF32CD32),
+                      foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(2),
+                        borderRadius: BorderRadius.circular(8),
                       ),
                       elevation: 0,
                     ),
                     child: _isLoading
-                        ? const Row(
+                        ? Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
+                                width: ResponsiveUtils.getResponsiveIconSize(context, 20),
+                                height: ResponsiveUtils.getResponsiveIconSize(context, 20),
+                                child: const CircularProgressIndicator(
                                   color: Color(0xFF6B7280),
                                   strokeWidth: 2,
                                 ),
                               ),
-                              SizedBox(width: 12),
+                              SizedBox(width: ResponsiveUtils.getResponsiveSpacing(context, 8)),
                               Text(
-                                'Creating Account...',
+                                texts['loading']!,
                                 style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF6B7280),
+                                  fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
+                                  fontWeight: FontWeight.w600,
+                                  color: const Color(0xFF6B7280),
+                                  fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                                 ),
                               ),
                             ],
@@ -649,75 +369,64 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         : Text(
                             texts['registerButton']!,
                             style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
+                              fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
+                              fontWeight: FontWeight.w600,
                               fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                             ),
                           ),
                   ),
                 ),
-                const SizedBox(height: 16),
                 
-                // Privacy Note
+                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 16)),
+                
+                // Privacy policy text
                 Text(
-                  texts['privacyNote']!,
+                  texts['privacyText']!,
                   style: TextStyle(
-                    fontSize: 11,
-                    color: const Color(0xFF6C757D),
-                    height: 1.4,
+                    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 12),
+                    color: const Color(0xFF9CA3AF),
                     fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                   ),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 24),
                 
-                // Already Have Account Link
-                Center(
-                  child: TextButton(
-                    onPressed: () {
-                      context.go('/login');
-                    },
-                    child: Text(
-                      texts['alreadyHaveAccount']!,
+                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 24)),
+                
+                // Sign in link
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      texts['haveAccount']!,
                       style: TextStyle(
-                        color: const Color(0xFF007BFF),
-                        fontWeight: FontWeight.w500,
+                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
+                        color: const Color(0xFF6B7280),
                         fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                       ),
                     ),
-                  ),
-                ),
-                  ],
-                ),
-              ),
-            ),
-            
-            // Floating back button
-            Positioned(
-              top: 16,
-              left: 16,
-              child: Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.1),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
+                    SizedBox(width: ResponsiveUtils.getResponsiveSpacing(context, 4)),
+                    TextButton(
+                      onPressed: _isLoading ? null : () => context.pop(),
+                      style: TextButton.styleFrom(
+                        padding: EdgeInsets.zero,
+                        minimumSize: Size.zero,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                      child: Text(
+                        texts['signIn']!,
+                        style: TextStyle(
+                          fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
+                          color: const Color(0xFF0086FF),
+                          fontWeight: FontWeight.w600,
+                          fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                        ),
+                      ),
                     ),
                   ],
                 ),
-                child: IconButton(
-                  icon: const Icon(Icons.arrow_back, color: Colors.black87),
-                  onPressed: () => context.go('/login'),
-                  padding: EdgeInsets.zero,
-                ),
-              ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

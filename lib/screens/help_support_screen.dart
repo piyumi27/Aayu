@@ -341,32 +341,74 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                   const SizedBox(height: 20),
                   
                   // Contact Methods Row
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      _buildContactMethod(
-                        icon: Icons.phone,
-                        label: content['phoneLabel'],
-                        value: content['phoneNumber'],
-                        color: const Color(0xFF007BFF),
-                        onTap: () => _launchPhone(content['phoneNumber']),
+                  ResponsiveUtils.isSmallWidth(context)
+                    ? Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Expanded(
+                                child: _buildContactMethod(
+                                  icon: Icons.phone,
+                                  label: content['phoneLabel'],
+                                  value: content['phoneNumber'],
+                                  color: const Color(0xFF007BFF),
+                                  onTap: () => _launchPhone(content['phoneNumber']),
+                                ),
+                              ),
+                              Expanded(
+                                child: _buildContactMethod(
+                                  icon: Icons.email,
+                                  label: content['emailLabel'],
+                                  value: content['emailAddress'],
+                                  color: const Color(0xFF007BFF),
+                                  onTap: () => _launchEmail(content['emailAddress']),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          _buildContactMethod(
+                            icon: Icons.message,
+                            label: content['whatsappLabel'],
+                            value: content['whatsappNumber'],
+                            color: const Color(0xFF28A745),
+                            onTap: () => _launchWhatsApp(content['whatsappNumber']),
+                          ),
+                        ],
+                      )
+                    : Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Expanded(
+                            child: _buildContactMethod(
+                              icon: Icons.phone,
+                              label: content['phoneLabel'],
+                              value: content['phoneNumber'],
+                              color: const Color(0xFF007BFF),
+                              onTap: () => _launchPhone(content['phoneNumber']),
+                            ),
+                          ),
+                          Expanded(
+                            child: _buildContactMethod(
+                              icon: Icons.email,
+                              label: content['emailLabel'],
+                              value: content['emailAddress'],
+                              color: const Color(0xFF007BFF),
+                              onTap: () => _launchEmail(content['emailAddress']),
+                            ),
+                          ),
+                          Expanded(
+                            child: _buildContactMethod(
+                              icon: Icons.message,
+                              label: content['whatsappLabel'],
+                              value: content['whatsappNumber'],
+                              color: const Color(0xFF28A745),
+                              onTap: () => _launchWhatsApp(content['whatsappNumber']),
+                            ),
+                          ),
+                        ],
                       ),
-                      _buildContactMethod(
-                        icon: Icons.email,
-                        label: content['emailLabel'],
-                        value: content['emailAddress'],
-                        color: const Color(0xFF007BFF),
-                        onTap: () => _launchEmail(content['emailAddress']),
-                      ),
-                      _buildContactMethod(
-                        icon: Icons.message,
-                        label: content['whatsappLabel'],
-                        value: content['whatsappNumber'],
-                        color: const Color(0xFF28A745),
-                        onTap: () => _launchWhatsApp(content['whatsappNumber']),
-                      ),
-                    ],
-                  ),
                 ],
               ),
             ),
@@ -597,6 +639,9 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
             const SizedBox(height: 8),
             Text(
               label,
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
                 fontWeight: FontWeight.w600,
@@ -607,6 +652,9 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
             const SizedBox(height: 4),
             Text(
               value,
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 fontSize: ResponsiveUtils.getResponsiveFontSize(context, 11),
                 color: const Color(0xFF6B7280),

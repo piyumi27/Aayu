@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'providers/child_provider.dart';
+import 'services/local_auth_service.dart';
 import 'screens/add_child_screen.dart';
 import 'screens/add_health_record_screen.dart';
 import 'screens/edit_child_profile_screen.dart';
@@ -138,6 +139,10 @@ final _router = GoRouter(
       builder: (context, state) => const ForgotPasswordScreen(),
     ),
     GoRoute(
+      path: '/verification-center',
+      builder: (context, state) => const VerificationCenterScreen(),
+    ),
+    GoRoute(
       path: '/add-child',
       builder: (context, state) => const AddChildScreen(),
     ),
@@ -170,7 +175,10 @@ final _router = GoRouter(
             final prefs = await SharedPreferences.getInstance();
             final languageSelected = prefs.getBool('language_selected') ?? false;
             final onboardingCompleted = prefs.getBool('onboarding_completed') ?? false;
-            final userLoggedIn = prefs.getBool('user_logged_in') ?? false;
+            
+            // Use LocalAuthService to check authentication status
+            final authService = LocalAuthService();
+            final isLoggedIn = await authService.isLoggedIn();
             
             if (!languageSelected) {
               return '/splash';
@@ -178,9 +186,17 @@ final _router = GoRouter(
             if (!onboardingCompleted) {
               return '/onboarding';
             }
-            if (!userLoggedIn) {
+            if (!isLoggedIn) {
               return '/login';
             }
+            
+            // If logged in, check if user needs verification
+            final user = await authService.getCurrentUser();
+            if (user != null && !user.isSyncGateOpen) {
+              // User is logged in but not verified - show verification center
+              return '/verification-center';
+            }
+            
             return null;
           },
         ),
