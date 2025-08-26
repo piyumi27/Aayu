@@ -6,6 +6,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'services/firebase_sync_service.dart';
+
 import 'providers/child_provider.dart';
 import 'screens/add_child_screen.dart';
 import 'screens/add_health_record_screen.dart';
@@ -32,6 +34,10 @@ import 'widgets/bottom_navigation.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  
+  // Initialize WorkManager for background sync
+  await FirebaseSyncService.initialize();
+  
   runApp(const AayuApp());
 }
 

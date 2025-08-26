@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../models/user_account.dart';
+import '../services/local_auth_service.dart';
 import '../utils/responsive_utils.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -15,11 +17,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
   String _selectedLanguage = 'en';
   bool _notificationsEnabled = true;
   String _syncStatus = 'up-to-date'; // 'up-to-date', 'pending', 'error'
+  UserAccount? _currentUser;
+  VerificationStatus _verificationStatus = VerificationStatus.notLoggedIn;
+  
+  final LocalAuthService _authService = LocalAuthService();
   
   @override
   void initState() {
     super.initState();
     _loadPreferences();
+    _loadUserData();
   }
 
   Future<void> _loadPreferences() async {
@@ -29,6 +36,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
         _selectedLanguage = prefs.getString('language') ?? 'en';
         _notificationsEnabled = prefs.getBool('notifications_enabled') ?? true;
         _syncStatus = prefs.getString('sync_status') ?? 'up-to-date';
+      });
+    }
+  }
+
+  Future<void> _loadUserData() async {
+    final user = await _authService.getCurrentUser();
+    final verificationStatus = await _authService.getVerificationStatus();
+    
+    if (mounted) {
+      setState(() {
+        _currentUser = user;
+        _verificationStatus = verificationStatus;
+        
+        // Update sync status based on verification
+        if (verificationStatus == VerificationStatus.pendingSync) {
+          _syncStatus = 'pending';
+        } else if (verificationStatus == VerificationStatus.verified) {
+          _syncStatus = 'up-to-date';
+        }
       });
     }
   }
@@ -86,6 +112,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
         'comingSoon': 'Coming Soon',
         'featureInDevelopment': 'This feature is currently in development.',
         'ok': 'OK',
+        'verificationStatus': 'Verification Status',
+        'accountVerification': 'Account Verification',
       },
       'si': {
         'settings': 'සැකසීම්',
@@ -118,6 +146,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
         'comingSoon': 'ඉක්මනින් එනවා',
         'featureInDevelopment': 'මෙම විශේෂාංගය දැනට සංවර්ධනය වෙමින් පවතී.',
         'ok': 'හරි',
+        'verificationStatus': 'සත්‍යාපන තත්ත්වය',
+        'accountVerification': 'ගිණුම් සත්‍යාපනය',
       },
       'ta': {
         'settings': 'அமைப்புகள்',
@@ -150,6 +180,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
         'comingSoon': 'விரைவில் வரும்',
         'featureInDevelopment': 'இந்த அம்சம் தற்போது வளர்ச்சியில் உள்ளது.',
         'ok': 'சரி',
+        'verificationStatus': 'சரிபார்ப்பு நிலை',
+        'accountVerification': 'கணக்கு சரிபார்ப்பு',
       },
     };
     return texts[_selectedLanguage] ?? texts['en']!;
@@ -193,6 +225,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 title: texts['editProfile']!,
                 onTap: () => context.push('/edit-parent-profile'),
                 hasChevron: true,
+              ),
+              _buildDivider(),
+              _buildSettingsRow(
+                icon: Icons.verified_user_outlined,
+                title: texts['verificationStatus']!,
+                trailing: _buildVerificationBadge(),
               ),
               _buildDivider(),
               _buildSettingsRow(
@@ -318,6 +356,63 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildVerificationBadge() {
+    Color badgeColor;
+    String badgeText;
+    
+    switch (_verificationStatus) {
+      case VerificationStatus.verified:
+        badgeColor = const Color(0xFF10B981);
+        badgeText = _selectedLanguage == 'si' 
+            ? _verificationStatus.displayTextSinhala
+            : _selectedLanguage == 'ta'
+                ? _verificationStatus.displayTextTamil
+                : _verificationStatus.displayText;
+        break;
+      case VerificationStatus.pendingSync:
+        badgeColor = const Color(0xFFF59E0B);
+        badgeText = _selectedLanguage == 'si' 
+            ? _verificationStatus.displayTextSinhala
+            : _selectedLanguage == 'ta'
+                ? _verificationStatus.displayTextTamil
+                : _verificationStatus.displayText;
+        break;
+      case VerificationStatus.unverified:
+        badgeColor = const Color(0xFFEF4444);
+        badgeText = _selectedLanguage == 'si' 
+            ? _verificationStatus.displayTextSinhala
+            : _selectedLanguage == 'ta'
+                ? _verificationStatus.displayTextTamil
+                : _verificationStatus.displayText;
+        break;
+      case VerificationStatus.notLoggedIn:
+        badgeColor = const Color(0xFF9CA3AF);
+        badgeText = _selectedLanguage == 'si' 
+            ? _verificationStatus.displayTextSinhala
+            : _selectedLanguage == 'ta'
+                ? _verificationStatus.displayTextTamil
+                : _verificationStatus.displayText;
+        break;
+    }
+    
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: badgeColor,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Text(
+        badgeText,
+        style: TextStyle(
+          fontSize: ResponsiveUtils.getResponsiveFontSize(context, 12),
+          fontWeight: FontWeight.w600,
+          color: Colors.white,
+          fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
         ),
       ),
     );

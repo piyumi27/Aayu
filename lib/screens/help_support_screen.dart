@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -619,39 +620,46 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
   }
 
   Future<void> _launchPhone(String phoneNumber) async {
-    final Uri phoneUri = Uri(scheme: 'tel', path: phoneNumber);
-    if (await canLaunchUrl(phoneUri)) {
-      await launchUrl(phoneUri);
-    } else {
-      _showSnackBar('Could not launch phone');
+    final uri = Uri(scheme: 'tel', path: phoneNumber);
+    try {
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri);
+      } else {
+        _showSnackBar('Could not launch phone dialer');
+      }
+    } catch (e) {
+      _showSnackBar('Could not launch phone dialer');
     }
   }
 
   Future<void> _launchEmail(String email) async {
-    final Uri emailUri = Uri(
+    final uri = Uri(
       scheme: 'mailto',
       path: email,
-      queryParameters: {
-        'subject': 'ආයු App Support Request',
-        'body': 'Dear Support Team,\n\n',
-      },
+      query: 'subject=Aayu App Support Request',
     );
-    if (await canLaunchUrl(emailUri)) {
-      await launchUrl(emailUri);
-    } else {
-      _showSnackBar('Could not launch email');
+    try {
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri);
+      } else {
+        _showSnackBar('Could not launch email client');
+      }
+    } catch (e) {
+      _showSnackBar('Could not launch email client');
     }
   }
 
   Future<void> _launchWhatsApp(String phoneNumber) async {
-    // Remove + and spaces from phone number
     final cleanNumber = phoneNumber.replaceAll(RegExp(r'[^\d]'), '');
-    final Uri whatsappUri = Uri.parse('https://wa.me/$cleanNumber');
-    
-    if (await canLaunchUrl(whatsappUri)) {
-      await launchUrl(whatsappUri, mode: LaunchMode.externalApplication);
-    } else {
-      _showSnackBar('WhatsApp is not installed');
+    final uri = Uri.parse('https://wa.me/$cleanNumber?text=Hello, I need help with the Aayu app');
+    try {
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      } else {
+        _showSnackBar('Could not launch WhatsApp');
+      }
+    } catch (e) {
+      _showSnackBar('Could not launch WhatsApp');
     }
   }
 
