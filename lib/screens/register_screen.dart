@@ -186,8 +186,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         shape: BoxShape.circle,
                         gradient: LinearGradient(
                           colors: [
-                            const Color(0xFF32CD32),
-                            const Color(0xFF32CD32).withValues(alpha: 0.8),
+                            const Color(0xFF0086FF),
+                            const Color(0xFF0086FF).withValues(alpha: 0.8),
                           ],
                         ),
                       ),
@@ -335,7 +335,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   child: ElevatedButton(
                     onPressed: _isLoading ? null : _register,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: _isLoading ? const Color(0xFFE5E7EB) : const Color(0xFF32CD32),
+                      backgroundColor: _isLoading ? const Color(0xFFE5E7EB) : const Color(0xFF0086FF),
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),

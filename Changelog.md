@@ -126,6 +126,16 @@ All notable changes to the Aayu project will be documented in this file.
   - **Responsive Design**: All authentication screens now use ResponsiveUtils for consistent sizing
   - **Error Handling**: Enhanced error display with proper localization and visual feedback
 
+- **Streamlined Verification Center Experience**
+  - **No Phone Re-entry**: Uses already registered phone number automatically
+  - **Direct OTP Input**: Shows OTP field immediately with smart Send/Verify button
+  - **Email Verification Integration**: Optional email verification with status tracking
+  - **Skip Verification Option**: Users can continue using app offline with clear dialog explanation
+  - **Countdown Timer**: 30-second resend countdown with proper state management
+  - **Blue Color Scheme**: Consistent with app's primary color palette (0xFF0086FF)
+  - **Card-Based Design**: Clean verification cards with icons and clear instructions
+  - **Responsive Layout**: Proper spacing and sizing across all device sizes
+
 ### Fixed
 - **Home Screen VerificationBanner Integration Fix**
   - Fixed undefined `status` parameter in VerificationBanner widget usage
