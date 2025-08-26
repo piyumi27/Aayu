@@ -2,6 +2,23 @@
 
 All notable changes to the Aayu project will be documented in this file.
 
+## [2025-08-26] - Code Quality Improvements & Bug Fixes
+
+### Fixed
+- **Compilation Errors & Warnings Resolution**
+  - Fixed Flutter BorderSide rendering error in notifications screen (hairline borders with BorderRadius)
+  - Removed unused element warnings: `_buildDateField`, `_buildGenderSelection`, `_buildOptionalMeasurements` in add_child_screen.dart
+  - Removed unused field warning: `_calendarFormat` in vaccination_calendar_screen.dart
+  - Removed unused element warning: `_getLocalizedMilestones` in pre_six_month_countdown_screen.dart
+  - Fixed async context usage warning in notifications_screen.dart by extracting context data before async operations
+  - Added key missing trailing commas to improve code formatting consistency
+
+### Changed
+- **Notification Card Border System**
+  - Updated notification selection borders to avoid Flutter rendering constraint violations
+  - Selection state now uses `Border.all()` instead of conditional hairline borders with BorderRadius
+  - Improved visual feedback for selected notification cards
+
 ## [2025-08-26] - Intelligent Notifications System with Sri Lankan Health Context
 
 ### Added

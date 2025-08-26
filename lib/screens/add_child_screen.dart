@@ -630,95 +630,7 @@ class _AddChildScreenState extends State<AddChildScreen> {
     );
   }
 
-  Widget _buildDateField(Map<String, String> texts) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        GestureDetector(
-          onTap: _selectDate,
-          child: Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey[300]!),
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    _birthDate == null
-                        ? texts['selectBirthDate']!
-                        : _birthDate!.toString().split(' ')[0],
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: _birthDate == null ? Colors.grey[600] : Colors.black87,
-                      fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-                    ),
-                  ),
-                ),
-                const Icon(Icons.calendar_today, color: Colors.grey),
-              ],
-            ),
-          ),
-        ),
-        if (_dobError != null) ...[
-          const SizedBox(height: 4),
-          Text(
-            _dobError!,
-            style: TextStyle(
-              fontSize: 12,
-              color: const Color(0xFFFF5252),
-              fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-            ),
-          ),
-        ],
-      ],
-    );
-  }
 
-  Widget _buildGenderSelection(Map<String, String> texts) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          texts['gender']!,
-          style: TextStyle(
-            fontSize: 16,
-            color: Colors.grey[700],
-            fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Row(
-          children: [
-            _buildGenderChip(
-              label: texts['male']!,
-              value: 'Male',
-              icon: Icons.male,
-            ),
-            const SizedBox(width: 12),
-            _buildGenderChip(
-              label: texts['female']!,
-              value: 'Female',
-              icon: Icons.female,
-            ),
-          ],
-        ),
-        if (_genderError != null) ...[
-          const SizedBox(height: 4),
-          Text(
-            _genderError!,
-            style: TextStyle(
-              fontSize: 12,
-              color: const Color(0xFFFF5252),
-              fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-            ),
-          ),
-        ],
-      ],
-    );
-  }
 
   Widget _buildGenderChip({
     required String label,
@@ -764,41 +676,6 @@ class _AddChildScreenState extends State<AddChildScreen> {
     );
   }
 
-  Widget _buildOptionalMeasurements(Map<String, String> texts) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: _buildTextField(
-                controller: _birthWeightController,
-                label: texts['birthWeight']!,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: _buildTextField(
-                controller: _birthHeightController,
-                label: texts['birthHeight']!,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 8),
-        Text(
-          texts['helperText']!,
-          style: TextStyle(
-            fontSize: 12,
-            color: Colors.grey[600],
-            fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-          ),
-        ),
-      ],
-    );
-  }
 
 
   Future<void> _pickImage() async {

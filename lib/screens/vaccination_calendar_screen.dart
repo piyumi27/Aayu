@@ -20,7 +20,6 @@ class _VaccinationCalendarScreenState extends State<VaccinationCalendarScreen>
   // Core calendar state
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
-  CalendarFormat _calendarFormat = CalendarFormat.month;
   
   // App state
   String _selectedLanguage = 'en';
@@ -352,9 +351,7 @@ class _VaccinationCalendarScreenState extends State<VaccinationCalendarScreen>
             }
           },
           onFormatChanged: (format) {
-            setState(() {
-              _calendarFormat = format;
-            });
+            // Format changed - no state needed
           },
           onPageChanged: (focusedDay) {
             _focusedDay = focusedDay;

@@ -56,10 +56,12 @@ class _NotificationsScreenState extends State<NotificationsScreen>
 
   /// Initialize notifications
   Future<void> _initializeNotifications() async {
+    // Get context-dependent data before async operations
+    final childProvider = Provider.of<ChildProvider>(context, listen: false);
+    
     await _notificationService.loadNotifications();
     
     // Generate health notifications for current child
-    final childProvider = Provider.of<ChildProvider>(context, listen: false);
     if (childProvider.selectedChild != null) {
       await _notificationService.generateHealthNotifications(
         childProvider.selectedChild!,
@@ -313,24 +315,17 @@ class _NotificationsScreenState extends State<NotificationsScreen>
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(12),
-            border: Border(
-              left: BorderSide(
-                color: notification.color,
-                width: 4,
-              ),
-              top: BorderSide(
-                color: isSelected ? const Color(0xFF0086FF) : Colors.transparent,
-                width: isSelected ? 2 : 0,
-              ),
-              right: BorderSide(
-                color: isSelected ? const Color(0xFF0086FF) : Colors.transparent,
-                width: isSelected ? 2 : 0,
-              ),
-              bottom: BorderSide(
-                color: isSelected ? const Color(0xFF0086FF) : Colors.transparent,
-                width: isSelected ? 2 : 0,
-              ),
-            ),
+            border: isSelected
+                ? Border.all(
+                    color: const Color(0xFF0086FF),
+                    width: 2,
+                  )
+                : Border(
+                    left: BorderSide(
+                      color: notification.color,
+                      width: 4,
+                    ),
+                  ),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.05),

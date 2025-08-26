@@ -164,7 +164,7 @@ class AppNotification {
       return '${diff.inDays} days ago';
     } else {
       final month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-                    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][timestamp.month - 1];
+                    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',][timestamp.month - 1];
       return '$month ${timestamp.day}';
     }
   }

@@ -80,7 +80,7 @@ class NotificationService {
         .length;
     final overdueReminders = _notifications
         .where((n) => n.category == NotificationCategory.reminders && 
-                      n.priority == NotificationPriority.critical)
+                      n.priority == NotificationPriority.critical,)
         .length;
 
     if (urgentAlerts > 0) {
@@ -347,14 +347,14 @@ class NotificationService {
         'nutritionTip6To11Title',
         'nutritionTip6To11Content',
         child,
-      ));
+      ),);
     } else if (ageInMonths >= 12 && ageInMonths <= 23) {
       tips.add(_createNutritionTip(
         'nutrition_tip_12_23m',
         'nutritionTip12To23Title',
         'nutritionTip12To23Content',
         child,
-      ));
+      ),);
     }
 
     return tips;
@@ -446,7 +446,7 @@ class NotificationService {
       'isRead': n.isRead,
       'isStarred': n.isStarred,
       'childId': n.childId,
-    }).toList();
+    },).toList();
     
     await prefs.setString('notifications_data', notificationData.toString());
   }

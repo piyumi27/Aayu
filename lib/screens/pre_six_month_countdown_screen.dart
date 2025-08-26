@@ -104,36 +104,6 @@ class _PreSixMonthCountdownScreenState extends State<PreSixMonthCountdownScreen>
   }
 
 
-  Map<String, String> _getLocalizedMilestones() {
-    final Map<String, Map<String, String>> milestones = {
-      'en': {
-        '0': 'Focusing on Faces',
-        '30': 'Smiles Responsively',
-        '60': 'Laughs and Coos',
-        '90': 'Recognizes Voices',
-        '120': 'Reaches for Objects',
-        '150': 'Shows Emotions',
-      },
-      'si': {
-        '0': 'මුහුණු දෙස බලනවා',
-        '30': 'ප්‍රතිචාරයක් ලෙස සිනහ වෙනවා',
-        '60': 'සිනහ වී හඬ කරනවා',
-        '90': 'හඬ හඳුනා ගන්නවා',
-        '120': 'වස්තු වෙත අත් දිගු කරනවා',
-        '150': 'හැඟීම් පෙන්වනවා',
-      },
-      'ta': {
-        '0': 'முகங்களில் கவனம் செலுத்துதல்',
-        '30': 'பதிலளிக்கும் புன்னகை',
-        '60': 'சிரிக்கிறது மற்றும் குரல் எழுப்புகிறது',
-        '90': 'குரல்களை அடையாளம் காண்கிறது',
-        '120': 'பொருட்களை நோக்கி கை நீட்டுகிறது',
-        '150': 'உணர்ச்சிகளைக் காட்டுகிறது',
-      },
-    };
-    
-    return milestones[_selectedLanguage] ?? milestones['en']!;
-  }
 
   Map<String, String> _getLocalizedText() {
     final Map<String, Map<String, String>> texts = {
