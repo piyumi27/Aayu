@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../utils/responsive_utils.dart';
-import '../services/notification_service.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -15,7 +15,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   String _selectedLanguage = 'en';
   bool _notificationsEnabled = true;
   String _syncStatus = 'up-to-date'; // 'up-to-date', 'pending', 'error'
-  String _selectedUnits = 'metric';
   
   @override
   void initState() {
@@ -29,7 +28,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _selectedLanguage = prefs.getString('language') ?? 'en';
       _notificationsEnabled = prefs.getBool('notifications_enabled') ?? true;
       _syncStatus = prefs.getString('sync_status') ?? 'up-to-date';
-      _selectedUnits = prefs.getString('units') ?? 'metric';
     });
   }
 
@@ -187,7 +185,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               _buildSettingsRow(
                 icon: Icons.person_outline,
                 title: texts['editProfile']!,
-                onTap: () => _showComingSoonDialog(context, texts),
+                onTap: () => context.push('/edit-parent-profile'),
                 hasChevron: true,
               ),
               _buildDivider(),
