@@ -31,6 +31,17 @@ All notable changes to the Aayu project will be documented in this file.
   - **Real-time Updates**: Live form state tracking and change detection
   - **Cultural Adaptation**: Gender-specific icons and colors, Sri Lankan naming conventions
 
+- **Comprehensive Help & Support System**
+  - **Extensive FAQ Database**: 30+ detailed FAQs covering nutrition, growth, vaccinations, newborn care, and app usage
+  - **Sri Lankan Health Context**: PHM integration, local vaccination schedule, traditional foods guidance
+  - **Accordion UI Design**: Nested expandable categories with smooth animations
+  - **Multi-category Organization**: 6 main categories - Nutrition, Growth, Vaccinations, App Usage, Special Dietary, Newborn Care
+  - **Quick Contact Methods**: One-tap access to PHM hotline, email support, and WhatsApp assistance
+  - **Trilingual Content**: Complete FAQ translations in Sinhala, Tamil, and English
+  - **Emergency Guidance**: Clear instructions for danger signs and when to seek immediate medical help
+  - **Local Food Recommendations**: Traditional Sri Lankan baby foods with preparation guidelines
+  - **Growth Monitoring Help**: Detailed guidance on using app features for tracking child development
+
 ### Fixed
 - **Compilation Errors & Warnings Resolution**
   - Fixed Flutter BorderSide rendering error in notifications screen (hairline borders with BorderRadius)

@@ -25,6 +25,7 @@ import 'screens/register_screen.dart';
 import 'screens/settings_screen.dart';
 import 'screens/edit_parent_profile_screen.dart';
 import 'screens/edit_child_profile_screen.dart';
+import 'screens/help_support_screen.dart';
 import 'screens/splash_screen.dart';
 import 'widgets/bottom_navigation.dart';
 
@@ -233,6 +234,10 @@ final _router = GoRouter(
           childId: extra['childId'],
         );
       },
+    ),
+    GoRoute(
+      path: '/help-support',
+      builder: (context, state) => const HelpSupportScreen(),
     ),
   ],
 );

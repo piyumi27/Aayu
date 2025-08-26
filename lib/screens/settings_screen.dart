@@ -256,7 +256,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               _buildSettingsRow(
                 icon: Icons.help_outline,
                 title: texts['helpSupport']!,
-                onTap: () => _showComingSoonDialog(context, texts),
+                onTap: () => context.push('/help-support'),
                 hasChevron: true,
               ),
               _buildDivider(),
