@@ -292,7 +292,7 @@ class _HomeScreenState extends State<HomeScreen> {
               borderRadius: BorderRadius.circular(8),
             ),
             child: IconButton(
-              onPressed: () => context.go('/profile'),
+              onPressed: () => context.push('/settings'),
               icon: const Icon(
                 Icons.settings_outlined,
                 color: Color(0xFF6B7280),

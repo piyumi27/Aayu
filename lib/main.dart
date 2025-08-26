@@ -22,6 +22,7 @@ import 'screens/otp_verification_screen.dart';
 import 'screens/pre_six_month_countdown_screen.dart';
 import 'screens/profile_screen.dart';
 import 'screens/register_screen.dart';
+import 'screens/settings_screen.dart';
 import 'screens/splash_screen.dart';
 import 'widgets/bottom_navigation.dart';
 
@@ -207,6 +208,13 @@ final _router = GoRouter(
           pageBuilder: (context, state) => SlideRightTransitionPage(
             key: state.pageKey,
             child: const NotificationsScreen(),
+          ),
+        ),
+        GoRoute(
+          path: '/settings',
+          pageBuilder: (context, state) => SlideRightTransitionPage(
+            key: state.pageKey,
+            child: const SettingsScreen(),
           ),
         ),
       ],

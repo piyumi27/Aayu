@@ -2,7 +2,25 @@
 
 All notable changes to the Aayu project will be documented in this file.
 
-## [2025-08-26] - Code Quality Improvements & Bug Fixes
+## [2025-08-26] - Settings Screen Implementation & Code Quality Fixes
+
+### Added
+- **Comprehensive Settings Screen**
+  - Professional list-style design with section headers (Account, Preferences, Support, Session)
+  - Trilingual support (English, Sinhala, Tamil) with cultural context integration
+  - Interactive language selection with bottom sheet picker and flag indicators
+  - Notification toggle with real-time preferences saving
+  - Data sync status badge with color-coded states (Up-to-date/Pending/Error)
+  - Units preference (Metric/Imperial) ready for implementation
+  - Help & Support, Edit Profile, Change Password sections with "Coming Soon" dialogs
+  - Secure logout confirmation with localized messages
+  - Responsive design using ResponsiveUtils across all device sizes
+  - Noto Serif Sinhala font integration for Sri Lankan text display
+
+- **Navigation Integration**
+  - Added settings route to GoRouter with slide transition animations
+  - Settings icon in Profile screen AppBar for easy access
+  - Proper navigation flow between Profile and Settings screens
 
 ### Fixed
 - **Compilation Errors & Warnings Resolution**
