@@ -29,6 +29,8 @@ import 'screens/register_screen.dart';
 import 'screens/settings_screen.dart';
 import 'screens/splash_screen.dart';
 import 'screens/verification_center_screen.dart';
+import 'screens/progress_tracking_screen.dart';
+import 'screens/achievements_screen.dart';
 import 'services/firebase_sync_service.dart';
 import 'widgets/bottom_navigation.dart';
 
@@ -193,7 +195,6 @@ final _router = GoRouter(
             // If logged in, check if user needs verification
             // Note: Allow unverified users to access the app offline
             // They can access verification center through profile screen
-            final user = await authService.getCurrentUser();
             // Removed automatic redirect to verification center for unverified users
             
             return null;
@@ -263,6 +264,14 @@ final _router = GoRouter(
     GoRoute(
       path: '/verification-center',
       builder: (context, state) => const VerificationCenterScreen(),
+    ),
+    GoRoute(
+      path: '/progress-tracking',
+      builder: (context, state) => const ProgressTrackingScreen(),
+    ),
+    GoRoute(
+      path: '/achievements',
+      builder: (context, state) => const AchievementsScreen(),
     ),
   ],
 );

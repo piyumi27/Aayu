@@ -101,7 +101,6 @@ class _BottomNavigationState extends State<BottomNavigation> {
     final selectedIndex = _calculateSelectedIndex(context);
     
     // Responsive sizing
-    final screenType = ResponsiveUtils.getScreenType(context);
     final iconSize = ResponsiveUtils.getResponsiveIconSize(context, 24);
     final fontSize = ResponsiveUtils.getResponsiveFontSize(context, 12);
     

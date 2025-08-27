@@ -180,7 +180,7 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
         centerTitle: true,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Color(0xFF1A1A1A)),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => context.go('/'),
         ),
         actions: [
           IconButton(

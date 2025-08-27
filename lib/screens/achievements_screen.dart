@@ -1,0 +1,1306 @@
+import 'dart:math' as math;
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../models/child.dart';
+import '../providers/child_provider.dart';
+import '../utils/responsive_utils.dart';
+
+class AchievementsScreen extends StatefulWidget {
+  const AchievementsScreen({super.key});
+
+  @override
+  State<AchievementsScreen> createState() => _AchievementsScreenState();
+}
+
+class _AchievementsScreenState extends State<AchievementsScreen>
+    with TickerProviderStateMixin {
+  
+  late AnimationController _heroController;
+  late AnimationController _badgeController;
+  late AnimationController _particleController;
+  late AnimationController _levelController;
+  
+  late Animation<double> _heroScaleAnimation;
+  late Animation<double> _heroRotationAnimation;
+  late Animation<Offset> _heroSlideAnimation;
+  late Animation<double> _badgeAnimation;
+  late Animation<double> _particleAnimation;
+  late Animation<double> _levelAnimation;
+  
+  String _selectedLanguage = 'en';
+  String _selectedCategory = 'all'; // all, milestones, daily, weekly, special
+  
+  @override
+  void initState() {
+    super.initState();
+    _loadLanguage();
+    _initializeAnimations();
+  }
+
+  void _initializeAnimations() {
+    // Hero animation controller
+    _heroController = AnimationController(
+      duration: const Duration(milliseconds: 2000),
+      vsync: this,
+    );
+
+    // Badge animation controller
+    _badgeController = AnimationController(
+      duration: const Duration(milliseconds: 1500),
+      vsync: this,
+    );
+
+    // Particle animation controller
+    _particleController = AnimationController(
+      duration: const Duration(milliseconds: 3000),
+      vsync: this,
+    );
+
+    // Level animation controller
+    _levelController = AnimationController(
+      duration: const Duration(milliseconds: 1000),
+      vsync: this,
+    );
+
+    _heroScaleAnimation = Tween<double>(
+      begin: 0.5,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _heroController,
+      curve: Curves.elasticOut,
+    ));
+
+    _heroRotationAnimation = Tween<double>(
+      begin: 0.0,
+      end: 2 * math.pi,
+    ).animate(CurvedAnimation(
+      parent: _heroController,
+      curve: const Interval(0.0, 0.6, curve: Curves.easeInOut),
+    ));
+
+    _heroSlideAnimation = Tween<Offset>(
+      begin: const Offset(0.0, -1.0),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: _heroController,
+      curve: Curves.bounceOut,
+    ));
+
+    _badgeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _badgeController,
+      curve: Curves.bounceOut,
+    ));
+
+    _particleAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _particleController,
+      curve: Curves.easeOut,
+    ));
+
+    _levelAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _levelController,
+      curve: Curves.easeInOutCubic,
+    ));
+
+    // Start animation sequence
+    _startAnimationSequence();
+  }
+
+  void _startAnimationSequence() async {
+    _heroController.forward();
+    await Future.delayed(const Duration(milliseconds: 500));
+    _particleController.repeat();
+    await Future.delayed(const Duration(milliseconds: 300));
+    _badgeController.forward();
+    await Future.delayed(const Duration(milliseconds: 200));
+    _levelController.forward();
+  }
+
+  Future<void> _loadLanguage() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (mounted) {
+      setState(() {
+        _selectedLanguage = prefs.getString('selected_language') ?? 'en';
+      });
+    }
+  }
+
+  int _calculateDaysSinceBirth(Child child) {
+    final now = DateTime.now();
+    final difference = now.difference(child.birthDate);
+    return difference.inDays;
+  }
+
+  Map<String, String> _getLocalizedText() {
+    final Map<String, Map<String, String>> texts = {
+      'en': {
+        'title': 'Achievements',
+        'subtitle': 'Your journey of accomplishments',
+        'level': 'Level',
+        'progress': 'Progress',
+        'points': 'Points',
+        'achievements': 'Achievements',
+        'badges': 'Badges Earned',
+        'streaks': 'Current Streak',
+        'totalPoints': 'Total Points',
+        'nextLevel': 'Next Level',
+        'categories': 'Categories',
+        'all': 'All',
+        'milestones': 'Milestones',
+        'daily': 'Daily',
+        'weekly': 'Weekly',
+        'special': 'Special',
+        'unlocked': 'Unlocked',
+        'locked': 'Locked',
+        'inProgress': 'In Progress',
+        'congratulations': 'Congratulations!',
+        'newBadge': 'New Badge Unlocked',
+        'keepGoing': 'Keep up the great work!',
+        'days': 'days',
+        'collected': 'collected',
+        'complete': 'complete',
+        // Achievement titles
+        'firstWeek': 'First Week Champion',
+        'earlyRiser': 'Early Riser',
+        'consistency': 'Consistency Master',
+        'milestone30': '30 Days Strong',
+        'milestone60': '60 Days Warrior',
+        'milestone90': '90 Days Hero',
+        'milestone120': '120 Days Legend',
+        'milestone150': '150 Days Champion',
+        'milestone180': '180 Days Master',
+        'perfectWeek': 'Perfect Week',
+        'monthlyGoal': 'Monthly Goal Crusher',
+        'dedication': 'Dedication Award',
+        'explorer': 'Growth Explorer',
+        'tracker': 'Progress Tracker',
+      },
+      'si': {
+        'title': 'ජයග්‍රහණ',
+        'subtitle': 'ඔබේ සාර්ථකත්ව ගමන',
+        'level': 'මට්ටම',
+        'progress': 'ප්‍රගතිය',
+        'points': 'ලකුණු',
+        'achievements': 'ජයග්‍රහණ',
+        'badges': 'උපාධි ලබා ගත්',
+        'streaks': 'වර්තමාන අඛණ්ඩතාව',
+        'totalPoints': 'සම්පූර්ණ ලකුණු',
+        'nextLevel': 'ඊළඟ මට්ටම',
+        'categories': 'කාණ්ඩ',
+        'all': 'සියල්ල',
+        'milestones': 'සන්ධිස්ථාන',
+        'daily': 'දිනපතා',
+        'weekly': 'සතිපතා',
+        'special': 'විශේෂ',
+        'unlocked': 'අගුළු ඇරුණි',
+        'locked': 'අගුළු දමා ඇත',
+        'inProgress': 'ක්‍රියාත්මකයි',
+        'congratulations': 'සුභ පැතුම්!',
+        'newBadge': 'නව උපාධියක් අගුළු ඇරුණි',
+        'keepGoing': 'හොඳ වැඩක් දිගටම කරගෙන යන්න!',
+        'days': 'දින',
+        'collected': 'රැස්කර ගන්නා ලදි',
+        'complete': 'සම්පූර්ණ',
+      },
+      'ta': {
+        'title': 'சாதனைகள்',
+        'subtitle': 'உங்கள் வெற்றியின் பயணம்',
+        'level': 'நிலை',
+        'progress': 'முன்னேற்றம்',
+        'points': 'புள்ளிகள்',
+        'achievements': 'சாதனைகள்',
+        'badges': 'பெறப்பட்ட பேட்ஜ்கள்',
+        'streaks': 'தற்போதைய தொடர்ச்சி',
+        'totalPoints': 'மொத்த புள்ளிகள்',
+        'nextLevel': 'அடுத்த நிலை',
+        'categories': 'வகைகள்',
+        'all': 'அனைத்து',
+        'milestones': 'மைல்கற்கள்',
+        'daily': 'தினசரி',
+        'weekly': 'வாராந்திர',
+        'special': 'சிறப்பு',
+        'unlocked': 'திறக்கப்பட்டது',
+        'locked': 'பூட்டப்பட்டது',
+        'inProgress': 'முன்னேற்றத்தில்',
+        'congratulations': 'வாழ்த்துகள்!',
+        'newBadge': 'புதிய பேட்ஜ் திறக்கப்பட்டது',
+        'keepGoing': 'சிறந்த வேலையைத் தொடருங்கள்!',
+        'days': 'நாட்கள்',
+        'collected': 'சேகரிக்கப்பட்டது',
+        'complete': 'முழுமையான',
+      },
+    };
+    return texts[_selectedLanguage] ?? texts['en']!;
+  }
+
+  List<Achievement> _getAchievements(int daysSinceBirth, Map<String, String> texts) {
+    final achievements = <Achievement>[
+      // Milestone Achievements
+      Achievement(
+        id: 'first_week',
+        title: texts['firstWeek'] ?? 'First Week Champion',
+        description: 'Complete your first 7 days',
+        category: 'milestones',
+        icon: Icons.emoji_events,
+        color: const Color(0xFFFFD700),
+        points: 100,
+        targetValue: 7,
+        currentValue: daysSinceBirth.clamp(0, 7),
+        isUnlocked: daysSinceBirth >= 7,
+        rarity: AchievementRarity.bronze,
+      ),
+      
+      Achievement(
+        id: 'milestone_30',
+        title: texts['milestone30'] ?? '30 Days Strong',
+        description: 'Reach the 30-day milestone',
+        category: 'milestones',
+        icon: Icons.military_tech,
+        color: const Color(0xFFFF6B35),
+        points: 300,
+        targetValue: 30,
+        currentValue: daysSinceBirth.clamp(0, 30),
+        isUnlocked: daysSinceBirth >= 30,
+        rarity: AchievementRarity.silver,
+      ),
+      
+      Achievement(
+        id: 'milestone_60',
+        title: texts['milestone60'] ?? '60 Days Warrior',
+        description: 'Conquer 2 months of growth',
+        category: 'milestones',
+        icon: Icons.shield,
+        color: const Color(0xFF10B981),
+        points: 600,
+        targetValue: 60,
+        currentValue: daysSinceBirth.clamp(0, 60),
+        isUnlocked: daysSinceBirth >= 60,
+        rarity: AchievementRarity.silver,
+      ),
+      
+      Achievement(
+        id: 'milestone_90',
+        title: texts['milestone90'] ?? '90 Days Hero',
+        description: 'Complete 3 months of dedication',
+        category: 'milestones',
+        icon: Icons.star,
+        color: const Color(0xFF0086FF),
+        points: 900,
+        targetValue: 90,
+        currentValue: daysSinceBirth.clamp(0, 90),
+        isUnlocked: daysSinceBirth >= 90,
+        rarity: AchievementRarity.gold,
+      ),
+      
+      Achievement(
+        id: 'milestone_120',
+        title: texts['milestone120'] ?? '120 Days Legend',
+        description: '4 months of amazing progress',
+        category: 'milestones',
+        icon: Icons.workspace_premium,
+        color: const Color(0xFF8B5CF6),
+        points: 1200,
+        targetValue: 120,
+        currentValue: daysSinceBirth.clamp(0, 120),
+        isUnlocked: daysSinceBirth >= 120,
+        rarity: AchievementRarity.gold,
+      ),
+      
+      Achievement(
+        id: 'milestone_150',
+        title: texts['milestone150'] ?? '150 Days Champion',
+        description: '5 months of incredible growth',
+        category: 'milestones',
+        icon: Icons.diamond,
+        color: const Color(0xFFEC4899),
+        points: 1500,
+        targetValue: 150,
+        currentValue: daysSinceBirth.clamp(0, 150),
+        isUnlocked: daysSinceBirth >= 150,
+        rarity: AchievementRarity.platinum,
+      ),
+      
+      Achievement(
+        id: 'milestone_180',
+        title: texts['milestone180'] ?? '180 Days Master',
+        description: 'Complete the 6-month journey',
+        category: 'milestones',
+        icon: Icons.emoji_events,
+        color: const Color(0xFFFFD700),
+        points: 1800,
+        targetValue: 180,
+        currentValue: daysSinceBirth.clamp(0, 180),
+        isUnlocked: daysSinceBirth >= 180,
+        rarity: AchievementRarity.diamond,
+      ),
+      
+      // Daily Achievements
+      Achievement(
+        id: 'early_riser',
+        title: texts['earlyRiser'] ?? 'Early Riser',
+        description: 'Log progress before 9 AM',
+        category: 'daily',
+        icon: Icons.wb_sunny,
+        color: const Color(0xFFFBBF24),
+        points: 50,
+        targetValue: 1,
+        currentValue: 1, // Simulated
+        isUnlocked: true,
+        rarity: AchievementRarity.bronze,
+      ),
+      
+      Achievement(
+        id: 'consistency',
+        title: texts['consistency'] ?? 'Consistency Master',
+        description: 'Track progress for 10 consecutive days',
+        category: 'weekly',
+        icon: Icons.done_all,
+        color: const Color(0xFF059669),
+        points: 250,
+        targetValue: 10,
+        currentValue: math.min(daysSinceBirth, 10),
+        isUnlocked: daysSinceBirth >= 10,
+        rarity: AchievementRarity.silver,
+      ),
+      
+      Achievement(
+        id: 'perfect_week',
+        title: texts['perfectWeek'] ?? 'Perfect Week',
+        description: 'Complete all daily goals for a week',
+        category: 'weekly',
+        icon: Icons.grade,
+        color: const Color(0xFF7C3AED),
+        points: 200,
+        targetValue: 7,
+        currentValue: math.min(daysSinceBirth, 7),
+        isUnlocked: daysSinceBirth >= 7,
+        rarity: AchievementRarity.silver,
+      ),
+      
+      // Special Achievements
+      Achievement(
+        id: 'explorer',
+        title: texts['explorer'] ?? 'Growth Explorer',
+        description: 'Visit all app sections',
+        category: 'special',
+        icon: Icons.explore,
+        color: const Color(0xFF06B6D4),
+        points: 150,
+        targetValue: 1,
+        currentValue: 1, // Simulated
+        isUnlocked: true,
+        rarity: AchievementRarity.bronze,
+      ),
+      
+      Achievement(
+        id: 'tracker',
+        title: texts['tracker'] ?? 'Progress Tracker',
+        description: 'View your progress 5 times',
+        category: 'special',
+        icon: Icons.analytics,
+        color: const Color(0xFFEF4444),
+        points: 100,
+        targetValue: 5,
+        currentValue: 5, // Simulated
+        isUnlocked: true,
+        rarity: AchievementRarity.bronze,
+      ),
+    ];
+    
+    return achievements;
+  }
+
+  List<Achievement> _getFilteredAchievements(List<Achievement> achievements) {
+    if (_selectedCategory == 'all') return achievements;
+    return achievements.where((a) => a.category == _selectedCategory).toList();
+  }
+
+  int _calculateTotalPoints(List<Achievement> achievements) {
+    return achievements
+        .where((a) => a.isUnlocked)
+        .fold(0, (total, achievement) => total + achievement.points);
+  }
+
+  int _calculateCurrentLevel(int totalPoints) {
+    return (totalPoints / 500).floor() + 1;
+  }
+
+  double _calculateLevelProgress(int totalPoints) {
+    final currentLevelPoints = totalPoints % 500;
+    return currentLevelPoints / 500.0;
+  }
+
+  @override
+  void dispose() {
+    _heroController.dispose();
+    _badgeController.dispose();
+    _particleController.dispose();
+    _levelController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final texts = _getLocalizedText();
+
+    return Consumer<ChildProvider>(
+      builder: (context, childProvider, child) {
+        final selectedChild = childProvider.selectedChild;
+        
+        if (selectedChild == null) {
+          return const Scaffold(
+            backgroundColor: Color(0xFFF8F9FA),
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
+
+        final daysSinceBirth = _calculateDaysSinceBirth(selectedChild);
+        final achievements = _getAchievements(daysSinceBirth, texts);
+        final filteredAchievements = _getFilteredAchievements(achievements);
+        final totalPoints = _calculateTotalPoints(achievements);
+        final currentLevel = _calculateCurrentLevel(totalPoints);
+        final levelProgress = _calculateLevelProgress(totalPoints);
+        final unlockedAchievements = achievements.where((a) => a.isUnlocked).length;
+
+        return Scaffold(
+          backgroundColor: const Color(0xFFF8F9FA),
+          body: CustomScrollView(
+            slivers: [
+              // Animated App Bar with Particles
+              _buildAnimatedAppBar(texts),
+              
+              // Hero Section with Level and Stats
+              SliverToBoxAdapter(
+                child: _buildHeroSection(
+                  currentLevel,
+                  levelProgress,
+                  totalPoints,
+                  unlockedAchievements,
+                  achievements.length,
+                  texts,
+                ),
+              ),
+              
+              // Category Filter
+              SliverToBoxAdapter(
+                child: _buildCategoryFilter(texts),
+              ),
+              
+              // Achievements Grid
+              SliverToBoxAdapter(
+                child: _buildAchievementsGrid(filteredAchievements, texts),
+              ),
+              
+              // Bottom Spacing
+              const SliverToBoxAdapter(
+                child: SizedBox(height: 100),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildAnimatedAppBar(Map<String, String> texts) {
+    return SliverAppBar(
+      expandedHeight: ResponsiveUtils.getResponsiveSpacing(context, 140),
+      floating: false,
+      pinned: true,
+      elevation: 0,
+      backgroundColor: Colors.transparent,
+      flexibleSpace: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              const Color(0xFF8B5CF6).withOpacity(0.9),
+              const Color(0xFFEC4899).withOpacity(0.8),
+              const Color(0xFFFFD700).withOpacity(0.7),
+            ],
+          ),
+        ),
+        child: Stack(
+          children: [
+            // Animated Particles
+            AnimatedBuilder(
+              animation: _particleAnimation,
+              builder: (context, child) {
+                return CustomPaint(
+                  painter: ParticlesPainter(_particleAnimation.value),
+                  size: Size.infinite,
+                );
+              },
+            ),
+            
+            FlexibleSpaceBar(
+              title: SlideTransition(
+                position: _heroSlideAnimation,
+                child: Text(
+                  texts['title'] ?? 'Achievements',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 24),
+                    fontWeight: FontWeight.bold,
+                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                    shadows: [
+                      Shadow(
+                        offset: const Offset(0, 2),
+                        blurRadius: 4,
+                        color: Colors.black.withOpacity(0.3),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              titlePadding: ResponsiveUtils.getResponsivePadding(context),
+            ),
+          ],
+        ),
+      ),
+      leading: Container(
+        margin: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.2),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => context.pop(),
+        ),
+      ),
+      actions: [
+        Container(
+          margin: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.2),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: IconButton(
+            icon: const Icon(Icons.share_outlined, color: Colors.white),
+            onPressed: () {},
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildHeroSection(
+    int currentLevel,
+    double levelProgress,
+    int totalPoints,
+    int unlockedAchievements,
+    int totalAchievements,
+    Map<String, String> texts,
+  ) {
+    return Padding(
+      padding: ResponsiveUtils.getResponsivePadding(context),
+      child: Column(
+        children: [
+          SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 20)),
+          
+          // Level Badge with Animation
+          AnimatedBuilder(
+            animation: _heroScaleAnimation,
+            builder: (context, child) {
+              return Transform.scale(
+                scale: _heroScaleAnimation.value,
+                child: Transform.rotate(
+                  angle: _heroRotationAnimation.value,
+                  child: Container(
+                    width: ResponsiveUtils.getResponsiveIconSize(context, 120),
+                    height: ResponsiveUtils.getResponsiveIconSize(context, 120),
+                    decoration: BoxDecoration(
+                      gradient: RadialGradient(
+                        colors: [
+                          const Color(0xFFFFD700),
+                          const Color(0xFFFFA500),
+                          const Color(0xFFFF8C00),
+                        ],
+                      ),
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFFFFD700).withOpacity(0.4),
+                          blurRadius: 20,
+                          spreadRadius: 5,
+                        ),
+                      ],
+                    ),
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            texts['level'] ?? 'Level',
+                            style: TextStyle(
+                              fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                              fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                            ),
+                          ),
+                          Text(
+                            '$currentLevel',
+                            style: TextStyle(
+                              fontSize: ResponsiveUtils.getResponsiveFontSize(context, 32),
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+          
+          SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 20)),
+          
+          // Level Progress Bar
+          AnimatedBuilder(
+            animation: _levelAnimation,
+            builder: (context, child) {
+              return Container(
+                padding: ResponsiveUtils.getResponsivePadding(context),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 15,
+                      offset: const Offset(0, 5),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          '${texts['level']} $currentLevel',
+                          style: TextStyle(
+                            fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
+                            fontWeight: FontWeight.bold,
+                            color: const Color(0xFF1A1A1A),
+                            fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                          ),
+                        ),
+                        Text(
+                          '${texts['nextLevel']} ${currentLevel + 1}',
+                          style: TextStyle(
+                            fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
+                            color: const Color(0xFF6B7280),
+                            fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                          ),
+                        ),
+                      ],
+                    ),
+                    
+                    SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 8)),
+                    
+                    LinearProgressIndicator(
+                      value: levelProgress * _levelAnimation.value,
+                      backgroundColor: Colors.grey[200],
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        const Color(0xFF8B5CF6),
+                      ),
+                      minHeight: 8,
+                    ),
+                    
+                    SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 8)),
+                    
+                    Text(
+                      '${(levelProgress * 500).toInt()} / 500 ${texts['points']}',
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 12),
+                        color: const Color(0xFF9CA3AF),
+                        fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+          
+          SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 20)),
+          
+          // Stats Cards
+          AnimatedBuilder(
+            animation: _badgeAnimation,
+            builder: (context, child) {
+              return Transform.scale(
+                scale: _badgeAnimation.value,
+                child: Row(
+                  children: [
+                    _buildStatCard(
+                      '$totalPoints',
+                      texts['totalPoints'] ?? 'Total Points',
+                      const Color(0xFF0086FF),
+                      Icons.stars,
+                    ),
+                    SizedBox(width: ResponsiveUtils.getResponsiveSpacing(context, 12)),
+                    _buildStatCard(
+                      '$unlockedAchievements/$totalAchievements',
+                      texts['badges'] ?? 'Badges',
+                      const Color(0xFF10B981),
+                      Icons.emoji_events,
+                    ),
+                    SizedBox(width: ResponsiveUtils.getResponsiveSpacing(context, 12)),
+                    _buildStatCard(
+                      '${(unlockedAchievements / totalAchievements * 100).toInt()}%',
+                      texts['complete'] ?? 'Complete',
+                      const Color(0xFFEC4899),
+                      Icons.check_circle,
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatCard(String value, String label, Color color, IconData icon) {
+    return Expanded(
+      child: Container(
+        padding: ResponsiveUtils.getResponsivePadding(context),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
+            Icon(
+              icon,
+              color: color,
+              size: ResponsiveUtils.getResponsiveIconSize(context, 28),
+            ),
+            SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 8)),
+            Text(
+              value,
+              style: TextStyle(
+                fontSize: ResponsiveUtils.getResponsiveFontSize(context, 20),
+                fontWeight: FontWeight.bold,
+                color: color,
+                fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 4)),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: ResponsiveUtils.getResponsiveFontSize(context, 12),
+                color: const Color(0xFF6B7280),
+                fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+              ),
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCategoryFilter(Map<String, String> texts) {
+    final categories = ['all', 'milestones', 'daily', 'weekly', 'special'];
+    
+    return Padding(
+      padding: ResponsiveUtils.getResponsivePadding(context),
+      child: Container(
+        height: ResponsiveUtils.getResponsiveSpacing(context, 50),
+        child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: categories.length,
+          itemBuilder: (context, index) {
+            final category = categories[index];
+            final isSelected = _selectedCategory == category;
+            
+            return Padding(
+              padding: EdgeInsets.only(
+                right: ResponsiveUtils.getResponsiveSpacing(context, 12),
+              ),
+              child: GestureDetector(
+                onTap: () => setState(() => _selectedCategory = category),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  padding: ResponsiveUtils.getResponsivePadding(context).copyWith(
+                    top: ResponsiveUtils.getResponsiveSpacing(context, 12),
+                    bottom: ResponsiveUtils.getResponsiveSpacing(context, 12),
+                  ),
+                  decoration: BoxDecoration(
+                    color: isSelected ? const Color(0xFF8B5CF6) : Colors.white,
+                    borderRadius: BorderRadius.circular(25),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Text(
+                    texts[category] ?? category,
+                    style: TextStyle(
+                      fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
+                      fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                      color: isSelected ? Colors.white : const Color(0xFF6B7280),
+                      fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAchievementsGrid(List<Achievement> achievements, Map<String, String> texts) {
+    return Padding(
+      padding: ResponsiveUtils.getResponsivePadding(context),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 20)),
+          
+          Text(
+            texts['achievements'] ?? 'Achievements',
+            style: TextStyle(
+              fontSize: ResponsiveUtils.getResponsiveFontSize(context, 20),
+              fontWeight: FontWeight.bold,
+              color: const Color(0xFF1A1A1A),
+              fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+            ),
+          ),
+          
+          SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 16)),
+          
+          GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: ResponsiveUtils.getResponsiveColumnCount(context),
+              crossAxisSpacing: ResponsiveUtils.getResponsiveSpacing(context, 12),
+              mainAxisSpacing: ResponsiveUtils.getResponsiveSpacing(context, 12),
+              childAspectRatio: 0.85,
+            ),
+            itemCount: achievements.length,
+            itemBuilder: (context, index) {
+              final achievement = achievements[index];
+              return AnimatedBuilder(
+                animation: _badgeAnimation,
+                builder: (context, child) {
+                  final delay = index * 0.1;
+                  final animationValue = (_badgeAnimation.value - delay).clamp(0.0, 1.0);
+                  
+                  return Transform.scale(
+                    scale: animationValue,
+                    child: _buildAchievementCard(achievement, texts),
+                  );
+                },
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAchievementCard(Achievement achievement, Map<String, String> texts) {
+    final progress = achievement.targetValue > 0
+        ? (achievement.currentValue / achievement.targetValue).clamp(0.0, 1.0)
+        : 1.0;
+
+    return GestureDetector(
+      onTap: () => _showAchievementDetails(achievement, texts),
+      child: Container(
+        padding: ResponsiveUtils.getResponsivePadding(context),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: achievement.isUnlocked
+                ? achievement.color.withOpacity(0.3)
+                : Colors.grey.withOpacity(0.2),
+            width: 2,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: achievement.isUnlocked
+                  ? achievement.color.withOpacity(0.2)
+                  : Colors.black.withOpacity(0.05),
+              blurRadius: 15,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            // Achievement Icon with Rarity Glow
+            Stack(
+              alignment: Alignment.center,
+              children: [
+                if (achievement.isUnlocked)
+                  Container(
+                    width: ResponsiveUtils.getResponsiveIconSize(context, 70),
+                    height: ResponsiveUtils.getResponsiveIconSize(context, 70),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: RadialGradient(
+                        colors: [
+                          achievement.color.withOpacity(0.3),
+                          achievement.color.withOpacity(0.1),
+                          Colors.transparent,
+                        ],
+                      ),
+                    ),
+                  ),
+                Container(
+                  width: ResponsiveUtils.getResponsiveIconSize(context, 60),
+                  height: ResponsiveUtils.getResponsiveIconSize(context, 60),
+                  decoration: BoxDecoration(
+                    color: achievement.isUnlocked
+                        ? achievement.color.withOpacity(0.2)
+                        : Colors.grey.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    achievement.isUnlocked ? achievement.icon : Icons.lock,
+                    size: ResponsiveUtils.getResponsiveIconSize(context, 32),
+                    color: achievement.isUnlocked
+                        ? achievement.color
+                        : Colors.grey,
+                  ),
+                ),
+                if (achievement.isUnlocked)
+                  Positioned(
+                    top: 0,
+                    right: 0,
+                    child: Container(
+                      width: ResponsiveUtils.getResponsiveIconSize(context, 20),
+                      height: ResponsiveUtils.getResponsiveIconSize(context, 20),
+                      decoration: BoxDecoration(
+                        color: _getRarityColor(achievement.rarity),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.check,
+                        size: ResponsiveUtils.getResponsiveIconSize(context, 12),
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+            
+            // Achievement Title
+            Text(
+              achievement.title,
+              style: TextStyle(
+                fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
+                fontWeight: FontWeight.w600,
+                color: achievement.isUnlocked
+                    ? const Color(0xFF1A1A1A)
+                    : const Color(0xFF9CA3AF),
+                fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+              ),
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+            
+            // Progress or Status
+            Column(
+              children: [
+                if (!achievement.isUnlocked && achievement.targetValue > 0) ...[
+                  LinearProgressIndicator(
+                    value: progress,
+                    backgroundColor: Colors.grey[200],
+                    valueColor: AlwaysStoppedAnimation<Color>(achievement.color),
+                    minHeight: 4,
+                  ),
+                  SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 4)),
+                  Text(
+                    '${achievement.currentValue}/${achievement.targetValue}',
+                    style: TextStyle(
+                      fontSize: ResponsiveUtils.getResponsiveFontSize(context, 11),
+                      color: const Color(0xFF9CA3AF),
+                      fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                    ),
+                  ),
+                ] else ...[
+                  Text(
+                    achievement.isUnlocked
+                        ? '${achievement.points} ${texts['points']}'
+                        : texts['locked'] ?? 'Locked',
+                    style: TextStyle(
+                      fontSize: ResponsiveUtils.getResponsiveFontSize(context, 12),
+                      fontWeight: FontWeight.w500,
+                      color: achievement.isUnlocked
+                          ? achievement.color
+                          : const Color(0xFF9CA3AF),
+                      fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Color _getRarityColor(AchievementRarity rarity) {
+    switch (rarity) {
+      case AchievementRarity.bronze:
+        return const Color(0xFFCD7F32);
+      case AchievementRarity.silver:
+        return const Color(0xFFC0C0C0);
+      case AchievementRarity.gold:
+        return const Color(0xFFFFD700);
+      case AchievementRarity.platinum:
+        return const Color(0xFFE5E4E2);
+      case AchievementRarity.diamond:
+        return const Color(0xFFB9F2FF);
+    }
+  }
+
+  void _showAchievementDetails(Achievement achievement, Map<String, String> texts) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+          ),
+          child: Container(
+            padding: ResponsiveUtils.getResponsivePadding(context),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(24),
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Colors.white,
+                  achievement.color.withOpacity(0.05),
+                ],
+              ),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Achievement Icon
+                Container(
+                  width: ResponsiveUtils.getResponsiveIconSize(context, 80),
+                  height: ResponsiveUtils.getResponsiveIconSize(context, 80),
+                  decoration: BoxDecoration(
+                    color: achievement.color.withOpacity(0.2),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    achievement.icon,
+                    size: ResponsiveUtils.getResponsiveIconSize(context, 40),
+                    color: achievement.color,
+                  ),
+                ),
+                
+                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 16)),
+                
+                // Achievement Title
+                Text(
+                  achievement.title,
+                  style: TextStyle(
+                    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 20),
+                    fontWeight: FontWeight.bold,
+                    color: const Color(0xFF1A1A1A),
+                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                
+                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 8)),
+                
+                // Achievement Description
+                Text(
+                  achievement.description,
+                  style: TextStyle(
+                    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
+                    color: const Color(0xFF6B7280),
+                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                
+                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 16)),
+                
+                // Points and Status
+                Container(
+                  padding: ResponsiveUtils.getResponsivePadding(context),
+                  decoration: BoxDecoration(
+                    color: achievement.color.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        '${achievement.points} ${texts['points']}',
+                        style: TextStyle(
+                          fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
+                          fontWeight: FontWeight.w600,
+                          color: achievement.color,
+                          fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                        ),
+                      ),
+                      Text(
+                        achievement.isUnlocked
+                            ? texts['unlocked'] ?? 'Unlocked'
+                            : texts['locked'] ?? 'Locked',
+                        style: TextStyle(
+                          fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
+                          color: const Color(0xFF6B7280),
+                          fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                
+                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 20)),
+                
+                // Close Button
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: achievement.color,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      padding: EdgeInsets.symmetric(
+                        vertical: ResponsiveUtils.getResponsiveSpacing(context, 16),
+                      ),
+                    ),
+                    child: Text(
+                      'Close',
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
+                        fontWeight: FontWeight.w600,
+                        fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class Achievement {
+  final String id;
+  final String title;
+  final String description;
+  final String category;
+  final IconData icon;
+  final Color color;
+  final int points;
+  final int targetValue;
+  final int currentValue;
+  final bool isUnlocked;
+  final AchievementRarity rarity;
+
+  Achievement({
+    required this.id,
+    required this.title,
+    required this.description,
+    required this.category,
+    required this.icon,
+    required this.color,
+    required this.points,
+    required this.targetValue,
+    required this.currentValue,
+    required this.isUnlocked,
+    required this.rarity,
+  });
+}
+
+enum AchievementRarity {
+  bronze,
+  silver,
+  gold,
+  platinum,
+  diamond,
+}
+
+class ParticlesPainter extends CustomPainter {
+  final double animationValue;
+
+  ParticlesPainter(this.animationValue);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()..style = PaintingStyle.fill;
+    
+    final random = math.Random(42); // Fixed seed for consistent particles
+    
+    for (int i = 0; i < 50; i++) {
+      final x = random.nextDouble() * size.width;
+      final y = random.nextDouble() * size.height;
+      final radius = random.nextDouble() * 3 + 1;
+      
+      // Animate particle opacity and position
+      final opacity = (math.sin(animationValue * 2 * math.pi + i) * 0.5 + 0.5) * 0.3;
+      final animatedY = y + math.sin(animationValue * 2 * math.pi + i) * 20;
+      
+      paint.color = Colors.white.withOpacity(opacity);
+      canvas.drawCircle(Offset(x, animatedY), radius, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(ParticlesPainter oldDelegate) {
+    return oldDelegate.animationValue != animationValue;
+  }
+}

@@ -185,7 +185,7 @@ class _PreSixMonthCountdownScreenState extends State<PreSixMonthCountdownScreen>
               ),
               child: IconButton(
                 icon: const Icon(Icons.arrow_back, color: Color(0xFF1A1A1A), size: 20),
-                onPressed: () => Navigator.of(context).pop(),
+                onPressed: () => context.go('/'),
               ),
             ),
             title: Text(
@@ -448,83 +448,111 @@ class _PreSixMonthCountdownScreenState extends State<PreSixMonthCountdownScreen>
     return Row(
       children: [
         Expanded(
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-            decoration: BoxDecoration(
-              color: const Color(0xFF10B981).withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  width: 24,
-                  height: 24,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF10B981).withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Icon(
-                    Icons.trending_up,
-                    color: Color(0xFF10B981),
-                    size: 16,
-                  ),
+          child: GestureDetector(
+            onTap: () => context.push('/progress-tracking'),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              decoration: BoxDecoration(
+                color: const Color(0xFF10B981).withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: const Color(0xFF10B981).withValues(alpha: 0.3),
+                  width: 1,
                 ),
-                const SizedBox(width: 8),
-                Flexible(
-                  child: Text(
-                    texts['progress'] ?? 'Progress',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: const Color(0xFF10B981),
-                      fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF10B981).withValues(alpha: 0.1),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 24,
+                    height: 24,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF10B981).withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                    overflow: TextOverflow.ellipsis,
+                    child: const Icon(
+                      Icons.trending_up,
+                      color: Color(0xFF10B981),
+                      size: 16,
+                    ),
                   ),
-                ),
-              ],
+                  const SizedBox(width: 8),
+                  Flexible(
+                    child: Text(
+                      texts['progress'] ?? 'Progress',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFF10B981),
+                        fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
         const SizedBox(width: 16),
         Expanded(
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-            decoration: BoxDecoration(
-              color: const Color(0xFF8B5CF6).withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  width: 24,
-                  height: 24,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF8B5CF6).withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Icon(
-                    Icons.emoji_events_outlined,
-                    color: Color(0xFF8B5CF6),
-                    size: 16,
-                  ),
+          child: GestureDetector(
+            onTap: () => context.push('/achievements'),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              decoration: BoxDecoration(
+                color: const Color(0xFF8B5CF6).withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: const Color(0xFF8B5CF6).withValues(alpha: 0.3),
+                  width: 1,
                 ),
-                const SizedBox(width: 8),
-                Flexible(
-                  child: Text(
-                    texts['achievements'] ?? 'Achievements',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: const Color(0xFF8B5CF6),
-                      fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF8B5CF6).withValues(alpha: 0.1),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 24,
+                    height: 24,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF8B5CF6).withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                    overflow: TextOverflow.ellipsis,
+                    child: const Icon(
+                      Icons.emoji_events_outlined,
+                      color: Color(0xFF8B5CF6),
+                      size: 16,
+                    ),
                   ),
-                ),
-              ],
+                  const SizedBox(width: 8),
+                  Flexible(
+                    child: Text(
+                      texts['achievements'] ?? 'Achievements',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFF8B5CF6),
+                        fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
