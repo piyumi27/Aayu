@@ -28,11 +28,28 @@ All notable changes to the Aayu project will be documented in this file.
   - Smooth slide animation for banner dismissal
   - Session cleanup on logout to reset dismissal state
 
+- **Comprehensive README.md**: Created professional project documentation inspired by leading open-source projects
+  - Beautiful header with space reserved for banner image and app logo
+  - Research project branding with professional badges and shields
+  - Comprehensive feature showcase with cultural Sri Lankan context
+  - Figma design system and wireframe integration sections
+  - Technical architecture documentation and project structure
+  - Research contributions and impact metrics
+  - Professional contact information and acknowledgments
+  - Multilingual branding (English, Sinhala, Tamil)
+
 ### Enhanced
 - **Pre-Six Month Countdown**: Enhanced buttons with hover effects, shadows, and navigation
   - Progress button navigates to new Progress Tracking screen
   - Achievements button navigates to new Achievements screen
   - Added visual feedback with borders and shadow effects
+- **Settings Screen**: Added comprehensive child management functionality
+  - New "Children" section for easy access to child profile editing
+  - Multilingual support for child-related settings (English, Sinhala, Tamil)
+- **User Profile Management**: Enhanced profile editing with real-time data integration
+  - Dynamic loading of actual user account information
+  - Real verification status display with colored badges
+  - Form validation and error handling with localized messages
 
 ### Fixed
 - **Bottom Navigation Overflow**: Fixed RenderFlex overflow by making bottom navigation responsive with SafeArea and dynamic sizing
@@ -45,6 +62,24 @@ All notable changes to the Aayu project will be documented in this file.
   - Added proper animation controller cleanup with stop() before dispose()
   - Implemented safeguard checks for isAnimating state before stopping controllers
   - Prevents "Navigator disposed" errors during screen transitions
+- **Edit Parent Profile Data Loading**: Fixed edit profile to show actual logged-in user details
+  - Integrated with LocalAuthService to load real user account data
+  - Profile fields now display user's actual full name, email, and phone number
+  - Verification status badges show real account verification state
+  - Save functionality now updates user profile through LocalAuthService
+- **Child Profile Management in Settings**: Added comprehensive child profile editing to settings
+  - New "Children" section in settings screen with "Edit Child Profiles" option
+  - Child profile editing screen now includes child selection at the top
+  - Smart child selection showing all available children with avatars and ages
+  - Age calculation displays days/months/years format appropriately
+  - Empty state handling when no children are registered
+  - Updated routing to support optional childId parameter for flexible navigation
+- **Navigation Type Casting Error**: Fixed routing errors when navigating without required parameters
+  - Fixed edit-child-profile route to handle optional parameters safely
+  - Fixed otp-verification route with proper null checks and error handling
+  - Fixed measurement-detail route with parameter validation
+  - Improved type safety across all GoRouter extra parameter handling
+  - Added comprehensive null checks to prevent type casting exceptions
 
 ### Technical Improvements
 - Implemented complex animation sequences with multiple AnimationControllers

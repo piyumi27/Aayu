@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../models/user_account.dart';
+import '../services/local_auth_service.dart';
 import '../utils/responsive_utils.dart';
 
 class EditParentProfileScreen extends StatefulWidget {
@@ -22,10 +24,8 @@ class _EditParentProfileScreenState extends State<EditParentProfileScreen> {
   String _selectedLanguage = 'en';
   File? _profileImage;
   bool _isLoading = false;
-  
-  // Mock data - replace with actual user data
-  final bool _emailVerified = true;
-  final bool _phoneVerified = true;
+  UserAccount? _currentUser;
+  final LocalAuthService _authService = LocalAuthService();
   
   @override
   void initState() {
@@ -43,13 +43,20 @@ class _EditParentProfileScreenState extends State<EditParentProfileScreen> {
 
   Future<void> _loadUserData() async {
     final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _selectedLanguage = prefs.getString('language') ?? 'en';
-      // Load mock data - replace with actual user data from database
-      _nameController.text = 'Sarah Johnson';
-      _emailController.text = 'sarah.johnson@example.com';
-      _phoneController.text = '+1 (555) 123-4567';
-    });
+    final user = await _authService.getCurrentUser();
+    
+    if (mounted) {
+      setState(() {
+        _selectedLanguage = prefs.getString('language') ?? 'en';
+        _currentUser = user;
+        
+        if (user != null) {
+          _nameController.text = user.fullName;
+          _emailController.text = user.email ?? '';
+          _phoneController.text = user.phoneNumber;
+        }
+      });
+    }
     
     // Listen for changes
     _nameController.addListener(_onTextChanged);
@@ -379,7 +386,7 @@ class _EditParentProfileScreenState extends State<EditParentProfileScreen> {
             suffixIcon: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                if (_emailVerified) ...[
+                if (_currentUser?.isVerified == true) ...[
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
@@ -445,7 +452,7 @@ class _EditParentProfileScreenState extends State<EditParentProfileScreen> {
             suffixIcon: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                if (_phoneVerified) ...[
+                if (_currentUser?.isVerified == true) ...[
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
@@ -670,34 +677,68 @@ class _EditParentProfileScreenState extends State<EditParentProfileScreen> {
     });
     
     try {
-      // TODO: Implement actual save functionality
-      await Future.delayed(const Duration(seconds: 1));
+      final result = await _authService.updateUserProfile(
+        fullName: _nameController.text.trim(),
+        email: _emailController.text.trim().isNotEmpty ? _emailController.text.trim() : null,
+      );
       
       final texts = _getLocalizedText();
       
+      if (result.success) {
+        // Update local user data
+        setState(() {
+          _currentUser = result.user;
+        });
+        
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              texts['changesSaved']!,
+              style: TextStyle(
+                fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+              ),
+            ),
+            backgroundColor: const Color(0xFF10B981),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              result.message,
+              style: TextStyle(
+                fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+              ),
+            ),
+            backgroundColor: const Color(0xFFFF4D4D),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+        );
+      }
+      
+    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            texts['changesSaved']!,
+            'Error saving changes: ${e.toString()}',
             style: TextStyle(
               fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
             ),
           ),
-          backgroundColor: const Color(0xFF10B981),
+          backgroundColor: const Color(0xFFFF4D4D),
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
           ),
         ),
       );
-      
-      setState(() {
-        // Changes saved
-      });
-      
-    } catch (e) {
-      // Handle error
-      print('Error saving changes: $e');
     } finally {
       setState(() {
         _isLoading = false;

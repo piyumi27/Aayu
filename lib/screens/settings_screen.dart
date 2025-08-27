@@ -114,6 +114,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
         'ok': 'OK',
         'verificationStatus': 'Verification Status',
         'accountVerification': 'Account Verification',
+        'children': 'CHILDREN',
+        'editChildProfiles': 'Edit Child Profiles',
       },
       'si': {
         'settings': 'සැකසීම්',
@@ -148,6 +150,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
         'ok': 'හරි',
         'verificationStatus': 'සත්‍යාපන තත්ත්වය',
         'accountVerification': 'ගිණුම් සත්‍යාපනය',
+        'children': 'ළමයින්',
+        'editChildProfiles': 'ළමා පැතිකඩ සංස්කරණය',
       },
       'ta': {
         'settings': 'அமைப்புகள்',
@@ -182,6 +186,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
         'ok': 'சரி',
         'verificationStatus': 'சரிபார்ப்பு நிலை',
         'accountVerification': 'கணக்கு சரிபார்ப்பு',
+        'children': 'குழந்தைகள்',
+        'editChildProfiles': 'குழந்தை சுயவிவரங்களைத் திருத்து',
       },
     };
     return texts[_selectedLanguage] ?? texts['en']!;
@@ -237,6 +243,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 icon: Icons.lock_outline,
                 title: texts['changePassword']!,
                 onTap: () => _showComingSoonDialog(context, texts),
+              ),
+            ]),
+            
+            const SizedBox(height: 32),
+            
+            // Children Section
+            _buildSectionHeader(texts['children']!),
+            _buildSettingsCard([
+              _buildSettingsRow(
+                icon: Icons.child_care_outlined,
+                title: texts['editChildProfiles']!,
+                onTap: () => context.push('/edit-child-profile'),
+                hasChevron: true,
               ),
             ]),
             

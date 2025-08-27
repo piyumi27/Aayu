@@ -10,11 +10,11 @@ import '../providers/child_provider.dart';
 import '../utils/responsive_utils.dart';
 
 class EditChildProfileScreen extends StatefulWidget {
-  final String childId;
+  final String? childId;
   
   const EditChildProfileScreen({
     super.key,
-    required this.childId,
+    this.childId,
   });
 
   @override
@@ -55,10 +55,22 @@ class _EditChildProfileScreenState extends State<EditChildProfileScreen> {
     
     setState(() {
       _selectedLanguage = prefs.getString('language') ?? 'en';
-      _child = childProvider.children.firstWhere(
-        (child) => child.id == widget.childId,
-        orElse: () => childProvider.selectedChild!,
-      );
+      
+      // Load specific child if childId provided, otherwise use selected child or first child
+      if (widget.childId != null) {
+        try {
+          _child = childProvider.children.firstWhere(
+            (child) => child.id == widget.childId,
+          );
+        } catch (e) {
+          // Child not found, use selected child or first child
+          _child = childProvider.selectedChild ?? 
+                   (childProvider.children.isNotEmpty ? childProvider.children.first : null);
+        }
+      } else {
+        _child = childProvider.selectedChild ?? 
+                 (childProvider.children.isNotEmpty ? childProvider.children.first : null);
+      }
       
       if (_child != null) {
         _nameController.text = _child!.name;
@@ -112,6 +124,9 @@ class _EditChildProfileScreenState extends State<EditChildProfileScreen> {
         'gallery': 'Gallery',
         'removePhoto': 'Remove Photo',
         'ageDisplay': 'Age: {age}',
+        'selectChild': 'Select Child',
+        'noChildren': 'No children found',
+        'addChildFirst': 'Add a child first from the home screen',
       },
       'si': {
         'editChildProfile': 'ළමා පැතිකඩ සංස්කරණය',
@@ -142,6 +157,9 @@ class _EditChildProfileScreenState extends State<EditChildProfileScreen> {
         'gallery': 'ගැලරිය',
         'removePhoto': 'ඡායාරූපය ඉවත් කරන්න',
         'ageDisplay': 'වයස: {age}',
+        'selectChild': 'ළමයා තෝරන්න',
+        'noChildren': 'ළමයින් හමු නොවිය',
+        'addChildFirst': 'මුලින්ම මුල් පිටුවෙන් ළමයෙකු එකතු කරන්න',
       },
       'ta': {
         'editChildProfile': 'குழந்தை சுயவிவரத்தைத் திருத்து',
@@ -172,6 +190,9 @@ class _EditChildProfileScreenState extends State<EditChildProfileScreen> {
         'gallery': 'காட்சியகம்',
         'removePhoto': 'புகைப்படத்தை அகற்று',
         'ageDisplay': 'வயது: {age}',
+        'selectChild': 'குழந்தையைத் தேர்ந்தெடுக்கவும்',
+        'noChildren': 'குழந்தைகள் எதுவும் கிடைக்கவில்லை',
+        'addChildFirst': 'முதல் பக்கத்தில் இருந்து முதலில் ஒரு குழந்தையைச் சேர்க்கவும்',
       },
     };
     return texts[_selectedLanguage] ?? texts['en']!;
@@ -211,16 +232,22 @@ class _EditChildProfileScreenState extends State<EditChildProfileScreen> {
               children: [
                 const SizedBox(height: 32),
                 
+                // Child Selector
+                _buildChildSelector(texts),
+                
+                const SizedBox(height: 32),
+                
                 // Profile Picture Section
-                _buildProfilePictureSection(texts),
+                if (_child != null) _buildProfilePictureSection(texts),
                 
-                const SizedBox(height: 48),
-                
-                // Form Fields
-                _buildNameField(texts),
-                const SizedBox(height: 24),
-                
-                _buildDateOfBirthField(texts),
+                if (_child != null) ...[
+                  const SizedBox(height: 48),
+                  
+                  // Form Fields
+                  _buildNameField(texts),
+                  const SizedBox(height: 24),
+                  
+                  _buildDateOfBirthField(texts),
                 const SizedBox(height: 24),
                 
                 _buildGenderSelection(texts),
@@ -231,19 +258,190 @@ class _EditChildProfileScreenState extends State<EditChildProfileScreen> {
                 
                 const SizedBox(height: 48),
                 
-                // Action Buttons
-                _buildSaveButton(texts),
-                const SizedBox(height: 16),
-                
-                _buildDeleteChildButton(texts),
-                
-                const SizedBox(height: 32),
+                  // Action Buttons
+                  _buildSaveButton(texts),
+                  const SizedBox(height: 16),
+                  
+                  _buildDeleteChildButton(texts),
+                  
+                  const SizedBox(height: 32),
+                ],
               ],
             ),
           ),
         ),
       ),
     );
+  }
+
+  Widget _buildChildSelector(Map<String, String> texts) {
+    return Consumer<ChildProvider>(
+      builder: (context, childProvider, child) {
+        if (childProvider.children.isEmpty) {
+          return Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Column(
+              children: [
+                Icon(
+                  Icons.child_care_outlined,
+                  size: 48,
+                  color: const Color(0xFF9CA3AF),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  texts['noChildren']!,
+                  style: TextStyle(
+                    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
+                    fontWeight: FontWeight.w600,
+                    color: const Color(0xFF374151),
+                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  texts['addChildFirst']!,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
+                    color: const Color(0xFF6B7280),
+                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+
+        return Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 10,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Text(
+                  texts['selectChild']!,
+                  style: TextStyle(
+                    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
+                    fontWeight: FontWeight.w600,
+                    color: const Color(0xFF374151),
+                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                  ),
+                ),
+              ),
+              const Divider(height: 1),
+              ListView.separated(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: childProvider.children.length,
+                separatorBuilder: (context, index) => const Divider(height: 1),
+                itemBuilder: (context, index) {
+                  final child = childProvider.children[index];
+                  final isSelected = _child?.id == child.id;
+                  final age = _calculateAge(child.birthDate);
+                  
+                  return ListTile(
+                    leading: CircleAvatar(
+                      backgroundColor: isSelected 
+                          ? const Color(0xFF0086FF) 
+                          : const Color(0xFFF3F4F6),
+                      child: Icon(
+                        child.gender == 'Male' ? Icons.boy : Icons.girl,
+                        color: isSelected 
+                            ? Colors.white
+                            : (child.gender == 'Male' 
+                                ? const Color(0xFF0086FF)
+                                : const Color(0xFFFF69B4)),
+                      ),
+                    ),
+                    title: Text(
+                      child.name,
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFF1A1A1A),
+                        fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                      ),
+                    ),
+                    subtitle: Text(
+                      texts['ageDisplay']!.replaceAll('{age}', age),
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
+                        color: const Color(0xFF6B7280),
+                        fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                      ),
+                    ),
+                    trailing: isSelected 
+                        ? const Icon(
+                            Icons.check_circle,
+                            color: Color(0xFF10B981),
+                          )
+                        : null,
+                    onTap: () {
+                      _selectChild(child);
+                    },
+                  );
+                },
+              ),
+              const SizedBox(height: 8),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  String _calculateAge(DateTime birthDate) {
+    final now = DateTime.now();
+    final difference = now.difference(birthDate);
+    final days = difference.inDays;
+    
+    if (days < 30) {
+      return '$days days';
+    } else if (days < 365) {
+      final months = (days / 30).floor();
+      return '$months months';
+    } else {
+      final years = (days / 365).floor();
+      final remainingMonths = ((days % 365) / 30).floor();
+      if (remainingMonths == 0) {
+        return '$years years';
+      } else {
+        return '$years years $remainingMonths months';
+      }
+    }
+  }
+
+  void _selectChild(Child child) {
+    setState(() {
+      _child = child;
+      _nameController.text = child.name;
+      _selectedGender = child.gender;
+      _birthDate = child.birthDate;
+      _birthWeightController.text = child.birthWeight?.toString() ?? '';
+      _birthHeightController.text = child.birthHeight?.toString() ?? '';
+    });
   }
 
   Widget _buildProfilePictureSection(Map<String, String> texts) {

@@ -128,7 +128,10 @@ final _router = GoRouter(
     GoRoute(
       path: '/otp-verification',
       builder: (context, state) {
-        final extra = state.extra as Map<String, dynamic>;
+        final extra = state.extra;
+        if (extra == null || extra is! Map<String, dynamic>) {
+          throw Exception('OTP Verification requires phoneNumber, verificationId, and fullName parameters');
+        }
         return OTPVerificationScreen(
           phoneNumber: extra['phoneNumber'],
           verificationId: extra['verificationId'],
@@ -155,7 +158,10 @@ final _router = GoRouter(
     GoRoute(
       path: '/measurement-detail',
       builder: (context, state) {
-        final extra = state.extra as Map<String, dynamic>;
+        final extra = state.extra;
+        if (extra == null || extra is! Map<String, dynamic>) {
+          throw Exception('Measurement Detail requires measurementId and childId parameters');
+        }
         return MeasurementDetailScreen(
           measurementId: extra['measurementId'],
           childId: extra['childId'],
@@ -251,9 +257,13 @@ final _router = GoRouter(
     GoRoute(
       path: '/edit-child-profile',
       builder: (context, state) {
-        final extra = state.extra as Map<String, dynamic>;
+        final extra = state.extra;
+        String? childId;
+        if (extra != null && extra is Map<String, dynamic>) {
+          childId = extra['childId'] as String?;
+        }
         return EditChildProfileScreen(
-          childId: extra['childId'],
+          childId: childId,
         );
       },
     ),
