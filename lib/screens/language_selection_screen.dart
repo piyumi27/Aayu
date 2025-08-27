@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../utils/responsive_utils.dart';
+
 class LanguageSelectionScreen extends StatefulWidget {
   const LanguageSelectionScreen({super.key});
 
@@ -22,7 +24,7 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
     });
 
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('selected_language', _selectedLanguage!);
+    await prefs.setString('language', _selectedLanguage!);
     await prefs.setBool('language_selected', true);
 
     if (mounted) {
@@ -32,119 +34,140 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final isSmallScreen = screenHeight < 600;
+    
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            children: [
-              const SizedBox(height: 60),
-              Container(
-                width: 150,
-                height: 150,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(25),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFF1E90FF).withValues(alpha: 0.08),
-                      blurRadius: 20,
-                      spreadRadius: 5,
-                    ),
-                  ],
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(15),
-                  child: Image.asset(
-                    'assets/images/logo.png',
-                    width: 120,
-                    height: 120,
-                    errorBuilder: (context, error, stackTrace) {
-                      return const Icon(
-                        Icons.child_care,
-                        size: 90,
-                        color: Color(0xFF1E90FF),
-                      );
-                    },
+        child: SingleChildScrollView(
+          child: Container(
+            constraints: BoxConstraints(
+              minHeight: MediaQuery.of(context).size.height - 
+                         MediaQuery.of(context).padding.top - 
+                         MediaQuery.of(context).padding.bottom,
+            ),
+            padding: ResponsiveUtils.getResponsivePadding(context),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, isSmallScreen ? 20 : 40)),
+                
+                // App logo/icon
+                Container(
+                  width: ResponsiveUtils.getResponsiveIconSize(context, isSmallScreen ? 100 : 150),
+                  height: ResponsiveUtils.getResponsiveIconSize(context, isSmallScreen ? 100 : 150),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(25),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withValues(alpha: 0.2),
+                        spreadRadius: 5,
+                        blurRadius: 15,
+                        offset: const Offset(0, 5),
+                      ),
+                    ],
                   ),
-                ),
-              ),
-              const SizedBox(height: 60),
-              const Text(
-                'Select Language / භාෂාව තෝරන්න',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black87,
-                ),
-              ),
-              const SizedBox(height: 30),
-              Expanded(
-                child: Column(
-                  children: [
-                    _buildLanguageCard(
-                      context,
-                      title: 'සිංහල',
-                      subtitle: 'Sinhala',
-                      languageCode: 'si',
-                      isSelected: _selectedLanguage == 'si',
-                    ),
-                    const SizedBox(height: 16),
-                    _buildLanguageCard(
-                      context,
-                      title: 'English',
-                      subtitle: 'ඉංග්‍රීසි',
-                      languageCode: 'en',
-                      isSelected: _selectedLanguage == 'en',
-                    ),
-                    const SizedBox(height: 16),
-                    _buildLanguageCard(
-                      context,
-                      title: 'தமிழ்',
-                      subtitle: 'Tamil',
-                      languageCode: 'ta',
-                      isSelected: _selectedLanguage == 'ta',
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 20),
-              SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: ElevatedButton(
-                  onPressed: _selectedLanguage != null && !_isLoading
-                      ? _saveLanguageAndProceed
-                      : null,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF1E90FF),
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    elevation: 2,
-                  ),
-                  child: _isLoading
-                      ? const SizedBox(
-                          width: 24,
-                          height: 24,
-                          child: CircularProgressIndicator(
-                            color: Colors.white,
-                            strokeWidth: 2,
-                          ),
-                        )
-                      : Text(
-                          _getButtonText(),
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                          ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(25),
+                    child: Center(
+                      child: Text(
+                        'ආයු',
+                        style: TextStyle(
+                          fontSize: ResponsiveUtils.getResponsiveFontSize(context, isSmallScreen ? 48 : 60),
+                          fontWeight: FontWeight.bold,
+                          color: const Color(0xFF0086FF),
+                          fontFamily: 'NotoSerifSinhala',
                         ),
+                      ),
+                    ),
+                  ),
                 ),
-              ),
-              const SizedBox(height: 20),
-            ],
+                
+                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, isSmallScreen ? 30 : 60)),
+                
+                Text(
+                  'Select Language / භාෂාව තෝරන්න',
+                  style: TextStyle(
+                    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 18),
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black87,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                
+                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, isSmallScreen ? 20 : 30)),
+                
+                // Language cards
+                _buildLanguageCard(
+                  context,
+                  title: 'සිංහල',
+                  subtitle: 'Sinhala',
+                  languageCode: 'si',
+                  isSelected: _selectedLanguage == 'si',
+                ),
+                
+                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 12)),
+                
+                _buildLanguageCard(
+                  context,
+                  title: 'English',
+                  subtitle: 'ඉංග්‍රීසි',
+                  languageCode: 'en',
+                  isSelected: _selectedLanguage == 'en',
+                ),
+                
+                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 12)),
+                
+                _buildLanguageCard(
+                  context,
+                  title: 'தமிழ்',
+                  subtitle: 'Tamil',
+                  languageCode: 'ta',
+                  isSelected: _selectedLanguage == 'ta',
+                ),
+                
+                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, isSmallScreen ? 20 : 40)),
+                
+                // Continue button
+                SizedBox(
+                  width: double.infinity,
+                  height: ResponsiveUtils.getResponsiveSpacing(context, 56),
+                  child: ElevatedButton(
+                    onPressed: _selectedLanguage != null && !_isLoading
+                        ? _saveLanguageAndProceed
+                        : null,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF0086FF),
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 2,
+                    ),
+                    child: _isLoading
+                        ? SizedBox(
+                            width: ResponsiveUtils.getResponsiveIconSize(context, 24),
+                            height: ResponsiveUtils.getResponsiveIconSize(context, 24),
+                            child: const CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ),
+                          )
+                        : Text(
+                            _getButtonText(),
+                            style: TextStyle(
+                              fontSize: ResponsiveUtils.getResponsiveFontSize(context, 18),
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                  ),
+                ),
+                
+                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 20)),
+              ],
+            ),
           ),
         ),
       ),
@@ -166,41 +189,37 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
       },
       borderRadius: BorderRadius.circular(12),
       child: Container(
-        padding: const EdgeInsets.all(20),
+        padding: ResponsiveUtils.getResponsivePadding(context, scale: 1.25),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF1E90FF).withValues(alpha: 0.08) : Colors.grey[50],
+          color: isSelected ? const Color(0xFF0086FF).withValues(alpha: 0.1) : Colors.grey[50],
+          borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isSelected ? const Color(0xFF1E90FF) : Colors.grey[300]!,
+            color: isSelected ? const Color(0xFF0086FF) : Colors.grey[300]!,
             width: isSelected ? 2 : 1,
           ),
-          borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
           children: [
             Container(
-              width: 24,
-              height: 24,
+              width: ResponsiveUtils.getResponsiveIconSize(context, 24),
+              height: ResponsiveUtils.getResponsiveIconSize(context, 24),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: isSelected ? const Color(0xFF1E90FF) : Colors.grey[400]!,
+                  color: isSelected ? const Color(0xFF0086FF) : Colors.grey[400]!,
                   width: 2,
                 ),
+                color: isSelected ? const Color(0xFF0086FF) : Colors.transparent,
               ),
               child: isSelected
-                  ? Center(
-                      child: Container(
-                        width: 12,
-                        height: 12,
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Color(0xFF1E90FF),
-                        ),
-                      ),
+                  ? Icon(
+                      Icons.check,
+                      size: ResponsiveUtils.getResponsiveIconSize(context, 16),
+                      color: Colors.white,
                     )
                   : null,
             ),
-            const SizedBox(width: 20),
+            SizedBox(width: ResponsiveUtils.getResponsiveSpacing(context, 16)),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -208,33 +227,28 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
                   Text(
                     title,
                     style: TextStyle(
-                      fontSize: 20,
+                      fontSize: ResponsiveUtils.getResponsiveFontSize(context, 18),
                       fontWeight: FontWeight.w600,
-                      color: isSelected ? const Color(0xFF1E90FF) : Colors.black87,
-                      fontFamily: languageCode == 'si'
-                          ? 'NotoSerifSinhala'
-                          : null,
+                      color: isSelected ? const Color(0xFF0086FF) : Colors.black87,
+                      fontFamily: _getFontFamily(languageCode),
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 2)),
                   Text(
                     subtitle,
                     style: TextStyle(
-                      fontSize: 14,
-                      color: isSelected ? const Color(0xFF1E90FF).withValues(alpha: 0.8) : Colors.black54,
-                      fontFamily: subtitle.contains('සිංහල')
-                          ? 'NotoSerifSinhala'
-                          : null,
+                      fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
+                      color: Colors.grey[600],
                     ),
                   ),
                 ],
               ),
             ),
             if (isSelected)
-              const Icon(
+              Icon(
                 Icons.check_circle,
-                color: Color(0xFF1E90FF),
-                size: 28,
+                size: ResponsiveUtils.getResponsiveIconSize(context, 28),
+                color: const Color(0xFF0086FF),
               ),
           ],
         ),
@@ -246,11 +260,23 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
     switch (_selectedLanguage) {
       case 'si':
         return 'ඉදිරියට';
-      case 'ta':
-        return 'தொடர';
       case 'en':
+        return 'Continue';
+      case 'ta':
+        return 'தொடர்க';
       default:
         return 'Continue';
+    }
+  }
+
+  String? _getFontFamily(String languageCode) {
+    switch (languageCode) {
+      case 'si':
+        return 'NotoSerifSinhala';
+      case 'ta':
+        return 'NotoSerifSinhala';
+      default:
+        return null;
     }
   }
 }

@@ -137,6 +137,21 @@ All notable changes to the Aayu project will be documented in this file.
   - **Responsive Layout**: Proper spacing and sizing across all device sizes
 
 ### Fixed
+- **Language Selection Screen Overflow & Responsiveness**
+  - Fixed RenderFlex overflow error by implementing SingleChildScrollView
+  - Added responsive sizing for all elements based on screen height
+  - Adjusts logo size, spacing, and font sizes for small screens (< 600px height)
+  - Uses ResponsiveUtils for consistent padding and spacing across all devices
+  - Implements proper constraints to prevent bottom overflow on any screen size
+  - Changed blue color scheme to match app theme (0xFF0086FF)
+
+- **Input Field Background Colors**
+  - Removed green/grey background from Sri Lankan phone number country code prefix
+  - Changed to light blue background (0xFF0086FF with 5% opacity) in SriLankaPhoneField
+  - Removed green/grey background from @gmail.com suffix in email field
+  - Applied consistent light blue background to GmailField suffix section
+  - Both phone and email fields now match the app's blue theme consistently
+
 - **Home Screen VerificationBanner Integration Fix**
   - Fixed undefined `status` parameter in VerificationBanner widget usage
   - Updated to use `user` parameter with proper UserAccount object

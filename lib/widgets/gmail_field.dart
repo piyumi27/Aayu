@@ -181,7 +181,7 @@ class _GmailFieldState extends State<GmailField> {
               Container(
                 padding: ResponsiveUtils.getResponsivePadding(context),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                  color: const Color(0xFF0086FF).withValues(alpha: 0.05),
                   borderRadius: const BorderRadius.only(
                     topRight: Radius.circular(7),
                     bottomRight: Radius.circular(7),
