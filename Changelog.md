@@ -2,15 +2,20 @@
 
 All notable changes to the Aayu project will be documented in this file.
 
-## [2025-08-27] - Verification Center & Navigation Fixes
+## [2025-08-27] - UI Fixes & Email Registration
 
 ### Fixed
+- **Bottom Navigation Overflow**: Fixed RenderFlex overflow by making bottom navigation responsive with SafeArea and dynamic sizing
+- **Email Registration**: Fixed email not being saved during user registration - emails now properly display in profile screen
 - **Verification Center Navigation**: Removed automatic redirect to verification center for unverified users
 - **Continue Using App Offline Button**: Fixed navigation to allow registered but unverified users to access dashboard
 - **User Flow**: Unverified users can now use the app offline and access verification through profile screen
 - **Color Scheme**: Updated verification center background to match default app styles (0xFFF3F4F6)
 
 ### Changed
+- Made bottom navigation bar responsive with dynamic icon and font sizing
+- Updated LocalAuthService.registerUser() to accept optional email parameter
+- Modified register screen to pass email during user registration
 - Modified main app redirect logic to allow unverified users to access home screen
 - Removed forced verification center redirect, making verification optional for offline usage
 

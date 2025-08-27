@@ -3,6 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../utils/responsive_utils.dart';
+
 // Screen imports for reference (these screens are navigated to via GoRouter)
 // Home (/) -> HomeScreen
 // Growth (/growth) -> GrowthChartsScreen  
@@ -98,8 +100,12 @@ class _BottomNavigationState extends State<BottomNavigation> {
     final labels = _getLocalizedLabels();
     final selectedIndex = _calculateSelectedIndex(context);
     
+    // Responsive sizing
+    final screenType = ResponsiveUtils.getScreenType(context);
+    final iconSize = ResponsiveUtils.getResponsiveIconSize(context, 24);
+    final fontSize = ResponsiveUtils.getResponsiveFontSize(context, 12);
+    
     return Container(
-      height: 56,
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [
@@ -110,53 +116,55 @@ class _BottomNavigationState extends State<BottomNavigation> {
           ),
         ],
       ),
-      child: BottomNavigationBar(
-        currentIndex: selectedIndex,
-        onTap: (index) => _onItemTapped(index, context),
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.white,
-        selectedItemColor: const Color(0xFF0086FF),
-        unselectedItemColor: const Color(0xFF666666),
-        selectedFontSize: 12,
-        unselectedFontSize: 12,
-        showSelectedLabels: true,
-        showUnselectedLabels: true,
-        elevation: 0,
-        selectedLabelStyle: GoogleFonts.notoSerifSinhala(
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
+      child: SafeArea(
+        child: BottomNavigationBar(
+          currentIndex: selectedIndex,
+          onTap: (index) => _onItemTapped(index, context),
+          type: BottomNavigationBarType.fixed,
+          backgroundColor: Colors.white,
+          selectedItemColor: const Color(0xFF0086FF),
+          unselectedItemColor: const Color(0xFF666666),
+          selectedFontSize: fontSize,
+          unselectedFontSize: fontSize,
+          showSelectedLabels: true,
+          showUnselectedLabels: true,
+          elevation: 0,
+          selectedLabelStyle: GoogleFonts.notoSerifSinhala(
+            fontSize: fontSize,
+            fontWeight: FontWeight.w600,
+          ),
+          unselectedLabelStyle: GoogleFonts.notoSerifSinhala(
+            fontSize: fontSize,
+            fontWeight: FontWeight.normal,
+          ),
+          items: [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home_outlined, size: iconSize),
+              activeIcon: Icon(Icons.home, size: iconSize),
+              label: labels['home'],
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.trending_up_outlined, size: iconSize),
+              activeIcon: Icon(Icons.trending_up, size: iconSize),
+              label: labels['growth'],
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.medical_services_outlined, size: iconSize),
+              activeIcon: Icon(Icons.medical_services, size: iconSize),
+              label: labels['medicine'],
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.menu_book_outlined, size: iconSize),
+              activeIcon: Icon(Icons.menu_book, size: iconSize),
+              label: labels['learn'],
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person_outline, size: iconSize),
+              activeIcon: Icon(Icons.person, size: iconSize),
+              label: labels['profile'],
+            ),
+          ],
         ),
-        unselectedLabelStyle: GoogleFonts.notoSerifSinhala(
-          fontSize: 12,
-          fontWeight: FontWeight.normal,
-        ),
-        items: [
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.home_outlined, size: 24),
-            activeIcon: const Icon(Icons.home, size: 24),
-            label: labels['home'],
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.trending_up_outlined, size: 24),
-            activeIcon: const Icon(Icons.trending_up, size: 24),
-            label: labels['growth'],
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.medical_services_outlined, size: 24),
-            activeIcon: const Icon(Icons.medical_services, size: 24),
-            label: labels['medicine'],
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.menu_book_outlined, size: 24),
-            activeIcon: const Icon(Icons.menu_book, size: 24),
-            label: labels['learn'],
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.person_outline, size: 24),
-            activeIcon: const Icon(Icons.person, size: 24),
-            label: labels['profile'],
-          ),
-        ],
       ),
     );
   }

@@ -22,6 +22,7 @@ class LocalAuthService {
     required String fullName,
     required String phoneNumber,
     required String password,
+    String? email,
   }) async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -40,6 +41,7 @@ class LocalAuthService {
         id: _uuid.v4(),
         fullName: fullName,
         phoneNumber: phoneNumber,
+        email: email?.isNotEmpty == true ? email : null,
         passwordHash: _hashPassword(password),
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),

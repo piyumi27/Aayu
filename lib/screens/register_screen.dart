@@ -61,6 +61,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         fullName: _fullName,
         phoneNumber: _phoneNumber,
         password: _password,
+        email: _email.isNotEmpty ? _email : null,
       );
       
       if (result.success && mounted) {
