@@ -161,61 +161,13 @@ class _VerificationCenterScreenState extends State<VerificationCenterScreen> {
     }
   }
   
-  void _skipVerification() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(
-          'Skip Verification?',
-          style: TextStyle(
-            fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-            color: const Color(0xFF1A1A1A),
-          ),
-        ),
-        content: Text(
-          'You can use the app offline without verification. Cloud features like data sync and backup will be available after verification.',
-          style: TextStyle(
-            fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-            color: const Color(0xFF6B7280),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Text(
-              'Cancel',
-              style: TextStyle(
-                color: const Color(0xFF6B7280),
-                fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-              ),
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              context.go('/');
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF0086FF),
-              foregroundColor: Colors.white,
-            ),
-            child: Text(
-              'Continue',
-              style: TextStyle(
-                fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
   
   Map<String, String> _getLocalizedText() {
     final Map<String, Map<String, String>> texts = {
       'en': {
         'title': 'Verify Your Account',
         'subtitle': 'Verify your email or phone to enable cloud sync and backup',
+        'verificationInfo': 'You have to verify your account to get full features of the app including data sync and backup.',
         'emailSection': 'Email Verification',
         'emailHint': 'We\'ll send a verification link to your email',
         'sendEmail': 'Send Verification Email',
@@ -228,12 +180,12 @@ class _VerificationCenterScreenState extends State<VerificationCenterScreen> {
         'resend': 'Resend OTP',
         'otpHint': 'Enter 6-digit code',
         'verifyOTP': 'Verify Code',
-        'skipButton': 'Skip for Now',
-        'continueOffline': 'Continue Using App Offline',
+        'continueOffline': 'Continue Using App Online',
       },
       'si': {
         'title': 'ඔබේ ගිණුම සත්‍යාපනය කරන්න',
         'subtitle': 'ක්ලවුඩ් සමමුහුර්තකරණය සහ උපස්ථකරණය සක්‍රිය කිරීමට ඔබේ විද්‍යුත් තැපෑල හෝ දුරකථනය සත්‍යාපනය කරන්න',
+        'verificationInfo': 'දත්ත සමකරණය සහ උපස්ථකරණය ඇතුළු යෙදුමේ සම්පූර්ණ විශේෂාංග ලබා ගැනීමට ඔබේ ගිණුම සත්‍යාපනය කරන්න.',
         'emailSection': 'විද්‍යුත් තැපෑල සත්‍යාපනය',
         'emailHint': 'අපි ඔබේ විද්‍යුත් තැපෑලට සත්‍යාපන සබැඳියක් යවන්නෙමු',
         'sendEmail': 'සත්‍යාපන තැපෑල යවන්න',
@@ -246,12 +198,12 @@ class _VerificationCenterScreenState extends State<VerificationCenterScreen> {
         'resend': 'OTP නැවත යවන්න',
         'otpHint': 'ඉලක්කම් 6 ඇතුළත් කරන්න',
         'verifyOTP': 'කේතය සත්‍යාපනය කරන්න',
-        'skipButton': 'දැනට මග හරින්න',
-        'continueOffline': 'ඕෆ්ලයින් යෙදුම භාවිතා කරන්න',
+        'continueOffline': 'යෙදුම අන්තර්ජාලයෙන් භාවිතා කරන්න',
       },
       'ta': {
         'title': 'உங்கள் கணக்கை சரிபார்க்கவும்',
         'subtitle': 'மேகக்கணி ஒத்திசைவு மற்றும் காப்புப்பிரதியை செயல்படுத்த உங்கள் மின்னஞ்சல் அல்லது தொலைபேசியை சரிபார்க்கவும்',
+        'verificationInfo': 'தரவு ஒத்திசைவு மற்றும் காப்புப்பிரதி உட்பட பயன்பாட்டின் முழு அம்சங்களைப் பெற உங்கள் கணக்கை சரிபார்க்கவும்.',
         'emailSection': 'மின்னஞ்சல் சரிபார்ப்பு',
         'emailHint': 'உங்கள் மின்னஞ்சலுக்கு சரிபார்ப்பு இணைப்பை அனுப்புவோம்',
         'sendEmail': 'சரிபார்ப்பு மின்னஞ்சல் அனுப்பு',
@@ -264,8 +216,7 @@ class _VerificationCenterScreenState extends State<VerificationCenterScreen> {
         'resend': 'OTP மீண்டும் அனுப்பு',
         'otpHint': '6-இலக்க குறியீட்டை உள்ளிடவும்',
         'verifyOTP': 'குறியீட்டை சரிபார்க்கவும்',
-        'skipButton': 'இப்போதைக்கு தவிர்க்கவும்',
-        'continueOffline': 'ஆஃப்லைனில் ஆப்பைப் பயன்படுத்தவும்',
+        'continueOffline': 'ஆன்லைனில் பயன்பாட்டைப் பயன்படுத்தவும்',
       },
     };
     return texts[_selectedLanguage] ?? texts['en']!;
@@ -295,20 +246,7 @@ class _VerificationCenterScreenState extends State<VerificationCenterScreen> {
             fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
           ),
         ),
-        actions: [
-          TextButton(
-            onPressed: _skipVerification,
-            child: Text(
-              texts['skipButton']!,
-              style: TextStyle(
-                color: const Color(0xFF0086FF),
-                fontWeight: FontWeight.w600,
-                fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
-                fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-              ),
-            ),
-          ),
-        ],
+        actions: [],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -327,7 +265,39 @@ class _VerificationCenterScreenState extends State<VerificationCenterScreen> {
                 textAlign: TextAlign.center,
               ),
               
-              SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 32)),
+              SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 24)),
+              
+              // Info message about verification benefits
+              Container(
+                padding: ResponsiveUtils.getResponsivePadding(context),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFEF3C7),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: const Color(0xFFF59E0B).withValues(alpha: 0.3)),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.info_outline,
+                      color: const Color(0xFFF59E0B),
+                      size: ResponsiveUtils.getResponsiveIconSize(context, 20),
+                    ),
+                    SizedBox(width: ResponsiveUtils.getResponsiveSpacing(context, 8)),
+                    Expanded(
+                      child: Text(
+                        texts['verificationInfo']!,
+                        style: TextStyle(
+                          color: const Color(0xFF92400E),
+                          fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
+                          fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              
+              SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 24)),
               
               // Success/Error Messages
               if (_errorMessage != null) ...[
@@ -644,11 +614,11 @@ class _VerificationCenterScreenState extends State<VerificationCenterScreen> {
               
               SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 32)),
               
-              // Continue Offline Button
+              // Continue Online Button
               SizedBox(
                 height: ResponsiveUtils.getResponsiveSpacing(context, 48),
                 child: OutlinedButton(
-                  onPressed: _skipVerification,
+                  onPressed: () => context.go('/'),
                   style: OutlinedButton.styleFrom(
                     side: BorderSide(color: const Color(0xFF0086FF)),
                     shape: RoundedRectangleBorder(
