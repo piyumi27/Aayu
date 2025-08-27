@@ -180,7 +180,7 @@ class _VerificationCenterScreenState extends State<VerificationCenterScreen> {
         'resend': 'Resend OTP',
         'otpHint': 'Enter 6-digit code',
         'verifyOTP': 'Verify Code',
-        'continueOffline': 'Continue Using App Online',
+        'continueOffline': 'Continue Using App Offline',
       },
       'si': {
         'title': 'ඔබේ ගිණුම සත්‍යාපනය කරන්න',
@@ -198,7 +198,7 @@ class _VerificationCenterScreenState extends State<VerificationCenterScreen> {
         'resend': 'OTP නැවත යවන්න',
         'otpHint': 'ඉලක්කම් 6 ඇතුළත් කරන්න',
         'verifyOTP': 'කේතය සත්‍යාපනය කරන්න',
-        'continueOffline': 'යෙදුම අන්තර්ජාලයෙන් භාවිතා කරන්න',
+        'continueOffline': 'ඕෆ්ලයින් යෙදුම භාවිතා කරන්න',
       },
       'ta': {
         'title': 'உங்கள் கணக்கை சரிபார்க்கவும்',
@@ -216,7 +216,7 @@ class _VerificationCenterScreenState extends State<VerificationCenterScreen> {
         'resend': 'OTP மீண்டும் அனுப்பு',
         'otpHint': '6-இலக்க குறியீட்டை உள்ளிடவும்',
         'verifyOTP': 'குறியீட்டை சரிபார்க்கவும்',
-        'continueOffline': 'ஆன்லைனில் பயன்பாட்டைப் பயன்படுத்தவும்',
+        'continueOffline': 'ஆஃப்லைனில் ஆப்பைப் பயன்படுத்தவும்',
       },
     };
     return texts[_selectedLanguage] ?? texts['en']!;
@@ -233,7 +233,7 @@ class _VerificationCenterScreenState extends State<VerificationCenterScreen> {
     }
     
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFF3F4F6),
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,

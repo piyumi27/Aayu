@@ -191,11 +191,10 @@ final _router = GoRouter(
             }
             
             // If logged in, check if user needs verification
+            // Note: Allow unverified users to access the app offline
+            // They can access verification center through profile screen
             final user = await authService.getCurrentUser();
-            if (user != null && !user.isSyncGateOpen) {
-              // User is logged in but not verified - show verification center
-              return '/verification-center';
-            }
+            // Removed automatic redirect to verification center for unverified users
             
             return null;
           },

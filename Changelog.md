@@ -2,6 +2,18 @@
 
 All notable changes to the Aayu project will be documented in this file.
 
+## [2025-08-27] - Verification Center & Navigation Fixes
+
+### Fixed
+- **Verification Center Navigation**: Removed automatic redirect to verification center for unverified users
+- **Continue Using App Offline Button**: Fixed navigation to allow registered but unverified users to access dashboard
+- **User Flow**: Unverified users can now use the app offline and access verification through profile screen
+- **Color Scheme**: Updated verification center background to match default app styles (0xFFF3F4F6)
+
+### Changed
+- Modified main app redirect logic to allow unverified users to access home screen
+- Removed forced verification center redirect, making verification optional for offline usage
+
 ## [2025-08-26] - Offline-First Authentication with Deferred Verification & Feature Gating
 
 ### Added
