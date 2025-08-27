@@ -1,15 +1,13 @@
 <div align="center">
   <!-- Header Banner Space - Add your beautiful banner image here -->
-  <img src="assets/images/banner-placeholder.png" alt="Aayu Banner" width="100%" style="border-radius: 10px; margin-bottom: 20px;">
+  <img src="/home/akash/Aayu/readme/banner.png" alt="Aayu Banner" width="100%" style="border-radius: 10px; margin-bottom: 20px;">
   
   <h1 style="border: none; margin: 0;">
-    <img src="assets/icons/app_icon.png" alt="Aayu Logo" width="80" height="80" style="vertical-align: middle;">
-    <br>
     ආයු (Ayu)
   </h1>
   
   <p style="font-size: 18px; margin-top: 10px; color: #666;">
-    🌱 Smart Child Nutrition Tracker for Sri Lankan Families
+    Smart Child Nutrition Tracker for Sri Lankan Families
   </p>
   
   <p style="margin-bottom: 30px;">
@@ -87,7 +85,7 @@ To bridge the gap between traditional child care wisdom and modern nutritional s
 Our comprehensive design system includes wireframes, user flows, and component libraries:
 
 <div align="center">
-  <a href="https://figma.com/your-figma-link-here">
+  <a href="https://www.figma.com/design/nVUZuyIIDvqHbF7Ww6AHnX/%E0%B6%86%E0%B6%BA%E0%B7%94-Mobile-APP-Wireframe?node-id=0-1&t=lqQeVaNq2lari1Bx-1">
     <img src="https://img.shields.io/badge/View%20in%20Figma-Design%20System-F24E1E?style=for-the-badge&logo=figma&logoColor=white" alt="View in Figma">
   </a>
   
