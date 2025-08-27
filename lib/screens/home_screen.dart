@@ -164,7 +164,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         VerificationBanner(
                           user: _currentUser,
                           onVerifyNow: () => context.go('/verification-center'),
-                          isDismissible: false, // Don't allow dismissing from home screen
+                          isDismissible: true, // Allow users to dismiss (reappears on next login)
                         ),
                       
                       // Main Content Area

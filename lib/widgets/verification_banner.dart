@@ -62,7 +62,9 @@ class _VerificationBannerState extends State<VerificationBanner>
     if (mounted) {
       setState(() {
         _selectedLanguage = prefs.getString('language') ?? 'en';
-        _isDismissed = prefs.getBool('verification_banner_dismissed') ?? false;
+        // Use session-based dismissal key
+        final sessionKey = 'verification_banner_dismissed_${widget.user?.id ?? 'current'}';
+        _isDismissed = prefs.getBool(sessionKey) ?? false;
       });
     }
   }
@@ -74,7 +76,9 @@ class _VerificationBannerState extends State<VerificationBanner>
     
     if (mounted) {
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setBool('verification_banner_dismissed', true);
+      // Use session-based dismissal (reappears on next login)
+      final sessionKey = 'verification_banner_dismissed_${widget.user?.id ?? 'current'}';
+      await prefs.setBool(sessionKey, true);
       setState(() => _isDismissed = true);
     }
   }

@@ -129,6 +129,14 @@ class LocalAuthService {
   /// Logout user
   Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
+    
+    // Clear session-based dismissals so verification banner reappears on next login
+    final keys = prefs.getKeys();
+    final dismissalKeys = keys.where((key) => key.startsWith('verification_banner_dismissed_')).toList();
+    for (final key in dismissalKeys) {
+      await prefs.remove(key);
+    }
+    
     await prefs.remove(_keyCurrentUser);
     await prefs.setBool('user_logged_in', false);
   }

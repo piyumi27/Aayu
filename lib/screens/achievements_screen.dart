@@ -443,6 +443,20 @@ class _AchievementsScreenState extends State<AchievementsScreen>
 
   @override
   void dispose() {
+    // Dispose animation controllers safely
+    if (_heroController.isAnimating) {
+      _heroController.stop();
+    }
+    if (_badgeController.isAnimating) {
+      _badgeController.stop();
+    }
+    if (_particleController.isAnimating) {
+      _particleController.stop();
+    }
+    if (_levelController.isAnimating) {
+      _levelController.stop();
+    }
+    
     _heroController.dispose();
     _badgeController.dispose();
     _particleController.dispose();
@@ -916,7 +930,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
               crossAxisCount: ResponsiveUtils.getResponsiveColumnCount(context),
               crossAxisSpacing: ResponsiveUtils.getResponsiveSpacing(context, 12),
               mainAxisSpacing: ResponsiveUtils.getResponsiveSpacing(context, 12),
-              childAspectRatio: 0.85,
+              childAspectRatio: 0.75, // Fixed aspect ratio for consistent sizing
             ),
             itemCount: achievements.length,
             itemBuilder: (context, index) {
@@ -948,137 +962,182 @@ class _AchievementsScreenState extends State<AchievementsScreen>
     return GestureDetector(
       onTap: () => _showAchievementDetails(achievement, texts),
       child: Container(
-        padding: ResponsiveUtils.getResponsivePadding(context),
+        height: double.infinity, // Ensures all cards have same height
+        padding: EdgeInsets.all(ResponsiveUtils.getResponsiveSpacing(context, 12)),
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
+          color: achievement.isUnlocked ? Colors.white : const Color(0xFFF9FAFB),
+          borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: achievement.isUnlocked
-                ? achievement.color.withOpacity(0.3)
-                : Colors.grey.withOpacity(0.2),
-            width: 2,
+                ? achievement.color.withOpacity(0.4)
+                : const Color(0xFFE5E7EB),
+            width: achievement.isUnlocked ? 2 : 1,
           ),
           boxShadow: [
             BoxShadow(
               color: achievement.isUnlocked
-                  ? achievement.color.withOpacity(0.2)
-                  : Colors.black.withOpacity(0.05),
-              blurRadius: 15,
-              offset: const Offset(0, 8),
+                  ? achievement.color.withOpacity(0.15)
+                  : Colors.black.withOpacity(0.03),
+              blurRadius: achievement.isUnlocked ? 12 : 6,
+              offset: const Offset(0, 4),
             ),
           ],
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.max,
           children: [
-            // Achievement Icon with Rarity Glow
-            Stack(
-              alignment: Alignment.center,
-              children: [
-                if (achievement.isUnlocked)
-                  Container(
-                    width: ResponsiveUtils.getResponsiveIconSize(context, 70),
-                    height: ResponsiveUtils.getResponsiveIconSize(context, 70),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: RadialGradient(
-                        colors: [
-                          achievement.color.withOpacity(0.3),
-                          achievement.color.withOpacity(0.1),
-                          Colors.transparent,
-                        ],
+            // Top section: Icon
+            Expanded(
+              flex: 3,
+              child: Center(
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    // Glow effect for unlocked achievements
+                    if (achievement.isUnlocked)
+                      Container(
+                        width: ResponsiveUtils.getResponsiveIconSize(context, 56),
+                        height: ResponsiveUtils.getResponsiveIconSize(context, 56),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: RadialGradient(
+                            colors: [
+                              achievement.color.withOpacity(0.2),
+                              achievement.color.withOpacity(0.1),
+                              Colors.transparent,
+                            ],
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                Container(
-                  width: ResponsiveUtils.getResponsiveIconSize(context, 60),
-                  height: ResponsiveUtils.getResponsiveIconSize(context, 60),
-                  decoration: BoxDecoration(
-                    color: achievement.isUnlocked
-                        ? achievement.color.withOpacity(0.2)
-                        : Colors.grey.withOpacity(0.1),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    achievement.isUnlocked ? achievement.icon : Icons.lock,
-                    size: ResponsiveUtils.getResponsiveIconSize(context, 32),
-                    color: achievement.isUnlocked
-                        ? achievement.color
-                        : Colors.grey,
-                  ),
-                ),
-                if (achievement.isUnlocked)
-                  Positioned(
-                    top: 0,
-                    right: 0,
-                    child: Container(
-                      width: ResponsiveUtils.getResponsiveIconSize(context, 20),
-                      height: ResponsiveUtils.getResponsiveIconSize(context, 20),
+                    // Icon container
+                    Container(
+                      width: ResponsiveUtils.getResponsiveIconSize(context, 48),
+                      height: ResponsiveUtils.getResponsiveIconSize(context, 48),
                       decoration: BoxDecoration(
-                        color: _getRarityColor(achievement.rarity),
+                        color: achievement.isUnlocked
+                            ? achievement.color.withOpacity(0.15)
+                            : const Color(0xFFE5E7EB),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
-                        Icons.check,
-                        size: ResponsiveUtils.getResponsiveIconSize(context, 12),
-                        color: Colors.white,
+                        achievement.isUnlocked ? achievement.icon : Icons.lock_outline,
+                        size: ResponsiveUtils.getResponsiveIconSize(context, 24),
+                        color: achievement.isUnlocked
+                            ? achievement.color
+                            : const Color(0xFF9CA3AF),
                       ),
                     ),
-                  ),
-              ],
-            ),
-            
-            // Achievement Title
-            Text(
-              achievement.title,
-              style: TextStyle(
-                fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
-                fontWeight: FontWeight.w600,
-                color: achievement.isUnlocked
-                    ? const Color(0xFF1A1A1A)
-                    : const Color(0xFF9CA3AF),
-                fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                    // Checkmark for unlocked achievements
+                    if (achievement.isUnlocked)
+                      Positioned(
+                        top: 0,
+                        right: 0,
+                        child: Container(
+                          width: ResponsiveUtils.getResponsiveIconSize(context, 16),
+                          height: ResponsiveUtils.getResponsiveIconSize(context, 16),
+                          decoration: BoxDecoration(
+                            color: _getRarityColor(achievement.rarity),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.check,
+                            size: ResponsiveUtils.getResponsiveIconSize(context, 10),
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
               ),
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
             ),
             
-            // Progress or Status
-            Column(
-              children: [
-                if (!achievement.isUnlocked && achievement.targetValue > 0) ...[
-                  LinearProgressIndicator(
-                    value: progress,
-                    backgroundColor: Colors.grey[200],
-                    valueColor: AlwaysStoppedAnimation<Color>(achievement.color),
-                    minHeight: 4,
+            // Middle section: Title
+            Expanded(
+              flex: 2,
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: ResponsiveUtils.getResponsiveSpacing(context, 4),
+                ),
+                child: Text(
+                  achievement.title,
+                  style: TextStyle(
+                    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 12),
+                    fontWeight: FontWeight.w600,
+                    color: achievement.isUnlocked
+                        ? const Color(0xFF111827)
+                        : const Color(0xFF6B7280),
+                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                    height: 1.2,
                   ),
-                  SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 4)),
-                  Text(
-                    '${achievement.currentValue}/${achievement.targetValue}',
-                    style: TextStyle(
-                      fontSize: ResponsiveUtils.getResponsiveFontSize(context, 11),
-                      color: const Color(0xFF9CA3AF),
-                      fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ),
+            
+            // Bottom section: Progress/Status
+            Expanded(
+              flex: 2,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  if (!achievement.isUnlocked && achievement.targetValue > 0) ...[
+                    // Progress bar for locked achievements
+                    Container(
+                      height: 4,
+                      margin: EdgeInsets.only(
+                        bottom: ResponsiveUtils.getResponsiveSpacing(context, 4),
+                      ),
+                      child: LinearProgressIndicator(
+                        value: progress,
+                        backgroundColor: const Color(0xFFE5E7EB),
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          achievement.color.withOpacity(0.6),
+                        ),
+                        minHeight: 4,
+                      ),
                     ),
-                  ),
-                ] else ...[
-                  Text(
-                    achievement.isUnlocked
-                        ? '${achievement.points} ${texts['points']}'
-                        : texts['locked'] ?? 'Locked',
-                    style: TextStyle(
-                      fontSize: ResponsiveUtils.getResponsiveFontSize(context, 12),
-                      fontWeight: FontWeight.w500,
-                      color: achievement.isUnlocked
-                          ? achievement.color
-                          : const Color(0xFF9CA3AF),
-                      fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                    Text(
+                      '${achievement.currentValue}/${achievement.targetValue}',
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 10),
+                        color: const Color(0xFF9CA3AF),
+                        fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                      ),
                     ),
-                  ),
+                  ] else ...[
+                    // Points or locked status
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: ResponsiveUtils.getResponsiveSpacing(context, 8),
+                        vertical: ResponsiveUtils.getResponsiveSpacing(context, 4),
+                      ),
+                      decoration: BoxDecoration(
+                        color: achievement.isUnlocked
+                            ? achievement.color.withOpacity(0.1)
+                            : const Color(0xFFF3F4F6),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        achievement.isUnlocked
+                            ? '${achievement.points}pt'
+                            : texts['locked'] ?? 'Locked',
+                        style: TextStyle(
+                          fontSize: ResponsiveUtils.getResponsiveFontSize(context, 10),
+                          fontWeight: FontWeight.w600,
+                          color: achievement.isUnlocked
+                              ? achievement.color
+                              : const Color(0xFF9CA3AF),
+                          fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                        ),
+                      ),
+                    ),
+                  ],
                 ],
-              ],
+              ),
             ),
           ],
         ),

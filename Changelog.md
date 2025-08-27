@@ -22,6 +22,12 @@ All notable changes to the Aayu project will be documented in this file.
   - Milestone-based achievements with progress tracking
   - Consistency and streak-based rewards
 
+- **Dismissible Verification Banner**: Account verification banner now dismissible with proper session management
+  - Session-based dismissal system using user-specific SharedPreferences keys
+  - Banner reappears on next login to maintain importance of verification
+  - Smooth slide animation for banner dismissal
+  - Session cleanup on logout to reset dismissal state
+
 ### Enhanced
 - **Pre-Six Month Countdown**: Enhanced buttons with hover effects, shadows, and navigation
   - Progress button navigates to new Progress Tracking screen
@@ -35,6 +41,10 @@ All notable changes to the Aayu project will be documented in this file.
 - **Continue Using App Offline Button**: Fixed navigation to allow registered but unverified users to access dashboard
 - **User Flow**: Unverified users can now use the app offline and access verification through profile screen
 - **Color Scheme**: Updated verification center background to match default app styles (0xFFF3F4F6)
+- **Navigator Disposal Errors**: Fixed animation controller disposal errors in Progress and Achievements screens
+  - Added proper animation controller cleanup with stop() before dispose()
+  - Implemented safeguard checks for isAnimating state before stopping controllers
+  - Prevents "Navigator disposed" errors during screen transitions
 
 ### Technical Improvements
 - Implemented complex animation sequences with multiple AnimationControllers
@@ -44,6 +54,11 @@ All notable changes to the Aayu project will be documented in this file.
 - Added proper route navigation and imports in main.dart
 
 ### Bug Fixes
+- **Achievement Cards**: Fixed inconsistent card sizing and visual states in achievements screen
+  - All cards now have uniform size and proper aspect ratio (0.75)
+  - Unlocked achievements are colorful with vibrant borders and shadows
+  - Locked achievements are gray/muted with lock icons
+  - Consistent layout with proper flex distribution (3:2:2 ratio)
 - **GoRouter Navigation**: Fixed "popped the last page off of the stack" errors in Growth Charts and Pre-Six Month Countdown screens
 - **Navigation Consistency**: Replaced Navigator.pop() with context.go('/') in screens with bottom navigation
 - Fixed invalid Material Icons references (Icons.360_outlined, Icons.chair_outlined)

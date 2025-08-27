@@ -274,6 +274,20 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
 
   @override
   void dispose() {
+    // Dispose animation controllers safely
+    if (_mainController.isAnimating) {
+      _mainController.stop();
+    }
+    if (_chartController.isAnimating) {
+      _chartController.stop();
+    }
+    if (_statsController.isAnimating) {
+      _statsController.stop();
+    }
+    if (_milestoneController.isAnimating) {
+      _milestoneController.stop();
+    }
+    
     _mainController.dispose();
     _chartController.dispose();
     _statsController.dispose();
