@@ -2,7 +2,39 @@
 
 All notable changes to the Aayu project will be documented in this file.
 
-## [2025-08-28] - Dashboard Improvements & About Page
+## [2025-08-28] - Dashboard Improvements, About Page & User Documentation
+
+### Added
+- **Comprehensive User Guide**: Created complete user documentation (USER_GUIDE.md)
+  - Welcome and system requirements
+  - Step-by-step initial setup guide with account registration
+  - Detailed feature walkthroughs for all screens
+  - Navigation guide with 5-tab system explanation
+  - Growth tracking with WHO standards interpretation
+  - Vaccination management with Sri Lankan schedule
+  - Nutrition guidance by age groups
+  - 6-month countdown feature for infants
+  - Advanced features including analytics and achievements
+  - Quick start summary and essential features guide
+
+- **Technical Documentation**: Created comprehensive technical guide (USER_GUIDE_TECHNICAL.md)
+  - Application entry and user flow diagrams
+  - Growth tracking and vaccination management workflows
+  - Daily user activity patterns and lifecycle diagrams
+  - System architecture and data model specifications
+  - Database schema and security architecture
+  - Performance optimization and sync workflows
+  - All diagrams created using Mermaid syntax for accuracy
+
+### Fixed
+- **Application Entry Flow**: Corrected registration flow in technical documentation
+  - Removed guest mode (all users must create accounts)
+  - Fixed verification flow to show optional data sync choice
+  - Users can use app without verification but with local-only mode
+  
+- **Growth Tracking Flow**: Fixed Mermaid syntax error in technical documentation
+  - Corrected string parsing issue in "Add More Measurements" message
+  - All technical flow diagrams now render properly
 
 ### Fixed
 - **Child Profile Picture Persistence**: Fixed issue where child profile pictures updated in profile settings weren't showing up across other screens (home screen, growth charts, health records)
