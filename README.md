@@ -3,7 +3,7 @@
   <img src="https://github.com/piyumi27/Aayu/blob/e8032e1a859a56f665b0903d47f4777023794d47/readme/banner.png" alt="Aayu Banner" width="100%" style="border-radius: 10px; margin-bottom: 20px;">
   
   <h1 style="border: none; margin: 0;">
-    ආයු (Ayu)
+    ආයු (Aayu)
   </h1>
   
   <p style="font-size: 18px; margin-top: 10px; color: #666;">
@@ -165,8 +165,8 @@ This project is built upon extensive research in:
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/aayu.git
-cd aayu
+git clone https://github.com/piyumi27/Aayu.git
+cd Aayu
 
 # Install dependencies
 flutter pub get
