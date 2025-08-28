@@ -2,7 +2,7 @@
 
 All notable changes to the Aayu project will be documented in this file.
 
-## [2025-08-28] - Profile Picture Persistence Fix
+## [2025-08-28] - Dashboard Improvements & About Page
 
 ### Fixed
 - **Child Profile Picture Persistence**: Fixed issue where child profile pictures updated in profile settings weren't showing up across other screens (home screen, growth charts, health records)
@@ -17,9 +17,29 @@ All notable changes to the Aayu project will be documented in this file.
   - Added profile picture display in `profile_screen.dart` with fallback to default icon
   - User profile pictures now persist and display correctly across all screens
 
-- **Dashboard Growth Countdown Positioning**: Fixed 6-month countdown to appear as the first card in dashboard action grid instead of secondary position
+- **Dashboard Growth Countdown Positioning**: Fixed 6-month countdown to appear as the first card in dashboard action grid for children under 6 months
+
+- **Child Stats Display Cleanup**: Improved weight/height/BMI display when no data is available
+  - Replaced messy "-- kg", "-- cm", "--" with clean "No data" text
+  - Added responsive styling with smaller, italic text for no-data states
+  - Improved visual consistency across all metric displays
+
+### Added
+- **About Aayu Page**: Created modern, comprehensive About page with developer information
+  - Beautiful gradient app logo and modern card-based layout
+  - Comprehensive app features list and description
+  - Developer section with Akash Hasendra | GitHub: HMAHD attribution
+  - Contact information with email and website links
+  - Interactive GitHub profile access button
+  - Legal section for privacy policy, terms, and open source licenses
+  - Full multilingual support (English, Sinhala, Tamil)
+  - Responsive design across all device sizes
 
 ### Enhanced
+- **Settings Navigation**: Fixed About Aayu navigation in settings page support section
+  - Removed "Coming Soon" dialog and added proper navigation to About page
+  - Updated routing configuration with `/about-aayu` route
+
 - **Child Profile Display**: Updated multiple screens to show child profile pictures consistently
   - Home screen dashboard now displays child avatars with their profile pictures
   - Growth charts screen shows child profile pictures in selector

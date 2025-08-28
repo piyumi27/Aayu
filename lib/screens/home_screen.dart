@@ -534,21 +534,21 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               _buildMetricItem(
                 texts['weight'] ?? 'Weight',
-                latestGrowth?.weight.toString() ?? '--',
-                texts['kg'] ?? 'kg',
+                latestGrowth?.weight.toString() ?? texts['noData'] ?? 'No data',
+                latestGrowth?.weight != null ? (texts['kg'] ?? 'kg') : '',
               ),
               const SizedBox(width: 16),
               _buildMetricItem(
                 texts['height'] ?? 'Height',
-                latestGrowth?.height.toString() ?? '--',
-                texts['cm'] ?? 'cm',
+                latestGrowth?.height.toString() ?? texts['noData'] ?? 'No data',
+                latestGrowth?.height != null ? (texts['cm'] ?? 'cm') : '',
               ),
               const SizedBox(width: 16),
               _buildMetricItem(
                 texts['bmi'] ?? 'BMI',
                 latestGrowth != null 
                     ? (latestGrowth.weight / ((latestGrowth.height / 100) * (latestGrowth.height / 100))).toStringAsFixed(1)
-                    : '--',
+                    : texts['noData'] ?? 'No data',
                 '',
               ),
             ],
@@ -559,6 +559,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildMetricItem(String label, String value, String unit) {
+    final isNoData = value == 'No data' || value.contains('No data') || value.contains('නොමැත') || value.contains('இல்லை');
+    
     return Expanded(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -577,13 +579,15 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               Text(
                 value,
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFF111827),
+                style: TextStyle(
+                  fontSize: isNoData ? 14 : 20,
+                  fontWeight: isNoData ? FontWeight.w400 : FontWeight.w600,
+                  color: isNoData ? const Color(0xFF9CA3AF) : const Color(0xFF111827),
+                  fontStyle: isNoData ? FontStyle.italic : FontStyle.normal,
+                  fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                 ),
               ),
-              if (unit.isNotEmpty) ...[
+              if (unit.isNotEmpty && !isNoData) ...[
                 const SizedBox(width: 2),
                 Text(
                   unit,

@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'providers/child_provider.dart';
 import 'services/local_auth_service.dart';
+import 'screens/about_aayu_screen.dart';
 import 'screens/add_child_screen.dart';
 import 'screens/add_health_record_screen.dart';
 import 'screens/edit_child_profile_screen.dart';
@@ -260,6 +261,10 @@ final _router = GoRouter(
     GoRoute(
       path: '/help-support',
       builder: (context, state) => const HelpSupportScreen(),
+    ),
+    GoRoute(
+      path: '/about-aayu',
+      builder: (context, state) => const AboutAayuScreen(),
     ),
     GoRoute(
       path: '/verification-center',

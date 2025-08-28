@@ -326,7 +326,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               _buildSettingsRow(
                 icon: Icons.info_outline,
                 title: texts['about']!,
-                onTap: () => _showComingSoonDialog(context, texts),
+                onTap: () => context.push('/about-aayu'),
                 hasChevron: true,
               ),
             ]),
