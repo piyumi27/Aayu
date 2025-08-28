@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -32,6 +33,7 @@ class _EditChildProfileScreenState extends State<EditChildProfileScreen> {
   DateTime? _birthDate;
   File? _profileImage;
   bool _isLoading = false;
+  bool _removeExistingPhoto = false;
   Child? _child;
   
   @override
@@ -441,7 +443,19 @@ class _EditChildProfileScreenState extends State<EditChildProfileScreen> {
       _birthDate = child.birthDate;
       _birthWeightController.text = child.birthWeight?.toString() ?? '';
       _birthHeightController.text = child.birthHeight?.toString() ?? '';
+      // Reset profile image when switching children
+      _profileImage = null;
     });
+  }
+
+  ImageProvider? _getProfileImageProvider() {
+    // Priority: 1. New selected image 2. Existing saved image 3. No image
+    if (_profileImage != null) {
+      return FileImage(_profileImage!);
+    } else if (_child?.photoUrl != null && _child!.photoUrl!.isNotEmpty) {
+      return FileImage(File(_child!.photoUrl!));
+    }
+    return null;
   }
 
   Widget _buildProfilePictureSection(Map<String, String> texts) {
@@ -469,10 +483,8 @@ class _EditChildProfileScreenState extends State<EditChildProfileScreen> {
               child: CircleAvatar(
                 radius: 58,
                 backgroundColor: const Color(0xFFF3F4F6),
-                backgroundImage: _profileImage != null 
-                    ? FileImage(_profileImage!)
-                    : null,
-                child: _profileImage == null
+                backgroundImage: _getProfileImageProvider(),
+                child: _getProfileImageProvider() == null
                     ? Icon(
                         _selectedGender == 'Male' ? Icons.boy : Icons.girl,
                         size: 60,
@@ -926,11 +938,12 @@ class _EditChildProfileScreenState extends State<EditChildProfileScreen> {
               _pickImage(ImageSource.gallery);
             }),
             
-            if (_profileImage != null)
+            if (_getProfileImageProvider() != null)
               _buildImageSourceOption(Icons.delete_outline, texts['removePhoto']!, () {
                 Navigator.of(context).pop();
                 setState(() {
                   _profileImage = null;
+                  _removeExistingPhoto = true;
                 });
               }),
             
@@ -983,6 +996,7 @@ class _EditChildProfileScreenState extends State<EditChildProfileScreen> {
       if (pickedFile != null) {
         setState(() {
           _profileImage = File(pickedFile.path);
+          _removeExistingPhoto = false; // Reset removal flag when new image is selected
         });
       }
     } catch (e) {
@@ -1007,8 +1021,33 @@ class _EditChildProfileScreenState extends State<EditChildProfileScreen> {
     });
     
     try {
-      // TODO: Implement actual save functionality with ChildProvider
-      await Future.delayed(const Duration(seconds: 1));
+      // Save profile image to local storage if changed
+      String? photoUrl = _child?.photoUrl;
+      if (_profileImage != null) {
+        // Save new image to app documents directory
+        final appDir = await getApplicationDocumentsDirectory();
+        final fileName = 'child_${_child!.id}_${DateTime.now().millisecondsSinceEpoch}.png';
+        final savedImage = await _profileImage!.copy('${appDir.path}/$fileName');
+        photoUrl = savedImage.path;
+      } else if (_removeExistingPhoto) {
+        // Remove existing photo
+        photoUrl = null;
+      }
+      
+      // Create updated child object
+      final updatedChild = _child!.copyWith(
+        name: _nameController.text.trim(),
+        gender: _selectedGender,
+        birthDate: _birthDate,
+        birthWeight: double.tryParse(_birthWeightController.text.trim()),
+        birthHeight: double.tryParse(_birthHeightController.text.trim()),
+        photoUrl: photoUrl,
+        updatedAt: DateTime.now(),
+      );
+      
+      // Update child through provider
+      final childProvider = Provider.of<ChildProvider>(context, listen: false);
+      await childProvider.updateChild(updatedChild);
       
       if (!mounted) return;
       
@@ -1030,12 +1069,26 @@ class _EditChildProfileScreenState extends State<EditChildProfileScreen> {
         ),
       );
       
+      // Update local state to reflect saved changes
       setState(() {
-        // Changes saved
+        _child = updatedChild;
+        _profileImage = null;
+        _removeExistingPhoto = false;
       });
       
     } catch (e) {
-      // Handle error silently
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error saving changes: ${e.toString()}'),
+            backgroundColor: const Color(0xFFFF4D4D),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+        );
+      }
     } finally {
       setState(() {
         _isLoading = false;

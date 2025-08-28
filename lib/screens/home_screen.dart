@@ -673,7 +673,7 @@ class _HomeScreenState extends State<HomeScreen> {
           final ageInMonths = age.inDays / 30.44; // Average days per month
           
           if (ageInMonths < 6) {
-            actions.insert(1, {
+            actions.insert(0, {
               'title': texts['growthCountdown'] ?? 'Growth Countdown',
               'icon': Icons.timer_outlined,
               'color': const Color(0xFFFF6B6B),

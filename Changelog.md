@@ -50,7 +50,15 @@ All notable changes to the Aayu project will be documented in this file.
   - Age-based conditional rendering using precise month calculation
   - Multilingual support with proper translations (English, Sinhala, Tamil)
   - Timer icon and distinctive red color for easy identification
-  - Positioned prominently in action grid for better accessibility
+  - Positioned as first item in action grid for maximum visibility
+
+- **Child Profile Picture Persistence**: Fixed profile pictures not updating across screens
+  - Implemented proper profile picture saving to local storage
+  - Added support for existing photo display and editing
+  - Profile pictures now persist across all screens after editing
+  - Added photo removal functionality with proper state management
+  - Updated ChildProvider to notify all screens of profile changes
+  - Images saved to app documents directory with unique timestamps
 
 ### Enhanced
 - **Pre-Six Month Countdown**: Enhanced buttons with hover effects, shadows, and navigation
