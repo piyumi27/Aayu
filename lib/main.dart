@@ -180,20 +180,10 @@ final _router = GoRouter(
             child: const HomeScreen(),
           ),
           redirect: (context, state) async {
-            final prefs = await SharedPreferences.getInstance();
-            final languageSelected = prefs.getBool('language_selected') ?? false;
-            final onboardingCompleted = prefs.getBool('onboarding_completed') ?? false;
-            
             // Use LocalAuthService to check authentication status
             final authService = LocalAuthService();
             final isLoggedIn = await authService.isLoggedIn();
             
-            if (!languageSelected) {
-              return '/splash';
-            }
-            if (!onboardingCompleted) {
-              return '/onboarding';
-            }
             if (!isLoggedIn) {
               return '/login';
             }

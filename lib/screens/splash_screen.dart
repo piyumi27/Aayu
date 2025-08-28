@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -57,11 +58,21 @@ class _SplashScreenState extends State<SplashScreen>
 
     _animationController.forward();
 
-    Future.delayed(const Duration(seconds: 3), () {
+    Future.delayed(const Duration(seconds: 3), () async {
       if (mounted) {
-        // Navigate to home route, which will trigger redirect logic 
-        // to show appropriate screen based on completion states
-        context.go('/home');
+        // Check completion states and navigate appropriately
+        final prefs = await SharedPreferences.getInstance();
+        final languageSelected = prefs.getBool('language_selected') ?? false;
+        final onboardingCompleted = prefs.getBool('onboarding_completed') ?? false;
+        
+        if (!languageSelected) {
+          context.go('/language-selection');
+        } else if (!onboardingCompleted) {
+          context.go('/onboarding');
+        } else {
+          // User has completed first-run experience, go to main app
+          context.go('/');
+        }
       }
     });
   }

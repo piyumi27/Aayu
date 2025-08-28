@@ -94,6 +94,11 @@ All notable changes to the Aayu project will be documented in this file.
   - Fixed measurement-detail route with parameter validation
   - Improved type safety across all GoRouter extra parameter handling
   - Added comprehensive null checks to prevent type casting exceptions
+- **First-Run Navigation Error**: Fixed "no routes for location: /home" error
+  - Corrected splash screen navigation to use proper route paths
+  - Moved first-run logic directly to splash screen for cleaner flow
+  - Eliminated redirect loop conflicts between splash and home routes
+  - Improved navigation flow with direct state-based routing
 
 ### Technical Improvements
 - Implemented complex animation sequences with multiple AnimationControllers
