@@ -2,6 +2,35 @@
 
 All notable changes to the Aayu project will be documented in this file.
 
+## [2025-08-28] - Profile Picture Persistence Fix
+
+### Fixed
+- **Child Profile Picture Persistence**: Fixed issue where child profile pictures updated in profile settings weren't showing up across other screens (home screen, growth charts, health records)
+  - Implemented proper save functionality in `edit_child_profile_screen.dart` replacing TODO placeholder
+  - Added local file storage using path_provider with timestamp-based naming
+  - Profile pictures now persist across all screens showing child information
+  
+- **User Profile Picture Support**: Added comprehensive user profile picture support
+  - Added `photoUrl` field to `UserAccount` model with proper serialization
+  - Updated `LocalAuthService.updateUserProfile()` to handle profile pictures
+  - Implemented profile picture save functionality in `edit_parent_profile_screen.dart`
+  - Added profile picture display in `profile_screen.dart` with fallback to default icon
+  - User profile pictures now persist and display correctly across all screens
+
+- **Dashboard Growth Countdown Positioning**: Fixed 6-month countdown to appear as the first card in dashboard action grid instead of secondary position
+
+### Enhanced
+- **Child Profile Display**: Updated multiple screens to show child profile pictures consistently
+  - Home screen dashboard now displays child avatars with their profile pictures
+  - Growth charts screen shows child profile pictures in selector
+  - All screens with child information now properly display saved profile pictures
+  
+- **Profile Picture Management**: Improved profile picture handling across both child and user profiles
+  - Priority-based image provider system (new image → saved image → default icon)
+  - Proper circular clipping with `ClipRRect` for consistent display
+  - Remove photo functionality with state management
+  - Image compression and optimization for storage efficiency
+
 ## [2025-08-27] - Stunning Progress & Achievements System
 
 ### Added

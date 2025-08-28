@@ -34,6 +34,7 @@ class UserAccount {
   final DateTime? lastLoginAt;
   final DateTime? verifiedAt;
   final DateTime? syncedAt;
+  final String? photoUrl; // User profile picture path
   
   // Enhanced verification tracking
   final AuthMethod authMethod;
@@ -55,6 +56,7 @@ class UserAccount {
     this.lastLoginAt,
     this.verifiedAt,
     this.syncedAt,
+    this.photoUrl,
     this.authMethod = AuthMethod.email,
     this.isEmailVerified = false,
     this.isPhoneVerified = false,
@@ -75,6 +77,7 @@ class UserAccount {
     DateTime? lastLoginAt,
     DateTime? verifiedAt,
     DateTime? syncedAt,
+    String? photoUrl,
     AuthMethod? authMethod,
     bool? isEmailVerified,
     bool? isPhoneVerified,
@@ -94,6 +97,7 @@ class UserAccount {
       lastLoginAt: lastLoginAt ?? this.lastLoginAt,
       verifiedAt: verifiedAt ?? this.verifiedAt,
       syncedAt: syncedAt ?? this.syncedAt,
+      photoUrl: photoUrl ?? this.photoUrl,
       authMethod: authMethod ?? this.authMethod,
       isEmailVerified: isEmailVerified ?? this.isEmailVerified,
       isPhoneVerified: isPhoneVerified ?? this.isPhoneVerified,
@@ -116,6 +120,7 @@ class UserAccount {
       'lastLoginAt': lastLoginAt?.toIso8601String(),
       'verifiedAt': verifiedAt?.toIso8601String(),
       'syncedAt': syncedAt?.toIso8601String(),
+      'photoUrl': photoUrl,
       'authMethod': authMethod.name,
       'isEmailVerified': isEmailVerified,
       'isPhoneVerified': isPhoneVerified,
@@ -144,6 +149,7 @@ class UserAccount {
       syncedAt: json['syncedAt'] != null 
           ? DateTime.parse(json['syncedAt']) 
           : null,
+      photoUrl: json['photoUrl'],
       authMethod: AuthMethod.values.firstWhere(
         (method) => method.name == json['authMethod'],
         orElse: () => AuthMethod.email,

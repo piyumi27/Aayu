@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math' as math;
 
 import 'package:fl_chart/fl_chart.dart';
@@ -38,6 +39,16 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
     setState(() {
       _selectedLanguage = prefs.getString('selected_language') ?? 'en';
     });
+  }
+
+  ImageProvider? _getChildProfileImage(Child child) {
+    if (child.photoUrl != null && child.photoUrl!.isNotEmpty) {
+      final file = File(child.photoUrl!);
+      if (file.existsSync()) {
+        return FileImage(file);
+      }
+    }
+    return null;
   }
 
   Map<String, String> _getLocalizedText() {
@@ -263,12 +274,22 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
                   color: const Color(0xFFE0E7FF),
                   borderRadius: BorderRadius.circular(24),
                 ),
-                child: Center(
-                  child: Icon(
-                    Icons.person_outline,
-                    color: const Color(0xFF3A7AFE),
-                    size: 24,
-                  ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(24),
+                  child: _getChildProfileImage(child) != null
+                      ? Image(
+                          image: _getChildProfileImage(child)!,
+                          width: 48,
+                          height: 48,
+                          fit: BoxFit.cover,
+                        )
+                      : Center(
+                          child: Icon(
+                            child.gender == 'Male' ? Icons.boy : Icons.girl,
+                            color: const Color(0xFF3A7AFE),
+                            size: 24,
+                          ),
+                        ),
                 ),
               ),
               const SizedBox(width: 12),

@@ -145,6 +145,7 @@ class LocalAuthService {
   Future<AuthResult> updateUserProfile({
     required String fullName,
     String? email,
+    String? photoUrl,
   }) async {
     try {
       final user = await _getStoredUser();
@@ -158,6 +159,7 @@ class LocalAuthService {
       final updatedUser = user.copyWith(
         fullName: fullName,
         email: email,
+        photoUrl: photoUrl,
         updatedAt: DateTime.now(),
         needsSync: true,
       );

@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../models/child.dart';
 import '../models/user_account.dart';
 import '../providers/child_provider.dart';
 import '../services/local_auth_service.dart';
@@ -267,6 +270,16 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  ImageProvider? _getChildProfileImage(Child child) {
+    if (child.photoUrl != null && child.photoUrl!.isNotEmpty) {
+      final file = File(child.photoUrl!);
+      if (file.existsSync()) {
+        return FileImage(file);
+      }
+    }
+    return null;
+  }
+
   void _addChild(BuildContext context) {
     Navigator.of(context).push(
       MaterialPageRoute(
@@ -365,14 +378,17 @@ class _HomeScreenState extends State<HomeScreen> {
                           backgroundColor: isSelected 
                               ? Colors.white.withValues(alpha: 0.3)
                               : const Color(0xFF6B7280),
-                          child: Text(
-                            child.name[0].toUpperCase(),
-                            style: TextStyle(
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
+                          backgroundImage: _getChildProfileImage(child),
+                          child: _getChildProfileImage(child) == null
+                              ? Text(
+                                  child.name[0].toUpperCase(),
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              : null,
                         ),
                         const SizedBox(width: 8),
                         Text(
@@ -463,15 +479,25 @@ class _HomeScreenState extends State<HomeScreen> {
                   color: Color(0xFF0086FF),
                   shape: BoxShape.circle,
                 ),
-                child: Center(
-                  child: Text(
-                    child.name[0].toUpperCase(),
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(24),
+                  child: _getChildProfileImage(child) != null
+                      ? Image(
+                          image: _getChildProfileImage(child)!,
+                          width: 48,
+                          height: 48,
+                          fit: BoxFit.cover,
+                        )
+                      : Center(
+                          child: Text(
+                            child.name[0].toUpperCase(),
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
                 ),
               ),
               const SizedBox(width: 12),

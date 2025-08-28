@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/user_account.dart';
@@ -24,6 +25,7 @@ class _EditParentProfileScreenState extends State<EditParentProfileScreen> {
   String _selectedLanguage = 'en';
   File? _profileImage;
   bool _isLoading = false;
+  bool _removeExistingPhoto = false;
   UserAccount? _currentUser;
   final LocalAuthService _authService = LocalAuthService();
   
@@ -155,6 +157,19 @@ class _EditParentProfileScreenState extends State<EditParentProfileScreen> {
     return texts[_selectedLanguage] ?? texts['en']!;
   }
 
+  ImageProvider? _getUserProfileImage() {
+    if (_profileImage != null) {
+      return FileImage(_profileImage!);
+    }
+    if (_currentUser?.photoUrl != null && _currentUser!.photoUrl!.isNotEmpty && !_removeExistingPhoto) {
+      final file = File(_currentUser!.photoUrl!);
+      if (file.existsSync()) {
+        return FileImage(file);
+      }
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     final texts = _getLocalizedText();
@@ -249,10 +264,8 @@ class _EditParentProfileScreenState extends State<EditParentProfileScreen> {
               child: CircleAvatar(
                 radius: 58,
                 backgroundColor: const Color(0xFFF3F4F6),
-                backgroundImage: _profileImage != null 
-                    ? FileImage(_profileImage!)
-                    : null,
-                child: _profileImage == null 
+                backgroundImage: _getUserProfileImage(),
+                child: _getUserProfileImage() == null 
                     ? Icon(
                         Icons.person,
                         size: 60,
@@ -604,11 +617,12 @@ class _EditParentProfileScreenState extends State<EditParentProfileScreen> {
               _pickImage(ImageSource.gallery);
             }),
             
-            if (_profileImage != null)
+            if (_profileImage != null || (_currentUser?.photoUrl != null && _currentUser!.photoUrl!.isNotEmpty && !_removeExistingPhoto))
               _buildImageSourceOption(Icons.delete_outline, texts['removePhoto']!, () {
                 Navigator.of(context).pop();
                 setState(() {
                   _profileImage = null;
+                  _removeExistingPhoto = true;
                 });
               }),
             
@@ -677,9 +691,23 @@ class _EditParentProfileScreenState extends State<EditParentProfileScreen> {
     });
     
     try {
+      // Save profile image to local storage if changed
+      String? photoUrl = _currentUser?.photoUrl;
+      if (_profileImage != null) {
+        // Save new image to app documents directory
+        final appDir = await getApplicationDocumentsDirectory();
+        final fileName = 'user_${_currentUser!.id}_${DateTime.now().millisecondsSinceEpoch}.png';
+        final savedImage = await _profileImage!.copy('${appDir.path}/$fileName');
+        photoUrl = savedImage.path;
+      } else if (_removeExistingPhoto) {
+        // Remove existing photo
+        photoUrl = null;
+      }
+
       final result = await _authService.updateUserProfile(
         fullName: _nameController.text.trim(),
         email: _emailController.text.trim().isNotEmpty ? _emailController.text.trim() : null,
+        photoUrl: photoUrl,
       );
       
       final texts = _getLocalizedText();

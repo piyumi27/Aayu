@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -92,6 +94,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
       },
     };
     return texts[_selectedLanguage] ?? texts['en']!;
+  }
+
+  ImageProvider? _getUserProfileImage() {
+    if (_currentUser?.photoUrl != null && _currentUser!.photoUrl!.isNotEmpty) {
+      final file = File(_currentUser!.photoUrl!);
+      if (file.existsSync()) {
+        return FileImage(file);
+      }
+    }
+    return null;
   }
 
   String _formatJoinDate(DateTime date) {
@@ -191,18 +203,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     height: ResponsiveUtils.getResponsiveIconSize(context, 80),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      gradient: LinearGradient(
+                      gradient: _getUserProfileImage() == null ? LinearGradient(
                         colors: [
                           const Color(0xFF0086FF),
                           const Color(0xFF0086FF).withValues(alpha: 0.8),
                         ],
-                      ),
+                      ) : null,
                     ),
-                    child: Icon(
-                      Icons.person,
-                      color: Colors.white,
-                      size: ResponsiveUtils.getResponsiveIconSize(context, 40),
-                    ),
+                    child: _getUserProfileImage() != null
+                        ? ClipRRect(
+                            borderRadius: BorderRadius.circular(ResponsiveUtils.getResponsiveIconSize(context, 40)),
+                            child: Image(
+                              image: _getUserProfileImage()!,
+                              width: ResponsiveUtils.getResponsiveIconSize(context, 80),
+                              height: ResponsiveUtils.getResponsiveIconSize(context, 80),
+                              fit: BoxFit.cover,
+                            ),
+                          )
+                        : Icon(
+                            Icons.person,
+                            color: Colors.white,
+                            size: ResponsiveUtils.getResponsiveIconSize(context, 40),
+                          ),
                   ),
                   
                   SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 16)),
