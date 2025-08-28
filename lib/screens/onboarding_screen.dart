@@ -265,9 +265,9 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   Widget _buildSlide(String title, String subtitle, int index) {
     // Define Lottie animation URLs - using the user's requested URLs
     final List<String> lottieAnimations = [
-      'https://assets9.lottiefiles.com/packages/lf20_5tl1xxnz.json', // Growth tracking - Rocket Launch
-      'https://assets3.lottiefiles.com/packages/lf20_tutvdkg0.json', // Medical/vaccine
-      'https://assets5.lottiefiles.com/packages/lf20_ysas4vcp.json', // Nutrition - Healthy or Junk Food
+      'assets/images/onboard/growth_lottiefile.json', // Growth tracking - Rocket Launch
+      'assets/images/onboard/medical_lottiefiles.json', // Medical/vaccine
+      'assets/images/onboard/nutrition_lottiefile.json', // Nutrition - Healthy or Junk Food
     ];
 
     // Get appropriate controller for the animation

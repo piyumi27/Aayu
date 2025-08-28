@@ -59,7 +59,9 @@ class _SplashScreenState extends State<SplashScreen>
 
     Future.delayed(const Duration(seconds: 3), () {
       if (mounted) {
-        context.go('/language-selection');
+        // Navigate to home route, which will trigger redirect logic 
+        // to show appropriate screen based on completion states
+        context.go('/home');
       }
     });
   }

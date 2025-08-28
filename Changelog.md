@@ -38,6 +38,20 @@ All notable changes to the Aayu project will be documented in this file.
   - Professional contact information and acknowledgments
   - Multilingual branding (English, Sinhala, Tamil)
 
+- **First-Run Experience Management**: Implemented proper onboarding flow control
+  - Fixed splash screen navigation to respect completion states
+  - Language selection and onboarding screens now only appear on first app launch
+  - Persistent state tracking using SharedPreferences prevents repeated onboarding
+  - Proper redirect logic ensures users see appropriate screen based on completion status
+  - Clean app restart behavior until user data is cleared or app is uninstalled
+
+- **Enhanced Dashboard Navigation**: Added contextual access to Pre-6-Month Countdown screen
+  - Smart "Growth Countdown" action appears for children under 6 months old
+  - Age-based conditional rendering using precise month calculation
+  - Multilingual support with proper translations (English, Sinhala, Tamil)
+  - Timer icon and distinctive red color for easy identification
+  - Positioned prominently in action grid for better accessibility
+
 ### Enhanced
 - **Pre-Six Month Countdown**: Enhanced buttons with hover effects, shadows, and navigation
   - Progress button navigates to new Progress Tracking screen

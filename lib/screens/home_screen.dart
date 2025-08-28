@@ -77,6 +77,7 @@ class _HomeScreenState extends State<HomeScreen> {
         'growthCharts': 'Growth Charts',
         'vaccines': 'Vaccines',
         'learn': 'Learn',
+        'growthCountdown': 'Growth Countdown',
         'recentActivity': 'Recent Activity',
         'noRecentActivity': 'No recent activity',
         'age': 'Age',
@@ -102,6 +103,7 @@ class _HomeScreenState extends State<HomeScreen> {
         'growthCharts': 'වර්ධන ප්‍රස්ථාර',
         'vaccines': 'එන්නත්',
         'learn': 'ඉගෙන ගන්න',
+        'growthCountdown': 'වර්ධන ගණන්කිරීම',
         'recentActivity': 'මෑත ක්‍රියාකාරකම්',
         'noRecentActivity': 'මෑත ක්‍රියාකාරකම් නොමැත',
         'age': 'වයස',
@@ -127,6 +129,7 @@ class _HomeScreenState extends State<HomeScreen> {
         'growthCharts': 'வளர்ச்சி விளக்கப்படங்கள்',
         'vaccines': 'தடுப்பூசிகள்',
         'learn': 'கற்றுக்கொள்ளுங்கள்',
+        'growthCountdown': 'வளர்ச்சி கணக்கீடு',
         'recentActivity': 'சமீபத்திய செயல்பாடு',
         'noRecentActivity': 'சமீபத்திய செயல்பாடு இல்லை',
         'age': 'வயது',
@@ -625,40 +628,59 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildCleanActionGrid(Map<String, String> texts) {
-    final actions = [
-      {
-        'title': texts['addMeasurement'] ?? 'Add Measurement',
-        'icon': Icons.add_chart_outlined,
-        'color': const Color(0xFF0086FF),
-        'onTap': () => _openAddMeasurement(context),
-      },
-      {
-        'title': texts['growthCharts'] ?? 'Growth Charts',
-        'icon': Icons.trending_up,
-        'color': const Color(0xFF10B981),
-        'onTap': () => Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => const GrowthChartsScreen(),
-          ),
-        ),
-      },
-      {
-        'title': texts['vaccines'] ?? 'Vaccines',
-        'icon': Icons.vaccines_outlined,
-        'color': const Color(0xFFF59E0B),
-        'onTap': () => Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => const VaccinationCalendarScreen(),
-          ),
-        ),
-      },
-      {
-        'title': texts['learn'] ?? 'Learn',
-        'icon': Icons.school_outlined,
-        'color': const Color(0xFF8B5CF6),
-        'onTap': () => context.go('/learn'),
-      },
-    ];
+    return Consumer<ChildProvider>(
+      builder: (context, childProvider, child) {
+        final actions = <Map<String, dynamic>>[
+          {
+            'title': texts['addMeasurement'] ?? 'Add Measurement',
+            'icon': Icons.add_chart_outlined,
+            'color': const Color(0xFF0086FF),
+            'onTap': () => _openAddMeasurement(context),
+          },
+          {
+            'title': texts['growthCharts'] ?? 'Growth Charts',
+            'icon': Icons.trending_up,
+            'color': const Color(0xFF10B981),
+            'onTap': () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const GrowthChartsScreen(),
+              ),
+            ),
+          },
+          {
+            'title': texts['vaccines'] ?? 'Vaccines',
+            'icon': Icons.vaccines_outlined,
+            'color': const Color(0xFFF59E0B),
+            'onTap': () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const VaccinationCalendarScreen(),
+              ),
+            ),
+          },
+          {
+            'title': texts['learn'] ?? 'Learn',
+            'icon': Icons.school_outlined,
+            'color': const Color(0xFF8B5CF6),
+            'onTap': () => context.go('/learn'),
+          },
+        ];
+
+        // Add Growth Countdown for children under 6 months
+        final selectedChild = childProvider.selectedChild;
+        if (selectedChild != null) {
+          final now = DateTime.now();
+          final age = now.difference(selectedChild.birthDate);
+          final ageInMonths = age.inDays / 30.44; // Average days per month
+          
+          if (ageInMonths < 6) {
+            actions.insert(1, {
+              'title': texts['growthCountdown'] ?? 'Growth Countdown',
+              'icon': Icons.timer_outlined,
+              'color': const Color(0xFFFF6B6B),
+              'onTap': () => context.go('/pre-six-month-countdown'),
+            });
+          }
+        }
 
     return Container(
       margin: ResponsiveUtils.getResponsivePadding(context),
@@ -721,6 +743,8 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         },
       ),
+    );
+      },
     );
   }
 
