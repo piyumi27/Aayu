@@ -1,6 +1,6 @@
 <div align="center">
   <!-- Header Banner Space - Add your beautiful banner image here -->
-  <img src="https://github.com/piyumi27/Aayu/blob/faf0e03f114d5e326f04f692a99f0e200ba928c1/readme/banner.png" alt="Aayu Banner" width="100%" style="border-radius: 10px; margin-bottom: 20px;">
+  <img src="https://github.com/piyumi27/Aayu/blob/e8032e1a859a56f665b0903d47f4777023794d47/readme/banner.png" alt="Aayu Banner" width="100%" style="border-radius: 10px; margin-bottom: 20px;">
   
   <h1 style="border: none; margin: 0;">
     ආයු (Ayu)
@@ -296,4 +296,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 <div align="center">
   <p>⭐ <strong>Star this repo if you found it helpful!</strong> ⭐</p>
 </div>
+
 
