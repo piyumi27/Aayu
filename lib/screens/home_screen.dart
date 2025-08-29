@@ -262,16 +262,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-
-
-
-
-
-
-
-
-
-
   void _openAddMeasurement(BuildContext context) {
     Navigator.of(context).push(
       MaterialPageRoute(
@@ -380,7 +370,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildCleanChildSelector(ChildProvider provider, Map<String, String> texts) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 12),
       color: Colors.white,
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
@@ -763,6 +753,12 @@ class _HomeScreenState extends State<HomeScreen> {
       builder: (context, childProvider, child) {
         final actions = <Map<String, dynamic>>[
           {
+            'title': texts['countdown'] ?? 'Countdown',
+            'icon': Icons.data_usage_outlined,
+            'color': const Color(0xFFC703FD),
+            'onTap': () => context.go('/pre-six-month-countdown'),
+          },
+          {
             'title': texts['addMeasurement'] ?? 'Add Measurement',
             'icon': Icons.add_chart_outlined,
             'color': const Color(0xFF0086FF),
@@ -803,8 +799,12 @@ class _HomeScreenState extends State<HomeScreen> {
           final age = now.difference(selectedChild.birthDate);
           final ageInMonths = age.inDays / 30.44; // Average days per month
           
+          // Debug: Check child age for countdown
+          print('DEBUG: Child ${selectedChild.name} age: ${ageInMonths.toStringAsFixed(1)} months');
+          print('DEBUG: Birth date: ${selectedChild.birthDate}');
+          print('DEBUG: Should show countdown: ${ageInMonths < 6}');
           
-          if (ageInMonths < 6) { // Fixed back to 6 months
+          if (ageInMonths < 120) { // Temporary: Show for all children to test
             // Insert at the beginning of the list to make it the first card
             actions.insert(0, {
               'title': texts['growthCountdown'] ?? 'Growth Countdown',
