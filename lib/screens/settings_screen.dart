@@ -286,7 +286,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 trailing: Switch(
                   value: _notificationsEnabled,
                   onChanged: _saveNotificationPreference,
-                  activeThumbColor: const Color(0xFF10B981),
+                  activeThumbColor: const Color(0xFF0086FF),
                 ),
               ),
               _buildDivider(),
@@ -387,7 +387,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     
     switch (_verificationStatus) {
       case VerificationStatus.verified:
-        badgeColor = const Color(0xFF10B981);
+        badgeColor = const Color(0xFF0086FF);
         badgeText = _selectedLanguage == 'si' 
             ? _verificationStatus.displayTextSinhala
             : _selectedLanguage == 'ta'
@@ -528,12 +528,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Widget _buildSyncBadge(Map<String, String> texts) {
-    Color badgeColor = const Color(0xFF10B981);
+    Color badgeColor = const Color(0xFF0086FF);
     String badgeText = texts['upToDate']!;
     
     switch (_syncStatus) {
       case 'up-to-date':
-        badgeColor = const Color(0xFF10B981);
+        badgeColor = const Color(0xFF0086FF);
         badgeText = texts['upToDate']!;
         break;
       case 'pending':
@@ -545,7 +545,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         badgeText = texts['syncError']!;
         break;
       default:
-        badgeColor = const Color(0xFF10B981);
+        badgeColor = const Color(0xFF0086FF);
         badgeText = texts['upToDate']!;
     }
     

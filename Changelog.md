@@ -186,6 +186,48 @@ This implementation provides a complete, professional offline blog system that e
 
 This update establishes professional branding for the Aayu team, provides comprehensive contact methods, and maintains the app's blue color theme throughout the user experience.
 
+## [2025-08-29] - UI Fixes & Color Theme Consistency
+
+### Fixed
+- **Settings Page Color Theme**
+  - Removed all green color references (#10B981) from settings screen
+  - Updated notification switch active color to blue (#0086FF)
+  - Updated sync status badges to use blue theme consistently
+  - All settings page elements now match the app's blue branding
+
+- **Profile Images in About Page**
+  - Added explicit `assets/images/about/` to pubspec.yaml assets
+  - Fixed profile image loading for founder.jpeg and developer.jpeg
+  - Ensured proper image error handling with branded fallbacks
+  - Images now display correctly on first load
+
+- **App Logo Enhancement**
+  - Updated app logo in About page from single character "ආ" to full "ආයු"
+  - Adjusted font size from 32px to 24px for better fit
+  - Maintained NotoSerifSinhala font family for authentic Sinhala rendering
+  - Improved visual branding consistency
+
+### Technical Improvements
+- **Asset Management**
+  - Explicit asset path declaration for about page images
+  - Proper image loading with error state handling
+  - Optimized asset bundling for profile pictures
+
+- **Color Consistency**  
+  - Complete removal of legacy green theme remnants
+  - Consistent blue theme (#0086FF) across all UI components
+  - Proper Material 3 color scheme integration
+  - Brand-consistent visual elements throughout
+
+### User Experience
+- **Visual Polish**
+  - Professional profile images now loading correctly
+  - Consistent blue branding across settings and about pages
+  - Complete "ආයු" logo for better brand recognition
+  - Improved visual coherence throughout the app
+
+These fixes ensure complete visual consistency with the blue theme and proper functionality of all profile images and branding elements.
+
 ## [2025-08-29] - Git Repository Cleanup
 
 ### Fixed

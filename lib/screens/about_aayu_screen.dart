@@ -325,9 +325,9 @@ class _AboutAayuScreenState extends State<AboutAayuScreen> {
             ),
             child: Center(
               child: Text(
-                'ආ',
+                'ආයු',
                 style: TextStyle(
-                  fontSize: 32,
+                  fontSize: 24,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                   fontFamily: 'NotoSerifSinhala',
@@ -501,9 +501,15 @@ class _AboutAayuScreenState extends State<AboutAayuScreen> {
                   borderRadius: BorderRadius.circular(14),
                   child: Image.asset(
                     'assets/images/about/founder.jpeg',
+                    width: 80,
+                    height: 80,
                     fit: BoxFit.cover,
+                    alignment: Alignment.center,
                     errorBuilder: (context, error, stackTrace) {
+                      print('Founder image error: $error'); // Debug print
                       return Container(
+                        width: 80,
+                        height: 80,
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
@@ -650,9 +656,15 @@ class _AboutAayuScreenState extends State<AboutAayuScreen> {
                   borderRadius: BorderRadius.circular(14),
                   child: Image.asset(
                     'assets/images/about/developer.jpeg',
+                    width: 80,
+                    height: 80,
                     fit: BoxFit.cover,
+                    alignment: Alignment.center,
                     errorBuilder: (context, error, stackTrace) {
+                      print('Developer image error: $error'); // Debug print
                       return Container(
+                        width: 80,
+                        height: 80,
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
