@@ -12,6 +12,7 @@ import '../models/growth_record.dart';
 import '../providers/child_provider.dart';
 import 'add_measurement_screen.dart';
 import 'nutritional_analysis_screen.dart';
+import 'pre_six_month_countdown_screen.dart';
 
 class GrowthChartsScreen extends StatefulWidget {
   const GrowthChartsScreen({super.key});
@@ -51,6 +52,13 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
     return null;
   }
 
+  bool _shouldShowGrowthCountdown(Child child) {
+    final now = DateTime.now();
+    final age = now.difference(child.birthDate);
+    final ageInMonths = age.inDays / 30.44; // Average days per month
+    return ageInMonths < 6;
+  }
+
   Map<String, String> _getLocalizedText() {
     final Map<String, Map<String, String>> texts = {
       'en': {
@@ -73,6 +81,7 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
         'weightAge': 'Weight-Age',
         'heightAge': 'Height-Age',
         'weightForHeight': 'Weight-for-Height',
+        'growthCountdown': 'Growth Countdown',
       },
       'si': {
         'title': 'වර්ධන ප්‍රස්ථාර',
@@ -94,6 +103,7 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
         'weightAge': 'බර-වයස',
         'heightAge': 'උස-වයස',
         'weightForHeight': 'උස සඳහා බර',
+        'growthCountdown': 'වර්ධන ගණන් කිරීම',
       },
       'ta': {
         'title': 'வளர்ச்சி விளக்கப்படங்கள்',
@@ -115,6 +125,7 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
         'weightAge': 'எடை-வயது',
         'heightAge': 'உயரம்-வயது',
         'weightForHeight': 'உயரத்திற்கான எடை',
+        'growthCountdown': 'வளர்ச்சி எண்ணிக்கை',
       },
     };
 
@@ -194,6 +205,17 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
           onPressed: () => context.go('/'),
         ),
         actions: [
+          // Growth Countdown for children under 6 months
+          if (_shouldShowGrowthCountdown(child))
+            IconButton(
+              icon: const Icon(Icons.timer_outlined, color: Color(0xFFFF6B6B)),
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const PreSixMonthCountdownScreen(),
+                ),
+              ),
+              tooltip: texts['growthCountdown'] ?? 'Growth Countdown',
+            ),
           IconButton(
             icon: const Icon(Icons.share_outlined, color: Color(0xFF3A7AFE)),
             onPressed: _shareChart,

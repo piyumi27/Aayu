@@ -21,12 +21,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   late AnimationController _lottieController2;
   late AnimationController _lottieController3;
   
-  // Individual animation loading states
-  final Map<int, bool> _animationLoadedStates = {
-    0: false,
-    1: false,
-    2: false,
-  };
+  // No loading states needed as we're using local JSON files
 
   @override
   void initState() {
@@ -50,13 +45,6 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     );
   }
 
-  void _onAnimationLoaded(int index) {
-    if (mounted) {
-      setState(() {
-        _animationLoadedStates[index] = true;
-      });
-    }
-  }
 
   Future<void> _loadLanguage() async {
     final prefs = await SharedPreferences.getInstance();
@@ -183,22 +171,20 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                         _currentPage = page;
                       });
                       
-                      // Start animation for current page if it's already loaded
-                      if (_animationLoadedStates[page] == true) {
-                        switch (page) {
-                          case 0:
-                            _lottieController1.reset();
-                            _lottieController1.forward();
-                            break;
-                          case 1:
-                            _lottieController2.reset();
-                            _lottieController2.forward();
-                            break;
-                          case 2:
-                            _lottieController3.reset();
-                            _lottieController3.forward();
-                            break;
-                        }
+                      // Start animation for current page
+                      switch (page) {
+                        case 0:
+                          _lottieController1.reset();
+                          _lottieController1.forward();
+                          break;
+                        case 1:
+                          _lottieController2.reset();
+                          _lottieController2.forward();
+                          break;
+                        case 2:
+                          _lottieController3.reset();
+                          _lottieController3.forward();
+                          break;
                       }
                     },
                     itemCount: slides.length,
@@ -301,80 +287,40 @@ class _OnboardingScreenState extends State<OnboardingScreen>
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(20),
-              child: Stack(
-                children: [
-                  // Lottie animation - centered
-                  Center(
-                    child: Lottie.network(
-                      lottieAnimations[index],
-                      controller: controller,
-                      fit: BoxFit.contain,
-                      animate: _currentPage == index && _animationLoadedStates[index] == true,
-                      repeat: true,
-                      options: LottieOptions(
-                        enableMergePaths: true,
-                      ),
-                      onLoaded: (composition) {
-                        // Mark animation as loaded
-                        _onAnimationLoaded(index);
-                        
-                        // Start animation when loaded and if this is the current page
-                        if (_currentPage == index) {
-                          controller.duration = composition.duration;
-                          controller.reset();
-                          controller.forward();
-                        }
-                      },
-                      errorBuilder: (context, error, stackTrace) {
-                        // Mark as loaded even on error to hide loading
-                        _onAnimationLoaded(index);
-                        
-                        // Fallback to icon if Lottie fails to load
-                        return SizedBox(
-                          width: double.infinity,
-                          height: double.infinity,
-                          child: Center(
-                            child: Icon(
-                              index == 0
-                                  ? Icons.trending_up
-                                  : index == 1
-                                      ? Icons.vaccines
-                                      : Icons.restaurant,
-                              size: 120,
-                              color: const Color(0xFF1E90FF),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
+              child: Center(
+                child: Lottie.asset(
+                  lottieAnimations[index],
+                  controller: controller,
+                  fit: BoxFit.contain,
+                  animate: _currentPage == index,
+                  repeat: true,
+                  options: LottieOptions(
+                    enableMergePaths: true,
                   ),
-                  
-                  // Loading placeholder - only show if this specific animation is not loaded
-                  if (_animationLoadedStates[index] != true)
-                    Container(
-                      color: const Color(0xFF1E90FF).withValues(alpha: 0.05),
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const CircularProgressIndicator(
-                              color: Color(0xFF1E90FF),
-                              strokeWidth: 2,
-                            ),
-                            const SizedBox(height: 16),
-                            Text(
-                              'Loading animation...',
-                              style: TextStyle(
-                                color: const Color(0xFF1E90FF),
-                                fontSize: 14,
-                                fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                ],
+                  onLoaded: (composition) {
+                    // Start animation when loaded and if this is the current page
+                    // Using post frame callback to avoid setState during build
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      if (mounted && _currentPage == index) {
+                        controller.duration = composition.duration;
+                        controller.reset();
+                        controller.forward();
+                      }
+                    });
+                  },
+                  errorBuilder: (context, error, stackTrace) {
+                    // Fallback to icon if Lottie fails to load
+                    return Icon(
+                      index == 0
+                          ? Icons.trending_up
+                          : index == 1
+                              ? Icons.vaccines
+                              : Icons.restaurant,
+                      size: 120,
+                      color: const Color(0xFF1E90FF),
+                    );
+                  },
+                ),
               ),
             ),
           ),

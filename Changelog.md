@@ -2,6 +2,16 @@
 
 All notable changes to the Aayu project will be documented in this file.
 
+## [2025-08-29] - Onboarding Animation & Navigation Fixes
+
+### Fixed
+- **Onboarding Screen Animation Loading**: Fixed setState during build error
+  - Removed loading states since animations now use local JSON files
+  - Changed from Lottie.network to Lottie.asset for instant loading
+  - Removed unnecessary Stack widget and loading placeholder UI
+  - Used WidgetsBinding.addPostFrameCallback to avoid setState during build
+  - Animations now load instantly without any loading indicators
+
 ## [2025-08-29] - Dashboard Navigation & Profile Pictures Fixes
 
 ### Fixed
@@ -18,6 +28,12 @@ All notable changes to the Aayu project will be documented in this file.
   - Fixed vaccination_calendar_screen.dart to display child profile pictures in dropdown
   - Added proper File and NetworkImage handling for both local and remote images
   - Profile pictures now consistently display across all screens with proper fallback to initials
+
+- **Growth Countdown Permanent Access**: Added permanent access to Growth Countdown screen
+  - Added Growth Countdown button in Growth Charts screen AppBar for children under 6 months
+  - Button appears with timer icon and proper tooltip in multiple languages
+  - Users can now access Growth Countdown from Growth tab → Growth Charts → Timer button
+  - Ensures parents never lose access to this important feature for infants under 6 months
 
 ## [2025-08-29] - InkWell Disposal Safety Fixes
 
