@@ -118,6 +118,74 @@ All notable changes to the Aayu project will be documented in this file.
 
 This implementation provides a complete, professional offline blog system that enhances the Learn section with rich, culturally appropriate content for Sri Lankan parents, following all industrial standards and responsive design requirements.
 
+## [2025-08-29] - App Theme & About Page Enhancement
+
+### Updated
+- **App Color Theme**
+  - Changed main app theme from green to professional blue (#0086FF)
+  - Updated ColorScheme.fromSeed to use blue as primary color
+  - Consistent blue theme across all components and screens
+
+- **About Page Complete Redesign**
+  - Added founder section for Piyumi Pabodha Rajakaruna
+  - Enhanced developer section for Akash Hasendra as Co-founder & Lead Developer
+  - Added professional profile pictures (founder.jpeg, developer.jpeg)
+  - Integrated comprehensive social media links for both founder and developer
+
+### Added
+- **Founder Profile Section**
+  - Piyumi Pabodha Rajakaruna as Founder & Product Visionary
+  - Professional profile picture with fallback gradient design
+  - Social media integration: Facebook, Instagram, WhatsApp, LinkedIn
+  - Multilingual support (English, Sinhala, Tamil) for founder information
+
+- **Enhanced Developer Section**
+  - Updated Akash Hasendra title to Co-founder & Lead Developer
+  - Added developer profile picture with error handling
+  - Complete social media suite: GitHub, Facebook, Instagram, WhatsApp, LinkedIn
+  - Professional social button design with brand colors
+
+- **Social Media Integration**
+  - Custom social button component with brand-appropriate colors
+  - Facebook: #1877F2, Instagram: #E4405F, WhatsApp: #25D366
+  - LinkedIn: #0A66C2, GitHub: #24292F
+  - Responsive touch targets and hover states
+
+### Technical Improvements
+- **Profile Image Loading**
+  - Asset-based profile pictures: assets/images/about/founder.jpeg, assets/images/about/developer.jpeg
+  - Graceful error handling with branded fallback designs
+  - Consistent styling with blue border accents
+  - Optimized image sizing (80x80) for mobile and tablet displays
+
+- **URL Launcher Integration**
+  - External application launching for all social media platforms
+  - Proper error handling for unsupported platforms
+  - WhatsApp integration with Sri Lankan phone numbers
+  - Professional email and website link handling
+
+### Multilingual Support
+- **Localized Content**
+  - English: Founder & Co-founder titles
+  - Sinhala: නිර්මාතෘ & සහ-නිර්මාතෘ සහ ප්‍රධාන සංවර්ධක
+  - Tamil: நிறுவனர் & இணை நிறுவனர் & முன்னணி டெவலப்பர்
+  - Culturally appropriate name translations and role descriptions
+
+### Design Enhancements
+- **Professional Layout**
+  - Consistent 80x80 profile images with rounded corners
+  - Blue accent colors matching app theme (#0086FF)
+  - Card-based design with subtle shadows and proper spacing
+  - Responsive typography using ResponsiveUtils throughout
+
+- **Social Media UX**
+  - Color-coded social buttons for instant recognition
+  - Proper touch targets (44x44) for mobile accessibility
+  - Visual feedback with background colors and borders
+  - Professional spacing and alignment
+
+This update establishes professional branding for the Aayu team, provides comprehensive contact methods, and maintains the app's blue color theme throughout the user experience.
+
 ## [2025-08-29] - Git Repository Cleanup
 
 ### Fixed

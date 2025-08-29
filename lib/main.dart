@@ -57,7 +57,7 @@ class AayuApp extends StatelessWidget {
       child: MaterialApp.router(
         title: 'ආයු',
         theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
+          colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF0086FF)),
           textTheme: GoogleFonts.notoSerifSinhalaTextTheme(
             Theme.of(context).textTheme,
           ),
