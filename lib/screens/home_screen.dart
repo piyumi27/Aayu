@@ -396,8 +396,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     decoration: BoxDecoration(
-                      color: isSelected ? const Color(0xFF0086FF) : const Color(0xFFE5E7EB),
-                      borderRadius: BorderRadius.circular(20),
+                      color: isSelected ? Colors.white : const Color(0xFFE5E7EB),
+                      borderRadius: isSelected ? BorderRadius.circular(8) : BorderRadius.circular(20),
+                      border: isSelected ? Border.all(color: const Color(0xFF0086FF), width: 2) : null,
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -405,7 +406,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         CircleAvatar(
                           radius: 12,
                           backgroundColor: isSelected 
-                              ? Colors.white.withValues(alpha: 0.3)
+                              ? const Color(0xFF0086FF)
                               : const Color(0xFF6B7280),
                           backgroundImage: _getChildProfileImage(child),
                           child: _getChildProfileImage(child) == null
@@ -425,7 +426,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
-                            color: isSelected ? Colors.white : const Color(0xFF374151),
+                            color: isSelected ? const Color(0xFF0086FF) : const Color(0xFF374151),
                             fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                           ),
                         ),
@@ -802,10 +803,8 @@ class _HomeScreenState extends State<HomeScreen> {
           final age = now.difference(selectedChild.birthDate);
           final ageInMonths = age.inDays / 30.44; // Average days per month
           
-          print('DEBUG: Child age in months: $ageInMonths'); // Debug info
-          print('DEBUG: Child birth date: ${selectedChild.birthDate}'); // Debug info
           
-          if (ageInMonths < 120) { // Temporarily changed from 6 to 120 months for testing
+          if (ageInMonths < 6) { // Fixed back to 6 months
             // Insert at the beginning of the list to make it the first card
             actions.insert(0, {
               'title': texts['growthCountdown'] ?? 'Growth Countdown',
