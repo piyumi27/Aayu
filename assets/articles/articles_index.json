@@ -1,0 +1,160 @@
+{
+  "version": "1.0.0",
+  "lastUpdated": "2025-01-29",
+  "articles": [
+    {
+      "id": "breastfeeding-basics",
+      "title": "Breastfeeding Basics: Getting Started",
+      "summary": "Essential guide for new mothers on breastfeeding techniques, positioning, and common challenges.",
+      "category": "nutrition",
+      "tags": ["breastfeeding", "newborn", "feeding", "nutrition", "mothers"],
+      "author": "Dr. Priya Silva",
+      "publishDate": "2025-01-15T00:00:00.000Z",
+      "readTimeMinutes": 8,
+      "featuredImage": "assets/articles/images/breastfeeding-basics.jpg",
+      "priority": "high",
+      "isFeatured": true,
+      "localizedTitles": {
+        "si": "මවුපැල් දීමේ මූලික කරුණු: ආරම්භ කිරීම",
+        "ta": "தாய்ப்பால் கொடுப்பதன் அடிப்படைகள்: ஆரம்பிப்பது"
+      },
+      "localizedSummaries": {
+        "si": "මවුපැල් දීමේ ක්‍රම, ස්ථානගත කිරීම සහ සාමාන්‍ය අභියෝග පිළිබඳ නව මව්වරුන් සඳහා වන අත්‍යාවශ්‍ය මාර්ගෝපදේශය.",
+        "ta": "புதிய தாய்மார்களுக்கான தாய்ப்பால் கொடுக்கும் நுட்பங்கள், நிலைப்படுத்துதல் மற்றும் பொதுவான சவால்கள் பற்றிய அத்தியாவசிய வழிகாட்டி."
+      },
+      "relatedArticles": ["first-foods-introduction", "feeding-schedule-newborn"]
+    },
+    {
+      "id": "first-foods-introduction",
+      "title": "Introducing First Foods: 6+ Months",
+      "summary": "Complete guide to starting solid foods, suitable first foods, and feeding schedules for babies over 6 months.",
+      "category": "nutrition",
+      "tags": ["solid-foods", "weaning", "6-months", "baby-food", "nutrition"],
+      "author": "Dr. Chaminda Jayawardena",
+      "publishDate": "2025-01-10T00:00:00.000Z",
+      "readTimeMinutes": 12,
+      "featuredImage": "assets/articles/images/first-foods.jpg",
+      "priority": "high",
+      "isFeatured": true,
+      "localizedTitles": {
+        "si": "පළමු ආහාර හඳුන්වාදීම: මාස 6+",
+        "ta": "முதல் உணவுகளை அறிமுகப்படுத்துதல்: 6+ மாதங்கள்"
+      },
+      "localizedSummaries": {
+        "si": "මාස 6කට වැඩි ළදරුවන් සඳහා ඝන ආහාර ආරම්භ කිරීම, සුදුසු පළමු ආහාර සහ පෝෂණ කාලසටහන් පිළිබඳ සම්පූර්ණ මාර්ගෝපදේශය.",
+        "ta": "6 மாதங்களுக்கு மேற்பட்ட குழந்தைகளுக்கு திட உணவுகளை தொடங்குவது, பொருத்தமான முதல் உணவுகள் மற்றும் உணவு அட்டவணைகள் பற்றிய முழுமையான வழிகாட்டி."
+      },
+      "relatedArticles": ["breastfeeding-basics", "toddler-nutrition-guide"]
+    },
+    {
+      "id": "vaccination-schedule-sri-lanka",
+      "title": "Sri Lankan Vaccination Schedule",
+      "summary": "Complete immunization schedule for Sri Lankan children with timing, vaccines, and what to expect.",
+      "category": "health",
+      "tags": ["vaccination", "immunization", "schedule", "health", "prevention"],
+      "author": "Ministry of Health - Sri Lanka",
+      "publishDate": "2025-01-20T00:00:00.000Z",
+      "readTimeMinutes": 15,
+      "featuredImage": "assets/articles/images/vaccination-schedule.jpg",
+      "priority": "high",
+      "isFeatured": true,
+      "localizedTitles": {
+        "si": "ශ්‍රී ලංකාවේ එන්නත් කාලසටහන",
+        "ta": "இலங்கை தடுப்பூசி அட்டवणை"
+      },
+      "localizedSummaries": {
+        "si": "කාලසටහන, එන්නත් සහ අපේක්‍ෂා කළ යුතු දේ සමග ශ්‍රී ලංකා දරුවන් සඳහා සම්පූර්ණ ප්‍රතිශක්තිකරණ කාලසටහන.",
+        "ta": "காலஅட்டவணை, தடுப்பூசிகள் மற்றும் எதிர்பார்க்க வேண்டியவை உட்பட இலங்கை குழந்தைகளுக்கான முழுமையான நோய்த்தடுப்பு அட்டவணை."
+      },
+      "relatedArticles": ["post-vaccination-care", "fever-management"]
+    },
+    {
+      "id": "developmental-milestones-0-12-months",
+      "title": "Developmental Milestones: 0-12 Months",
+      "summary": "Important developmental milestones to watch for in your baby's first year, month by month guide.",
+      "category": "development",
+      "tags": ["milestones", "development", "0-12-months", "baby", "growth"],
+      "author": "Dr. Niluka Perera",
+      "publishDate": "2025-01-08T00:00:00.000Z",
+      "readTimeMinutes": 10,
+      "featuredImage": "assets/articles/images/developmental-milestones.jpg",
+      "priority": "normal",
+      "isFeatured": false,
+      "localizedTitles": {
+        "si": "වර්ධන සන්ධිස්ථාන: මාස 0-12",
+        "ta": "வளர்ச்சி மைல்கற்கள்: 0-12 மாதங்கள்"
+      },
+      "localizedSummaries": {
+        "si": "ඔබේ ළදරුවාගේ පළමු වර්ෂයේ දී නිරීක්‍ෂණය කළ යුතු වැදගත් වර්ධන සන්ධිස්ථාන, මාසිකව මාර්ගෝපදේශය.",
+        "ta": "உங்கள் குழந்தையின் முதல் ஆண்டில் கவனிக்க வேண்டிய முக்கியமான வளர்ச்சி மைல்கற்கள், மாத வாரியான வழிகாட்டி."
+      },
+      "relatedArticles": ["tummy-time-importance", "baby-play-activities"]
+    },
+    {
+      "id": "safe-sleep-practices",
+      "title": "Safe Sleep Practices for Babies",
+      "summary": "Essential guidelines for safe infant sleep to reduce SIDS risk and ensure peaceful nights.",
+      "category": "safety",
+      "tags": ["sleep", "safety", "SIDS", "infant", "prevention"],
+      "author": "Dr. Ravi Fernando",
+      "publishDate": "2025-01-25T00:00:00.000Z",
+      "readTimeMinutes": 7,
+      "featuredImage": "assets/articles/images/safe-sleep.jpg",
+      "priority": "high",
+      "isFeatured": true,
+      "localizedTitles": {
+        "si": "ළදරුවන් සඳහා ආරක්‍ෂිත නිද්‍රා පිළිවෙත්",
+        "ta": "குழந்தைகளுக்கான பாதுகாப்பான தூக்க நடைமுறைகள்"
+      },
+      "localizedSummaries": {
+        "si": "SIDS අවදානම අඩු කිරීමට සහ සාමකාමී රාත්‍රි සහතික කිරීමට ආරක්‍ෂිත ළදරු නිද්‍රා සඳහා අත්‍යාවශ්‍ය මාර්ගෝපදේශ.",
+        "ta": "SIDS அபாயத்தை குறைக்கவும் அமைதியான இரவுகளை உறுதி செய்யவும் பாதுகாப்பான குழந்தை தூக்கத்திற்கான அத்தியாவசிய வழிகாட்டுதல்கள்."
+      },
+      "relatedArticles": ["creating-sleep-routine", "handling-sleep-regression"]
+    },
+    {
+      "id": "postpartum-care-mother",
+      "title": "Postpartum Care for New Mothers",
+      "summary": "Comprehensive guide for new mothers on physical and emotional recovery after childbirth.",
+      "category": "parenting",
+      "tags": ["postpartum", "mother-care", "recovery", "mental-health", "parenting"],
+      "author": "Dr. Sandya Kumari",
+      "publishDate": "2025-01-12T00:00:00.000Z",
+      "readTimeMinutes": 14,
+      "featuredImage": "assets/articles/images/postpartum-care.jpg",
+      "priority": "normal",
+      "isFeatured": false,
+      "localizedTitles": {
+        "si": "නව මව්වරුන් සඳහා ප්‍රසවාන්තර සත්කාර",
+        "ta": "புதிய தாய்மார்களுக்கான பிரசவத்திற்குப் பிறகான பராமரிப்பு"
+      },
+      "localizedSummaries": {
+        "si": "ප්‍රසවයෙන් පසු ශාරීරික හා චිත්තවේගීය සුවය පිළිබඳ නව මව්වරුන් සඳහා වන සම්පූර්ණ මාර්ගෝපදේශය.",
+        "ta": "பிரசவத்திற்குப் பிறகு உடல் மற்றும் உணர்ச்சி சீராக்கத்தில் புதிய தாய்மார்களுக்கான விரிவான வழிகாட்டி."
+      },
+      "relatedArticles": ["breastfeeding-basics", "managing-baby-blues"]
+    },
+    {
+      "id": "baby-play-activities",
+      "title": "Fun Activities for Baby Development",
+      "summary": "Age-appropriate play activities that support your baby's cognitive, motor, and social development.",
+      "category": "activity",
+      "tags": ["play", "activities", "development", "cognitive", "motor-skills"],
+      "author": "Nayani Wickramasinghe",
+      "publishDate": "2025-01-05T00:00:00.000Z",
+      "readTimeMinutes": 9,
+      "featuredImage": "assets/articles/images/baby-activities.jpg",
+      "priority": "normal",
+      "isFeatured": false,
+      "localizedTitles": {
+        "si": "ළදරු වර්ධනය සඳහා විනෝදජනක ක්‍රියාකාරකම්",
+        "ta": "குழந்தை வளர்ச்சிக்கான வேடிக்கையான செயல்பாடுகள்"
+      },
+      "localizedSummaries": {
+        "si": "ඔබේ ළදරුවාගේ සංජානන, චලන සහ සමාජ වර්ධනයට සහාය වන වයසට සුදුසු ක්‍රීඩා ක්‍රියාකාරකම්.",
+        "ta": "உங்கள் குழந்தையின் அறிவாற்றல், மோட்டார் மற்றும் சமூக வளர்ச்சியை ஆதரிக்கும் வயதுக்கு ஏற்ற விளையாட்டு நடவடிக்கைகள்."
+      },
+      "relatedArticles": ["developmental-milestones-0-12-months", "tummy-time-importance"]
+    }
+  ]
+}

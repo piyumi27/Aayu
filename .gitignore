@@ -9,8 +9,6 @@
 .history
 .svn/
 migrate_working_dir/
-build
-
 
 # IntelliJ related
 *.iml
@@ -57,6 +55,15 @@ app.*.map.json
 
 # Coverage
 coverage/
+
+# Zone.Identifier files (Windows WSL)
+*:Zone.Identifier
+
+# Gradle build files
+.gradle/
+gradle-app.setting
+!gradle-wrapper.jar
+.gradletasknamecache
 
 # Exceptions to above rules.
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
