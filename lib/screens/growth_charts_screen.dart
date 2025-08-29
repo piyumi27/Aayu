@@ -135,7 +135,7 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
   @override
   Widget build(BuildContext context) {
     final texts = _getLocalizedText();
-    final provider = Provider.of<ChildProvider>(context);
+    final provider = Provider.of<ChildProvider>(context, listen: true);
     final child = provider.selectedChild;
 
     if (child == null) {
@@ -279,7 +279,9 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
     final ageString = provider.getAgeString(child.birthDate);
     final daysSinceUpdate = latestRecord != null 
         ? DateTime.now().difference(latestRecord.date).inDays 
-        : 0;
+        : (child.birthWeight != null || child.birthHeight != null) 
+            ? DateTime.now().difference(child.birthDate).inDays 
+            : 0;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -358,19 +360,21 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
             children: [
               _buildMetricItem(
                 texts['weight']!,
-                latestRecord?.weight.toString() ?? '--',
-                texts['kg']!,
+                latestRecord?.weight.toString() ?? child.birthWeight?.toString() ?? '--',
+                (latestRecord?.weight != null || child.birthWeight != null) ? texts['kg']! : '',
               ),
               _buildMetricItem(
                 texts['height']!,
-                latestRecord?.height.toString() ?? '--',
-                texts['cm']!,
+                latestRecord?.height.toString() ?? child.birthHeight?.toString() ?? '--',
+                (latestRecord?.height != null || child.birthHeight != null) ? texts['cm']! : '',
               ),
               _buildMetricItem(
                 texts['bmi']!,
                 latestRecord != null 
                     ? (latestRecord.weight / ((latestRecord.height / 100) * (latestRecord.height / 100))).toStringAsFixed(1)
-                    : '--',
+                    : (child.birthWeight != null && child.birthHeight != null)
+                        ? (child.birthWeight! / ((child.birthHeight! / 100) * (child.birthHeight! / 100))).toStringAsFixed(1)
+                        : '--',
                 '',
               ),
               Expanded(
@@ -530,15 +534,58 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
 
   Widget _buildGrowthChart(ChildProvider provider, Map<String, String> texts) {
     final records = _getFilteredRecords(provider.growthRecords);
-    if (records.isEmpty) {
+    final child = provider.selectedChild;
+    
+    // Check if we have any data (records or birth data)
+    final hasData = records.isNotEmpty || 
+        (child?.birthWeight != null && _selectedTab == 'Weight-Age') ||
+        (child?.birthHeight != null && _selectedTab == 'Height-Age');
+    
+    if (!hasData) {
       return Container(
         height: 300,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
         ),
-        child: const Center(
-          child: Text('No data available'),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.show_chart,
+                size: 48,
+                color: const Color(0xFF9CA3AF),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'No growth data yet',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: const Color(0xFF6B7280),
+                  fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                ),
+              ),
+              const SizedBox(height: 8),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const AddMeasurementScreen(),
+                    ),
+                  );
+                },
+                child: Text(
+                  texts['addNew']!,
+                  style: TextStyle(
+                    color: const Color(0xFF3A7AFE),
+                    fontWeight: FontWeight.w600,
+                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       );
     }
@@ -590,26 +637,45 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
                 showTitles: true,
                 reservedSize: 30,
                 getTitlesWidget: (value, meta) {
-                  final monthLabels = ['22m', '23m', '24m', '25m', '26m', '27m', '28m'];
-                  if (value.toInt() < monthLabels.length) {
+                  final months = value.toInt();
+                  if (months < 12) {
                     return Text(
-                      monthLabels[value.toInt()],
+                      '${months}m',
                       style: const TextStyle(
                         color: Color(0xFF6B7280),
                         fontSize: 12,
                       ),
                     );
+                  } else {
+                    final years = (months / 12).floor();
+                    final remainingMonths = months % 12;
+                    if (remainingMonths == 0) {
+                      return Text(
+                        '${years}y',
+                        style: const TextStyle(
+                          color: Color(0xFF6B7280),
+                          fontSize: 12,
+                        ),
+                      );
+                    } else {
+                      return Text(
+                        '${years}y${remainingMonths}m',
+                        style: const TextStyle(
+                          color: Color(0xFF6B7280),
+                          fontSize: 10,
+                        ),
+                      );
+                    }
                   }
-                  return const Text('');
                 },
               ),
             ),
           ),
           borderData: FlBorderData(show: false),
           minX: 0,
-          maxX: 6,
-          minY: 8,
-          maxY: 18,
+          maxX: _getMaxX(records, child),
+          minY: _getMinY(records, child),
+          maxY: _getMaxY(records, child),
           lineBarsData: [
             // Child's data line
             LineChartBarData(
@@ -631,44 +697,60 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
               ),
               belowBarData: BarAreaData(show: false),
             ),
-            // 97th percentile
-            _buildPercentileLine(16, const Color(0xFF10B981)),
-            // 85th percentile
-            _buildPercentileLine(15, const Color(0xFF34D399)),
-            // 50th percentile
-            _buildPercentileLine(13.5, const Color(0xFFFBBF24)),
-            // 15th percentile
-            _buildPercentileLine(12, const Color(0xFFFB923C)),
-            // 3rd percentile
-            _buildPercentileLine(10.5, const Color(0xFFEF4444)),
+            // WHO percentile lines - these should be calculated based on actual WHO data
+            ..._buildWHOPercentileLines(child),
           ],
         ),
       ),
     );
   }
 
-  LineChartBarData _buildPercentileLine(double y, Color color) {
-    return LineChartBarData(
-      spots: List.generate(7, (index) => FlSpot(index.toDouble(), y)),
-      isCurved: false,
-      color: color.withValues(alpha: 0.5),
-      barWidth: 1,
-      isStrokeCapRound: false,
-      dotData: const FlDotData(show: false),
-      belowBarData: BarAreaData(show: false),
-      dashArray: [5, 5],
-    );
-  }
 
   List<FlSpot> _getChartSpots(List<GrowthRecord> records) {
-    // For demo, returning sample data points
-    return [
-      const FlSpot(0, 11.5),
-      const FlSpot(1, 11.8),
-      const FlSpot(2, 12.0),
-      const FlSpot(3, 12.1),
-      const FlSpot(4, 12.5),
-    ];
+    final provider = Provider.of<ChildProvider>(context, listen: false);
+    final child = provider.selectedChild;
+    if (child == null) return [];
+
+    List<FlSpot> spots = [];
+    
+    // Add birth data as first point if available
+    if (child.birthWeight != null && _selectedTab == 'Weight-Age') {
+      spots.add(FlSpot(0, child.birthWeight!));
+    } else if (child.birthHeight != null && _selectedTab == 'Height-Age') {
+      spots.add(FlSpot(0, child.birthHeight!));
+    }
+    
+    // Add growth records
+    final sortedRecords = List<GrowthRecord>.from(records);
+    sortedRecords.sort((a, b) => a.date.compareTo(b.date));
+    
+    for (int i = 0; i < sortedRecords.length; i++) {
+      final record = sortedRecords[i];
+      final ageInMonths = DateTime.now().difference(child.birthDate).inDays / 30.44;
+      final recordAgeInMonths = record.date.difference(child.birthDate).inDays / 30.44;
+      
+      double value;
+      switch (_selectedTab) {
+        case 'Weight-Age':
+          value = record.weight;
+          break;
+        case 'Height-Age':
+          value = record.height;
+          break;
+        case 'BMI':
+          value = record.weight / ((record.height / 100) * (record.height / 100));
+          break;
+        case 'Weight-for-Height':
+          value = record.weight / (record.height / 100);
+          break;
+        default:
+          value = record.weight;
+      }
+      
+      spots.add(FlSpot(recordAgeInMonths, value));
+    }
+    
+    return spots;
   }
 
   List<GrowthRecord> _getFilteredRecords(List<GrowthRecord> allRecords) {
@@ -693,8 +775,12 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
   }
 
   Widget _buildLegend(Map<String, String> texts) {
+    final provider = Provider.of<ChildProvider>(context, listen: false);
+    final child = provider.selectedChild;
+    final childName = child?.name ?? 'Child';
+    
     final legendItems = [
-      {'color': const Color(0xFF3A7AFE), 'label': 'Emma'},
+      {'color': const Color(0xFF3A7AFE), 'label': childName},
       {'color': const Color(0xFF10B981), 'label': '97th'},
       {'color': const Color(0xFF34D399), 'label': '85th'},
       {'color': const Color(0xFFFBBF24), 'label': '50th'},
@@ -812,7 +898,7 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  '${texts['age']}: 2y 4m', // This should be calculated
+                  '${texts['age']}: ${_getAgeAtMeasurement(record)}',
                   style: TextStyle(
                     fontSize: 12,
                     color: const Color(0xFF6B7280),
@@ -850,9 +936,46 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
   }
 
   String _calculatePercentile(GrowthRecord record) {
-    // This is a placeholder - actual percentile calculation would use WHO standards
-    final percentiles = ['55th', '58th', '60th'];
-    return percentiles[math.Random().nextInt(percentiles.length)];
+    final provider = Provider.of<ChildProvider>(context, listen: false);
+    final child = provider.selectedChild;
+    if (child == null) return '--';
+    
+    // Calculate age at time of measurement
+    final ageInMonths = record.date.difference(child.birthDate).inDays / 30.44;
+    
+    // This is a simplified percentile calculation
+    // In a real app, this would use WHO growth standards tables
+    double value;
+    switch (_selectedTab) {
+      case 'Weight-Age':
+        value = record.weight;
+        break;
+      case 'Height-Age':
+        value = record.height;
+        break;
+      case 'BMI':
+        value = record.weight / ((record.height / 100) * (record.height / 100));
+        break;
+      default:
+        value = record.weight;
+    }
+    
+    // Simplified percentile estimation based on rough WHO standards
+    if (_selectedTab == 'Weight-Age') {
+      if (value > 15) return '90th';
+      if (value > 13) return '75th';
+      if (value > 11) return '50th';
+      if (value > 9) return '25th';
+      return '10th';
+    } else if (_selectedTab == 'Height-Age') {
+      if (value > 90) return '90th';
+      if (value > 85) return '75th';
+      if (value > 80) return '50th';
+      if (value > 75) return '25th';
+      return '10th';
+    }
+    
+    return '50th';
   }
 
   Widget _buildGrowthInsights(Child child, Map<String, String> texts) {
@@ -899,6 +1022,114 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
         ),
       ],
     );
+  }
+
+  double _getMaxX(List<GrowthRecord> records, Child? child) {
+    if (child == null) return 24;
+    
+    final now = DateTime.now();
+    final ageInMonths = now.difference(child.birthDate).inDays / 30.44;
+    
+    // Show at least 6 months ahead or current age, whichever is greater
+    return math.max(ageInMonths + 6, 24);
+  }
+  
+  double _getMinY(List<GrowthRecord> records, Child? child) {
+    final spots = _getChartSpots(records);
+    if (spots.isEmpty) {
+      switch (_selectedTab) {
+        case 'Weight-Age': return 2;
+        case 'Height-Age': return 40;
+        case 'BMI': return 10;
+        default: return 0;
+      }
+    }
+    
+    final minValue = spots.map((s) => s.y).reduce(math.min);
+    return (minValue * 0.8).floorToDouble();
+  }
+  
+  double _getMaxY(List<GrowthRecord> records, Child? child) {
+    final spots = _getChartSpots(records);
+    if (spots.isEmpty) {
+      switch (_selectedTab) {
+        case 'Weight-Age': return 20;
+        case 'Height-Age': return 120;
+        case 'BMI': return 25;
+        default: return 100;
+      }
+    }
+    
+    final maxValue = spots.map((s) => s.y).reduce(math.max);
+    return (maxValue * 1.2).ceilToDouble();
+  }
+  
+  List<LineChartBarData> _buildWHOPercentileLines(Child? child) {
+    if (child == null) return [];
+    
+    // These are simplified WHO percentile lines - in a real app, these would be calculated
+    // using actual WHO growth standards data tables
+    final lines = <LineChartBarData>[];
+    final maxX = _getMaxX([], child);
+    
+    switch (_selectedTab) {
+      case 'Weight-Age':
+        lines.addAll([
+          _buildPercentileLine([2.5, 4, 6, 8, 10, 12], const Color(0xFFEF4444)), // 3rd
+          _buildPercentileLine([3, 5, 7, 9, 11, 13], const Color(0xFFFB923C)), // 15th
+          _buildPercentileLine([3.5, 5.5, 8, 10, 12, 14], const Color(0xFFFBBF24)), // 50th
+          _buildPercentileLine([4, 6.5, 9, 11, 13, 15], const Color(0xFF34D399)), // 85th
+          _buildPercentileLine([4.5, 7, 10, 12, 14, 16], const Color(0xFF10B981)), // 97th
+        ]);
+        break;
+      case 'Height-Age':
+        lines.addAll([
+          _buildPercentileLine([45, 55, 65, 75, 85, 95], const Color(0xFFEF4444)), // 3rd
+          _buildPercentileLine([47, 58, 68, 78, 88, 98], const Color(0xFFFB923C)), // 15th
+          _buildPercentileLine([50, 61, 71, 81, 91, 101], const Color(0xFFFBBF24)), // 50th
+          _buildPercentileLine([53, 64, 74, 84, 94, 104], const Color(0xFF34D399)), // 85th
+          _buildPercentileLine([55, 66, 76, 86, 96, 106], const Color(0xFF10B981)), // 97th
+        ]);
+        break;
+    }
+    
+    return lines;
+  }
+  
+  LineChartBarData _buildPercentileLine(List<double> values, Color color) {
+    final spots = <FlSpot>[];
+    for (int i = 0; i < values.length; i++) {
+      spots.add(FlSpot(i * 6.0, values[i])); // 6 month intervals
+    }
+    
+    return LineChartBarData(
+      spots: spots,
+      isCurved: true,
+      color: color.withValues(alpha: 0.5),
+      barWidth: 1,
+      isStrokeCapRound: false,
+      dotData: const FlDotData(show: false),
+      belowBarData: BarAreaData(show: false),
+      dashArray: [5, 5],
+    );
+  }
+  
+  String _getAgeAtMeasurement(GrowthRecord record) {
+    final provider = Provider.of<ChildProvider>(context, listen: false);
+    final child = provider.selectedChild;
+    if (child == null) return '--';
+    
+    final ageAtMeasurement = record.date.difference(child.birthDate);
+    final years = (ageAtMeasurement.inDays / 365).floor();
+    final months = ((ageAtMeasurement.inDays % 365) / 30.44).floor();
+    
+    if (years == 0) {
+      return '${months}m';
+    } else if (months == 0) {
+      return '${years}y';
+    } else {
+      return '${years}y ${months}m';
+    }
   }
 
   void _shareChart() {

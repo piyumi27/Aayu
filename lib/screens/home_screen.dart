@@ -563,21 +563,23 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               _buildMetricItem(
                 texts['weight'] ?? 'Weight',
-                latestGrowth?.weight.toString() ?? texts['noData'] ?? 'No data',
-                latestGrowth?.weight != null ? (texts['kg'] ?? 'kg') : '',
+                latestGrowth?.weight.toString() ?? child.birthWeight?.toString() ?? texts['noData'] ?? 'No data',
+                (latestGrowth?.weight != null || child.birthWeight != null) ? (texts['kg'] ?? 'kg') : '',
               ),
               const SizedBox(width: 16),
               _buildMetricItem(
                 texts['height'] ?? 'Height',
-                latestGrowth?.height.toString() ?? texts['noData'] ?? 'No data',
-                latestGrowth?.height != null ? (texts['cm'] ?? 'cm') : '',
+                latestGrowth?.height.toString() ?? child.birthHeight?.toString() ?? texts['noData'] ?? 'No data',
+                (latestGrowth?.height != null || child.birthHeight != null) ? (texts['cm'] ?? 'cm') : '',
               ),
               const SizedBox(width: 16),
               _buildMetricItem(
                 texts['bmi'] ?? 'BMI',
                 latestGrowth != null 
                     ? (latestGrowth.weight / ((latestGrowth.height / 100) * (latestGrowth.height / 100))).toStringAsFixed(1)
-                    : texts['noData'] ?? 'No data',
+                    : (child.birthWeight != null && child.birthHeight != null)
+                        ? (child.birthWeight! / ((child.birthHeight! / 100) * (child.birthHeight! / 100))).toStringAsFixed(1)
+                        : texts['noData'] ?? 'No data',
                 '',
               ),
             ],
@@ -800,7 +802,10 @@ class _HomeScreenState extends State<HomeScreen> {
           final age = now.difference(selectedChild.birthDate);
           final ageInMonths = age.inDays / 30.44; // Average days per month
           
-          if (ageInMonths < 6) {
+          print('DEBUG: Child age in months: $ageInMonths'); // Debug info
+          print('DEBUG: Child birth date: ${selectedChild.birthDate}'); // Debug info
+          
+          if (ageInMonths < 120) { // Temporarily changed from 6 to 120 months for testing
             // Insert at the beginning of the list to make it the first card
             actions.insert(0, {
               'title': texts['growthCountdown'] ?? 'Growth Countdown',
@@ -812,7 +817,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             });
+            print('DEBUG: Growth countdown added to actions'); // Debug info
           }
+        } else {
+          print('DEBUG: No selected child found'); // Debug info
         }
 
     return Container(
