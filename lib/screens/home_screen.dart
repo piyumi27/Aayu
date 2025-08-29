@@ -84,6 +84,9 @@ class _HomeScreenState extends State<HomeScreen> {
         'growthCountdown': 'Growth Countdown',
         'recentActivity': 'Recent Activity',
         'noRecentActivity': 'No recent activity',
+        'latestMeasurements': 'Latest Measurements',
+        'birthMeasurements': 'Birth Measurements',
+        'lastUpdated': 'Last updated',
         'age': 'Age',
         'gender': 'Gender',
         'kg': 'kg',
@@ -110,6 +113,9 @@ class _HomeScreenState extends State<HomeScreen> {
         'growthCountdown': 'වර්ධන ගණන්කිරීම',
         'recentActivity': 'මෑත ක්‍රියාකාරකම්',
         'noRecentActivity': 'මෑත ක්‍රියාකාරකම් නොමැත',
+        'latestMeasurements': 'නවතම මිනුම්',
+        'birthMeasurements': 'උපන් මිනුම්',
+        'lastUpdated': 'අවසාන වරට යාවත්කාලීන කළේ',
         'age': 'වයස',
         'gender': 'ලිංගය',
         'kg': 'කිලෝ',
@@ -136,6 +142,9 @@ class _HomeScreenState extends State<HomeScreen> {
         'growthCountdown': 'வளர்ச்சி கணக்கீடு',
         'recentActivity': 'சமீபத்திய செயல்பாடு',
         'noRecentActivity': 'சமீபத்திய செயல்பாடு இல்லை',
+        'latestMeasurements': 'சமீபத்திய அளவீடுகள்',
+        'birthMeasurements': 'பிறப்பு அளவீடுகள்',
+        'lastUpdated': 'கடைசியாக புதுப்பிக்கப்பட்டது',
         'age': 'வயது',
         'gender': 'பாலினம்',
         'kg': 'கிலோ',
@@ -279,6 +288,25 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     }
     return null;
+  }
+
+  String _formatDate(DateTime date) {
+    final now = DateTime.now();
+    final difference = now.difference(date);
+    
+    if (difference.inDays == 0) {
+      return 'Today';
+    } else if (difference.inDays == 1) {
+      return 'Yesterday';
+    } else if (difference.inDays < 7) {
+      return '${difference.inDays} days ago';
+    } else if (difference.inDays < 30) {
+      final weeks = (difference.inDays / 7).floor();
+      return '$weeks week${weeks > 1 ? 's' : ''} ago';
+    } else {
+      final months = (difference.inDays / 30).floor();
+      return '$months month${months > 1 ? 's' : ''} ago';
+    }
   }
 
   void _addChild(BuildContext context) {
@@ -601,6 +629,75 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildEnhancedMetricItem(String label, String value, String unit, IconData icon, Color iconColor) {
+    final isNoData = value == 'No data' || value.contains('No data') || value.contains('නොමැත') || value.contains('இல்லை');
+    
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: const Color(0xFFE5E7EB),
+            width: 1,
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  icon,
+                  size: 16,
+                  color: isNoData ? const Color(0xFF9CA3AF) : iconColor,
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: const Color(0xFF6B7280),
+                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  value,
+                  style: TextStyle(
+                    fontSize: isNoData ? 16 : 20,
+                    fontWeight: FontWeight.w600,
+                    color: isNoData ? const Color(0xFF9CA3AF) : const Color(0xFF111827),
+                    fontStyle: isNoData ? FontStyle.italic : FontStyle.normal,
+                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                  ),
+                ),
+                if (unit.isNotEmpty && !isNoData) ...[
+                  const SizedBox(width: 2),
+                  Text(
+                    unit,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: const Color(0xFF6B7280),
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

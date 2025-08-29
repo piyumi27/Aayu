@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -643,6 +644,16 @@ class _AddChildScreenState extends State<AddChildScreen> {
     
     try {
       final now = DateTime.now();
+      
+      // Save profile image to local storage if selected
+      String? savedPhotoUrl;
+      if (_profileImage != null) {
+        final appDir = await getApplicationDocumentsDirectory();
+        final fileName = 'child_${now.millisecondsSinceEpoch}.png';
+        final savedImage = await _profileImage!.copy('${appDir.path}/$fileName');
+        savedPhotoUrl = savedImage.path;
+      }
+      
       final child = Child(
         id: now.millisecondsSinceEpoch.toString(),
         name: _nameController.text.trim(),
@@ -654,8 +665,8 @@ class _AddChildScreenState extends State<AddChildScreen> {
         birthHeight: _birthHeightController.text.isEmpty
             ? null
             : double.tryParse(_birthHeightController.text),
-        bloodType: null, // Removed from new design
-        photoUrl: null, // Will be uploaded later
+        bloodType: null,
+        photoUrl: savedPhotoUrl,
         createdAt: now,
         updatedAt: now,
       );

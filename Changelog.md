@@ -35,6 +35,20 @@ All notable changes to the Aayu project will be documented in this file.
   - Users can now access Growth Countdown from Growth tab → Growth Charts → Timer button
   - Ensures parents never lose access to this important feature for infants under 6 months
 
+- **Child Data Propagation**: Fixed child data not saving properly from add child screen
+  - Fixed profile photo not being saved to local storage using path_provider
+  - Added proper file naming with timestamp to prevent conflicts
+  - Child photos, birth measurements, and all details now properly persist across app
+  - Fixed missing import for path_provider in add_child_screen.dart
+
+- **Dashboard UX Improvements**: Enhanced dashboard visual design and information hierarchy
+  - Added birth measurements fallback when no growth measurements exist
+  - Improved visual hierarchy with better spacing and typography
+  - Added enhanced metric display with icons and better visual treatment
+  - Added support for displaying both latest measurements and birth measurements
+  - Improved date formatting with relative time display (today, yesterday, etc.)
+  - Added gender and age icons for better visual information display
+
 ## [2025-08-29] - InkWell Disposal Safety Fixes
 
 ### Fixed
