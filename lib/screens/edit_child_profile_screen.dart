@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/child.dart';
 import '../providers/child_provider.dart';
 import '../utils/responsive_utils.dart';
+import '../widgets/safe_ink_well.dart';
 
 class EditChildProfileScreen extends StatefulWidget {
   final String? childId;
@@ -955,7 +956,7 @@ class _EditChildProfileScreenState extends State<EditChildProfileScreen> {
   }
 
   Widget _buildImageSourceOption(IconData icon, String label, VoidCallback onTap) {
-    return InkWell(
+    return SafeInkWell(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),

@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../utils/responsive_utils.dart';
+import '../widgets/safe_ink_well.dart';
 
 class LanguageSelectionScreen extends StatefulWidget {
   const LanguageSelectionScreen({super.key});
@@ -181,7 +182,7 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
     required String languageCode,
     required bool isSelected,
   }) {
-    return InkWell(
+    return SafeInkWell(
       onTap: () {
         setState(() {
           _selectedLanguage = languageCode;

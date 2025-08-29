@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../utils/responsive_utils.dart';
+import '../widgets/safe_ink_well.dart';
 
 class HelpSupportScreen extends StatefulWidget {
   const HelpSupportScreen({super.key});
@@ -469,7 +470,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
       ),
       child: Column(
         children: [
-          InkWell(
+          SafeInkWell(
             onTap: () {
               if (mounted) {
                 setState(() {
@@ -534,7 +535,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
     
     return Column(
       children: [
-        InkWell(
+        SafeInkWell(
           onTap: () {
             if (mounted) {
               setState(() {
@@ -616,7 +617,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
     required Color color,
     required VoidCallback onTap,
   }) {
-    return InkWell(
+    return SafeInkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
       child: Container(

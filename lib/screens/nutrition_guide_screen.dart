@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/nutrition_content.dart';
 import '../providers/child_provider.dart';
 import '../utils/responsive_utils.dart';
+import '../widgets/safe_ink_well.dart';
 import 'nutrition_article_detail_screen.dart';
 
 /// Professional Nutrition Guide screen with Sri Lankan cultural context
@@ -333,7 +334,7 @@ class _NutritionGuideScreenState extends State<NutritionGuideScreen>
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(ResponsiveUtils.getResponsiveBorderRadius(context)),
       ),
-      child: InkWell(
+      child: SafeInkWell(
         onTap: () => _openArticleDetail(article),
         borderRadius: BorderRadius.circular(ResponsiveUtils.getResponsiveBorderRadius(context)),
         child: Column(

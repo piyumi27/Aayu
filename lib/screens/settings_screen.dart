@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user_account.dart';
 import '../services/local_auth_service.dart' as auth;
 import '../utils/responsive_utils.dart';
+import '../widgets/safe_ink_well.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -480,7 +481,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     Color? iconColor,
     VoidCallback? onTap,
   }) {
-    return InkWell(
+    return SafeInkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
       child: Container(
@@ -630,7 +631,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget _buildLanguageOption(String code, String name, String flag, Map<String, String> texts) {
     final isSelected = _selectedLanguage == code;
     
-    return InkWell(
+    return SafeInkWell(
       onTap: () {
         _saveLanguagePreference(code);
         Navigator.of(context).pop();

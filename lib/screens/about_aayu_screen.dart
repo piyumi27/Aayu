@@ -52,8 +52,8 @@ class _AboutAayuScreenState extends State<AboutAayuScreen> {
         'terms': 'Terms of Service',
         'licenses': 'Open Source Licenses',
         'contact': 'Contact Us',
-        'email': 'Email: support@aayu.lk',
-        'website': 'Website: www.aayu.lk',
+        'email': 'Email: support@aayu.dev',
+        'website': 'Website: www.aayu.dev',
         'visitGithub': 'Visit GitHub Profile',
         'openSourceNotice': 'This app is built with Flutter and uses various open-source libraries.',
       },
@@ -79,8 +79,8 @@ class _AboutAayuScreenState extends State<AboutAayuScreen> {
         'terms': 'සේවා කොන්දේසි',
         'licenses': 'විවෘත මූලාශ්‍ර බලපත්‍ර',
         'contact': 'අප සම්බන්ධ කරගන්න',
-        'email': 'ඊමේල්: support@aayu.lk',
-        'website': 'වෙබ් අඩවිය: www.aayu.lk',
+        'email': 'ඊමේල්: support@aayu.dev',
+        'website': 'වෙබ් අඩවිය: www.aayu.dev',
         'visitGithub': 'GitHub පැතිකඩ බලන්න',
         'openSourceNotice': 'මෙම යෙදුම Flutter සමඟ ගොඩනගා ඇති අතර විවිධ විවෘත මූලාශ්‍ර පුස්තකාල භාවිතා කරයි.',
       },
@@ -106,8 +106,8 @@ class _AboutAayuScreenState extends State<AboutAayuScreen> {
         'terms': 'சேவை விதிமுறைகள்',
         'licenses': 'திறந்த மூல உரிமங்கள்',
         'contact': 'எங்களை தொடர்பு கொள்ளுங்கள்',
-        'email': 'மின்னஞ்சல்: support@aayu.lk',
-        'website': 'வலைதளம்: www.aayu.lk',
+        'email': 'மின்னஞ்சல்: support@aayu.dev',
+        'website': 'வலைதளம்: www.aayu.dev',
         'visitGithub': 'GitHub சுயவிவரத்தைப் பார்வையிடு',
         'openSourceNotice': 'இந்த பயன்பாடு Flutter உடன் கட்டமைக்கப்பட்டு பல்வேறு திறந்த மூல நூலகங்களைப் பயன்படுத்துகிறது.',
       },
@@ -123,14 +123,14 @@ class _AboutAayuScreenState extends State<AboutAayuScreen> {
   }
 
   Future<void> _openEmail() async {
-    final url = Uri.parse('mailto:support@aayu.lk');
+    final url = Uri.parse('mailto:support@aayu.dev');
     if (await canLaunchUrl(url)) {
       await launchUrl(url);
     }
   }
 
   Future<void> _openWebsite() async {
-    final url = Uri.parse('https://www.aayu.lk');
+    final url = Uri.parse('https://www.aayu.dev');
     if (await canLaunchUrl(url)) {
       await launchUrl(url, mode: LaunchMode.externalApplication);
     }

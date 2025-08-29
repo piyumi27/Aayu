@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/user_account.dart';
 import '../utils/responsive_utils.dart';
+import './safe_ink_well.dart';
 
 class FeatureGate extends StatefulWidget {
   final Widget child;
@@ -208,7 +209,7 @@ class _FeatureGateState extends State<FeatureGate> {
         Positioned.fill(
           child: Material(
             color: Colors.transparent,
-            child: InkWell(
+            child: SafeInkWell(
               onTap: _showVerificationModal,
               borderRadius: BorderRadius.circular(8),
               child: Container(

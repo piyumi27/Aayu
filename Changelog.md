@@ -2,6 +2,23 @@
 
 All notable changes to the Aayu project will be documented in this file.
 
+## [2025-08-29] - InkWell Disposal Safety Fixes
+
+### Fixed
+- **InkWell Disposal Issues**: Replaced InkWell with SafeInkWell in remaining screens to prevent disposal errors
+  - Fixed language_selection_screen.dart InkWell disposal issue in language card selection
+  - Fixed help_support_screen.dart InkWell disposal issues in FAQ category expansion, FAQ item expansion, and contact method buttons
+  - Fixed nutrition_guide_screen.dart InkWell disposal issue in article card tapping
+  - Fixed feature_gate.dart InkWell disposal issue in verification modal overlay
+  - All screens now use SafeInkWell which wraps InkWell with Material widget and proper disposal handling
+  - Prevents "Looking up a deactivated widget's ancestor" errors during screen transitions
+
+### Technical Improvements
+- **SafeInkWell Integration**: Added SafeInkWell import to all affected screens
+  - Consistent import path usage: '../widgets/safe_ink_well.dart' for screens, './safe_ink_well.dart' for widgets
+  - Maintained all existing InkWell parameters and functionality while improving safety
+  - No breaking changes to existing UI or interaction behavior
+
 ## [2025-08-28] - Dashboard Improvements, About Page & User Documentation
 
 ### Added
