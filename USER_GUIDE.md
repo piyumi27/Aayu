@@ -1113,7 +1113,7 @@ For comprehensive technical documentation including:
 
 **Thank you for choosing Aayu to support your child's healthy growth and development! 🌟**
 
-*Made with ❤️ in Sri Lanka by Akash Hasendra*
+*Made with ❤️ in Sri Lanka by Piyumi Pabodha Rajakaruna*
 
 ---
 
@@ -1265,7 +1265,7 @@ A: No, an account is required for all users, but verification is optional.
 - Report issues with screenshots
 
 **Developer Information**:
-- **Created by**: Akash Hasendra
+- **Created by**: Piyumi Pabodha Rajakaruna
 - **GitHub**: [HMAHD](https://github.com/HMAHD)
 - **Technical Documentation**: [USER_GUIDE_TECHNICAL.md](USER_GUIDE_TECHNICAL.md)
 

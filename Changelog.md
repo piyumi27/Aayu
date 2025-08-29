@@ -2,6 +2,23 @@
 
 All notable changes to the Aayu project will be documented in this file.
 
+## [2025-08-29] - Dashboard Navigation & Profile Pictures Fixes
+
+### Fixed
+- **Pre-Six Month Countdown Navigation**: Fixed dashboard access to Growth Countdown screen
+  - Changed from `context.go()` to `Navigator.push()` to maintain navigation stack
+  - Added proper import for PreSixMonthCountdownScreen in home_screen.dart
+  - Growth Countdown card now properly appears as first card for children under 6 months
+  - Users can now navigate back to dashboard after viewing countdown screen
+
+- **Profile Pictures Display**: Fixed child profile pictures not showing in multiple screens
+  - Fixed add_health_record_screen.dart to display child profile pictures in:
+    - Current child selector (main CircleAvatar)
+    - Child selection modal (list of children)
+  - Fixed vaccination_calendar_screen.dart to display child profile pictures in dropdown
+  - Added proper File and NetworkImage handling for both local and remote images
+  - Profile pictures now consistently display across all screens with proper fallback to initials
+
 ## [2025-08-29] - InkWell Disposal Safety Fixes
 
 ### Fixed

@@ -14,6 +14,7 @@ import '../widgets/verification_banner.dart';
 import 'add_child_screen.dart';
 import 'add_measurement_screen.dart';
 import 'growth_charts_screen.dart';
+import 'pre_six_month_countdown_screen.dart';
 import 'vaccination_calendar_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -695,7 +696,7 @@ class _HomeScreenState extends State<HomeScreen> {
           },
         ];
 
-        // Add Growth Countdown for children under 6 months
+        // Add Growth Countdown for children under 6 months (always first)
         final selectedChild = childProvider.selectedChild;
         if (selectedChild != null) {
           final now = DateTime.now();
@@ -703,11 +704,16 @@ class _HomeScreenState extends State<HomeScreen> {
           final ageInMonths = age.inDays / 30.44; // Average days per month
           
           if (ageInMonths < 6) {
+            // Insert at the beginning of the list to make it the first card
             actions.insert(0, {
               'title': texts['growthCountdown'] ?? 'Growth Countdown',
               'icon': Icons.timer_outlined,
               'color': const Color(0xFFFF6B6B),
-              'onTap': () => context.go('/pre-six-month-countdown'),
+              'onTap': () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const PreSixMonthCountdownScreen(),
+                ),
+              ),
             });
           }
         }

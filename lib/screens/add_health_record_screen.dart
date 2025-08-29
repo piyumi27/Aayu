@@ -302,16 +302,23 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
             CircleAvatar(
               radius: 24,
               backgroundColor: const Color(0xFF0086FF).withValues(alpha: 0.1),
-              child: selectedChild != null
-                  ? Text(
-                      selectedChild.name[0].toUpperCase(),
-                      style: const TextStyle(
-                        color: Color(0xFF0086FF),
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    )
-                  : const Icon(Icons.person, color: Color(0xFF0086FF)),
+              backgroundImage: selectedChild?.photoUrl != null && selectedChild!.photoUrl!.isNotEmpty
+                  ? (selectedChild!.photoUrl!.startsWith('http')
+                      ? NetworkImage(selectedChild.photoUrl!) as ImageProvider
+                      : FileImage(File(selectedChild.photoUrl!)))
+                  : null,
+              child: selectedChild?.photoUrl == null || selectedChild!.photoUrl!.isEmpty
+                  ? (selectedChild != null
+                      ? Text(
+                          selectedChild.name[0].toUpperCase(),
+                          style: const TextStyle(
+                            color: Color(0xFF0086FF),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        )
+                      : const Icon(Icons.person, color: Color(0xFF0086FF)))
+                  : null,
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -378,13 +385,20 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
                   backgroundColor: isSelected 
                       ? const Color(0xFF0086FF) 
                       : const Color(0xFF0086FF).withValues(alpha: 0.1),
-                  child: Text(
-                    child.name[0].toUpperCase(),
-                    style: TextStyle(
-                      color: isSelected ? Colors.white : const Color(0xFF0086FF),
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  backgroundImage: child.photoUrl != null && child.photoUrl!.isNotEmpty
+                      ? (child.photoUrl!.startsWith('http')
+                          ? NetworkImage(child.photoUrl!) as ImageProvider
+                          : FileImage(File(child.photoUrl!)))
+                      : null,
+                  child: child.photoUrl == null || child.photoUrl!.isEmpty
+                      ? Text(
+                          child.name[0].toUpperCase(),
+                          style: TextStyle(
+                            color: isSelected ? Colors.white : const Color(0xFF0086FF),
+                            fontWeight: FontWeight.bold,
+                          ),
+                        )
+                      : null,
                 ),
                 title: Text(
                   child.name,

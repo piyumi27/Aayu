@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -187,14 +189,21 @@ class _VaccinationCalendarScreenState extends State<VaccinationCalendarScreen>
                   CircleAvatar(
                     radius: 16,
                     backgroundColor: const Color(0xFF0086FF).withValues(alpha: 0.1),
-                    child: Text(
-                      child.name[0].toUpperCase(),
-                      style: const TextStyle(
-                        color: Color(0xFF0086FF),
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12,
-                      ),
-                    ),
+                    backgroundImage: child.photoUrl != null && child.photoUrl!.isNotEmpty
+                        ? (child.photoUrl!.startsWith('http')
+                            ? NetworkImage(child.photoUrl!) as ImageProvider
+                            : FileImage(File(child.photoUrl!)))
+                        : null,
+                    child: child.photoUrl == null || child.photoUrl!.isEmpty
+                        ? Text(
+                            child.name[0].toUpperCase(),
+                            style: const TextStyle(
+                              color: Color(0xFF0086FF),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                            ),
+                          )
+                        : null,
                   ),
                   const SizedBox(width: 12),
                   Column(
