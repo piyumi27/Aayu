@@ -65,6 +65,9 @@ flutter:
   assets:
     - assets/images/
     - assets/images/onboard/
+    - assets/images/about/
+    - assets/images/about/founder.jpeg
+    - assets/images/about/developer.jpeg
     - assets/icons/
     - assets/articles/
     - assets/articles/images/

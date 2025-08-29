@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -487,52 +488,13 @@ class _AboutAayuScreenState extends State<AboutAayuScreen> {
           // Founder Avatar & Info
           Row(
             children: [
-              Container(
-                width: 80,
-                height: 80,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: const Color(0xFF0086FF).withValues(alpha: 0.2),
-                    width: 2,
-                  ),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(14),
-                  child: Image.asset(
-                    'assets/images/about/founder.jpeg',
-                    width: 80,
-                    height: 80,
-                    fit: BoxFit.cover,
-                    alignment: Alignment.center,
-                    errorBuilder: (context, error, stackTrace) {
-                      print('Founder image error: $error'); // Debug print
-                      return Container(
-                        width: 80,
-                        height: 80,
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              const Color(0xFF0086FF),
-                              const Color(0xFF00B894),
-                            ],
-                          ),
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                        child: Center(
-                          child: Text(
-                            'PP',
-                            style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
+              _buildProfileImage(
+                imagePath: 'assets/images/about/founder.jpeg',
+                fallbackInitials: 'PP',
+                gradientColors: [
+                  const Color(0xFF0086FF),
+                  const Color(0xFF00B894),
+                ],
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -642,52 +604,13 @@ class _AboutAayuScreenState extends State<AboutAayuScreen> {
           // Developer Avatar & Info
           Row(
             children: [
-              Container(
-                width: 80,
-                height: 80,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: const Color(0xFF0086FF).withValues(alpha: 0.2),
-                    width: 2,
-                  ),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(14),
-                  child: Image.asset(
-                    'assets/images/about/developer.jpeg',
-                    width: 80,
-                    height: 80,
-                    fit: BoxFit.cover,
-                    alignment: Alignment.center,
-                    errorBuilder: (context, error, stackTrace) {
-                      print('Developer image error: $error'); // Debug print
-                      return Container(
-                        width: 80,
-                        height: 80,
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              const Color(0xFF8B5CF6),
-                              const Color(0xFF06B6D4),
-                            ],
-                          ),
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                        child: Center(
-                          child: Text(
-                            'AH',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
+              _buildProfileImage(
+                imagePath: 'assets/images/about/developer.jpeg',
+                fallbackInitials: 'AH',
+                gradientColors: [
+                  const Color(0xFF8B5CF6),
+                  const Color(0xFF06B6D4),
+                ],
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -942,6 +865,109 @@ class _AboutAayuScreenState extends State<AboutAayuScreen> {
       height: 1,
       color: const Color(0xFFF3F4F6),
     );
+  }
+
+  Widget _buildProfileImage({
+    required String imagePath,
+    required String fallbackInitials,
+    required List<Color> gradientColors,
+  }) {
+    return Container(
+      width: 80,
+      height: 80,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: const Color(0xFF0086FF).withValues(alpha: 0.2),
+          width: 2,
+        ),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(14),
+        child: FutureBuilder<bool>(
+          future: _checkImageExists(imagePath),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              // Loading state
+              return Container(
+                decoration: BoxDecoration(
+                  color: Colors.grey.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Center(
+                  child: SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        const Color(0xFF0086FF),
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            }
+            
+            if (snapshot.hasData && snapshot.data == true) {
+              // Image exists, try to load it
+              return Image.asset(
+                imagePath,
+                width: 80,
+                height: 80,
+                fit: BoxFit.cover,
+                alignment: imagePath.contains('founder') 
+                    ? Alignment(0, -0.7) // Position face slightly up from center for founder
+                    : Alignment.center, // Keep developer image centered
+                errorBuilder: (context, error, stackTrace) {
+                  print('Image loading error for $imagePath: $error');
+                  return _buildFallbackAvatar(fallbackInitials, gradientColors);
+                },
+              );
+            } else {
+              // Image doesn't exist or failed to load
+              print('Image not found: $imagePath');
+              return _buildFallbackAvatar(fallbackInitials, gradientColors);
+            }
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFallbackAvatar(String initials, List<Color> gradientColors) {
+    return Container(
+      width: 80,
+      height: 80,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: gradientColors,
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Center(
+        child: Text(
+          initials,
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<bool> _checkImageExists(String imagePath) async {
+    try {
+      await rootBundle.load(imagePath);
+      return true;
+    } catch (e) {
+      print('Asset check failed for $imagePath: $e');
+      return false;
+    }
   }
 
   Widget _buildSocialButton({
