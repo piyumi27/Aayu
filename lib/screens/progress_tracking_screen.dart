@@ -534,7 +534,7 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
                   decoration: BoxDecoration(
                     color: const Color(0xFFFFFBEB),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: const Color(0xFFFBBF24).withOpacity(0.3)),
+                    border: Border.all(color: const Color(0xFFFBBF24).withValues(alpha: 0.3)),
                   ),
                   child: Row(
                     children: [
@@ -571,7 +571,7 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
+            color: color.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(
@@ -794,7 +794,7 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
         border: Border.all(color: const Color(0xFFE5E7EB)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -810,7 +810,7 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [color, color.withOpacity(0.8)],
+                    colors: [color, color.withValues(alpha: 0.8)],
                   ),
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -921,54 +921,63 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(6),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(8),
+              color: color.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(6),
             ),
             child: Icon(
               icon,
               color: color,
-              size: 18,
+              size: 16,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
           Text(
             value,
             style: TextStyle(
-              fontSize: 16,
+              fontSize: 14,
               fontWeight: FontWeight.w700,
               color: const Color(0xFF111827),
             ),
           ),
-          const SizedBox(height: 4),
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w500,
-              color: const Color(0xFF6B7280),
+          const SizedBox(height: 2),
+          Flexible(
+            child: Text(
+              title,
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w500,
+                color: const Color(0xFF6B7280),
+              ),
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
-            textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 4),
           LinearProgressIndicator(
             value: progress,
             backgroundColor: const Color(0xFFF3F4F6),
             valueColor: AlwaysStoppedAnimation<Color>(color),
-            minHeight: 3,
-            borderRadius: BorderRadius.circular(2),
+            minHeight: 2,
+            borderRadius: BorderRadius.circular(1),
           ),
-          const SizedBox(height: 4),
-          Text(
-            subtitle,
-            style: TextStyle(
-              fontSize: 9,
-              color: const Color(0xFF6B7280),
+          const SizedBox(height: 3),
+          Flexible(
+            child: Text(
+              subtitle,
+              style: TextStyle(
+                fontSize: 8,
+                color: const Color(0xFF6B7280),
+              ),
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
-            textAlign: TextAlign.center,
           ),
         ],
       ),
@@ -1077,7 +1086,7 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
   }
 
   Widget _buildVisualTimeline(List<MilestoneData> milestones) {
-    return Container(
+    return SizedBox(
       height: 80,
       child: Row(
         children: List.generate(milestones.length, (index) {
@@ -1243,105 +1252,52 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
     );
   }
 
-  Widget _buildMilestoneRow(MilestoneData milestone) {
-    final isCompleted = milestone.currentDay >= milestone.targetDay;
-    final isInProgress =
-        milestone.currentDay >= milestone.targetDay - 15 && !isCompleted;
-    final progress =
-        (milestone.currentDay / milestone.targetDay).clamp(0.0, 1.0);
+  // MOCK DATA METHODS FOR COMPREHENSIVE TESTING
+  Map<String, String> _getMockNutritionData(Child child) {
+    final random = math.Random(child.name.hashCode);
+    return {
+      'dailyCalories': '${850 + random.nextInt(200)}',
+      'proteinIntake': '${15 + random.nextInt(10)}g',
+      'calciumLevel': '${700 + random.nextInt(300)}mg',
+      'ironLevel': '${8 + random.nextInt(4)}mg',
+      'vitaminD': '${400 + random.nextInt(200)}IU',
+    };
+  }
 
-    return Padding(
-      padding: EdgeInsets.only(
-        bottom: ResponsiveUtils.getResponsiveSpacing(context, 12),
-      ),
-      child: Row(
-        children: [
-          // Status Icon
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: isCompleted
-                  ? const Color(0xFF10B981).withOpacity(0.1)
-                  : isInProgress
-                      ? const Color(0xFFF59E0B).withOpacity(0.1)
-                      : const Color(0xFF6B7280).withOpacity(0.1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(
-              isCompleted
-                  ? Icons.check_circle_outline
-                  : isInProgress
-                      ? Icons.hourglass_empty_rounded
-                      : Icons.radio_button_unchecked,
-              color: isCompleted
-                  ? const Color(0xFF10B981)
-                  : isInProgress
-                      ? const Color(0xFFF59E0B)
-                      : const Color(0xFF6B7280),
-              size: 20,
-            ),
-          ),
+  Map<String, double> _getMockSleepData(Child child) {
+    final random = math.Random(child.name.hashCode + 1);
+    return {
+      'nightSleep': 10.5 + random.nextDouble() * 2,
+      'daytimeNaps': 1.5 + random.nextDouble(),
+      'sleepEfficiency': 0.80 + random.nextDouble() * 0.15,
+      'bedtimeConsistency': 0.75 + random.nextDouble() * 0.2,
+    };
+  }
 
-          SizedBox(width: ResponsiveUtils.getResponsiveSpacing(context, 12)),
+  Map<String, int> _getMockActivityData(Child child) {
+    final random = math.Random(child.name.hashCode + 2);
+    return {
+      'tummyTimeMinutes': 45 + random.nextInt(30),
+      'playTimeHours': 3 + random.nextInt(2),
+      'motorSkillActivities': 5 + random.nextInt(5),
+      'socialInteractionMinutes': 120 + random.nextInt(60),
+    };
+  }
 
-          // Milestone Info
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  milestone.title,
-                  style: TextStyle(
-                    fontSize:
-                        ResponsiveUtils.getResponsiveFontSize(context, 14),
-                    fontWeight: FontWeight.w500,
-                    color: const Color(0xFF111827),
-                  ),
-                ),
-                Text(
-                  'Target: Day ${milestone.targetDay}',
-                  style: TextStyle(
-                    fontSize:
-                        ResponsiveUtils.getResponsiveFontSize(context, 12),
-                    color: const Color(0xFF6B7280),
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          // Progress Badge
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: isCompleted
-                  ? const Color(0xFF10B981).withOpacity(0.1)
-                  : isInProgress
-                      ? const Color(0xFFF59E0B).withOpacity(0.1)
-                      : const Color(0xFF6B7280).withOpacity(0.1),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Text(
-              isCompleted
-                  ? 'Done'
-                  : isInProgress
-                      ? '${(progress * 100).toInt()}%'
-                      : 'Pending',
-              style: TextStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.w600,
-                color: isCompleted
-                    ? const Color(0xFF10B981)
-                    : isInProgress
-                        ? const Color(0xFFF59E0B)
-                        : const Color(0xFF6B7280),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
+  List<Map<String, dynamic>> _getMockGrowthHistory(Child child) {
+    final history = <Map<String, dynamic>>[];
+    final baseWeight = child.birthWeight ?? 3.2;
+    final baseHeight = child.birthHeight ?? 50;
+    
+    for (int week = 0; week < 24; week += 2) {
+      history.add({
+        'week': week,
+        'weight': baseWeight + (week * 0.15) + math.Random().nextDouble() * 0.3,
+        'height': baseHeight + (week * 0.8) + math.Random().nextDouble() * 1.5,
+        'headCircumference': 34 + (week * 0.3),
+      });
+    }
+    return history;
   }
 
 }
@@ -1443,8 +1399,8 @@ class MiniChartPainter extends CustomPainter {
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
         colors: [
-          color.withOpacity(0.3),
-          color.withOpacity(0.05),
+          color.withValues(alpha: 0.3),
+          color.withValues(alpha: 0.05),
         ],
       ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
 
