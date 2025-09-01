@@ -317,252 +317,579 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
         final milestones = _getMilestones(daysSinceBirth, texts);
 
         return Scaffold(
-          backgroundColor: const Color(0xFFF8F9FA),
-          body: CustomScrollView(
-            slivers: [
-              // Animated App Bar
-              _buildAnimatedAppBar(texts),
-              
-              // Main Content
-              SliverToBoxAdapter(
-                child: AnimatedBuilder(
-                  animation: _fadeAnimation,
-                  builder: (context, child) {
-                    return Transform.translate(
-                      offset: Offset(0, _slideAnimation.value),
-                      child: Opacity(
-                        opacity: _fadeAnimation.value,
-                        child: Padding(
-                          padding: ResponsiveUtils.getResponsivePadding(context),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // Hero Stats Cards
-                              _buildHeroStats(selectedChild, daysSinceBirth, progress, texts),
-                              
-                              SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 24)),
-                              
-                              // Period Selector
-                              _buildPeriodSelector(texts),
-                              
-                              SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 24)),
-                              
-                              // Progress Chart
-                              _buildProgressChart(daysSinceBirth, progress, texts),
-                              
-                              SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 32)),
-                              
-                              // Milestones Section
-                              _buildMilestonesSection(milestones, texts),
-                              
-                              SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 100)),
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildAnimatedAppBar(Map<String, String> texts) {
-    return SliverAppBar(
-      expandedHeight: ResponsiveUtils.getResponsiveSpacing(context, 120),
-      floating: false,
-      pinned: true,
-      elevation: 0,
-      backgroundColor: Colors.transparent,
-      flexibleSpace: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              const Color(0xFF0086FF).withOpacity(0.9),
-              const Color(0xFF10B981).withOpacity(0.8),
-            ],
-          ),
-        ),
-        child: FlexibleSpaceBar(
-          title: AnimatedBuilder(
+          backgroundColor: surfaceWhite,
+          appBar: _buildIndustrialAppBar(context, texts),
+          body: AnimatedBuilder(
             animation: _fadeAnimation,
             builder: (context, child) {
-              return Opacity(
-                opacity: _fadeAnimation.value,
-                child: Text(
-                  texts['title'] ?? 'Growth Progress',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 20),
-                    fontWeight: FontWeight.bold,
-                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+              return SlideTransition(
+                position: _slideAnimation,
+                child: FadeTransition(
+                  opacity: _fadeAnimation,
+                  child: SingleChildScrollView(
+                    padding: ResponsiveUtils.getResponsivePadding(context),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Progress Overview Card
+                        _buildProgressOverviewCard(selectedChild, daysSinceBirth, progress, texts),
+                        
+                        SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 24)),
+                        
+                        // Growth Metrics Grid
+                        _buildGrowthMetricsGrid(selectedChild, daysSinceBirth, texts),
+                        
+                        SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 24)),
+                        
+                        // Milestones Progress
+                        _buildMilestonesProgressCard(milestones, texts),
+                        
+                        SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 24)),
+                        
+                        // Quick Actions
+                        _buildQuickActions(context, texts),
+                        
+                        SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 32)),
+                      ],
+                    ),
                   ),
                 ),
               );
             },
           ),
-          titlePadding: ResponsiveUtils.getResponsivePadding(context),
-          background: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  const Color(0xFF0086FF).withOpacity(0.9),
-                  const Color(0xFF10B981).withOpacity(0.8),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-      leading: Container(
-        margin: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.2),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => context.pop(),
-        ),
-      ),
-      actions: [
-        Container(
-          margin: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.2),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: IconButton(
-            icon: const Icon(Icons.share_outlined, color: Colors.white),
-            onPressed: () {},
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildHeroStats(Child child, int daysSinceBirth, double progress, Map<String, String> texts) {
-    return AnimatedBuilder(
-      animation: _statsAnimation,
-      builder: (context, _) {
-        return Transform.scale(
-          scale: _statsAnimation.value,
-          child: Container(
-            padding: ResponsiveUtils.getResponsivePadding(context),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Colors.white,
-                  Colors.white.withOpacity(0.95),
-                ],
-              ),
-              borderRadius: BorderRadius.circular(24),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 20,
-                  offset: const Offset(0, 8),
-                ),
-              ],
-            ),
-            child: Column(
-              children: [
-                // Main Progress Circle
-                SizedBox(
-                  width: ResponsiveUtils.getResponsiveIconSize(context, 180),
-                  height: ResponsiveUtils.getResponsiveIconSize(context, 180),
-                  child: AnimatedBuilder(
-                    animation: _chartAnimation,
-                    builder: (context, child) {
-                      return CustomPaint(
-                        painter: EnhancedCircularProgressPainter(
-                          progress: progress * _chartAnimation.value,
-                          strokeWidth: 12,
-                        ),
-                        child: Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                '$daysSinceBirth',
-                                style: TextStyle(
-                                  fontSize: ResponsiveUtils.getResponsiveFontSize(context, 48),
-                                  fontWeight: FontWeight.bold,
-                                  color: const Color(0xFF1A1A1A),
-                                  fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-                                ),
-                              ),
-                              Text(
-                                texts['daysPassed'] ?? 'days passed',
-                                style: TextStyle(
-                                  fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
-                                  color: const Color(0xFF6B7280),
-                                  fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                
-                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 24)),
-                
-                // Stats Row
-                Row(
-                  children: [
-                    _buildStatCard(
-                      '${(progress * 100).toInt()}%',
-                      texts['completed'] ?? 'Completed',
-                      const Color(0xFF10B981),
-                      Icons.check_circle_outline,
-                    ),
-                    SizedBox(width: ResponsiveUtils.getResponsiveSpacing(context, 12)),
-                    _buildStatCard(
-                      '${180 - daysSinceBirth}',
-                      texts['daysPassed'] ?? 'Days Left',
-                      const Color(0xFF0086FF),
-                      Icons.schedule_outlined,
-                    ),
-                    SizedBox(width: ResponsiveUtils.getResponsiveSpacing(context, 12)),
-                    _buildStatCard(
-                      texts['onTrack'] ?? 'On Track',
-                      texts['target'] ?? 'Status',
-                      const Color(0xFF8B5CF6),
-                      Icons.trending_up_outlined,
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
         );
       },
     );
   }
 
-  Widget _buildStatCard(String value, String label, Color color, IconData icon) {
-    return Expanded(
-      child: Container(
-        padding: ResponsiveUtils.getResponsivePadding(context).copyWith(
-          top: ResponsiveUtils.getResponsiveSpacing(context, 16),
-          bottom: ResponsiveUtils.getResponsiveSpacing(context, 16),
+  PreferredSizeWidget _buildIndustrialAppBar(BuildContext context, Map<String, String> texts) {
+    return AppBar(
+      title: Text(
+        AppTexts.getText(context, 'growth'),
+        style: TextStyle(
+          fontSize: ResponsiveUtils.getResponsiveFontSize(context, 20),
+          fontWeight: FontWeight.w600,
+          color: textPrimary,
         ),
+      ),
+      backgroundColor: cardWhite,
+      foregroundColor: textPrimary,
+      elevation: 0,
+      scrolledUnderElevation: 1,
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back_ios_new_rounded),
+        onPressed: () => context.pop(),
+      ),
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.more_vert_rounded),
+          onPressed: () {
+            _showOptionsMenu(context);
+          },
+        ),
+      ],
+    );
+  }
+
+  void _showOptionsMenu(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => Container(
+        padding: ResponsiveUtils.getResponsivePadding(context),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.share_outlined),
+              title: const Text('Share Progress'),
+              onTap: () => Navigator.pop(context),
+            ),
+            ListTile(
+              leading: const Icon(Icons.analytics_outlined),
+              title: const Text('Detailed Analytics'),
+              onTap: () => Navigator.pop(context),
+            ),
+            ListTile(
+              leading: const Icon(Icons.settings_outlined),
+              title: const Text('Settings'),
+              onTap: () => Navigator.pop(context),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProgressOverviewCard(Child child, int daysSinceBirth, double progress, Map<String, String> texts) {
+    final progressPercentage = (progress * 100).toInt();
+    final daysRemaining = math.max(0, 180 - daysSinceBirth);
+    
+    return Container(
+      padding: ResponsiveUtils.getResponsivePadding(context),
+      decoration: BoxDecoration(
+        color: cardWhite,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE5E7EB)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: primaryBlue.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(
+                  Icons.timeline_rounded,
+                  color: primaryBlue,
+                  size: ResponsiveUtils.getResponsiveIconSize(context, 24),
+                ),
+              ),
+              SizedBox(width: ResponsiveUtils.getResponsiveSpacing(context, 12)),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Growth Progress Overview',
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 18),
+                        fontWeight: FontWeight.w600,
+                        color: textPrimary,
+                      ),
+                    ),
+                    Text(
+                      'Tracking ${child.name}\'s development journey',
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
+                        color: textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          
+          SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 24)),
+          
+          // Progress Bar
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    '$daysSinceBirth days completed',
+                    style: TextStyle(
+                      fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
+                      fontWeight: FontWeight.w500,
+                      color: textPrimary,
+                    ),
+                  ),
+                  Text(
+                    '$progressPercentage%',
+                    style: TextStyle(
+                      fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
+                      fontWeight: FontWeight.w600,
+                      color: primaryBlue,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 8)),
+              LinearProgressIndicator(
+                value: progress,
+                backgroundColor: const Color(0xFFF3F4F6),
+                valueColor: AlwaysStoppedAnimation<Color>(primaryBlue),
+                minHeight: 8,
+                borderRadius: BorderRadius.circular(4),
+              ),
+              SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 8)),
+              Text(
+                daysRemaining > 0 ? '$daysRemaining days remaining to 6-month milestone' : 'Milestone achieved!',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.getResponsiveFontSize(context, 12),
+                  color: textSecondary,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildGrowthMetricsGrid(Child child, int daysSinceBirth, Map<String, String> texts) {
+    return GridView.count(
+      crossAxisCount: ResponsiveUtils.isSmallWidth(context) ? 2 : 4,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      crossAxisSpacing: ResponsiveUtils.getResponsiveSpacing(context, 16),
+      mainAxisSpacing: ResponsiveUtils.getResponsiveSpacing(context, 16),
+      childAspectRatio: ResponsiveUtils.isSmallWidth(context) ? 1.2 : 1.1,
+      children: [
+        _buildMetricCard(
+          'Weight Progress',
+          '${child.birthWeight?.toStringAsFixed(1) ?? 'N/A'} kg',
+          Icons.monitor_weight_outlined,
+          successGreen,
+          'Last: 3 days ago',
+        ),
+        _buildMetricCard(
+          'Height Progress',
+          '${child.birthHeight?.toStringAsFixed(0) ?? 'N/A'} cm',
+          Icons.height_rounded,
+          primaryBlue,
+          'Last: 3 days ago',
+        ),
+        _buildMetricCard(
+          'Days Active',
+          '$daysSinceBirth',
+          Icons.calendar_today_outlined,
+          warningAmber,
+          'Since birth',
+        ),
+        _buildMetricCard(
+          'Milestones',
+          '4 / 6',
+          Icons.emoji_events_outlined,
+          errorRed,
+          'Completed',
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMetricCard(String title, String value, IconData icon, Color color, String subtitle) {
+    return Container(
+      padding: ResponsiveUtils.getResponsivePadding(context),
+      decoration: BoxDecoration(
+        color: cardWhite,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFE5E7EB)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Icon(
+                  icon,
+                  color: color,
+                  size: ResponsiveUtils.getResponsiveIconSize(context, 18),
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 8)),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: ResponsiveUtils.getResponsiveFontSize(context, 18),
+              fontWeight: FontWeight.w700,
+              color: textPrimary,
+            ),
+          ),
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: ResponsiveUtils.getResponsiveFontSize(context, 12),
+              color: textSecondary,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          Text(
+            subtitle,
+            style: TextStyle(
+              fontSize: ResponsiveUtils.getResponsiveFontSize(context, 10),
+              color: textSecondary.withOpacity(0.7),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMilestonesProgressCard(List<MilestoneData> milestones, Map<String, String> texts) {
+    return Container(
+      padding: ResponsiveUtils.getResponsivePadding(context),
+      decoration: BoxDecoration(
+        color: cardWhite,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE5E7EB)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: successGreen.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(
+                  Icons.flag_outlined,
+                  color: successGreen,
+                  size: ResponsiveUtils.getResponsiveIconSize(context, 24),
+                ),
+              ),
+              SizedBox(width: ResponsiveUtils.getResponsiveSpacing(context, 12)),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Development Milestones',
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 18),
+                        fontWeight: FontWeight.w600,
+                        color: textPrimary,
+                      ),
+                    ),
+                    Text(
+                      'Key developmental achievements',
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
+                        color: textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          
+          SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 20)),
+          
+          // Milestones List
+          ...milestones.take(4).map((milestone) => _buildMilestoneRow(milestone)).toList(),
+          
+          SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 12)),
+          
+          // View All Button
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton(
+              onPressed: () {
+                // Navigate to detailed milestones view
+              },
+              style: OutlinedButton.styleFrom(
+                side: BorderSide(color: primaryBlue.withOpacity(0.3)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: Text(
+                'View All Milestones',
+                style: TextStyle(
+                  color: primaryBlue,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMilestoneRow(MilestoneData milestone) {
+    final isCompleted = milestone.currentDay >= milestone.targetDay;
+    final isInProgress = milestone.currentDay >= milestone.targetDay - 15 && !isCompleted;
+    final progress = (milestone.currentDay / milestone.targetDay).clamp(0.0, 1.0);
+    
+    return Padding(
+      padding: EdgeInsets.only(
+        bottom: ResponsiveUtils.getResponsiveSpacing(context, 12),
+      ),
+      child: Row(
+        children: [
+          // Status Icon
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: isCompleted 
+                ? successGreen.withOpacity(0.1)
+                : isInProgress
+                  ? warningAmber.withOpacity(0.1)
+                  : neutralGray.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(
+              isCompleted 
+                ? Icons.check_circle_outline
+                : isInProgress
+                  ? Icons.hourglass_empty_rounded
+                  : Icons.radio_button_unchecked,
+              color: isCompleted 
+                ? successGreen
+                : isInProgress
+                  ? warningAmber
+                  : neutralGray,
+              size: 20,
+            ),
+          ),
+          
+          SizedBox(width: ResponsiveUtils.getResponsiveSpacing(context, 12)),
+          
+          // Milestone Info
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  milestone.title,
+                  style: TextStyle(
+                    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
+                    fontWeight: FontWeight.w500,
+                    color: textPrimary,
+                  ),
+                ),
+                Text(
+                  'Target: Day ${milestone.targetDay}',
+                  style: TextStyle(
+                    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 12),
+                    color: textSecondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          
+          // Progress Badge
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            decoration: BoxDecoration(
+              color: isCompleted 
+                ? successGreen.withOpacity(0.1)
+                : isInProgress
+                  ? warningAmber.withOpacity(0.1)
+                  : neutralGray.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Text(
+              isCompleted 
+                ? 'Done'
+                : isInProgress
+                  ? '${(progress * 100).toInt()}%'
+                  : 'Pending',
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w600,
+                color: isCompleted 
+                  ? successGreen
+                  : isInProgress
+                    ? warningAmber
+                    : neutralGray,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildQuickActions(BuildContext context, Map<String, String> texts) {
+    return Container(
+      padding: ResponsiveUtils.getResponsivePadding(context),
+      decoration: BoxDecoration(
+        color: cardWhite,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE5E7EB)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Quick Actions',
+            style: TextStyle(
+              fontSize: ResponsiveUtils.getResponsiveFontSize(context, 18),
+              fontWeight: FontWeight.w600,
+              color: textPrimary,
+            ),
+          ),
+          
+          SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 16)),
+          
+          Row(
+            children: [
+              Expanded(
+                child: _buildActionButton(
+                  'Add Measurement',
+                  Icons.straighten_rounded,
+                  primaryBlue,
+                  () {
+                    // Navigate to add measurement
+                  },
+                ),
+              ),
+              SizedBox(width: ResponsiveUtils.getResponsiveSpacing(context, 12)),
+              Expanded(
+                child: _buildActionButton(
+                  'View Charts',
+                  Icons.analytics_outlined,
+                  successGreen,
+                  () {
+                    // Navigate to detailed charts
+                  },
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildActionButton(String label, IconData icon, Color color, VoidCallback onTap) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
         decoration: BoxDecoration(
           color: color.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(12),
           border: Border.all(color: color.withOpacity(0.2)),
         ),
         child: Column(
@@ -574,26 +901,13 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
             ),
             SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 8)),
             Text(
-              value,
-              style: TextStyle(
-                fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
-                fontWeight: FontWeight.bold,
-                color: color,
-                fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 4)),
-            Text(
               label,
               style: TextStyle(
-                fontSize: ResponsiveUtils.getResponsiveFontSize(context, 11),
-                color: const Color(0xFF6B7280),
-                fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                fontSize: ResponsiveUtils.getResponsiveFontSize(context, 12),
+                fontWeight: FontWeight.w500,
+                color: color,
               ),
               textAlign: TextAlign.center,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
             ),
           ],
         ),
@@ -601,280 +915,7 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
     );
   }
 
-  Widget _buildPeriodSelector(Map<String, String> texts) {
-    final periods = ['week', 'month', '3months', '6months'];
-    
-    return Container(
-      padding: const EdgeInsets.all(4),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: periods.map((period) {
-          final isSelected = _selectedPeriod == period;
-          return Expanded(
-            child: GestureDetector(
-              onTap: () => setState(() => _selectedPeriod = period),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                padding: ResponsiveUtils.getResponsivePadding(context).copyWith(
-                  top: ResponsiveUtils.getResponsiveSpacing(context, 12),
-                  bottom: ResponsiveUtils.getResponsiveSpacing(context, 12),
-                ),
-                decoration: BoxDecoration(
-                  color: isSelected ? const Color(0xFF0086FF) : Colors.transparent,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  texts[period] ?? period,
-                  style: TextStyle(
-                    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
-                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                    color: isSelected ? Colors.white : const Color(0xFF6B7280),
-                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ),
-          );
-        }).toList(),
-      ),
-    );
-  }
 
-  Widget _buildProgressChart(int daysSinceBirth, double progress, Map<String, String> texts) {
-    return AnimatedBuilder(
-      animation: _chartAnimation,
-      builder: (context, _) {
-        return Container(
-          padding: ResponsiveUtils.getResponsivePadding(context),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.08),
-                blurRadius: 20,
-                offset: const Offset(0, 8),
-              ),
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                texts['weeklyProgress'] ?? 'Weekly Progress',
-                style: TextStyle(
-                  fontSize: ResponsiveUtils.getResponsiveFontSize(context, 18),
-                  fontWeight: FontWeight.bold,
-                  color: const Color(0xFF1A1A1A),
-                  fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-                ),
-              ),
-              
-              SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 20)),
-              
-              // Weekly Progress Bars
-              ...List.generate(7, (index) {
-                final dayProgress = math.min(1.0, (daysSinceBirth - index * 7) / 7.0);
-                final animatedProgress = dayProgress * _chartAnimation.value;
-                
-                return Padding(
-                  padding: EdgeInsets.only(
-                    bottom: ResponsiveUtils.getResponsiveSpacing(context, 12),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Week ${index + 1}',
-                        style: TextStyle(
-                          fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
-                          fontWeight: FontWeight.w500,
-                          color: const Color(0xFF374151),
-                          fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-                        ),
-                      ),
-                      SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 6)),
-                      LinearProgressIndicator(
-                        value: animatedProgress.clamp(0.0, 1.0),
-                        backgroundColor: Colors.grey[200],
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          Color.lerp(
-                            const Color(0xFF10B981),
-                            const Color(0xFF0086FF),
-                            index / 6,
-                          )!,
-                        ),
-                        minHeight: 8,
-                      ),
-                    ],
-                  ),
-                );
-              }),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildMilestonesSection(List<MilestoneData> milestones, Map<String, String> texts) {
-    return SlideTransition(
-      position: _milestoneSlideAnimation,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            texts['milestones'] ?? 'Milestones',
-            style: TextStyle(
-              fontSize: ResponsiveUtils.getResponsiveFontSize(context, 20),
-              fontWeight: FontWeight.bold,
-              color: const Color(0xFF1A1A1A),
-              fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-            ),
-          ),
-          
-          SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 16)),
-          
-          ...milestones.asMap().entries.map((entry) {
-            final index = entry.key;
-            final milestone = entry.value;
-            
-            return AnimatedBuilder(
-              animation: _milestoneController,
-              builder: (context, child) {
-                final delay = index * 0.1;
-                final animationValue = (_milestoneController.value - delay).clamp(0.0, 1.0);
-                
-                return Transform.translate(
-                  offset: Offset(0, 50 * (1 - animationValue)),
-                  child: Opacity(
-                    opacity: animationValue,
-                    child: _buildMilestoneCard(milestone, texts),
-                  ),
-                );
-              },
-            );
-          }).toList(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildMilestoneCard(MilestoneData milestone, Map<String, String> texts) {
-    final isCompleted = milestone.currentDay >= milestone.targetDay;
-    final isInProgress = milestone.currentDay >= milestone.targetDay - 15 && !isCompleted;
-    final progress = (milestone.currentDay / milestone.targetDay).clamp(0.0, 1.0);
-
-    return Container(
-      margin: EdgeInsets.only(
-        bottom: ResponsiveUtils.getResponsiveSpacing(context, 16),
-      ),
-      padding: ResponsiveUtils.getResponsivePadding(context),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: isCompleted 
-            ? milestone.color.withOpacity(0.3)
-            : Colors.grey.withOpacity(0.1),
-          width: isCompleted ? 2 : 1,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 15,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          // Milestone Icon
-          Container(
-            width: ResponsiveUtils.getResponsiveIconSize(context, 60),
-            height: ResponsiveUtils.getResponsiveIconSize(context, 60),
-            decoration: BoxDecoration(
-              color: milestone.color.withOpacity(isCompleted ? 0.2 : 0.1),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Icon(
-              isCompleted ? Icons.check_circle : milestone.icon,
-              color: milestone.color,
-              size: ResponsiveUtils.getResponsiveIconSize(context, 28),
-            ),
-          ),
-          
-          SizedBox(width: ResponsiveUtils.getResponsiveSpacing(context, 16)),
-          
-          // Milestone Details
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  milestone.title,
-                  style: TextStyle(
-                    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
-                    fontWeight: FontWeight.w600,
-                    color: const Color(0xFF1A1A1A),
-                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-                  ),
-                ),
-                
-                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 4)),
-                
-                Text(
-                  isCompleted
-                    ? texts['completed'] ?? 'Completed'
-                    : isInProgress
-                      ? texts['inProgress'] ?? 'In Progress'
-                      : texts['upcoming'] ?? 'Upcoming',
-                  style: TextStyle(
-                    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
-                    color: milestone.color,
-                    fontWeight: FontWeight.w500,
-                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-                  ),
-                ),
-                
-                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 8)),
-                
-                // Progress Bar
-                LinearProgressIndicator(
-                  value: progress,
-                  backgroundColor: Colors.grey[200],
-                  valueColor: AlwaysStoppedAnimation<Color>(milestone.color),
-                  minHeight: 6,
-                ),
-                
-                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 4)),
-                
-                Text(
-                  'Day ${milestone.targetDay}',
-                  style: TextStyle(
-                    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 12),
-                    color: const Color(0xFF9CA3AF),
-                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }
 
 class MilestoneData {

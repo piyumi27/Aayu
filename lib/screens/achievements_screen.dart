@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/child.dart';
 import '../providers/child_provider.dart';
 import '../utils/responsive_utils.dart';
+import '../l10n/l10n.dart';
 
 class AchievementsScreen extends StatefulWidget {
   const AchievementsScreen({super.key});
@@ -18,17 +19,20 @@ class AchievementsScreen extends StatefulWidget {
 class _AchievementsScreenState extends State<AchievementsScreen>
     with TickerProviderStateMixin {
   
-  late AnimationController _heroController;
-  late AnimationController _badgeController;
-  late AnimationController _particleController;
-  late AnimationController _levelController;
+  // Industrial color scheme - matching progress screen
+  static const Color primaryBlue = Color(0xFF0086FF);
+  static const Color successGreen = Color(0xFF10B981);
+  static const Color warningAmber = Color(0xFFF59E0B);
+  static const Color errorRed = Color(0xFFEF4444);
+  static const Color neutralGray = Color(0xFF6B7280);
+  static const Color surfaceWhite = Color(0xFFFAFBFC);
+  static const Color cardWhite = Colors.white;
+  static const Color textPrimary = Color(0xFF111827);
+  static const Color textSecondary = Color(0xFF6B7280);
   
-  late Animation<double> _heroScaleAnimation;
-  late Animation<double> _heroRotationAnimation;
-  late Animation<Offset> _heroSlideAnimation;
-  late Animation<double> _badgeAnimation;
-  late Animation<double> _particleAnimation;
-  late Animation<double> _levelAnimation;
+  late AnimationController _animationController;
+  late Animation<double> _fadeAnimation;
+  late Animation<Offset> _slideAnimation;
   
   String _selectedLanguage = 'en';
   String _selectedCategory = 'all'; // all, milestones, daily, weekly, special
@@ -490,130 +494,286 @@ class _AchievementsScreenState extends State<AchievementsScreen>
         final unlockedAchievements = achievements.where((a) => a.isUnlocked).length;
 
         return Scaffold(
-          backgroundColor: const Color(0xFFF8F9FA),
-          body: CustomScrollView(
-            slivers: [
-              // Animated App Bar with Particles
-              _buildAnimatedAppBar(texts),
-              
-              // Hero Section with Level and Stats
-              SliverToBoxAdapter(
-                child: _buildHeroSection(
-                  currentLevel,
-                  levelProgress,
-                  totalPoints,
-                  unlockedAchievements,
-                  achievements.length,
-                  texts,
+          backgroundColor: surfaceWhite,
+          appBar: _buildIndustrialAppBar(context, texts),
+          body: AnimatedBuilder(
+            animation: _fadeAnimation,
+            builder: (context, child) {
+              return SlideTransition(
+                position: _slideAnimation,
+                child: FadeTransition(
+                  opacity: _fadeAnimation,
+                  child: SingleChildScrollView(
+                    padding: ResponsiveUtils.getResponsivePadding(context),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Level Overview Card
+                        _buildLevelOverviewCard(
+                          currentLevel,
+                          levelProgress,
+                          totalPoints,
+                          texts,
+                        ),
+                        
+                        SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 24)),
+                        
+                        // Statistics Grid
+                        _buildStatsGrid(unlockedAchievements, achievements.length, texts),
+                        
+                        SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 24)),
+                        
+                        // Category Filter
+                        _buildCategoryFilter(texts),
+                        
+                        SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 24)),
+                        
+                        // Achievements Section
+                        _buildAchievementsSection(filteredAchievements, texts),
+                        
+                        SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 32)),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
-              
-              // Category Filter
-              SliverToBoxAdapter(
-                child: _buildCategoryFilter(texts),
-              ),
-              
-              // Achievements Grid
-              SliverToBoxAdapter(
-                child: _buildAchievementsGrid(filteredAchievements, texts),
-              ),
-              
-              // Bottom Spacing
-              const SliverToBoxAdapter(
-                child: SizedBox(height: 100),
-              ),
-            ],
+              );
+            },
           ),
         );
       },
     );
   }
 
-  Widget _buildAnimatedAppBar(Map<String, String> texts) {
-    return SliverAppBar(
-      expandedHeight: ResponsiveUtils.getResponsiveSpacing(context, 140),
-      floating: false,
-      pinned: true,
-      elevation: 0,
-      backgroundColor: Colors.transparent,
-      flexibleSpace: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              const Color(0xFF8B5CF6).withOpacity(0.9),
-              const Color(0xFFEC4899).withOpacity(0.8),
-              const Color(0xFFFFD700).withOpacity(0.7),
-            ],
-          ),
-        ),
-        child: Stack(
-          children: [
-            // Animated Particles
-            AnimatedBuilder(
-              animation: _particleAnimation,
-              builder: (context, child) {
-                return CustomPaint(
-                  painter: ParticlesPainter(_particleAnimation.value),
-                  size: Size.infinite,
-                );
-              },
-            ),
-            
-            FlexibleSpaceBar(
-              title: SlideTransition(
-                position: _heroSlideAnimation,
-                child: Text(
-                  texts['title'] ?? 'Achievements',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 24),
-                    fontWeight: FontWeight.bold,
-                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-                    shadows: [
-                      Shadow(
-                        offset: const Offset(0, 2),
-                        blurRadius: 4,
-                        color: Colors.black.withOpacity(0.3),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              titlePadding: ResponsiveUtils.getResponsivePadding(context),
-            ),
-          ],
+  PreferredSizeWidget _buildIndustrialAppBar(BuildContext context, Map<String, String> texts) {
+    return AppBar(
+      title: Text(
+        texts['title'] ?? 'Achievements',
+        style: TextStyle(
+          fontSize: ResponsiveUtils.getResponsiveFontSize(context, 20),
+          fontWeight: FontWeight.w600,
+          color: textPrimary,
         ),
       ),
-      leading: Container(
-        margin: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.2),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => context.pop(),
-        ),
+      backgroundColor: cardWhite,
+      foregroundColor: textPrimary,
+      elevation: 0,
+      scrolledUnderElevation: 1,
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back_ios_new_rounded),
+        onPressed: () => context.pop(),
       ),
       actions: [
-        Container(
-          margin: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.2),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: IconButton(
-            icon: const Icon(Icons.share_outlined, color: Colors.white),
-            onPressed: () {},
-          ),
+        IconButton(
+          icon: const Icon(Icons.share_outlined),
+          onPressed: () {
+            // Share functionality
+          },
         ),
       ],
     );
   }
 
-  Widget _buildHeroSection(
+  Widget _buildLevelOverviewCard(
+    int currentLevel,
+    double levelProgress,
+    int totalPoints,
+    Map<String, String> texts,
+  ) {
+    final pointsToNext = 500 - (totalPoints % 500);
+    
+    return Container(
+      padding: ResponsiveUtils.getResponsivePadding(context),
+      decoration: BoxDecoration(
+        color: cardWhite,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE5E7EB)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: warningAmber.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  Icons.military_tech_outlined,
+                  color: warningAmber,
+                  size: ResponsiveUtils.getResponsiveIconSize(context, 32),
+                ),
+              ),
+              SizedBox(width: ResponsiveUtils.getResponsiveSpacing(context, 16)),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Level $currentLevel',
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 24),
+                        fontWeight: FontWeight.w700,
+                        color: textPrimary,
+                      ),
+                    ),
+                    Text(
+                      '$totalPoints total points earned',
+                      style: TextStyle(
+                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
+                        color: textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          
+          SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 20)),
+          
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Progress to Level ${currentLevel + 1}',
+                    style: TextStyle(
+                      fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
+                      fontWeight: FontWeight.w600,
+                      color: textPrimary,
+                    ),
+                  ),
+                  Text(
+                    '${(levelProgress * 100).toInt()}%',
+                    style: TextStyle(
+                      fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
+                      fontWeight: FontWeight.w600,
+                      color: warningAmber,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 8)),
+              LinearProgressIndicator(
+                value: levelProgress,
+                backgroundColor: const Color(0xFFF3F4F6),
+                valueColor: AlwaysStoppedAnimation<Color>(warningAmber),
+                minHeight: 8,
+                borderRadius: BorderRadius.circular(4),
+              ),
+              SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 8)),
+              Text(
+                '$pointsToNext more points needed for next level',
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.getResponsiveFontSize(context, 12),
+                  color: textSecondary,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatsGrid(int unlockedAchievements, int totalAchievements, Map<String, String> texts) {
+    return GridView.count(
+      crossAxisCount: ResponsiveUtils.isSmallWidth(context) ? 2 : 4,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      crossAxisSpacing: ResponsiveUtils.getResponsiveSpacing(context, 16),
+      mainAxisSpacing: ResponsiveUtils.getResponsiveSpacing(context, 16),
+      childAspectRatio: ResponsiveUtils.isSmallWidth(context) ? 1.2 : 1.1,
+      children: [
+        _buildStatCard(
+          '$unlockedAchievements',
+          'Unlocked',
+          Icons.check_circle_outline_rounded,
+          successGreen,
+        ),
+        _buildStatCard(
+          '${totalAchievements - unlockedAchievements}',
+          'Remaining',
+          Icons.radio_button_unchecked_rounded,
+          neutralGray,
+        ),
+        _buildStatCard(
+          '${(unlockedAchievements / totalAchievements * 100).toInt()}%',
+          'Completion',
+          Icons.pie_chart_outline_rounded,
+          primaryBlue,
+        ),
+        _buildStatCard(
+          '4',
+          'Categories',
+          Icons.category_outlined,
+          errorRed,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildStatCard(String value, String label, IconData icon, Color color) {
+    return Container(
+      padding: ResponsiveUtils.getResponsivePadding(context),
+      decoration: BoxDecoration(
+        color: cardWhite,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFE5E7EB)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Icon(
+                  icon,
+                  color: color,
+                  size: ResponsiveUtils.getResponsiveIconSize(context, 18),
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 8)),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: ResponsiveUtils.getResponsiveFontSize(context, 18),
+              fontWeight: FontWeight.w700,
+              color: textPrimary,
+            ),
+          ),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: ResponsiveUtils.getResponsiveFontSize(context, 12),
+              color: textSecondary,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOldHeroSection(
     int currentLevel,
     double levelProgress,
     int totalPoints,
@@ -621,183 +781,12 @@ class _AchievementsScreenState extends State<AchievementsScreen>
     int totalAchievements,
     Map<String, String> texts,
   ) {
-    return Padding(
-      padding: ResponsiveUtils.getResponsivePadding(context),
-      child: Column(
-        children: [
-          SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 20)),
-          
-          // Level Badge with Animation
-          AnimatedBuilder(
-            animation: _heroScaleAnimation,
-            builder: (context, child) {
-              return Transform.scale(
-                scale: _heroScaleAnimation.value,
-                child: Transform.rotate(
-                  angle: _heroRotationAnimation.value,
-                  child: Container(
-                    width: ResponsiveUtils.getResponsiveIconSize(context, 120),
-                    height: ResponsiveUtils.getResponsiveIconSize(context, 120),
-                    decoration: BoxDecoration(
-                      gradient: RadialGradient(
-                        colors: [
-                          const Color(0xFFFFD700),
-                          const Color(0xFFFFA500),
-                          const Color(0xFFFF8C00),
-                        ],
-                      ),
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFFFFD700).withOpacity(0.4),
-                          blurRadius: 20,
-                          spreadRadius: 5,
-                        ),
-                      ],
-                    ),
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            texts['level'] ?? 'Level',
-                            style: TextStyle(
-                              fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
-                              color: Colors.white,
-                              fontWeight: FontWeight.w600,
-                              fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-                            ),
-                          ),
-                          Text(
-                            '$currentLevel',
-                            style: TextStyle(
-                              fontSize: ResponsiveUtils.getResponsiveFontSize(context, 32),
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              );
-            },
-          ),
-          
-          SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 20)),
-          
-          // Level Progress Bar
-          AnimatedBuilder(
-            animation: _levelAnimation,
-            builder: (context, child) {
-              return Container(
-                padding: ResponsiveUtils.getResponsivePadding(context),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 15,
-                      offset: const Offset(0, 5),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          '${texts['level']} $currentLevel',
-                          style: TextStyle(
-                            fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
-                            fontWeight: FontWeight.bold,
-                            color: const Color(0xFF1A1A1A),
-                            fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-                          ),
-                        ),
-                        Text(
-                          '${texts['nextLevel']} ${currentLevel + 1}',
-                          style: TextStyle(
-                            fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
-                            color: const Color(0xFF6B7280),
-                            fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-                          ),
-                        ),
-                      ],
-                    ),
-                    
-                    SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 8)),
-                    
-                    LinearProgressIndicator(
-                      value: levelProgress * _levelAnimation.value,
-                      backgroundColor: Colors.grey[200],
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        const Color(0xFF8B5CF6),
-                      ),
-                      minHeight: 8,
-                    ),
-                    
-                    SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 8)),
-                    
-                    Text(
-                      '${(levelProgress * 500).toInt()} / 500 ${texts['points']}',
-                      style: TextStyle(
-                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 12),
-                        color: const Color(0xFF9CA3AF),
-                        fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-          
-          SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 20)),
-          
-          // Stats Cards
-          AnimatedBuilder(
-            animation: _badgeAnimation,
-            builder: (context, child) {
-              return Transform.scale(
-                scale: _badgeAnimation.value,
-                child: Row(
-                  children: [
-                    _buildStatCard(
-                      '$totalPoints',
-                      texts['totalPoints'] ?? 'Total Points',
-                      const Color(0xFF0086FF),
-                      Icons.stars,
-                    ),
-                    SizedBox(width: ResponsiveUtils.getResponsiveSpacing(context, 12)),
-                    _buildStatCard(
-                      '$unlockedAchievements/$totalAchievements',
-                      texts['badges'] ?? 'Badges',
-                      const Color(0xFF10B981),
-                      Icons.emoji_events,
-                    ),
-                    SizedBox(width: ResponsiveUtils.getResponsiveSpacing(context, 12)),
-                    _buildStatCard(
-                      '${(unlockedAchievements / totalAchievements * 100).toInt()}%',
-                      texts['complete'] ?? 'Complete',
-                      const Color(0xFFEC4899),
-                      Icons.check_circle,
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-        ],
-      ),
-    );
+    // Old implementation - keeping for reference
+    return Container();
   }
 
-  Widget _buildStatCard(String value, String label, Color color, IconData icon) {
+  // Old stat card - replaced with new implementation above
+  Widget _buildOldStatCard(String value, String label, Color color, IconData icon) {
     return Expanded(
       child: Container(
         padding: ResponsiveUtils.getResponsivePadding(context),
@@ -851,54 +840,44 @@ class _AchievementsScreenState extends State<AchievementsScreen>
   Widget _buildCategoryFilter(Map<String, String> texts) {
     final categories = ['all', 'milestones', 'daily', 'weekly', 'special'];
     
-    return Padding(
-      padding: ResponsiveUtils.getResponsivePadding(context),
-      child: Container(
-        height: ResponsiveUtils.getResponsiveSpacing(context, 50),
-        child: ListView.builder(
-          scrollDirection: Axis.horizontal,
-          itemCount: categories.length,
-          itemBuilder: (context, index) {
-            final category = categories[index];
-            final isSelected = _selectedCategory == category;
-            
-            return Padding(
-              padding: EdgeInsets.only(
-                right: ResponsiveUtils.getResponsiveSpacing(context, 12),
-              ),
-              child: GestureDetector(
-                onTap: () => setState(() => _selectedCategory = category),
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 300),
-                  padding: ResponsiveUtils.getResponsivePadding(context).copyWith(
-                    top: ResponsiveUtils.getResponsiveSpacing(context, 12),
-                    bottom: ResponsiveUtils.getResponsiveSpacing(context, 12),
+    return Container(
+      height: ResponsiveUtils.getResponsiveSpacing(context, 50),
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: categories.length,
+        itemBuilder: (context, index) {
+          final category = categories[index];
+          final isSelected = _selectedCategory == category;
+          
+          return Padding(
+            padding: EdgeInsets.only(
+              right: ResponsiveUtils.getResponsiveSpacing(context, 12),
+            ),
+            child: InkWell(
+              onTap: () => setState(() => _selectedCategory = category),
+              borderRadius: BorderRadius.circular(20),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                decoration: BoxDecoration(
+                  color: isSelected ? primaryBlue : cardWhite,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: isSelected ? primaryBlue : const Color(0xFFE5E7EB),
                   ),
-                  decoration: BoxDecoration(
-                    color: isSelected ? const Color(0xFF8B5CF6) : Colors.white,
-                    borderRadius: BorderRadius.circular(25),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: Text(
-                    texts[category] ?? category,
-                    style: TextStyle(
-                      fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
-                      fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                      color: isSelected ? Colors.white : const Color(0xFF6B7280),
-                      fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-                    ),
+                ),
+                child: Text(
+                  texts[category] ?? category,
+                  style: TextStyle(
+                    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
+                    fontWeight: FontWeight.w500,
+                    color: isSelected ? Colors.white : textSecondary,
                   ),
                 ),
               ),
-            );
-          },
-        ),
+            ),
+          );
+        },
       ),
     );
   }
