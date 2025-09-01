@@ -647,46 +647,44 @@ class _AchievementsScreenState extends State<AchievementsScreen>
 
   Widget _buildStatCard(String value, String label, IconData icon, Color color) {
     return Container(
-      padding: ResponsiveUtils.getResponsivePadding(context),
+      padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         color: cardWhite,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(8),
         border: Border.all(color: const Color(0xFFE5E7EB)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                child: Icon(
-                  icon,
-                  color: color,
-                  size: ResponsiveUtils.getResponsiveIconSize(context, 18),
-                ),
-              ),
-            ],
+          Icon(
+            icon,
+            color: color,
+            size: 14,
           ),
-          SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 8)),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: ResponsiveUtils.getResponsiveFontSize(context, 18),
-              fontWeight: FontWeight.w700,
-              color: textPrimary,
+          const SizedBox(height: 4),
+          Flexible(
+            child: Text(
+              value,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                color: textPrimary,
+              ),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
             ),
           ),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: ResponsiveUtils.getResponsiveFontSize(context, 12),
-              color: textSecondary,
-              fontWeight: FontWeight.w500,
+          Flexible(
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 9,
+                color: textSecondary,
+                fontWeight: FontWeight.w500,
+              ),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
             ),
           ),
         ],
