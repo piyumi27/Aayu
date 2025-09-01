@@ -45,90 +45,28 @@ class _AchievementsScreenState extends State<AchievementsScreen>
   }
 
   void _initializeAnimations() {
-    // Hero animation controller
-    _heroController = AnimationController(
-      duration: const Duration(milliseconds: 2000),
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 600),
       vsync: this,
     );
 
-    // Badge animation controller
-    _badgeController = AnimationController(
-      duration: const Duration(milliseconds: 1500),
-      vsync: this,
-    );
-
-    // Particle animation controller
-    _particleController = AnimationController(
-      duration: const Duration(milliseconds: 3000),
-      vsync: this,
-    );
-
-    // Level animation controller
-    _levelController = AnimationController(
-      duration: const Duration(milliseconds: 1000),
-      vsync: this,
-    );
-
-    _heroScaleAnimation = Tween<double>(
-      begin: 0.5,
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
       end: 1.0,
     ).animate(CurvedAnimation(
-      parent: _heroController,
-      curve: Curves.elasticOut,
+      parent: _animationController,
+      curve: Curves.easeOutQuart,
     ));
 
-    _heroRotationAnimation = Tween<double>(
-      begin: 0.0,
-      end: 2 * math.pi,
-    ).animate(CurvedAnimation(
-      parent: _heroController,
-      curve: const Interval(0.0, 0.6, curve: Curves.easeInOut),
-    ));
-
-    _heroSlideAnimation = Tween<Offset>(
-      begin: const Offset(0.0, -1.0),
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0.0, 0.1),
       end: Offset.zero,
     ).animate(CurvedAnimation(
-      parent: _heroController,
-      curve: Curves.bounceOut,
+      parent: _animationController,
+      curve: Curves.easeOutQuart,
     ));
 
-    _badgeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _badgeController,
-      curve: Curves.bounceOut,
-    ));
-
-    _particleAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _particleController,
-      curve: Curves.easeOut,
-    ));
-
-    _levelAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _levelController,
-      curve: Curves.easeInOutCubic,
-    ));
-
-    // Start animation sequence
-    _startAnimationSequence();
-  }
-
-  void _startAnimationSequence() async {
-    _heroController.forward();
-    await Future.delayed(const Duration(milliseconds: 500));
-    _particleController.repeat();
-    await Future.delayed(const Duration(milliseconds: 300));
-    _badgeController.forward();
-    await Future.delayed(const Duration(milliseconds: 200));
-    _levelController.forward();
+    _animationController.forward();
   }
 
   Future<void> _loadLanguage() async {
@@ -447,24 +385,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
 
   @override
   void dispose() {
-    // Dispose animation controllers safely
-    if (_heroController.isAnimating) {
-      _heroController.stop();
-    }
-    if (_badgeController.isAnimating) {
-      _badgeController.stop();
-    }
-    if (_particleController.isAnimating) {
-      _particleController.stop();
-    }
-    if (_levelController.isAnimating) {
-      _levelController.stop();
-    }
-    
-    _heroController.dispose();
-    _badgeController.dispose();
-    _particleController.dispose();
-    _levelController.dispose();
+    _animationController.dispose();
     super.dispose();
   }
 
@@ -529,7 +450,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                         SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 24)),
                         
                         // Achievements Section
-                        _buildAchievementsSection(filteredAchievements, texts),
+                        _buildAchievementsGrid(filteredAchievements, texts),
                         
                         SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 32)),
                       ],
@@ -914,18 +835,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
             itemCount: achievements.length,
             itemBuilder: (context, index) {
               final achievement = achievements[index];
-              return AnimatedBuilder(
-                animation: _badgeAnimation,
-                builder: (context, child) {
-                  final delay = index * 0.1;
-                  final animationValue = (_badgeAnimation.value - delay).clamp(0.0, 1.0);
-                  
-                  return Transform.scale(
-                    scale: animationValue,
-                    child: _buildAchievementCard(achievement, texts),
-                  );
-                },
-              );
+              return _buildAchievementCard(achievement, texts);
             },
           ),
         ],

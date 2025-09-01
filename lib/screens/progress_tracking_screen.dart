@@ -17,21 +17,13 @@ class ProgressTrackingScreen extends StatefulWidget {
 
 class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
     with TickerProviderStateMixin {
-  
-  late AnimationController _mainController;
-  late AnimationController _chartController;
-  late AnimationController _statsController;
-  late AnimationController _milestoneController;
-  
+  late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
-  late Animation<double> _slideAnimation;
-  late Animation<double> _chartAnimation;
-  late Animation<double> _statsAnimation;
-  late Animation<Offset> _milestoneSlideAnimation;
-  
+  late Animation<Offset> _slideAnimation;
+
   String _selectedLanguage = 'en';
   String _selectedPeriod = 'week'; // week, month, 3months, 6months
-  
+
   @override
   void initState() {
     super.initState();
@@ -40,27 +32,8 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
   }
 
   void _initializeAnimations() {
-    // Main fade and slide animation
-    _mainController = AnimationController(
-      duration: const Duration(milliseconds: 800),
-      vsync: this,
-    );
-
-    // Chart animation controller
-    _chartController = AnimationController(
-      duration: const Duration(milliseconds: 1200),
-      vsync: this,
-    );
-
-    // Stats animation controller
-    _statsController = AnimationController(
-      duration: const Duration(milliseconds: 1000),
-      vsync: this,
-    );
-
-    // Milestone animation controller
-    _milestoneController = AnimationController(
-      duration: const Duration(milliseconds: 1500),
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 600),
       vsync: this,
     );
 
@@ -68,54 +41,19 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
       begin: 0.0,
       end: 1.0,
     ).animate(CurvedAnimation(
-      parent: _mainController,
-      curve: Curves.easeOutCubic,
+      parent: _animationController,
+      curve: Curves.easeOutQuart,
     ));
 
-    _slideAnimation = Tween<double>(
-      begin: 50.0,
-      end: 0.0,
-    ).animate(CurvedAnimation(
-      parent: _mainController,
-      curve: Curves.easeOutCubic,
-    ));
-
-    _chartAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _chartController,
-      curve: Curves.elasticOut,
-    ));
-
-    _statsAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _statsController,
-      curve: Curves.bounceOut,
-    ));
-
-    _milestoneSlideAnimation = Tween<Offset>(
-      begin: const Offset(0.0, 1.0),
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0.0, 0.1),
       end: Offset.zero,
     ).animate(CurvedAnimation(
-      parent: _milestoneController,
-      curve: Curves.easeOutBack,
+      parent: _animationController,
+      curve: Curves.easeOutQuart,
     ));
 
-    // Start animations in sequence
-    _startAnimationSequence();
-  }
-
-  void _startAnimationSequence() async {
-    _mainController.forward();
-    await Future.delayed(const Duration(milliseconds: 300));
-    _chartController.forward();
-    await Future.delayed(const Duration(milliseconds: 200));
-    _statsController.forward();
-    await Future.delayed(const Duration(milliseconds: 400));
-    _milestoneController.forward();
+    _animationController.forward();
   }
 
   Future<void> _loadLanguage() async {
@@ -225,7 +163,8 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
     return texts[_selectedLanguage] ?? texts['en']!;
   }
 
-  List<MilestoneData> _getMilestones(int daysSinceBirth, Map<String, String> texts) {
+  List<MilestoneData> _getMilestones(
+      int daysSinceBirth, Map<String, String> texts) {
     return [
       MilestoneData(
         title: texts['milestone1'] ?? 'First Smile',
@@ -274,24 +213,7 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
 
   @override
   void dispose() {
-    // Dispose animation controllers safely
-    if (_mainController.isAnimating) {
-      _mainController.stop();
-    }
-    if (_chartController.isAnimating) {
-      _chartController.stop();
-    }
-    if (_statsController.isAnimating) {
-      _statsController.stop();
-    }
-    if (_milestoneController.isAnimating) {
-      _milestoneController.stop();
-    }
-    
-    _mainController.dispose();
-    _chartController.dispose();
-    _statsController.dispose();
-    _milestoneController.dispose();
+    _animationController.dispose();
     super.dispose();
   }
 
@@ -302,7 +224,7 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
     return Consumer<ChildProvider>(
       builder: (context, childProvider, child) {
         final selectedChild = childProvider.selectedChild;
-        
+
         if (selectedChild == null) {
           return const Scaffold(
             backgroundColor: Color(0xFFF8F9FA),
@@ -317,7 +239,7 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
         final milestones = _getMilestones(daysSinceBirth, texts);
 
         return Scaffold(
-          backgroundColor: surfaceWhite,
+          backgroundColor: const Color(0xFFFAFBFC),
           appBar: _buildIndustrialAppBar(context, texts),
           body: AnimatedBuilder(
             animation: _fadeAnimation,
@@ -332,24 +254,34 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // Progress Overview Card
-                        _buildProgressOverviewCard(selectedChild, daysSinceBirth, progress, texts),
-                        
-                        SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 24)),
-                        
+                        _buildProgressOverviewCard(
+                            selectedChild, daysSinceBirth, progress, texts),
+
+                        SizedBox(
+                            height: ResponsiveUtils.getResponsiveSpacing(
+                                context, 24)),
+
                         // Growth Metrics Grid
-                        _buildGrowthMetricsGrid(selectedChild, daysSinceBirth, texts),
-                        
-                        SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 24)),
-                        
+                        _buildGrowthMetricsGrid(
+                            selectedChild, daysSinceBirth, texts),
+
+                        SizedBox(
+                            height: ResponsiveUtils.getResponsiveSpacing(
+                                context, 24)),
+
                         // Milestones Progress
                         _buildMilestonesProgressCard(milestones, texts),
-                        
-                        SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 24)),
-                        
+
+                        SizedBox(
+                            height: ResponsiveUtils.getResponsiveSpacing(
+                                context, 24)),
+
                         // Quick Actions
                         _buildQuickActions(context, texts),
-                        
-                        SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 32)),
+
+                        SizedBox(
+                            height: ResponsiveUtils.getResponsiveSpacing(
+                                context, 32)),
                       ],
                     ),
                   ),
@@ -362,18 +294,19 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
     );
   }
 
-  PreferredSizeWidget _buildIndustrialAppBar(BuildContext context, Map<String, String> texts) {
+  PreferredSizeWidget _buildIndustrialAppBar(
+      BuildContext context, Map<String, String> texts) {
     return AppBar(
       title: Text(
-        AppTexts.getText(context, 'growth'),
+        texts['title'] ?? 'Growth Progress',
         style: TextStyle(
           fontSize: ResponsiveUtils.getResponsiveFontSize(context, 20),
           fontWeight: FontWeight.w600,
-          color: textPrimary,
+          color: const Color(0xFF111827),
         ),
       ),
-      backgroundColor: cardWhite,
-      foregroundColor: textPrimary,
+      backgroundColor: Colors.white,
+      foregroundColor: const Color(0xFF111827),
       elevation: 0,
       scrolledUnderElevation: 1,
       leading: IconButton(
@@ -423,14 +356,15 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
     );
   }
 
-  Widget _buildProgressOverviewCard(Child child, int daysSinceBirth, double progress, Map<String, String> texts) {
+  Widget _buildProgressOverviewCard(Child child, int daysSinceBirth,
+      double progress, Map<String, String> texts) {
     final progressPercentage = (progress * 100).toInt();
     final daysRemaining = math.max(0, 180 - daysSinceBirth);
-    
+
     return Container(
       padding: ResponsiveUtils.getResponsivePadding(context),
       decoration: BoxDecoration(
-        color: cardWhite,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: const Color(0xFFE5E7EB)),
         boxShadow: [
@@ -450,16 +384,17 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: primaryBlue.withOpacity(0.1),
+                  color: const Color(0xFF0086FF).withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(
                   Icons.timeline_rounded,
-                  color: primaryBlue,
+                  color: const Color(0xFF0086FF),
                   size: ResponsiveUtils.getResponsiveIconSize(context, 24),
                 ),
               ),
-              SizedBox(width: ResponsiveUtils.getResponsiveSpacing(context, 12)),
+              SizedBox(
+                  width: ResponsiveUtils.getResponsiveSpacing(context, 12)),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -467,16 +402,18 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
                     Text(
                       'Growth Progress Overview',
                       style: TextStyle(
-                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 18),
+                        fontSize:
+                            ResponsiveUtils.getResponsiveFontSize(context, 18),
                         fontWeight: FontWeight.w600,
-                        color: textPrimary,
+                        color: const Color(0xFF111827),
                       ),
                     ),
                     Text(
                       'Tracking ${child.name}\'s development journey',
                       style: TextStyle(
-                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
-                        color: textSecondary,
+                        fontSize:
+                            ResponsiveUtils.getResponsiveFontSize(context, 14),
+                        color: const Color(0xFF6B7280),
                       ),
                     ),
                   ],
@@ -484,9 +421,9 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
               ),
             ],
           ),
-          
+
           SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 24)),
-          
+
           // Progress Bar
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -497,35 +434,41 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
                   Text(
                     '$daysSinceBirth days completed',
                     style: TextStyle(
-                      fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
+                      fontSize:
+                          ResponsiveUtils.getResponsiveFontSize(context, 16),
                       fontWeight: FontWeight.w500,
-                      color: textPrimary,
+                      color: const Color(0xFF111827),
                     ),
                   ),
                   Text(
                     '$progressPercentage%',
                     style: TextStyle(
-                      fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
+                      fontSize:
+                          ResponsiveUtils.getResponsiveFontSize(context, 16),
                       fontWeight: FontWeight.w600,
-                      color: primaryBlue,
+                      color: const Color(0xFF0086FF),
                     ),
                   ),
                 ],
               ),
-              SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 8)),
+              SizedBox(
+                  height: ResponsiveUtils.getResponsiveSpacing(context, 8)),
               LinearProgressIndicator(
                 value: progress,
                 backgroundColor: const Color(0xFFF3F4F6),
-                valueColor: AlwaysStoppedAnimation<Color>(primaryBlue),
+                valueColor: AlwaysStoppedAnimation<Color>(const Color(0xFF0086FF)),
                 minHeight: 8,
                 borderRadius: BorderRadius.circular(4),
               ),
-              SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 8)),
+              SizedBox(
+                  height: ResponsiveUtils.getResponsiveSpacing(context, 8)),
               Text(
-                daysRemaining > 0 ? '$daysRemaining days remaining to 6-month milestone' : 'Milestone achieved!',
+                daysRemaining > 0
+                    ? '$daysRemaining days remaining to 6-month milestone'
+                    : 'Milestone achieved!',
                 style: TextStyle(
                   fontSize: ResponsiveUtils.getResponsiveFontSize(context, 12),
-                  color: textSecondary,
+                  color: const Color(0xFF6B7280),
                 ),
               ),
             ],
@@ -535,7 +478,8 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
     );
   }
 
-  Widget _buildGrowthMetricsGrid(Child child, int daysSinceBirth, Map<String, String> texts) {
+  Widget _buildGrowthMetricsGrid(
+      Child child, int daysSinceBirth, Map<String, String> texts) {
     return GridView.count(
       crossAxisCount: ResponsiveUtils.isSmallWidth(context) ? 2 : 4,
       shrinkWrap: true,
@@ -548,39 +492,40 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
           'Weight Progress',
           '${child.birthWeight?.toStringAsFixed(1) ?? 'N/A'} kg',
           Icons.monitor_weight_outlined,
-          successGreen,
+          const Color(0xFF10B981),
           'Last: 3 days ago',
         ),
         _buildMetricCard(
           'Height Progress',
           '${child.birthHeight?.toStringAsFixed(0) ?? 'N/A'} cm',
           Icons.height_rounded,
-          primaryBlue,
+          const Color(0xFF0086FF),
           'Last: 3 days ago',
         ),
         _buildMetricCard(
           'Days Active',
           '$daysSinceBirth',
           Icons.calendar_today_outlined,
-          warningAmber,
+          const Color(0xFFF59E0B),
           'Since birth',
         ),
         _buildMetricCard(
           'Milestones',
           '4 / 6',
           Icons.emoji_events_outlined,
-          errorRed,
+          const Color(0xFFEF4444),
           'Completed',
         ),
       ],
     );
   }
 
-  Widget _buildMetricCard(String title, String value, IconData icon, Color color, String subtitle) {
+  Widget _buildMetricCard(
+      String title, String value, IconData icon, Color color, String subtitle) {
     return Container(
       padding: ResponsiveUtils.getResponsivePadding(context),
       decoration: BoxDecoration(
-        color: cardWhite,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: const Color(0xFFE5E7EB)),
       ),
@@ -609,14 +554,14 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
             style: TextStyle(
               fontSize: ResponsiveUtils.getResponsiveFontSize(context, 18),
               fontWeight: FontWeight.w700,
-              color: textPrimary,
+              color: const Color(0xFF111827),
             ),
           ),
           Text(
             title,
             style: TextStyle(
               fontSize: ResponsiveUtils.getResponsiveFontSize(context, 12),
-              color: textSecondary,
+              color: const Color(0xFF6B7280),
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -624,7 +569,7 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
             subtitle,
             style: TextStyle(
               fontSize: ResponsiveUtils.getResponsiveFontSize(context, 10),
-              color: textSecondary.withOpacity(0.7),
+              color: const Color(0xFF6B7280).withOpacity(0.7),
             ),
           ),
         ],
@@ -632,11 +577,12 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
     );
   }
 
-  Widget _buildMilestonesProgressCard(List<MilestoneData> milestones, Map<String, String> texts) {
+  Widget _buildMilestonesProgressCard(
+      List<MilestoneData> milestones, Map<String, String> texts) {
     return Container(
       padding: ResponsiveUtils.getResponsivePadding(context),
       decoration: BoxDecoration(
-        color: cardWhite,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: const Color(0xFFE5E7EB)),
         boxShadow: [
@@ -656,16 +602,17 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: successGreen.withOpacity(0.1),
+                  color: const Color(0xFF10B981).withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(
                   Icons.flag_outlined,
-                  color: successGreen,
+                  color: const Color(0xFF10B981),
                   size: ResponsiveUtils.getResponsiveIconSize(context, 24),
                 ),
               ),
-              SizedBox(width: ResponsiveUtils.getResponsiveSpacing(context, 12)),
+              SizedBox(
+                  width: ResponsiveUtils.getResponsiveSpacing(context, 12)),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -673,16 +620,18 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
                     Text(
                       'Development Milestones',
                       style: TextStyle(
-                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 18),
+                        fontSize:
+                            ResponsiveUtils.getResponsiveFontSize(context, 18),
                         fontWeight: FontWeight.w600,
-                        color: textPrimary,
+                        color: const Color(0xFF111827),
                       ),
                     ),
                     Text(
                       'Key developmental achievements',
                       style: TextStyle(
-                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
-                        color: textSecondary,
+                        fontSize:
+                            ResponsiveUtils.getResponsiveFontSize(context, 14),
+                        color: const Color(0xFF6B7280),
                       ),
                     ),
                   ],
@@ -690,14 +639,17 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
               ),
             ],
           ),
-          
+
           SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 20)),
-          
+
           // Milestones List
-          ...milestones.take(4).map((milestone) => _buildMilestoneRow(milestone)).toList(),
-          
+          ...milestones
+              .take(4)
+              .map((milestone) => _buildMilestoneRow(milestone))
+              .toList(),
+
           SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 12)),
-          
+
           // View All Button
           SizedBox(
             width: double.infinity,
@@ -706,7 +658,8 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
                 // Navigate to detailed milestones view
               },
               style: OutlinedButton.styleFrom(
-                side: BorderSide(color: primaryBlue.withOpacity(0.3)),
+                side:
+                    BorderSide(color: const Color(0xFF0086FF).withOpacity(0.3)),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -714,7 +667,7 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
               child: Text(
                 'View All Milestones',
                 style: TextStyle(
-                  color: primaryBlue,
+                  color: const Color(0xFF0086FF),
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -727,9 +680,11 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
 
   Widget _buildMilestoneRow(MilestoneData milestone) {
     final isCompleted = milestone.currentDay >= milestone.targetDay;
-    final isInProgress = milestone.currentDay >= milestone.targetDay - 15 && !isCompleted;
-    final progress = (milestone.currentDay / milestone.targetDay).clamp(0.0, 1.0);
-    
+    final isInProgress =
+        milestone.currentDay >= milestone.targetDay - 15 && !isCompleted;
+    final progress =
+        (milestone.currentDay / milestone.targetDay).clamp(0.0, 1.0);
+
     return Padding(
       padding: EdgeInsets.only(
         bottom: ResponsiveUtils.getResponsiveSpacing(context, 12),
@@ -741,30 +696,30 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: isCompleted 
-                ? successGreen.withOpacity(0.1)
-                : isInProgress
-                  ? warningAmber.withOpacity(0.1)
-                  : neutralGray.withOpacity(0.1),
+              color: isCompleted
+                  ? const Color(0xFF10B981).withOpacity(0.1)
+                  : isInProgress
+                      ? const Color(0xFFF59E0B).withOpacity(0.1)
+                      : const Color(0xFF6B7280).withOpacity(0.1),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(
-              isCompleted 
-                ? Icons.check_circle_outline
-                : isInProgress
-                  ? Icons.hourglass_empty_rounded
-                  : Icons.radio_button_unchecked,
-              color: isCompleted 
-                ? successGreen
-                : isInProgress
-                  ? warningAmber
-                  : neutralGray,
+              isCompleted
+                  ? Icons.check_circle_outline
+                  : isInProgress
+                      ? Icons.hourglass_empty_rounded
+                      : Icons.radio_button_unchecked,
+              color: isCompleted
+                  ? const Color(0xFF10B981)
+                  : isInProgress
+                      ? const Color(0xFFF59E0B)
+                      : const Color(0xFF6B7280),
               size: 20,
             ),
           ),
-          
+
           SizedBox(width: ResponsiveUtils.getResponsiveSpacing(context, 12)),
-          
+
           // Milestone Info
           Expanded(
             child: Column(
@@ -773,47 +728,49 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
                 Text(
                   milestone.title,
                   style: TextStyle(
-                    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
+                    fontSize:
+                        ResponsiveUtils.getResponsiveFontSize(context, 14),
                     fontWeight: FontWeight.w500,
-                    color: textPrimary,
+                    color: const Color(0xFF111827),
                   ),
                 ),
                 Text(
                   'Target: Day ${milestone.targetDay}',
                   style: TextStyle(
-                    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 12),
-                    color: textSecondary,
+                    fontSize:
+                        ResponsiveUtils.getResponsiveFontSize(context, 12),
+                    color: const Color(0xFF6B7280),
                   ),
                 ),
               ],
             ),
           ),
-          
+
           // Progress Badge
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
-              color: isCompleted 
-                ? successGreen.withOpacity(0.1)
-                : isInProgress
-                  ? warningAmber.withOpacity(0.1)
-                  : neutralGray.withOpacity(0.1),
+              color: isCompleted
+                  ? const Color(0xFF10B981).withOpacity(0.1)
+                  : isInProgress
+                      ? const Color(0xFFF59E0B).withOpacity(0.1)
+                      : const Color(0xFF6B7280).withOpacity(0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Text(
-              isCompleted 
-                ? 'Done'
-                : isInProgress
-                  ? '${(progress * 100).toInt()}%'
-                  : 'Pending',
+              isCompleted
+                  ? 'Done'
+                  : isInProgress
+                      ? '${(progress * 100).toInt()}%'
+                      : 'Pending',
               style: TextStyle(
                 fontSize: 10,
                 fontWeight: FontWeight.w600,
-                color: isCompleted 
-                  ? successGreen
-                  : isInProgress
-                    ? warningAmber
-                    : neutralGray,
+                color: isCompleted
+                    ? const Color(0xFF10B981)
+                    : isInProgress
+                        ? const Color(0xFFF59E0B)
+                        : const Color(0xFF6B7280),
               ),
             ),
           ),
@@ -826,7 +783,7 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
     return Container(
       padding: ResponsiveUtils.getResponsivePadding(context),
       decoration: BoxDecoration(
-        color: cardWhite,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: const Color(0xFFE5E7EB)),
         boxShadow: [
@@ -845,30 +802,29 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
             style: TextStyle(
               fontSize: ResponsiveUtils.getResponsiveFontSize(context, 18),
               fontWeight: FontWeight.w600,
-              color: textPrimary,
+              color: const Color(0xFF111827),
             ),
           ),
-          
           SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 16)),
-          
           Row(
             children: [
               Expanded(
                 child: _buildActionButton(
                   'Add Measurement',
                   Icons.straighten_rounded,
-                  primaryBlue,
+                  const Color(0xFF0086FF),
                   () {
                     // Navigate to add measurement
                   },
                 ),
               ),
-              SizedBox(width: ResponsiveUtils.getResponsiveSpacing(context, 12)),
+              SizedBox(
+                  width: ResponsiveUtils.getResponsiveSpacing(context, 12)),
               Expanded(
                 child: _buildActionButton(
                   'View Charts',
                   Icons.analytics_outlined,
-                  successGreen,
+                  const Color(0xFF10B981),
                   () {
                     // Navigate to detailed charts
                   },
@@ -881,7 +837,8 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
     );
   }
 
-  Widget _buildActionButton(String label, IconData icon, Color color, VoidCallback onTap) {
+  Widget _buildActionButton(
+      String label, IconData icon, Color color, VoidCallback onTap) {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
@@ -914,8 +871,6 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
       ),
     );
   }
-
-
 }
 
 class MilestoneData {
