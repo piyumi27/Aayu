@@ -36,7 +36,7 @@ class Vaccine {
       nameLocal: map['nameLocal'],
       description: map['description'],
       recommendedAgeMonths: map['recommendedAgeMonths'],
-      isMandatory: map['isMandatory'],
+      isMandatory: map['isMandatory'] == 1,
       category: map['category'],
     );
   }

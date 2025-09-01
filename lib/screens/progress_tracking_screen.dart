@@ -531,45 +531,52 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                child: Icon(
-                  icon,
-                  color: color,
-                  size: ResponsiveUtils.getResponsiveIconSize(context, 18),
-                ),
+          Container(
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Icon(
+              icon,
+              color: color,
+              size: ResponsiveUtils.getResponsiveIconSize(context, 16),
+            ),
+          ),
+          SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 6)),
+          Flexible(
+            child: Text(
+              value,
+              style: TextStyle(
+                fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
+                fontWeight: FontWeight.w700,
+                color: const Color(0xFF111827),
               ),
-            ],
-          ),
-          SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 8)),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: ResponsiveUtils.getResponsiveFontSize(context, 18),
-              fontWeight: FontWeight.w700,
-              color: const Color(0xFF111827),
+              overflow: TextOverflow.ellipsis,
             ),
           ),
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: ResponsiveUtils.getResponsiveFontSize(context, 12),
-              color: const Color(0xFF6B7280),
-              fontWeight: FontWeight.w500,
+          Flexible(
+            child: Text(
+              title,
+              style: TextStyle(
+                fontSize: ResponsiveUtils.getResponsiveFontSize(context, 11),
+                color: const Color(0xFF6B7280),
+                fontWeight: FontWeight.w500,
+              ),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 2,
             ),
           ),
-          Text(
-            subtitle,
-            style: TextStyle(
-              fontSize: ResponsiveUtils.getResponsiveFontSize(context, 10),
-              color: const Color(0xFF6B7280).withOpacity(0.7),
+          Flexible(
+            child: Text(
+              subtitle,
+              style: TextStyle(
+                fontSize: ResponsiveUtils.getResponsiveFontSize(context, 9),
+                color: const Color(0xFF6B7280).withOpacity(0.7),
+              ),
+              overflow: TextOverflow.ellipsis,
             ),
           ),
         ],

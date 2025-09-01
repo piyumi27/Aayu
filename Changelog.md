@@ -33,6 +33,12 @@ All notable changes to the Aayu project will be documented in this file.
   - Improved responsive design implementation
   - Better accessibility with proper touch targets and contrast ratios
 
+- **Runtime Issues**
+  - Fixed Vaccine model database type casting error (int to bool conversion)
+  - Resolved layout overflow in Growth Metrics Grid cards
+  - Improved responsive text sizing and overflow handling
+  - Fixed animation controller disposal issues
+
 ## [2025-08-30] - Complete Healthcare Management System
 
 ### Added
