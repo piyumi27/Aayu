@@ -6,6 +6,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/child.dart';
 import '../models/growth_record.dart';
 import '../models/notification.dart';
+import '../models/vaccine.dart';
+import '../models/medication.dart';
 
 /// Intelligent notification service for health monitoring
 class NotificationService {
@@ -158,7 +160,14 @@ class NotificationService {
   }
 
   /// Generate intelligent health notifications based on child data
-  Future<void> generateHealthNotifications(Child child, List<GrowthRecord> records) async {
+  Future<void> generateHealthNotifications(
+    Child child, 
+    List<GrowthRecord> records, {
+    List<Vaccine>? vaccines,
+    List<VaccineRecord>? vaccineRecords,
+    List<Medication>? medications,
+    List<MedicationDoseRecord>? doseRecords,
+  }) async {
     final notifications = <AppNotification>[];
 
     // Check for measurement gaps
@@ -189,6 +198,18 @@ class NotificationService {
     final measurementReminder = _generateMeasurementReminder(child, records);
     if (measurementReminder != null) {
       notifications.add(measurementReminder);
+    }
+
+    // Generate vaccination reminders
+    if (vaccines != null && vaccineRecords != null) {
+      final vaccinationReminders = _generateVaccinationReminders(child, vaccines, vaccineRecords);
+      notifications.addAll(vaccinationReminders);
+    }
+
+    // Generate medication reminders
+    if (medications != null && doseRecords != null) {
+      final medicationReminders = _generateMedicationReminders(child, medications, doseRecords);
+      notifications.addAll(medicationReminders);
     }
 
     // Add age-appropriate tips
@@ -496,6 +517,111 @@ class NotificationService {
 
     _notifications.addAll(samples);
     _notifyListeners();
+  }
+
+  /// Generate vaccination reminders
+  List<AppNotification> _generateVaccinationReminders(Child child, List<Vaccine> vaccines, List<VaccineRecord> records) {
+    final notifications = <AppNotification>[];
+    final ageInMonths = child.ageInMonths;
+    final givenVaccineIds = records.map((r) => r.vaccineId).toSet();
+    final now = DateTime.now();
+
+    // Check for overdue vaccines
+    final overdueVaccines = vaccines.where((vaccine) {
+      return !givenVaccineIds.contains(vaccine.id) && 
+             vaccine.recommendedAgeMonths <= ageInMonths &&
+             vaccine.recommendedAgeMonths < (ageInMonths - 2); // 2 months overdue
+    }).toList();
+
+    for (final vaccine in overdueVaccines) {
+      notifications.add(AppNotification(
+        id: 'vaccine_overdue_${child.id}_${vaccine.id}',
+        titleKey: 'vaccineOverdueTitle',
+        contentKey: 'vaccineOverdueContent',
+        category: NotificationCategory.healthAlerts,
+        priority: vaccine.isMandatory ? NotificationPriority.critical : NotificationPriority.high,
+        type: NotificationType.vaccineDue,
+        timestamp: now,
+        childId: child.id,
+        actionData: {
+          'childName': child.name,
+          'vaccineName': vaccine.name,
+          'vaccineLocal': vaccine.nameLocal,
+          'monthsOverdue': ageInMonths - vaccine.recommendedAgeMonths,
+        },
+        actions: [
+          NotificationAction(
+            id: 'schedule_vaccine',
+            labelKey: 'scheduleVaccine',
+            icon: Icons.vaccines,
+            color: const Color(0xFF0086FF),
+            onTap: () {},
+          ),
+        ],
+      ));
+    }
+
+    return notifications;
+  }
+
+  /// Generate medication reminders
+  List<AppNotification> _generateMedicationReminders(Child child, List<Medication> medications, List<MedicationDoseRecord> doseRecords) {
+    final notifications = <AppNotification>[];
+    final now = DateTime.now();
+
+    // Check for overdue medications
+    final activeMeds = medications.where((med) => med.isActive).toList();
+    
+    for (final medication in activeMeds) {
+      if (medication.frequency == MedicationFrequency.asNeeded) continue;
+
+      // Get last dose record for this medication
+      final lastDose = doseRecords
+          .where((record) => record.medicationId == medication.id && record.isTaken)
+          .fold<MedicationDoseRecord?>(null, (prev, current) {
+        if (prev == null) return current;
+        return current.actualTime!.isAfter(prev.actualTime!) ? current : prev;
+      });
+
+      final lastDoseTime = lastDose?.actualTime ?? medication.startDate;
+      final hoursSinceLastDose = now.difference(lastDoseTime).inHours;
+      final expectedFrequencyHours = medication.frequencyInHours;
+
+      if (hoursSinceLastDose >= expectedFrequencyHours + 1) { // 1 hour grace period
+        final priority = medication.isImportant 
+            ? NotificationPriority.critical
+            : NotificationPriority.high;
+
+        notifications.add(AppNotification(
+          id: 'medication_overdue_${child.id}_${medication.id}',
+          titleKey: 'medicationOverdueTitle',
+          contentKey: 'medicationOverdueContent',
+          category: NotificationCategory.reminders,
+          priority: priority,
+          type: NotificationType.medicationDue,
+          timestamp: now,
+          childId: child.id,
+          actionData: {
+            'childName': child.name,
+            'medicationName': medication.name,
+            'medicationLocal': medication.nameLocal,
+            'dosage': medication.dosageText,
+            'hoursOverdue': hoursSinceLastDose - expectedFrequencyHours,
+          },
+          actions: [
+            NotificationAction(
+              id: 'take_medication',
+              labelKey: 'takeMedication',
+              icon: Icons.medication,
+              color: const Color(0xFF0086FF),
+              onTap: () {},
+            ),
+          ],
+        ));
+      }
+    }
+
+    return notifications;
   }
 }
 

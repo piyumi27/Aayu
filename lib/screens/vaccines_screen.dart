@@ -329,6 +329,7 @@ class _AddVaccineRecordSheetState extends State<AddVaccineRecordSheet> {
   final _doctorController = TextEditingController();
   final _batchController = TextEditingController();
   final _notesController = TextEditingController();
+  final _sideEffectsController = TextEditingController();
   DateTime _date = DateTime.now();
 
   @override
@@ -337,6 +338,7 @@ class _AddVaccineRecordSheetState extends State<AddVaccineRecordSheet> {
     _doctorController.dispose();
     _batchController.dispose();
     _notesController.dispose();
+    _sideEffectsController.dispose();
     super.dispose();
   }
 
@@ -430,6 +432,16 @@ class _AddVaccineRecordSheetState extends State<AddVaccineRecordSheet> {
                 ),
                 maxLines: 2,
               ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _sideEffectsController,
+                decoration: const InputDecoration(
+                  labelText: 'Side Effects Noted (Optional)',
+                  hintText: 'Any side effects observed after vaccination',
+                  border: OutlineInputBorder(),
+                ),
+                maxLines: 2,
+              ),
               const SizedBox(height: 24),
               SizedBox(
                 width: double.infinity,
@@ -460,6 +472,7 @@ class _AddVaccineRecordSheetState extends State<AddVaccineRecordSheet> {
         doctorName: _doctorController.text.isEmpty ? null : _doctorController.text,
         batchNumber: _batchController.text.isEmpty ? null : _batchController.text,
         notes: _notesController.text.isEmpty ? null : _notesController.text,
+        sideEffectsNoted: _sideEffectsController.text.isEmpty ? null : _sideEffectsController.text,
         createdAt: now,
         updatedAt: now,
       );

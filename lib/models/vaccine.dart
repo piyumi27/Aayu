@@ -51,6 +51,7 @@ class VaccineRecord {
   final String? doctorName;
   final String? batchNumber;
   final String? notes;
+  final String? sideEffectsNoted;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -63,6 +64,7 @@ class VaccineRecord {
     this.doctorName,
     this.batchNumber,
     this.notes,
+    this.sideEffectsNoted,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -77,6 +79,7 @@ class VaccineRecord {
       'doctorName': doctorName,
       'batchNumber': batchNumber,
       'notes': notes,
+      'sideEffectsNoted': sideEffectsNoted,
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
     };
@@ -92,6 +95,7 @@ class VaccineRecord {
       doctorName: map['doctorName'],
       batchNumber: map['batchNumber'],
       notes: map['notes'],
+      sideEffectsNoted: map['sideEffectsNoted'],
       createdAt: DateTime.parse(map['createdAt']),
       updatedAt: DateTime.parse(map['updatedAt']),
     );

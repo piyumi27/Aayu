@@ -28,7 +28,11 @@ enum NotificationType {
   // Reminders (High Priority)
   measurementDue,
   vaccinationDue,
+  vaccineDue,
+  vaccineReminder,
+  medicationDue,
   medicationReminder,
+  medicationAdherence,
   phmVisit,
   milestoneCheck,
   
