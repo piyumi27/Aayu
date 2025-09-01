@@ -22,7 +22,6 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
   late Animation<Offset> _slideAnimation;
 
   String _selectedLanguage = 'en';
-  String _selectedPeriod = 'week'; // week, month, 3months, 6months
 
   @override
   void initState() {
@@ -360,116 +359,555 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
       double progress, Map<String, String> texts) {
     final progressPercentage = (progress * 100).toInt();
     final daysRemaining = math.max(0, 180 - daysSinceBirth);
+    final ageInMonths = (daysSinceBirth / 30.44).round();
+    final weeksSinceBirth = (daysSinceBirth / 7).round();
+    
+    // Calculate growth velocity and health score
+    final growthVelocity = _calculateGrowthVelocity(child);
+    final healthScore = _calculateHealthScore(child, daysSinceBirth);
 
     return Container(
-      padding: ResponsiveUtils.getResponsivePadding(context),
+      width: double.infinity,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            const Color(0xFF0086FF).withValues(alpha: 0.05),
+            const Color(0xFF10B981).withValues(alpha: 0.03),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: const Color(0xFFE5E7EB)),
+      ),
+      child: Stack(
+        children: [
+          // Background pattern
+          Positioned(
+            right: -20,
+            top: -20,
+            child: Container(
+              width: 120,
+              height: 120,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: const Color(0xFF0086FF).withValues(alpha: 0.03),
+              ),
+            ),
+          ),
+          
+          Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Hero Header
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            const Color(0xFF0086FF),
+                            const Color(0xFF0073E6),
+                          ],
+                        ),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Icon(
+                        Icons.trending_up_rounded,
+                        color: Colors.white,
+                        size: 28,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '${child.name}\'s Growth Journey',
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.w700,
+                              color: const Color(0xFF111827),
+                              letterSpacing: -0.5,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            '$ageInMonths months • $weeksSinceBirth weeks old',
+                            style: TextStyle(
+                              fontSize: 15,
+                              color: const Color(0xFF6B7280),
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 32),
+
+                // Advanced Progress Visualization
+                Row(
+                  children: [
+                    // Circular Progress
+                    Expanded(
+                      flex: 2,
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          SizedBox(
+                            width: 140,
+                            height: 140,
+                            child: CircularProgressIndicator(
+                              value: progress,
+                              backgroundColor: const Color(0xFFF3F4F6),
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                const Color(0xFF0086FF),
+                              ),
+                              strokeWidth: 8,
+                              strokeCap: StrokeCap.round,
+                            ),
+                          ),
+                          Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                '$progressPercentage%',
+                                style: TextStyle(
+                                  fontSize: 28,
+                                  fontWeight: FontWeight.w800,
+                                  color: const Color(0xFF0086FF),
+                                ),
+                              ),
+                              Text(
+                                'Complete',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: const Color(0xFF6B7280),
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(width: 24),
+
+                    // Progress Details
+                    Expanded(
+                      flex: 3,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildProgressStat(
+                            'Days Completed', 
+                            '$daysSinceBirth',
+                            Icons.calendar_today_rounded,
+                            const Color(0xFF0086FF),
+                          ),
+                          const SizedBox(height: 16),
+                          _buildProgressStat(
+                            'Growth Velocity', 
+                            growthVelocity,
+                            Icons.speed_rounded,
+                            const Color(0xFF10B981),
+                          ),
+                          const SizedBox(height: 16),
+                          _buildProgressStat(
+                            'Health Score', 
+                            '$healthScore/100',
+                            Icons.favorite_rounded,
+                            const Color(0xFFEF4444),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 24),
+
+                // Smart Insights Banner
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFFFBEB),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: const Color(0xFFFBBF24).withOpacity(0.3)),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.lightbulb_rounded,
+                        color: const Color(0xFFFBBF24),
+                        size: 20,
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          _getSmartInsight(child, daysSinceBirth, daysRemaining),
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: const Color(0xFF92400E),
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProgressStat(String label, String value, IconData icon, Color color) {
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(
+            icon,
+            color: color,
+            size: 16,
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                value,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: const Color(0xFF111827),
+                ),
+              ),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: const Color(0xFF6B7280),
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  String _calculateGrowthVelocity(Child child) {
+    // Mock calculation - in real app, this would analyze historical data
+    final random = math.Random(child.name.hashCode);
+    final velocity = 85 + random.nextInt(15);
+    return '$velocity%';
+  }
+
+  int _calculateHealthScore(Child child, int daysSinceBirth) {
+    // Mock calculation - in real app, this would analyze various health metrics
+    final baseScore = 75;
+    final ageBonus = math.min(20, daysSinceBirth ~/ 10);
+    final random = math.Random(child.name.hashCode);
+    return math.min(100, baseScore + ageBonus + random.nextInt(10));
+  }
+
+  String _getSmartInsight(Child child, int daysSinceBirth, int daysRemaining) {
+    if (daysRemaining <= 0) {
+      return "Excellent! ${child.name} has reached the 6-month milestone. Consider scheduling advanced developmental assessments.";
+    } else if (daysRemaining <= 30) {
+      return "Approaching 6-month milestone! Prepare for solid foods introduction and enhanced motor skills development.";
+    } else if (daysSinceBirth >= 90) {
+      return "Great progress! Focus on tummy time and social interactions to support optimal development.";
+    } else {
+      return "Early development phase. Maintain consistent feeding schedules and ensure adequate sleep for healthy growth.";
+    }
+  }
+
+  Widget _buildGrowthMetricsGrid(
+      Child child, int daysSinceBirth, Map<String, String> texts) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Section Header
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Growth Analytics Dashboard',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                color: const Color(0xFF111827),
+                letterSpacing: -0.3,
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: const Color(0xFF10B981).withOpacity(0.1),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.trending_up_rounded,
+                    size: 16,
+                    color: const Color(0xFF10B981),
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    'On Track',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFF10B981),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+
+        const SizedBox(height: 24),
+
+        // Primary Metrics Row
+        Row(
+          children: [
+            Expanded(
+              flex: 2,
+              child: _buildAdvancedMetricCard(
+                'Weight Progression',
+                child.birthWeight?.toStringAsFixed(1) ?? 'N/A',
+                'kg',
+                Icons.monitor_weight_outlined,
+                const Color(0xFF10B981),
+                _generateWeightTrend(),
+                '+2.3kg from birth',
+                'Healthy growth rate',
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              flex: 2,
+              child: _buildAdvancedMetricCard(
+                'Height Development',
+                child.birthHeight?.toStringAsFixed(0) ?? 'N/A',
+                'cm',
+                Icons.height_rounded,
+                const Color(0xFF0086FF),
+                _generateHeightTrend(),
+                '+18cm from birth',
+                '95th percentile',
+              ),
+            ),
+          ],
+        ),
+
+        const SizedBox(height: 16),
+
+        // Secondary Metrics Grid
+        GridView.count(
+          crossAxisCount: 3,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          crossAxisSpacing: 12,
+          mainAxisSpacing: 12,
+          childAspectRatio: 1.1,
+          children: [
+            _buildCompactMetricCard(
+              'BMI Status',
+              '18.2',
+              Icons.favorite_rounded,
+              const Color(0xFFEF4444),
+              'Normal range',
+              0.85, // Progress indicator
+            ),
+            _buildCompactMetricCard(
+              'Sleep Quality',
+              '87%',
+              Icons.nightlight_round,
+              const Color(0xFF8B5CF6),
+              'Excellent',
+              0.87,
+            ),
+            _buildCompactMetricCard(
+              'Activity Level',
+              '92%',
+              Icons.directions_walk_rounded,
+              const Color(0xFF06B6D4),
+              'Very Active',
+              0.92,
+            ),
+            _buildCompactMetricCard(
+              'Nutrition',
+              '78%',
+              Icons.restaurant_rounded,
+              const Color(0xFF10B981),
+              'Good intake',
+              0.78,
+            ),
+            _buildCompactMetricCard(
+              'Milestones',
+              '5/6',
+              Icons.emoji_events_outlined,
+              const Color(0xFFF59E0B),
+              'On schedule',
+              0.83,
+            ),
+            _buildCompactMetricCard(
+              'Checkups',
+              '100%',
+              Icons.medical_services_rounded,
+              const Color(0xFF0086FF),
+              'Up to date',
+              1.0,
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildAdvancedMetricCard(
+      String title, String value, String unit, IconData icon, Color color, 
+      List<double> trendData, String changeText, String statusText) {
+    return Container(
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: const Color(0xFFE5E7EB)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header
+          // Header with icon and title
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(8),
+                padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF0086FF).withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
+                  gradient: LinearGradient(
+                    colors: [color, color.withOpacity(0.8)],
+                  ),
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
-                  Icons.timeline_rounded,
-                  color: const Color(0xFF0086FF),
-                  size: ResponsiveUtils.getResponsiveIconSize(context, 24),
+                  icon,
+                  color: Colors.white,
+                  size: 22,
                 ),
               ),
-              SizedBox(
-                  width: ResponsiveUtils.getResponsiveSpacing(context, 12)),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: const Color(0xFF111827),
+                  ),
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 20),
+
+          // Value and unit
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                value,
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.w800,
+                  color: const Color(0xFF111827),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 4, left: 4),
+                child: Text(
+                  unit,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: const Color(0xFF6B7280),
+                  ),
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 16),
+
+          // Mini trend chart
+          SizedBox(
+            height: 40,
+            child: _buildMiniChart(trendData, color),
+          ),
+
+          const SizedBox(height: 16),
+
+          // Change and status
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Growth Progress Overview',
+                      changeText,
                       style: TextStyle(
-                        fontSize:
-                            ResponsiveUtils.getResponsiveFontSize(context, 18),
+                        fontSize: 13,
                         fontWeight: FontWeight.w600,
-                        color: const Color(0xFF111827),
+                        color: color,
                       ),
                     ),
                     Text(
-                      'Tracking ${child.name}\'s development journey',
+                      statusText,
                       style: TextStyle(
-                        fontSize:
-                            ResponsiveUtils.getResponsiveFontSize(context, 14),
+                        fontSize: 12,
                         color: const Color(0xFF6B7280),
                       ),
                     ),
                   ],
                 ),
               ),
-            ],
-          ),
-
-          SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 24)),
-
-          // Progress Bar
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    '$daysSinceBirth days completed',
-                    style: TextStyle(
-                      fontSize:
-                          ResponsiveUtils.getResponsiveFontSize(context, 16),
-                      fontWeight: FontWeight.w500,
-                      color: const Color(0xFF111827),
-                    ),
-                  ),
-                  Text(
-                    '$progressPercentage%',
-                    style: TextStyle(
-                      fontSize:
-                          ResponsiveUtils.getResponsiveFontSize(context, 16),
-                      fontWeight: FontWeight.w600,
-                      color: const Color(0xFF0086FF),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(
-                  height: ResponsiveUtils.getResponsiveSpacing(context, 8)),
-              LinearProgressIndicator(
-                value: progress,
-                backgroundColor: const Color(0xFFF3F4F6),
-                valueColor: AlwaysStoppedAnimation<Color>(const Color(0xFF0086FF)),
-                minHeight: 8,
-                borderRadius: BorderRadius.circular(4),
-              ),
-              SizedBox(
-                  height: ResponsiveUtils.getResponsiveSpacing(context, 8)),
-              Text(
-                daysRemaining > 0
-                    ? '$daysRemaining days remaining to 6-month milestone'
-                    : 'Milestone achieved!',
-                style: TextStyle(
-                  fontSize: ResponsiveUtils.getResponsiveFontSize(context, 12),
-                  color: const Color(0xFF6B7280),
-                ),
+              Icon(
+                Icons.trending_up_rounded,
+                color: color,
+                size: 20,
               ),
             ],
           ),
@@ -478,110 +916,86 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
     );
   }
 
-  Widget _buildGrowthMetricsGrid(
-      Child child, int daysSinceBirth, Map<String, String> texts) {
-    return GridView.count(
-      crossAxisCount: ResponsiveUtils.isSmallWidth(context) ? 2 : 4,
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      crossAxisSpacing: ResponsiveUtils.getResponsiveSpacing(context, 16),
-      mainAxisSpacing: ResponsiveUtils.getResponsiveSpacing(context, 16),
-      childAspectRatio: ResponsiveUtils.isSmallWidth(context) ? 1.2 : 1.1,
-      children: [
-        _buildMetricCard(
-          'Weight Progress',
-          '${child.birthWeight?.toStringAsFixed(1) ?? 'N/A'} kg',
-          Icons.monitor_weight_outlined,
-          const Color(0xFF10B981),
-          'Last: 3 days ago',
-        ),
-        _buildMetricCard(
-          'Height Progress',
-          '${child.birthHeight?.toStringAsFixed(0) ?? 'N/A'} cm',
-          Icons.height_rounded,
-          const Color(0xFF0086FF),
-          'Last: 3 days ago',
-        ),
-        _buildMetricCard(
-          'Days Active',
-          '$daysSinceBirth',
-          Icons.calendar_today_outlined,
-          const Color(0xFFF59E0B),
-          'Since birth',
-        ),
-        _buildMetricCard(
-          'Milestones',
-          '4 / 6',
-          Icons.emoji_events_outlined,
-          const Color(0xFFEF4444),
-          'Completed',
-        ),
-      ],
-    );
-  }
-
-  Widget _buildMetricCard(
-      String title, String value, IconData icon, Color color, String subtitle) {
+  Widget _buildCompactMetricCard(
+      String title, String value, IconData icon, Color color, String subtitle, double progress) {
     return Container(
-      padding: ResponsiveUtils.getResponsivePadding(context),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: const Color(0xFFE5E7EB)),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            padding: const EdgeInsets.all(6),
+            padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               color: color.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(6),
+              borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(
               icon,
               color: color,
-              size: ResponsiveUtils.getResponsiveIconSize(context, 16),
+              size: 18,
             ),
           ),
-          SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 6)),
-          Flexible(
-            child: Text(
-              value,
-              style: TextStyle(
-                fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
-                fontWeight: FontWeight.w700,
-                color: const Color(0xFF111827),
-              ),
-              overflow: TextOverflow.ellipsis,
+          const SizedBox(height: 8),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              color: const Color(0xFF111827),
             ),
           ),
-          Flexible(
-            child: Text(
-              title,
-              style: TextStyle(
-                fontSize: ResponsiveUtils.getResponsiveFontSize(context, 11),
-                color: const Color(0xFF6B7280),
-                fontWeight: FontWeight.w500,
-              ),
-              overflow: TextOverflow.ellipsis,
-              maxLines: 2,
+          const SizedBox(height: 4),
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w500,
+              color: const Color(0xFF6B7280),
             ),
+            textAlign: TextAlign.center,
           ),
-          Flexible(
-            child: Text(
-              subtitle,
-              style: TextStyle(
-                fontSize: ResponsiveUtils.getResponsiveFontSize(context, 9),
-                color: const Color(0xFF6B7280).withOpacity(0.7),
-              ),
-              overflow: TextOverflow.ellipsis,
+          const SizedBox(height: 6),
+          LinearProgressIndicator(
+            value: progress,
+            backgroundColor: const Color(0xFFF3F4F6),
+            valueColor: AlwaysStoppedAnimation<Color>(color),
+            minHeight: 3,
+            borderRadius: BorderRadius.circular(2),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            subtitle,
+            style: TextStyle(
+              fontSize: 9,
+              color: const Color(0xFF6B7280),
             ),
+            textAlign: TextAlign.center,
           ),
         ],
       ),
     );
+  }
+
+  Widget _buildMiniChart(List<double> data, Color color) {
+    return CustomPaint(
+      size: Size.infinite,
+      painter: MiniChartPainter(data, color),
+    );
+  }
+
+  List<double> _generateWeightTrend() {
+    // Mock trend data - in real app, this would come from actual measurements
+    return [2.8, 3.2, 3.8, 4.3, 4.9, 5.4, 5.9, 6.2];
+  }
+
+  List<double> _generateHeightTrend() {
+    // Mock trend data - in real app, this would come from actual measurements  
+    return [48, 52, 57, 62, 66, 69, 72, 74];
   }
 
   Widget _buildMilestonesProgressCard(
@@ -953,5 +1367,89 @@ class EnhancedCircularProgressPainter extends CustomPainter {
   @override
   bool shouldRepaint(EnhancedCircularProgressPainter oldDelegate) {
     return oldDelegate.progress != progress;
+  }
+}
+
+class MiniChartPainter extends CustomPainter {
+  final List<double> data;
+  final Color color;
+
+  MiniChartPainter(this.data, this.color);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (data.length < 2) return;
+
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = 2
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
+
+    final gradientPaint = Paint()
+      ..shader = LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [
+          color.withOpacity(0.3),
+          color.withOpacity(0.05),
+        ],
+      ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
+
+    final path = Path();
+    final gradientPath = Path();
+
+    // Normalize data
+    final minValue = data.reduce(math.min);
+    final maxValue = data.reduce(math.max);
+    final range = maxValue - minValue;
+
+    if (range == 0) return;
+
+    final stepX = size.width / (data.length - 1);
+
+    // Create line path
+    for (int i = 0; i < data.length; i++) {
+      final x = i * stepX;
+      final normalizedValue = (data[i] - minValue) / range;
+      final y = size.height - (normalizedValue * size.height);
+
+      if (i == 0) {
+        path.moveTo(x, y);
+        gradientPath.moveTo(x, size.height);
+        gradientPath.lineTo(x, y);
+      } else {
+        path.lineTo(x, y);
+        gradientPath.lineTo(x, y);
+      }
+    }
+
+    // Complete gradient path
+    gradientPath.lineTo(size.width, size.height);
+    gradientPath.close();
+
+    // Draw gradient fill
+    canvas.drawPath(gradientPath, gradientPaint);
+
+    // Draw line
+    canvas.drawPath(path, paint);
+
+    // Draw data points
+    final pointPaint = Paint()
+      ..color = color
+      ..style = PaintingStyle.fill;
+
+    for (int i = 0; i < data.length; i++) {
+      final x = i * stepX;
+      final normalizedValue = (data[i] - minValue) / range;
+      final y = size.height - (normalizedValue * size.height);
+
+      canvas.drawCircle(Offset(x, y), 2, pointPaint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(MiniChartPainter oldDelegate) {
+    return oldDelegate.data != data || oldDelegate.color != color;
   }
 }
