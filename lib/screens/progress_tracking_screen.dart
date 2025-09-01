@@ -273,13 +273,6 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
 
                         SizedBox(
                             height: ResponsiveUtils.getResponsiveSpacing(
-                                context, 24)),
-
-                        // Quick Actions
-                        _buildQuickActions(context, texts),
-
-                        SizedBox(
-                            height: ResponsiveUtils.getResponsiveSpacing(
                                 context, 32)),
                       ],
                     ),
@@ -649,36 +642,37 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
       children: [
         // Section Header
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              'Growth Analytics Dashboard',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
-                color: const Color(0xFF111827),
-                letterSpacing: -0.3,
+            Expanded(
+              child: Text(
+                'Growth Analytics Dashboard',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                  color: const Color(0xFF111827),
+                  letterSpacing: -0.3,
+                ),
               ),
             ),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
-                color: const Color(0xFF10B981).withOpacity(0.1),
-                borderRadius: BorderRadius.circular(20),
+                color: const Color(0xFF10B981).withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(16),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(
                     Icons.trending_up_rounded,
-                    size: 16,
+                    size: 14,
                     color: const Color(0xFF10B981),
                   ),
-                  const SizedBox(width: 4),
+                  const SizedBox(width: 3),
                   Text(
                     'On Track',
                     style: TextStyle(
-                      fontSize: 12,
+                      fontSize: 11,
                       fontWeight: FontWeight.w600,
                       color: const Color(0xFF10B981),
                     ),
@@ -1000,101 +994,251 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
 
   Widget _buildMilestonesProgressCard(
       List<MilestoneData> milestones, Map<String, String> texts) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Modern Header
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Development Timeline',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                color: const Color(0xFF111827),
+                letterSpacing: -0.3,
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: const Color(0xFF8B5CF6).withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Text(
+                '5/6 Complete',
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  color: const Color(0xFF8B5CF6),
+                ),
+              ),
+            ),
+          ],
+        ),
+
+        const SizedBox(height: 24),
+
+        // Timeline Container
+        Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                const Color(0xFF8B5CF6).withValues(alpha: 0.03),
+                const Color(0xFF06B6D4).withValues(alpha: 0.02),
+              ],
+            ),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: const Color(0xFFE5E7EB)),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              children: [
+                // Visual Timeline
+                _buildVisualTimeline(milestones),
+                
+                const SizedBox(height: 24),
+                
+                // Milestone Cards Grid
+                GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 16,
+                    mainAxisSpacing: 16,
+                    childAspectRatio: 1.4,
+                  ),
+                  itemCount: math.min(milestones.length, 6),
+                  itemBuilder: (context, index) {
+                    return _buildModernMilestoneCard(milestones[index]);
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildVisualTimeline(List<MilestoneData> milestones) {
     return Container(
-      padding: ResponsiveUtils.getResponsivePadding(context),
+      height: 80,
+      child: Row(
+        children: List.generate(milestones.length, (index) {
+          final milestone = milestones[index];
+          final isCompleted = milestone.currentDay >= milestone.targetDay;
+          final isActive = index <= 4; // Mock: first 5 are active/completed
+          
+          return Expanded(
+            child: Row(
+              children: [
+                // Timeline Node
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: isCompleted 
+                        ? const Color(0xFF10B981)
+                        : isActive 
+                            ? const Color(0xFF0086FF)
+                            : const Color(0xFFE5E7EB),
+                    boxShadow: isCompleted || isActive ? [
+                      BoxShadow(
+                        color: (isCompleted ? const Color(0xFF10B981) : const Color(0xFF0086FF)).withValues(alpha: 0.3),
+                        blurRadius: 8,
+                        spreadRadius: 2,
+                      ),
+                    ] : null,
+                  ),
+                  child: Icon(
+                    isCompleted 
+                        ? Icons.check_rounded 
+                        : milestone.icon,
+                    color: isCompleted || isActive 
+                        ? Colors.white 
+                        : const Color(0xFF9CA3AF),
+                    size: 20,
+                  ),
+                ),
+                
+                // Connection Line
+                if (index < milestones.length - 1)
+                  Expanded(
+                    child: Container(
+                      height: 3,
+                      margin: const EdgeInsets.symmetric(horizontal: 4),
+                      decoration: BoxDecoration(
+                        color: isActive 
+                            ? const Color(0xFF0086FF).withValues(alpha: 0.3)
+                            : const Color(0xFFE5E7EB),
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          );
+        }),
+      ),
+    );
+  }
+
+  Widget _buildModernMilestoneCard(MilestoneData milestone) {
+    final isCompleted = milestone.currentDay >= milestone.targetDay;
+    final progress = math.min(1.0, milestone.currentDay / milestone.targetDay);
+    
+    return Container(
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE5E7EB)),
+        border: Border.all(
+          color: isCompleted 
+              ? const Color(0xFF10B981).withValues(alpha: 0.2)
+              : const Color(0xFFE5E7EB),
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF10B981).withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            // Icon and Status
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: milestone.color.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Icon(
+                    milestone.icon,
+                    color: milestone.color,
+                    size: 20,
+                  ),
                 ),
-                child: Icon(
-                  Icons.flag_outlined,
-                  color: const Color(0xFF10B981),
-                  size: ResponsiveUtils.getResponsiveIconSize(context, 24),
-                ),
-              ),
-              SizedBox(
-                  width: ResponsiveUtils.getResponsiveSpacing(context, 12)),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Development Milestones',
-                      style: TextStyle(
-                        fontSize:
-                            ResponsiveUtils.getResponsiveFontSize(context, 18),
-                        fontWeight: FontWeight.w600,
-                        color: const Color(0xFF111827),
-                      ),
+                if (isCompleted)
+                  Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF10B981),
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                    Text(
-                      'Key developmental achievements',
-                      style: TextStyle(
-                        fontSize:
-                            ResponsiveUtils.getResponsiveFontSize(context, 14),
-                        color: const Color(0xFF6B7280),
-                      ),
+                    child: Icon(
+                      Icons.check_rounded,
+                      color: Colors.white,
+                      size: 12,
                     ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-
-          SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 20)),
-
-          // Milestones List
-          ...milestones
-              .take(4)
-              .map((milestone) => _buildMilestoneRow(milestone))
-              .toList(),
-
-          SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 12)),
-
-          // View All Button
-          SizedBox(
-            width: double.infinity,
-            child: OutlinedButton(
-              onPressed: () {
-                // Navigate to detailed milestones view
-              },
-              style: OutlinedButton.styleFrom(
-                side:
-                    BorderSide(color: const Color(0xFF0086FF).withOpacity(0.3)),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              child: Text(
-                'View All Milestones',
-                style: TextStyle(
-                  color: const Color(0xFF0086FF),
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
+                  ),
+              ],
             ),
-          ),
-        ],
+            
+            // Title
+            Text(
+              milestone.title,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: const Color(0xFF111827),
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+            
+            // Progress
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                LinearProgressIndicator(
+                  value: progress,
+                  backgroundColor: const Color(0xFFF3F4F6),
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    isCompleted ? const Color(0xFF10B981) : milestone.color,
+                  ),
+                  minHeight: 4,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  isCompleted 
+                      ? 'Completed'
+                      : 'Day ${milestone.currentDay}/${milestone.targetDay}',
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: const Color(0xFF6B7280),
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -1200,98 +1344,6 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
     );
   }
 
-  Widget _buildQuickActions(BuildContext context, Map<String, String> texts) {
-    return Container(
-      padding: ResponsiveUtils.getResponsivePadding(context),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE5E7EB)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Quick Actions',
-            style: TextStyle(
-              fontSize: ResponsiveUtils.getResponsiveFontSize(context, 18),
-              fontWeight: FontWeight.w600,
-              color: const Color(0xFF111827),
-            ),
-          ),
-          SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 16)),
-          Row(
-            children: [
-              Expanded(
-                child: _buildActionButton(
-                  'Add Measurement',
-                  Icons.straighten_rounded,
-                  const Color(0xFF0086FF),
-                  () {
-                    // Navigate to add measurement
-                  },
-                ),
-              ),
-              SizedBox(
-                  width: ResponsiveUtils.getResponsiveSpacing(context, 12)),
-              Expanded(
-                child: _buildActionButton(
-                  'View Charts',
-                  Icons.analytics_outlined,
-                  const Color(0xFF10B981),
-                  () {
-                    // Navigate to detailed charts
-                  },
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildActionButton(
-      String label, IconData icon, Color color, VoidCallback onTap) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-        decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: color.withOpacity(0.2)),
-        ),
-        child: Column(
-          children: [
-            Icon(
-              icon,
-              color: color,
-              size: ResponsiveUtils.getResponsiveIconSize(context, 24),
-            ),
-            SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 8)),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: ResponsiveUtils.getResponsiveFontSize(context, 12),
-                fontWeight: FontWeight.w500,
-                color: color,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }
 
 class MilestoneData {
