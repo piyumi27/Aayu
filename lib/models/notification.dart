@@ -100,11 +100,15 @@ class AppNotification {
         return Icons.warning_amber;
       case NotificationType.vaccinationOverdue:
       case NotificationType.vaccinationDue:
+      case NotificationType.vaccineDue:
+      case NotificationType.vaccineReminder:
         return Icons.vaccines;
       case NotificationType.measurementGap:
       case NotificationType.measurementDue:
         return Icons.monitor_weight;
       case NotificationType.medicationReminder:
+      case NotificationType.medicationDue:
+      case NotificationType.medicationAdherence:
         return Icons.medication;
       case NotificationType.phmVisit:
         return Icons.local_hospital;

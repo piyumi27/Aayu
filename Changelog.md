@@ -50,6 +50,15 @@ All notable changes to the Aayu project will be documented in this file.
   - Added new notification types: `vaccineDue`, `medicationDue`, `medicationAdherence`
   - Enhanced notification generation with vaccination and medication data
   - Intelligent priority-based alert system for healthcare reminders
+  - Fixed non-exhaustive switch statement for notification icons
+
+### Fixed
+- **Localization System**
+  - Created comprehensive l10n directory with ARB files for English, Sinhala, and Tamil
+  - Added complete localization infrastructure with 200+ translated strings
+  - Implemented Sri Lankan-specific date and number formatting
+  - Added language switching support with proper font rendering
+  - Fixed empty l10n folder issue with proper localization files
 
 ## [2025-08-30] - Academic Documentation
 - Added comprehensive Chapter 6: Testing and Evaluation document

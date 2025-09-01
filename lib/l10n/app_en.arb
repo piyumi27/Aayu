@@ -1,0 +1,267 @@
+{
+  "@@locale": "en",
+  "appTitle": "Aayu",
+  "@appTitle": {
+    "description": "The title of the application"
+  },
+
+  "_comment_general": "=== GENERAL ===",
+  "loading": "Loading...",
+  "error": "Error",
+  "success": "Success",
+  "cancel": "Cancel",
+  "save": "Save",
+  "delete": "Delete",
+  "edit": "Edit",
+  "add": "Add",
+  "close": "Close",
+  "back": "Back",
+  "next": "Next",
+  "done": "Done",
+  "yes": "Yes",
+  "no": "No",
+  "ok": "OK",
+
+  "_comment_navigation": "=== NAVIGATION ===",
+  "homeTab": "Home",
+  "growthTab": "Growth", 
+  "vaccinesTab": "Vaccines",
+  "learnTab": "Learn",
+  "profileTab": "Profile",
+
+  "_comment_child": "=== CHILD MANAGEMENT ===",
+  "addChild": "Add Child",
+  "childName": "Child Name",
+  "birthDate": "Birth Date",
+  "gender": "Gender",
+  "male": "Male",
+  "female": "Female",
+  "birthWeight": "Birth Weight (kg)",
+  "birthHeight": "Birth Height (cm)",
+
+  "_comment_growth": "=== GROWTH TRACKING ===",
+  "addMeasurement": "Add Measurement",
+  "currentWeight": "Current Weight (kg)",
+  "currentHeight": "Current Height (cm)",
+  "measurementDate": "Measurement Date",
+  "weightForAge": "Weight for Age",
+  "heightForAge": "Height for Age",
+  "weightForHeight": "Weight for Height",
+  "bmiForAge": "BMI for Age",
+
+  "_comment_vaccines": "=== VACCINATION ===",
+  "vaccinationSchedule": "Vaccination Schedule",
+  "scheduleTab": "Schedule",
+  "givenTab": "Given", 
+  "upcomingTab": "Upcoming",
+  "vaccineGiven": "Vaccine Given",
+  "scheduleMeasurement": "Schedule Measurement",
+  "scheduleVaccine": "Schedule Vaccine",
+  "viewSchedule": "View Schedule",
+  "location": "Location/Hospital",
+  "doctorName": "Doctor Name",
+  "batchNumber": "Batch Number (Optional)",
+  "notes": "Notes (Optional)",
+  "sideEffectsNoted": "Side Effects Noted (Optional)",
+  "overdueVaccines": "Overdue Vaccines",
+  "upcomingVaccines": "Upcoming Vaccines",
+
+  "_comment_medications": "=== MEDICATIONS ===",
+  "medicationsAndSupplements": "Medications & Supplements",
+  "todayTab": "Today",
+  "activeTab": "Active",
+  "historyTab": "History", 
+  "statsTab": "Stats",
+  "supplementsAndVitamins": "Supplements & Vitamins",
+  "medications": "Medications",
+  "overdueMedications": "Overdue Medications",
+  "upcomingMedications": "Upcoming (Next 2 Hours)",
+  "todaysSchedule": "Today's Schedule",
+  "take": "Take",
+  "skip": "Skip",
+  "takeNow": "Take Now",
+  "takeMedication": "Take Medication",
+  "skipDose": "Skip Dose",
+  "addMedication": "Add Medication",
+  "medicationName": "Medication Name",
+  "dosage": "Dosage",
+  "frequency": "Frequency",
+  "startDate": "Start Date",
+  "endDate": "End Date (Optional)",
+
+  "_comment_notifications": "=== NOTIFICATIONS ===",
+  "notifications": "Notifications",
+  "healthAlerts": "Health Alerts",
+  "reminders": "Reminders",
+  "tipsGuidance": "Tips & Guidance",
+  "systemUpdates": "System Updates",
+  
+  "measurementGapTitle": "Measurement Gap Alert",
+  "measurementGapContent": "It's been {days} days since the last measurement for {childName}. Regular monitoring is important for tracking growth progress.",
+  "@measurementGapContent": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      },
+      "childName": {
+        "type": "String"
+      }
+    }
+  },
+
+  "nutritionConcernTitle": "Nutrition Concern",
+  "nutritionConcernContent": "BMI trend analysis shows concerns for {childName}. Consider consulting with your PHM for guidance.",
+  "@nutritionConcernContent": {
+    "placeholders": {
+      "childName": {
+        "type": "String"
+      }
+    }
+  },
+
+  "growthStagnationTitle": "Growth Monitoring Alert", 
+  "growthStagnationContent": "Growth measurements for {childName} show stagnation. Please schedule a PHM visit for evaluation.",
+  "@growthStagnationContent": {
+    "placeholders": {
+      "childName": {
+        "type": "String"
+      }
+    }
+  },
+
+  "measurementReminderTitle": "Measurement Reminder",
+  "measurementReminderContent": "Time for {childName}'s regular growth measurement. Consistent tracking helps monitor healthy development.",
+  "@measurementReminderContent": {
+    "placeholders": {
+      "childName": {
+        "type": "String"
+      }
+    }
+  },
+
+  "vaccineOverdueTitle": "Vaccine Overdue",
+  "vaccineOverdueContent": "{vaccineName} ({vaccineLocal}) is overdue for {childName} by {monthsOverdue} months. Please schedule vaccination.",
+  "@vaccineOverdueContent": {
+    "placeholders": {
+      "vaccineName": {
+        "type": "String"
+      },
+      "vaccineLocal": {
+        "type": "String"
+      },
+      "childName": {
+        "type": "String"
+      },
+      "monthsOverdue": {
+        "type": "int"
+      }
+    }
+  },
+
+  "vaccineUpcomingTitle": "Upcoming Vaccination",
+  "vaccineUpcomingContent": "{vaccineName} ({vaccineLocal}) is due for {childName} in {dueInMonths} months.",
+  "@vaccineUpcomingContent": {
+    "placeholders": {
+      "vaccineName": {
+        "type": "String"
+      },
+      "vaccineLocal": {
+        "type": "String"
+      },
+      "childName": {
+        "type": "String"
+      },
+      "dueInMonths": {
+        "type": "int"
+      }
+    }
+  },
+
+  "medicationOverdueTitle": "Medication Overdue",
+  "medicationOverdueContent": "{medicationName} ({dosage}) is overdue for {childName} by {hoursOverdue} hours.",
+  "@medicationOverdueContent": {
+    "placeholders": {
+      "medicationName": {
+        "type": "String"
+      },
+      "dosage": {
+        "type": "String"
+      },
+      "childName": {
+        "type": "String"
+      },
+      "hoursOverdue": {
+        "type": "int"
+      }
+    }
+  },
+
+  "medicationUpcomingTitle": "Medication Reminder",
+  "medicationUpcomingContent": "{medicationName} ({dosage}) is due for {childName} in {hoursUntil} hours.",
+  "@medicationUpcomingContent": {
+    "placeholders": {
+      "medicationName": {
+        "type": "String"
+      },
+      "dosage": {
+        "type": "String"
+      },
+      "childName": {
+        "type": "String"
+      },
+      "hoursUntil": {
+        "type": "int"
+      }
+    }
+  },
+
+  "medicationAdherenceTitle": "Medication Adherence",
+  "medicationAdherenceContent": "Adherence for {medicationName} is {adherencePercentage}% for {childName}. Consider setting more reminders.",
+  "@medicationAdherenceContent": {
+    "placeholders": {
+      "medicationName": {
+        "type": "String"
+      },
+      "adherencePercentage": {
+        "type": "String"
+      },
+      "childName": {
+        "type": "String"
+      }
+    }
+  },
+
+  "_comment_learn": "=== LEARN SECTION ===",
+  "featuredTab": "Featured",
+  "categoriesTab": "Categories",
+  "recentTab": "Recent",
+  "searchArticles": "Search articles...",
+  "readMore": "Read More",
+  "relatedArticles": "Related Articles",
+
+  "_comment_profile": "=== PROFILE ===",
+  "settings": "Settings",
+  "language": "Language",
+  "notifications": "Notifications", 
+  "about": "About",
+  "help": "Help & Support",
+  "logout": "Logout",
+
+  "_comment_settings": "=== SETTINGS ===",
+  "appSettings": "App Settings",
+  "languageSettings": "Language Settings",
+  "notificationSettings": "Notification Settings",
+  "dataManagement": "Data Management",
+  "exportData": "Export Data",
+  "importData": "Import Data",
+  "deleteAllData": "Delete All Data",
+
+  "_comment_about": "=== ABOUT ===",
+  "aboutAayu": "About Aayu",
+  "version": "Version",
+  "developer": "Developer",
+  "founder": "Founder & Co-founder",
+  "contactUs": "Contact Us",
+  "privacyPolicy": "Privacy Policy",
+  "termsOfService": "Terms of Service"
+}
