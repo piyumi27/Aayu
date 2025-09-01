@@ -1171,80 +1171,85 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisSize: MainAxisSize.min,
           children: [
             // Icon and Status
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
-                  padding: const EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(6),
                   decoration: BoxDecoration(
                     color: milestone.color.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(
                     milestone.icon,
                     color: milestone.color,
-                    size: 20,
+                    size: 16,
                   ),
                 ),
                 if (isCompleted)
                   Container(
-                    padding: const EdgeInsets.all(4),
+                    padding: const EdgeInsets.all(3),
                     decoration: BoxDecoration(
                       color: const Color(0xFF10B981),
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(6),
                     ),
                     child: Icon(
                       Icons.check_rounded,
                       color: Colors.white,
-                      size: 12,
+                      size: 10,
                     ),
                   ),
               ],
             ),
             
+            const SizedBox(height: 6),
+            
             // Title
-            Text(
-              milestone.title,
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: const Color(0xFF111827),
+            Flexible(
+              child: Text(
+                milestone.title,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: const Color(0xFF111827),
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
             ),
             
+            const SizedBox(height: 4),
+            
             // Progress
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                LinearProgressIndicator(
-                  value: progress,
-                  backgroundColor: const Color(0xFFF3F4F6),
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                    isCompleted ? const Color(0xFF10B981) : milestone.color,
-                  ),
-                  minHeight: 4,
-                  borderRadius: BorderRadius.circular(2),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  isCompleted 
-                      ? 'Completed'
-                      : 'Day ${milestone.currentDay}/${milestone.targetDay}',
-                  style: TextStyle(
-                    fontSize: 10,
-                    color: const Color(0xFF6B7280),
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
+            LinearProgressIndicator(
+              value: progress,
+              backgroundColor: const Color(0xFFF3F4F6),
+              valueColor: AlwaysStoppedAnimation<Color>(
+                isCompleted ? const Color(0xFF10B981) : milestone.color,
+              ),
+              minHeight: 2,
+              borderRadius: BorderRadius.circular(1),
+            ),
+            
+            const SizedBox(height: 2),
+            
+            Text(
+              isCompleted 
+                  ? 'Completed'
+                  : 'Day ${milestone.currentDay}/${milestone.targetDay}',
+              style: TextStyle(
+                fontSize: 8,
+                color: const Color(0xFF6B7280),
+                fontWeight: FontWeight.w500,
+              ),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
             ),
           ],
         ),
