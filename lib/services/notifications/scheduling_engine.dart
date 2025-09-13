@@ -334,7 +334,7 @@ class NotificationSchedulingEngine {
       final endDate = DateTime.now().add(const Duration(days: 180));
       
       while (nextReminderDate.isBefore(endDate)) {
-        final notificationId = 'growth_reminder_${child.id}_${nextReminderDate.millisecondsSinceEpoch}'.hashCode;
+        final notificationId = _generateSafeNotificationId('growth_reminder_${child.id}_${nextReminderDate.day}');
         
         await _localNotificationService.scheduleNotification(
           id: notificationId,
@@ -446,7 +446,7 @@ class NotificationSchedulingEngine {
           
           // Only schedule future feeding times
           if (scheduledTime.isAfter(DateTime.now())) {
-            final notificationId = 'feeding_${child.id}_${scheduledTime.millisecondsSinceEpoch}'.hashCode;
+            final notificationId = _generateSafeNotificationId('feeding_${child.id}_${scheduledTime.hour}_${scheduledTime.day}');
             
             await _localNotificationService.scheduleNotification(
               id: notificationId,
@@ -861,4 +861,15 @@ Future<void> _performHealthMonitoring() async {
   if (kDebugMode) {
     print('🏥 Performing health monitoring check');
   }
+}
+
+/// Generate a safe 32-bit integer notification ID from a string
+int _generateSafeNotificationId(String identifier) {
+  // Get hash code and ensure it's within 32-bit signed integer range
+  final hashCode = identifier.hashCode;
+
+  // Convert to positive range and keep within 32-bit limits
+  final safeId = hashCode.abs() % 1073741824; // 2^30
+
+  return safeId == 0 ? 1 : safeId; // Ensure ID is never 0
 }

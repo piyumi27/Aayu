@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math' as math;
 import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -336,9 +337,11 @@ class LocalNotificationService {
       enableVibration: priority.index >= NotificationPriority.medium.index,
       enableLights: priority.index >= NotificationPriority.high.index,
       ledColor: _getLedColorFromPriority(priority),
+      ledOnMs: 1000, // LED on duration in milliseconds
+      ledOffMs: 500, // LED off duration in milliseconds
       actions: actions,
       largeIcon: imageUrl != null ? FilePathAndroidBitmap(imageUrl) : null,
-      styleInformation: body.length > 50 
+      styleInformation: body.length > 50
           ? BigTextStyleInformation(body, htmlFormatBigText: true)
           : null,
     );
@@ -419,6 +422,9 @@ class LocalNotificationService {
       showWhen: true,
       enableVibration: priority.index >= NotificationPriority.medium.index,
       enableLights: priority.index >= NotificationPriority.high.index,
+      ledColor: _getLedColorFromPriority(priority),
+      ledOnMs: 1000, // LED on duration in milliseconds
+      ledOffMs: 500, // LED off duration in milliseconds
     );
 
     const iosDetails = DarwinNotificationDetails(
@@ -638,6 +644,7 @@ class LocalNotificationService {
   Future<void> _storeLocalNotification(int id, String title, String body, String channelId, Map<String, dynamic>? payload) async {
     try {
       final db = await _databaseService.database;
+      final now = DateTime.now().toIso8601String();
       await db.insert('notification_history', {
         'id': id.toString(),
         'title': title,
@@ -645,7 +652,8 @@ class LocalNotificationService {
         'channelId': channelId,
         'payload': payload != null ? jsonEncode(payload) : null,
         'type': 'local',
-        'createdAt': DateTime.now().toIso8601String(),
+        'createdAt': now,
+        'receivedAt': now, // Local notifications are received immediately
         'isShown': 1,
       });
     } catch (e) {
@@ -763,13 +771,29 @@ class LocalNotificationService {
 
   /// Show test notification for debugging and user testing
   Future<void> showTestNotification() async {
+    // Generate a safe 32-bit integer ID
+    final safeId = _generateSafeNotificationId();
     await showNotification(
-      id: DateTime.now().millisecondsSinceEpoch,
+      id: safeId,
       title: 'Test Notification',
       body: 'This is a test notification to verify the system is working correctly.',
       channelId: 'general',
       priority: NotificationPriority.medium,
     );
+  }
+
+  /// Generate a safe 32-bit integer notification ID
+  int _generateSafeNotificationId() {
+    // Use current time in seconds and modulo to keep within 32-bit range
+    final now = DateTime.now();
+    final timeComponent = now.millisecondsSinceEpoch % 1000000000; // Keep last 9 digits
+    final randomComponent = math.Random().nextInt(1000); // Add small random component
+
+    // Ensure the ID is within 32-bit signed integer range: -2^31 to 2^31 - 1
+    // Using positive range: 1 to 2^30 (1073741824) to be safe
+    final safeId = (timeComponent + randomComponent) % 1073741824;
+
+    return safeId == 0 ? 1 : safeId; // Ensure ID is never 0
   }
 
   /// Check if service is initialized

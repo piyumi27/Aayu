@@ -16,7 +16,6 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   String _selectedLanguage = 'en';
-  bool _notificationsEnabled = true;
   String _syncStatus = 'up-to-date'; // 'up-to-date', 'pending', 'error'
   UserAccount? _currentUser;
   VerificationStatus _verificationStatus = VerificationStatus.notLoggedIn;
@@ -35,7 +34,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     if (mounted) {
       setState(() {
         _selectedLanguage = prefs.getString('language') ?? 'en';
-        _notificationsEnabled = prefs.getBool('notifications_enabled') ?? true;
         _syncStatus = prefs.getString('sync_status') ?? 'up-to-date';
       });
     }
@@ -70,15 +68,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
-  Future<void> _saveNotificationPreference(bool enabled) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('notifications_enabled', enabled);
-    if (mounted) {
-      setState(() {
-        _notificationsEnabled = enabled;
-      });
-    }
-  }
 
   Map<String, String> _getLocalizedText() {
     final Map<String, Map<String, String>> texts = {
@@ -283,11 +272,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
               _buildSettingsRow(
                 icon: Icons.notifications_outlined,
                 title: texts['notifications']!,
-                trailing: Switch(
-                  value: _notificationsEnabled,
-                  onChanged: _saveNotificationPreference,
-                  activeThumbColor: const Color(0xFF0086FF),
-                ),
                 hasChevron: true,
                 onTap: () => context.push('/notification-preferences'),
               ),

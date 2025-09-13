@@ -339,15 +339,19 @@ class PushNotificationService {
   Future<void> _storeNotificationInDatabase(RemoteMessage message, String receivedState) async {
     try {
       final db = await _databaseService.database;
+      final now = DateTime.now().toIso8601String();
       await db.insert('notification_history', {
         'id': message.messageId ?? DateTime.now().millisecondsSinceEpoch.toString(),
+        'type': 'push', // Required NOT NULL field
         'title': message.notification?.title ?? '',
         'body': message.notification?.body ?? '',
         'data': jsonEncode(message.data),
         'receivedState': receivedState,
-        'receivedAt': DateTime.now().toIso8601String(),
+        'receivedAt': now,
+        'createdAt': now, // Required NOT NULL field
         'isProcessed': 1,
         'isRead': receivedState == 'foreground' ? 0 : 1,
+        'isShown': 1, // Assuming push notifications are shown when received
       });
     } catch (e) {
       if (kDebugMode) {

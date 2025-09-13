@@ -2,6 +2,32 @@
 
 All notable changes to the Aayu project will be documented in this file.
 
+## [2025-09-13] - Notification System Fixes and Settings Cleanup
+
+### **Fixed Notification ID Overflow**
+- **Safe ID Generation**: Implemented `_generateSafeNotificationId()` method to constrain IDs within 32-bit integer range
+- **Modulo Operations**: Used millisecond timestamp % 1000000000 + random % 1000 to stay within [-2^31, 2^31-1] limits
+- **Error Prevention**: Fixed "must fit within 32-bit integer" crashes in LocalNotificationService
+- **Scheduling Engine**: Updated all notification scheduling to use safe ID generation methods
+
+### **Settings Screen Simplification**
+- **Removed Toggle**: Eliminated redundant notification Switch from main settings since dedicated notification preferences page exists
+- **Clean Navigation**: Notifications row now purely navigates to `/notification-preferences` without inline toggle
+- **Code Cleanup**: Removed unused `_notificationsEnabled` state variable and `_saveNotificationPreference` method
+- **Simplified UI**: Streamlined settings interface by removing duplicate notification controls
+
+### **Android LED Notification Fix**
+- **Pre-Oreo Compatibility**: Added required `ledOnMs: 1000` and `ledOffMs: 500` properties for Android versions before Oreo
+- **Error Prevention**: Fixed "Must specify both ledOnMs and ledOffMs" PlatformException crashes
+- **Universal Coverage**: Applied fix to both `showNotification()` and `scheduleNotification()` methods
+- **LED Timing**: Configured 1-second on, 0.5-second off LED blink cycle for consistent behavior
+
+### **Database Schema Compliance Fix**
+- **Missing Required Fields**: Fixed "NOT NULL constraint failed: notification_history.receivedAt" database errors
+- **Local Notifications**: Added missing `receivedAt` field set to immediate timestamp for local notifications
+- **Push Notifications**: Added missing `type`, `createdAt`, and `isShown` fields for push notification database storage
+- **Schema Alignment**: Ensured all notification insertions comply with notification_history table requirements
+
 ## [2025-09-13] - 6-Month Countdown UX Improvements
 
 ### **Non-Blocking Confetti Celebration**
