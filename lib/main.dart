@@ -37,6 +37,8 @@ import 'screens/splash_screen.dart';
 import 'screens/verification_center_screen.dart';
 import 'screens/progress_tracking_screen.dart';
 import 'screens/achievements_screen.dart';
+import 'screens/vaccination_timeline_screen.dart';
+import 'screens/milestone_tracker_screen.dart';
 import 'services/firebase_sync_service.dart';
 import 'widgets/bottom_navigation.dart';
 
@@ -315,8 +317,22 @@ final _router = GoRouter(
       builder: (context, state) => const AchievementsScreen(),
     ),
     GoRoute(
+      path: '/vaccination-timeline',
+      pageBuilder: (context, state) => SlideRightTransitionPage(
+        key: state.pageKey,
+        child: const VaccinationTimelineScreen(),
+      ),
+    ),
+    GoRoute(
       path: '/notification-preferences',
       builder: (context, state) => const NotificationPreferencesScreen(),
+    ),
+    GoRoute(
+      path: '/milestone-tracker',
+      pageBuilder: (context, state) => SlideRightTransitionPage(
+        key: state.pageKey,
+        child: const MilestoneTrackerScreen(),
+      ),
     ),
   ],
 );

@@ -10,6 +10,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/child.dart';
 import '../models/growth_record.dart';
 import '../providers/child_provider.dart';
+import '../repositories/standards_repository.dart';
+import '../services/growth_calculation_service.dart';
 import '../utils/responsive_utils.dart';
 import '../widgets/notifications/notification_badge.dart';
 import 'add_measurement_screen.dart';
@@ -27,14 +29,141 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
   String _selectedTab = 'Weight-Age';
   String _selectedRange = '3M';
   String _selectedLanguage = 'en';
+  String _selectedStandard = 'WHO'; // WHO or Sri Lankan
+  bool _showZScores = false;
+  bool _showPercentiles = true;
   
   final List<String> _tabs = ['Weight-Age', 'Height-Age', 'BMI', 'Weight-for-Height'];
   final List<String> _ranges = ['3M', '6M', '1Y', 'All'];
+  final List<String> _standards = ['WHO', 'Sri Lankan'];
+  
+  late StandardsRepository _standardsRepository;
+  late GrowthCalculationService _calculationService;
+  Map<String, dynamic>? _chartData;
 
   @override
   void initState() {
     super.initState();
+    _standardsRepository = StandardsRepository();
+    _calculationService = GrowthCalculationService();
     _loadLanguage();
+    _loadChartData();
+  }
+
+  Future<void> _loadChartData() async {
+    final provider = Provider.of<ChildProvider>(context, listen: false);
+    final child = provider.selectedChild;
+    
+    if (child != null) {
+      final data = await _generateChartData(child, provider.growthRecords);
+      setState(() {
+        _chartData = data;
+      });
+    }
+  }
+
+  Future<Map<String, dynamic>> _generateChartData(Child child, List<GrowthRecord> records) async {
+    final standards = await _standardsRepository.getGrowthStandards(
+      source: _selectedStandard == 'WHO' ? 'WHO' : 'SriLanka',
+    );
+
+    final chartPoints = <FlSpot>[];
+    final zScores = <FlSpot>[];
+    final percentiles = <FlSpot>[];
+
+    for (final record in records) {
+      final ageInMonths = _calculateAgeInMonths(record.date, child.birthDate);
+      double value = 0;
+      
+      switch (_selectedTab) {
+        case 'Weight-Age':
+          value = record.weight;
+          break;
+        case 'Height-Age':
+          value = record.height;
+          break;
+        case 'BMI':
+          value = record.weight / ((record.height / 100) * (record.height / 100));
+          break;
+        case 'Weight-for-Height':
+          value = record.weight;
+          break;
+      }
+
+      chartPoints.add(FlSpot(ageInMonths.toDouble(), value));
+
+      // Calculate Z-score using the proper service method
+      final zScore = await _calculateZScoreForMeasurement(
+        value,
+        ageInMonths,
+        child.gender,
+        _selectedTab,
+        _selectedStandard == 'WHO' ? 'WHO' : 'SriLanka',
+      );
+
+      zScores.add(FlSpot(ageInMonths.toDouble(), zScore));
+      percentiles.add(FlSpot(ageInMonths.toDouble(), _zScoreToPercentile(zScore)));
+    }
+
+    return {
+      'chartPoints': chartPoints,
+      'zScores': zScores,
+      'percentiles': percentiles,
+      'standards': standards,
+    };
+  }
+
+  Future<double> _calculateZScoreForMeasurement(
+    double value,
+    int ageInMonths,
+    String gender,
+    String measurementTab,
+    String standardSource,
+  ) async {
+    // Use the StandardsRepository directly to get the growth standard and calculate Z-score
+    String measurementType;
+    switch (measurementTab) {
+      case 'Weight-Age':
+        measurementType = 'weight_for_age';
+        break;
+      case 'Height-Age':
+        measurementType = 'height_for_age';
+        break;
+      case 'BMI':
+        measurementType = 'bmi_for_age';
+        break;
+      case 'Weight-for-Height':
+        measurementType = 'weight_for_height';
+        break;
+      default:
+        measurementType = 'weight_for_age';
+    }
+
+    final standard = await _standardsRepository.getGrowthStandardForChild(
+      ageMonths: ageInMonths,
+      gender: gender,
+      measurementType: measurementType,
+      source: standardSource,
+    );
+
+    return standard?.calculateZScore(value) ?? 0.0;
+  }
+
+  double _zScoreToPercentile(double zScore) {
+    // Simplified z-score to percentile conversion
+    if (zScore <= -3) return 0.1;
+    if (zScore <= -2) return 2.3;
+    if (zScore <= -1) return 15.9;
+    if (zScore <= 0) return 50.0;
+    if (zScore <= 1) return 84.1;
+    if (zScore <= 2) return 97.7;
+    if (zScore <= 3) return 99.9;
+    return 99.9;
+  }
+
+  int _calculateAgeInMonths(DateTime measurementDate, DateTime birthDate) {
+    final diff = measurementDate.difference(birthDate);
+    return (diff.inDays / 30.44).round();
   }
 
   Future<void> _loadLanguage() async {
@@ -84,6 +213,13 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
         'heightAge': 'Height-Age',
         'weightForHeight': 'Weight-for-Height',
         'growthCountdown': 'Growth Countdown',
+        'standards': 'Standards',
+        'whoStandards': 'WHO Standards',
+        'sriLankanStandards': 'Sri Lankan Standards',
+        'showZScores': 'Show Z-Scores',
+        'showPercentiles': 'Show Percentiles',
+        'zScore': 'Z-Score',
+        'percentile': 'Percentile',
       },
       'si': {
         'title': 'වර්ධන ප්‍රස්ථාර',
@@ -106,6 +242,13 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
         'heightAge': 'උස-වයස',
         'weightForHeight': 'උස සඳහා බර',
         'growthCountdown': 'වර්ධන ගණන් කිරීම',
+        'standards': 'ප්‍රමිතීන්',
+        'whoStandards': 'WHO ප්‍රමිතීන්',
+        'sriLankanStandards': 'ශ්‍රී ලංකාව ප්‍රමිතීන්',
+        'showZScores': 'Z-ලකුණු පෙන්වන්න',
+        'showPercentiles': 'ප්‍රතිශතයන් පෙන්වන්න',
+        'zScore': 'Z-ලකුණ',
+        'percentile': 'ප්‍රතිශතය',
       },
       'ta': {
         'title': 'வளர்ச்சி விளக்கப்படங்கள்',
@@ -128,6 +271,13 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
         'heightAge': 'உயரம்-வயது',
         'weightForHeight': 'உயரத்திற்கான எடை',
         'growthCountdown': 'வளர்ச்சி எண்ணிக்கை',
+        'standards': 'தரநிலைகள்',
+        'whoStandards': 'WHO தரநிலைகள்',
+        'sriLankanStandards': 'இலங்கை தரநிலைகள்',
+        'showZScores': 'Z-புள்ளிகளைக் காட்டு',
+        'showPercentiles': 'சதவீதங்களைக் காட்டு',
+        'zScore': 'Z-புள்ளி',
+        'percentile': 'சதவீதம்',
       },
     };
 
@@ -264,6 +414,9 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
           
           // Range Filter
           _buildRangeFilter(),
+          
+          // Standards Toggle & Display Options
+          _buildControlsSection(texts),
           
           // Chart Content
           Expanded(
@@ -1154,6 +1307,122 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
     } else {
       return '${years}y ${months}m';
     }
+  }
+
+  Widget _buildControlsSection(Map<String, String> texts) {
+    final isMobile = ResponsiveUtils.isMobile(context);
+
+    return Container(
+      color: Colors.white,
+      padding: EdgeInsets.symmetric(
+        horizontal: ResponsiveUtils.getResponsiveSpacing(context, 16),
+        vertical: ResponsiveUtils.getResponsiveSpacing(context, 8),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Standards Toggle - More compact for mobile
+          Container(
+            height: 36,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: const Color(0xFFE5E7EB)),
+            ),
+            child: Row(
+              children: _standards.map((standard) {
+                final isSelected = _selectedStandard == standard;
+                return Expanded(
+                  child: GestureDetector(
+                    onTap: () => setState(() {
+                      _selectedStandard = standard;
+                      _loadChartData();
+                    }),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: isSelected ? const Color(0xFF0086FF) : Colors.transparent,
+                        borderRadius: BorderRadius.circular(7),
+                      ),
+                      child: Center(
+                        child: Text(
+                          standard == 'WHO' ? 'WHO' : 'Sri Lankan',
+                          style: TextStyle(
+                            fontSize: ResponsiveUtils.getResponsiveFontSize(context, 12),
+                            fontWeight: FontWeight.w600,
+                            color: isSelected ? Colors.white : const Color(0xFF6B7280),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+
+          SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 8)),
+
+          // Display Options - More compact layout
+          Row(
+            children: [
+              Expanded(
+                child: Row(
+                  children: [
+                    SizedBox(
+                      height: 24,
+                      width: 24,
+                      child: Checkbox(
+                        value: _showPercentiles,
+                        onChanged: (value) => setState(() => _showPercentiles = value ?? true),
+                        activeColor: const Color(0xFF0086FF),
+                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    Flexible(
+                      child: Text(
+                        isMobile ? 'Percentiles' : texts['showPercentiles']!,
+                        style: TextStyle(
+                          fontSize: ResponsiveUtils.getResponsiveFontSize(context, 11),
+                          color: const Color(0xFF374151),
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: Row(
+                  children: [
+                    SizedBox(
+                      height: 24,
+                      width: 24,
+                      child: Checkbox(
+                        value: _showZScores,
+                        onChanged: (value) => setState(() => _showZScores = value ?? false),
+                        activeColor: const Color(0xFF0086FF),
+                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    Flexible(
+                      child: Text(
+                        isMobile ? 'Z-Scores' : texts['showZScores']!,
+                        style: TextStyle(
+                          fontSize: ResponsiveUtils.getResponsiveFontSize(context, 11),
+                          color: const Color(0xFF374151),
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 
   void _shareChart() {

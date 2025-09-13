@@ -48,7 +48,7 @@ class ChildProvider extends ChangeNotifier {
 
   Future<void> loadMedications() async {
     await _medicationService.initialize();
-    _medications = _medicationService.getMedications();
+    _medications = _medicationService.medications;
     notifyListeners();
   }
 
@@ -159,14 +159,23 @@ class ChildProvider extends ChangeNotifier {
   }
 
   List<Medication> getMedicationsByCategory(String category) {
-    return _medications.where((med) => med.category == category).toList();
+    // Since Medication doesn't have a category field, filter by type name
+    // or by indication/description containing the category
+    return _medications.where((med) => 
+        med.type.name.contains(category.toLowerCase()) ||
+        (med.indication?.toLowerCase().contains(category.toLowerCase()) ?? false) ||
+        med.description.toLowerCase().contains(category.toLowerCase())
+    ).toList();
   }
 
   List<Medication> searchMedications(String query) {
     final lowerQuery = query.toLowerCase();
     return _medications.where((med) =>
         med.name.toLowerCase().contains(lowerQuery) ||
-        med.category.toLowerCase().contains(lowerQuery) ||
+        med.nameLocal.toLowerCase().contains(lowerQuery) ||
+        med.type.name.toLowerCase().contains(lowerQuery) ||
+        (med.genericName?.toLowerCase().contains(lowerQuery) ?? false) ||
+        (med.indication?.toLowerCase().contains(lowerQuery) ?? false) ||
         med.description.toLowerCase().contains(lowerQuery)).toList();
   }
 }
