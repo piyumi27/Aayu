@@ -70,7 +70,7 @@ class NotificationCard extends StatelessWidget {
   Widget _buildPriorityIndicator(BuildContext context) {
     Color priorityColor;
     String priorityText;
-    
+
     switch (notification.priority) {
       case NotificationPriority.critical:
         priorityColor = Theme.of(context).colorScheme.error;
@@ -91,7 +91,8 @@ class NotificationCard extends StatelessWidget {
         break;
     }
 
-    if (notification.priority == NotificationPriority.low) return const SizedBox.shrink();
+    if (notification.priority == NotificationPriority.low)
+      return const SizedBox.shrink();
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
@@ -103,17 +104,17 @@ class NotificationCard extends StatelessWidget {
       child: Text(
         priorityText,
         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-          color: priorityColor,
-          fontWeight: FontWeight.bold,
-          fontSize: ResponsiveUtils.getResponsiveFontSize(context, 10),
-        ),
+              color: priorityColor,
+              fontWeight: FontWeight.bold,
+              fontSize: ResponsiveUtils.getResponsiveFontSize(context, 10),
+            ),
       ),
     );
   }
 
   Widget _buildChildInfo(BuildContext context) {
     if (notification.childId == null) return const SizedBox.shrink();
-    
+
     return Row(
       children: [
         Icon(
@@ -125,9 +126,9 @@ class NotificationCard extends StatelessWidget {
         Text(
           'Child ID: ${notification.childId}',
           style: Theme.of(context).textTheme.labelSmall?.copyWith(
-            color: Theme.of(context).colorScheme.outline,
-            fontSize: ResponsiveUtils.getResponsiveFontSize(context, 11),
-          ),
+                color: Theme.of(context).colorScheme.outline,
+                fontSize: ResponsiveUtils.getResponsiveFontSize(context, 11),
+              ),
         ),
       ],
     );
@@ -137,13 +138,13 @@ class NotificationCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final categoryColor = _getCategoryColor(context);
     final isUnread = !notification.isRead;
-    
+
     return Card(
       margin: EdgeInsets.only(
         bottom: ResponsiveUtils.getResponsiveSpacing(context, 8),
       ),
       elevation: isUnread ? 2 : 1,
-      color: isUnread 
+      color: isUnread
           ? Theme.of(context).colorScheme.surface
           : Theme.of(context).colorScheme.surface.withOpacity(0.8),
       child: InkWell(
@@ -152,7 +153,7 @@ class NotificationCard extends StatelessWidget {
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
-            border: isUnread 
+            border: isUnread
                 ? Border.all(
                     color: categoryColor.withOpacity(0.3),
                     width: 1,
@@ -176,7 +177,8 @@ class NotificationCard extends StatelessWidget {
                       child: Icon(
                         _getCategoryIcon(),
                         color: categoryColor,
-                        size: ResponsiveUtils.getResponsiveIconSize(context, 20),
+                        size:
+                            ResponsiveUtils.getResponsiveIconSize(context, 20),
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -188,11 +190,16 @@ class NotificationCard extends StatelessWidget {
                             children: [
                               Text(
                                 _getCategoryDisplayName(),
-                                style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                                  color: categoryColor,
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: ResponsiveUtils.getResponsiveFontSize(context, 12),
-                                ),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .labelMedium
+                                    ?.copyWith(
+                                      color: categoryColor,
+                                      fontWeight: FontWeight.w600,
+                                      fontSize:
+                                          ResponsiveUtils.getResponsiveFontSize(
+                                              context, 12),
+                                    ),
                               ),
                               const SizedBox(width: 8),
                               _buildPriorityIndicator(context),
@@ -212,10 +219,15 @@ class NotificationCard extends StatelessWidget {
                           const SizedBox(height: 2),
                           Text(
                             AppDateUtils.getTimeAgo(notification.createdAt),
-                            style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                              color: Theme.of(context).colorScheme.outline,
-                              fontSize: ResponsiveUtils.getResponsiveFontSize(context, 11),
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .labelSmall
+                                ?.copyWith(
+                                  color: Theme.of(context).colorScheme.outline,
+                                  fontSize:
+                                      ResponsiveUtils.getResponsiveFontSize(
+                                          context, 11),
+                                ),
                           ),
                         ],
                       ),
@@ -224,45 +236,53 @@ class NotificationCard extends StatelessWidget {
                       IconButton(
                         onPressed: onDelete,
                         icon: const Icon(Icons.delete_outline),
-                        iconSize: ResponsiveUtils.getResponsiveIconSize(context, 20),
+                        iconSize:
+                            ResponsiveUtils.getResponsiveIconSize(context, 20),
                         color: Theme.of(context).colorScheme.outline,
                         tooltip: 'Delete notification',
                       ),
                   ],
                 ),
-                
+
                 const SizedBox(height: 12),
-                
+
                 // Title
                 Text(
                   notification.title,
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    fontWeight: isUnread ? FontWeight.w600 : FontWeight.w500,
-                    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
-                  ),
+                        fontWeight:
+                            isUnread ? FontWeight.w600 : FontWeight.w500,
+                        fontSize:
+                            ResponsiveUtils.getResponsiveFontSize(context, 14),
+                      ),
                 ),
-                
+
                 const SizedBox(height: 4),
-                
+
                 // Body
                 Text(
                   notification.body,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
-                    height: 1.3,
-                    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 13),
-                  ),
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withOpacity(0.8),
+                        height: 1.3,
+                        fontSize:
+                            ResponsiveUtils.getResponsiveFontSize(context, 13),
+                      ),
                   maxLines: 3,
                   overflow: TextOverflow.ellipsis,
                 ),
-                
+
                 if (notification.childId != null) ...[
                   const SizedBox(height: 8),
                   _buildChildInfo(context),
                 ],
-                
+
                 // Action Buttons (if notification has action data)
-                if (notification.actionData != null && notification.actionData!.isNotEmpty) ...[
+                if (notification.actionData != null &&
+                    notification.actionData!.isNotEmpty) ...[
                   const SizedBox(height: 12),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
@@ -277,17 +297,21 @@ class NotificationCard extends StatelessWidget {
                         },
                         icon: Icon(
                           Icons.open_in_new,
-                          size: ResponsiveUtils.getResponsiveIconSize(context, 16),
+                          size: ResponsiveUtils.getResponsiveIconSize(
+                              context, 16),
                         ),
                         label: Text(
-                          notification.actionData?['action_label'] ?? 'View Details',
+                          notification.actionData?['action_label'] ??
+                              'View Details',
                           style: TextStyle(
-                            fontSize: ResponsiveUtils.getResponsiveFontSize(context, 12),
+                            fontSize: ResponsiveUtils.getResponsiveFontSize(
+                                context, 12),
                           ),
                         ),
                         style: TextButton.styleFrom(
                           foregroundColor: categoryColor,
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 8),
                         ),
                       ),
                     ],

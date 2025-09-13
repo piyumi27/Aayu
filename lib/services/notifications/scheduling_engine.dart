@@ -19,13 +19,16 @@ import 'push_notification_service.dart';
 /// Expert-level Smart Scheduling Engine for Health Notifications
 /// Handles intelligent scheduling with machine learning-inspired algorithms
 class NotificationSchedulingEngine {
-  static final NotificationSchedulingEngine _instance = NotificationSchedulingEngine._internal();
+  static final NotificationSchedulingEngine _instance =
+      NotificationSchedulingEngine._internal();
   factory NotificationSchedulingEngine() => _instance;
   NotificationSchedulingEngine._internal();
 
   final DatabaseService _databaseService = DatabaseService();
-  final LocalNotificationService _localNotificationService = LocalNotificationService();
-  final PushNotificationService _pushNotificationService = PushNotificationService();
+  final LocalNotificationService _localNotificationService =
+      LocalNotificationService();
+  final PushNotificationService _pushNotificationService =
+      PushNotificationService();
   final StandardsRepository _standardsRepository = StandardsRepository();
   final HealthAlertService _healthAlertService = HealthAlertService();
 
@@ -149,7 +152,8 @@ class NotificationSchedulingEngine {
         final children = await _databaseService.getChildren();
 
         if (kDebugMode) {
-          print('📱 Starting background notification scheduling for ${children.length} children');
+          print(
+              '📱 Starting background notification scheduling for ${children.length} children');
         }
 
         for (int i = 0; i < children.length; i++) {
@@ -163,12 +167,15 @@ class NotificationSchedulingEngine {
             final delay = Duration(milliseconds: 200 * (i + 1));
             await Future.delayed(delay);
 
-            if (kDebugMode && i % 2 == 0) { // Log every other child
-              print('📅 Scheduled notifications for child ${i + 1}/${children.length}');
+            if (kDebugMode && i % 2 == 0) {
+              // Log every other child
+              print(
+                  '📅 Scheduled notifications for child ${i + 1}/${children.length}');
             }
           } catch (childError) {
             if (kDebugMode) {
-              print('⚠️ Failed to schedule notifications for ${child.name}: $childError');
+              print(
+                  '⚠️ Failed to schedule notifications for ${child.name}: $childError');
             }
             // Continue with other children even if one fails
             continue;
@@ -218,7 +225,8 @@ class NotificationSchedulingEngine {
       }
 
       if (kDebugMode) {
-        print('✅ Initial notifications scheduled for ${children.length} children');
+        print(
+            '✅ Initial notifications scheduled for ${children.length} children');
       }
     } catch (e) {
       if (kDebugMode) {
@@ -261,7 +269,8 @@ class NotificationSchedulingEngine {
       final vaccines = await _databaseService.getVaccines();
       final childAgeMonths = _calculateAgeInMonths(child.birthDate);
       final vaccineRecords = await _databaseService.getVaccineRecords(child.id);
-      final givenVaccineIds = vaccineRecords.map((record) => record.vaccineId).toSet();
+      final givenVaccineIds =
+          vaccineRecords.map((record) => record.vaccineId).toSet();
 
       for (final vaccine in vaccines) {
         // Skip if already given
@@ -270,7 +279,8 @@ class NotificationSchedulingEngine {
         // Skip if not yet due (schedule 1 month before)
         if (vaccine.recommendedAgeMonths > childAgeMonths + 1) continue;
 
-        final dueDate = child.birthDate.add(Duration(days: vaccine.recommendedAgeMonths * 30));
+        final dueDate = child.birthDate
+            .add(Duration(days: vaccine.recommendedAgeMonths * 30));
         final now = DateTime.now();
 
         // Schedule multiple reminders for each vaccine
@@ -288,13 +298,15 @@ class NotificationSchedulingEngine {
 
           // Only schedule future reminders
           if (reminderDate.isAfter(now)) {
-            final notificationId = await NotificationIdGenerator.generateUniqueId();
+            final notificationId =
+                await NotificationIdGenerator.generateUniqueId();
             final isOverdue = reminderDate.isAfter(dueDate);
 
             await _localNotificationService.scheduleNotification(
               id: notificationId,
               title: _getVaccinationReminderTitle(vaccine, isOverdue),
-              body: _getVaccinationReminderBody(vaccine, child, reminderDate, dueDate),
+              body: _getVaccinationReminderBody(
+                  vaccine, child, reminderDate, dueDate),
               scheduledDate: _getOptimalNotificationTime(reminderDate),
               channelId: 'vaccination_reminders',
               priority: _stringToPriority(isOverdue ? 'high' : 'medium'),
@@ -336,7 +348,8 @@ class NotificationSchedulingEngine {
 
       if (growthRecords.isNotEmpty) {
         final lastMeasurement = growthRecords.first.date;
-        nextReminderDate = lastMeasurement.add(Duration(days: reminderFrequencyDays));
+        nextReminderDate =
+            lastMeasurement.add(Duration(days: reminderFrequencyDays));
       } else {
         // No measurements yet, remind soon
         nextReminderDate = DateTime.now().add(const Duration(days: 3));
@@ -362,7 +375,8 @@ class NotificationSchedulingEngine {
           },
         );
 
-        nextReminderDate = nextReminderDate.add(Duration(days: reminderFrequencyDays));
+        nextReminderDate =
+            nextReminderDate.add(Duration(days: reminderFrequencyDays));
       }
     } catch (e) {
       if (kDebugMode) {
@@ -390,7 +404,8 @@ class NotificationSchedulingEngine {
         return; // Skip milestone scheduling if standards loading fails
       }
 
-      final milestoneRecords = await _standardsRepository.getMilestoneRecords(child.id);
+      final milestoneRecords =
+          await _standardsRepository.getMilestoneRecords(child.id);
       final achievedMilestoneIds = milestoneRecords
           .where((record) => record.achieved)
           .map((record) => record.milestoneId)
@@ -402,11 +417,13 @@ class NotificationSchedulingEngine {
 
         // Calculate reminder date based on milestone age range
         final reminderAge = milestone.ageMonthsMax;
-        final reminderDate = child.birthDate.add(Duration(days: reminderAge * 30));
+        final reminderDate =
+            child.birthDate.add(Duration(days: reminderAge * 30));
 
         // Only schedule future reminders
         if (reminderDate.isAfter(DateTime.now())) {
-          final notificationId = await NotificationIdGenerator.generateUniqueId();
+          final notificationId =
+              await NotificationIdGenerator.generateUniqueId();
 
           await _localNotificationService.scheduleNotification(
             id: notificationId,
@@ -414,7 +431,8 @@ class NotificationSchedulingEngine {
             body: _getMilestoneReminderBody(milestone, child),
             scheduledDate: _getOptimalNotificationTime(reminderDate),
             channelId: 'milestone_reminders',
-            priority: _stringToPriority(milestone.isRedFlag ? 'high' : 'medium'),
+            priority:
+                _stringToPriority(milestone.isRedFlag ? 'high' : 'medium'),
             payload: {
               'type': 'milestone_reminder',
               'childId': child.id,
@@ -458,7 +476,8 @@ class NotificationSchedulingEngine {
 
           // Only schedule future feeding times
           if (scheduledTime.isAfter(DateTime.now())) {
-            final notificationId = await NotificationIdGenerator.generateUniqueId();
+            final notificationId =
+                await NotificationIdGenerator.generateUniqueId();
 
             await _localNotificationService.scheduleNotification(
               id: notificationId,
@@ -494,7 +513,8 @@ class NotificationSchedulingEngine {
       await _localNotificationService.scheduleNotification(
         id: await NotificationIdGenerator.generateUniqueId(),
         title: 'Weekly Health Check',
-        body: 'Time to review ${child.name}\'s health progress and any concerns',
+        body:
+            'Time to review ${child.name}\'s health progress and any concerns',
         scheduledDate: _getOptimalNotificationTime(weeklyCheckDate),
         channelId: 'general',
         priority: _stringToPriority('low'),
@@ -513,7 +533,8 @@ class NotificationSchedulingEngine {
       await _localNotificationService.scheduleNotification(
         id: await NotificationIdGenerator.generateUniqueId(),
         title: 'Monthly Health Review',
-        body: 'Time for ${child.name}\'s comprehensive health and development review',
+        body:
+            'Time for ${child.name}\'s comprehensive health and development review',
         scheduledDate: _getOptimalNotificationTime(monthlyReviewDate),
         channelId: 'general',
         priority: _stringToPriority('medium'),
@@ -609,7 +630,8 @@ class NotificationSchedulingEngine {
     return 'Vaccination Reminder: ${vaccine.name}';
   }
 
-  String _getVaccinationReminderBody(Vaccine vaccine, Child child, DateTime reminderDate, DateTime dueDate) {
+  String _getVaccinationReminderBody(
+      Vaccine vaccine, Child child, DateTime reminderDate, DateTime dueDate) {
     final daysUntilDue = dueDate.difference(reminderDate).inDays;
 
     if (daysUntilDue > 0) {
@@ -634,7 +656,8 @@ class NotificationSchedulingEngine {
     return 'Milestone Check: ${milestone.domain}';
   }
 
-  String _getMilestoneReminderBody(DevelopmentMilestone milestone, Child child) {
+  String _getMilestoneReminderBody(
+      DevelopmentMilestone milestone, Child child) {
     return 'Check if ${child.name} can: ${milestone.milestone}';
   }
 
@@ -678,7 +701,8 @@ class NotificationSchedulingEngine {
       );
 
       if (kDebugMode) {
-        print('✅ Cancelled ${notifications.length} notifications for child: $childId');
+        print(
+            '✅ Cancelled ${notifications.length} notifications for child: $childId');
       }
     } catch (e) {
       if (kDebugMode) {
@@ -688,7 +712,8 @@ class NotificationSchedulingEngine {
   }
 
   /// Update notification preferences and reschedule accordingly
-  Future<void> updateNotificationPreferences(Map<String, dynamic> preferences) async {
+  Future<void> updateNotificationPreferences(
+      Map<String, dynamic> preferences) async {
     try {
       final db = await _databaseService.database;
 
@@ -772,23 +797,21 @@ class NotificationSchedulingEngine {
       final db = await _databaseService.database;
 
       final totalScheduled = await db.rawQuery(
-        'SELECT COUNT(*) as count FROM scheduled_notifications WHERE isActive = 1'
-      );
+          'SELECT COUNT(*) as count FROM scheduled_notifications WHERE isActive = 1');
 
       final totalSent = await db.rawQuery(
-        'SELECT COUNT(*) as count FROM notification_history WHERE isShown = 1'
-      );
+          'SELECT COUNT(*) as count FROM notification_history WHERE isShown = 1');
 
       final totalTapped = await db.rawQuery(
-        'SELECT COUNT(*) as count FROM notification_history WHERE tappedAt IS NOT NULL'
-      );
+          'SELECT COUNT(*) as count FROM notification_history WHERE tappedAt IS NOT NULL');
 
       return {
         'totalScheduled': totalScheduled.first['count'],
         'totalSent': totalSent.first['count'],
         'totalTapped': totalTapped.first['count'],
         'engagementRate': totalSent.first['count'] as int > 0
-            ? (totalTapped.first['count'] as int) / (totalSent.first['count'] as int)
+            ? (totalTapped.first['count'] as int) /
+                (totalSent.first['count'] as int)
             : 0.0,
       };
     } catch (e) {

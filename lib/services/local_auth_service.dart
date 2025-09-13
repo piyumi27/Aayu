@@ -14,7 +14,7 @@ class LocalAuthService {
   static const String _keyCurrentUser = 'current_user';
   static const String _keyPendingSync = 'pending_sync';
   static const String _keyVerificationStatus = 'verification_status';
-  
+
   final Uuid _uuid = Uuid();
 
   /// Register a new user locally
@@ -26,7 +26,7 @@ class LocalAuthService {
   }) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      
+
       // Check if user already exists
       final existingUser = await _getStoredUser();
       if (existingUser != null) {
@@ -35,7 +35,7 @@ class LocalAuthService {
           message: 'User already registered. Please login instead.',
         );
       }
-      
+
       // Create local user
       final user = UserAccount(
         id: _uuid.v4(),
@@ -48,11 +48,11 @@ class LocalAuthService {
         isVerified: false,
         needsSync: true,
       );
-      
+
       // Store locally
       await _storeUser(user);
       await prefs.setBool(_keyPendingSync, true);
-      
+
       return AuthResult(
         success: true,
         message: 'Account created successfully. You are now logged in.',
@@ -73,35 +73,35 @@ class LocalAuthService {
   }) async {
     try {
       final user = await _getStoredUser();
-      
+
       if (user == null) {
         return AuthResult(
           success: false,
           message: 'No account found. Please register first.',
         );
       }
-      
+
       if (user.phoneNumber != phoneNumber) {
         return AuthResult(
           success: false,
           message: 'Phone number not found.',
         );
       }
-      
+
       if (user.passwordHash != _hashPassword(password)) {
         return AuthResult(
           success: false,
           message: 'Incorrect password.',
         );
       }
-      
+
       // Update last login
       final updatedUser = user.copyWith(
         lastLoginAt: DateTime.now(),
         updatedAt: DateTime.now(),
       );
       await _storeUser(updatedUser);
-      
+
       return AuthResult(
         success: true,
         message: 'Login successful.',
@@ -129,14 +129,16 @@ class LocalAuthService {
   /// Logout user
   Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
-    
+
     // Clear session-based dismissals so verification banner reappears on next login
     final keys = prefs.getKeys();
-    final dismissalKeys = keys.where((key) => key.startsWith('verification_banner_dismissed_')).toList();
+    final dismissalKeys = keys
+        .where((key) => key.startsWith('verification_banner_dismissed_'))
+        .toList();
     for (final key in dismissalKeys) {
       await prefs.remove(key);
     }
-    
+
     await prefs.remove(_keyCurrentUser);
     await prefs.setBool('user_logged_in', false);
   }
@@ -155,7 +157,7 @@ class LocalAuthService {
           message: 'No user logged in.',
         );
       }
-      
+
       final updatedUser = user.copyWith(
         fullName: fullName,
         email: email,
@@ -163,12 +165,12 @@ class LocalAuthService {
         updatedAt: DateTime.now(),
         needsSync: true,
       );
-      
+
       await _storeUser(updatedUser);
-      
+
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool(_keyPendingSync, true);
-      
+
       return AuthResult(
         success: true,
         message: 'Profile updated successfully.',
@@ -195,7 +197,7 @@ class LocalAuthService {
           message: 'No user logged in.',
         );
       }
-      
+
       // Verify current password
       if (user.passwordHash != _hashPassword(currentPassword)) {
         return AuthResult(
@@ -203,19 +205,19 @@ class LocalAuthService {
           message: 'Current password is incorrect.',
         );
       }
-      
+
       // Update password
       final updatedUser = user.copyWith(
         passwordHash: _hashPassword(newPassword),
         updatedAt: DateTime.now(),
         needsSync: true,
       );
-      
+
       await _storeUser(updatedUser);
-      
+
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool(_keyPendingSync, true);
-      
+
       return AuthResult(
         success: true,
         message: 'Password changed successfully.',
@@ -239,7 +241,7 @@ class LocalAuthService {
   Future<void> markAsSynced() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_keyPendingSync, false);
-    
+
     final user = await _getStoredUser();
     if (user != null) {
       final updatedUser = user.copyWith(
@@ -269,15 +271,15 @@ class LocalAuthService {
     if (user == null) {
       return VerificationStatus.notLoggedIn;
     }
-    
+
     if (user.isVerified) {
       return VerificationStatus.verified;
     }
-    
+
     if (user.needsSync) {
       return VerificationStatus.pendingSync;
     }
-    
+
     return VerificationStatus.unverified;
   }
 
@@ -292,9 +294,9 @@ class LocalAuthService {
   Future<UserAccount?> _getStoredUser() async {
     final prefs = await SharedPreferences.getInstance();
     final userJson = prefs.getString(_keyCurrentUser);
-    
+
     if (userJson == null) return null;
-    
+
     try {
       final userMap = json.decode(userJson) as Map<String, dynamic>;
       return UserAccount.fromJson(userMap);
@@ -335,4 +337,3 @@ class AuthResult {
     this.user,
   });
 }
-

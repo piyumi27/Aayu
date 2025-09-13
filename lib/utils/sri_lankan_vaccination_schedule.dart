@@ -285,18 +285,20 @@ class SriLankanVaccinationSchedule {
   }
 
   /// Get overdue vaccines for child age
-  static List<Vaccine> getOverdueVaccines(int ageInMonths, Set<String> givenVaccineIds) {
+  static List<Vaccine> getOverdueVaccines(
+      int ageInMonths, Set<String> givenVaccineIds) {
     return vaccines
-        .where((vaccine) => 
+        .where((vaccine) =>
             !givenVaccineIds.contains(vaccine.id) &&
             vaccine.recommendedAgeMonths < ageInMonths)
         .toList();
   }
 
   /// Get upcoming vaccines (due in next 2 months)
-  static List<Vaccine> getUpcomingVaccines(int ageInMonths, Set<String> givenVaccineIds) {
+  static List<Vaccine> getUpcomingVaccines(
+      int ageInMonths, Set<String> givenVaccineIds) {
     return vaccines
-        .where((vaccine) => 
+        .where((vaccine) =>
             !givenVaccineIds.contains(vaccine.id) &&
             vaccine.recommendedAgeMonths > ageInMonths &&
             vaccine.recommendedAgeMonths <= ageInMonths + 2)
@@ -306,43 +308,45 @@ class SriLankanVaccinationSchedule {
   /// Get vaccination schedule for age range
   static Map<String, List<Vaccine>> getScheduleByAgeGroup() {
     final schedule = <String, List<Vaccine>>{};
-    
+
     for (final vaccine in vaccines) {
       final ageGroup = _getAgeGroupForMonths(vaccine.recommendedAgeMonths);
       schedule.putIfAbsent(ageGroup, () => []).add(vaccine);
     }
-    
+
     return schedule;
   }
 
   /// Get vaccination completion percentage
-  static double getCompletionPercentage(int ageInMonths, Set<String> givenVaccineIds) {
+  static double getCompletionPercentage(
+      int ageInMonths, Set<String> givenVaccineIds) {
     final dueVaccines = vaccines
-        .where((vaccine) => 
-            vaccine.recommendedAgeMonths <= ageInMonths &&
-            vaccine.isMandatory)
+        .where((vaccine) =>
+            vaccine.recommendedAgeMonths <= ageInMonths && vaccine.isMandatory)
         .toList();
-    
+
     if (dueVaccines.isEmpty) return 100.0;
-    
+
     final givenCount = dueVaccines
         .where((vaccine) => givenVaccineIds.contains(vaccine.id))
         .length;
-    
+
     return (givenCount / dueVaccines.length) * 100;
   }
 
   /// Get next vaccination milestone
-  static Vaccine? getNextMilestone(int ageInMonths, Set<String> givenVaccineIds) {
+  static Vaccine? getNextMilestone(
+      int ageInMonths, Set<String> givenVaccineIds) {
     final upcomingVaccines = vaccines
-        .where((vaccine) => 
+        .where((vaccine) =>
             !givenVaccineIds.contains(vaccine.id) &&
             vaccine.recommendedAgeMonths > ageInMonths)
         .toList();
-    
+
     if (upcomingVaccines.isEmpty) return null;
-    
-    upcomingVaccines.sort((a, b) => a.recommendedAgeMonths.compareTo(b.recommendedAgeMonths));
+
+    upcomingVaccines.sort(
+        (a, b) => a.recommendedAgeMonths.compareTo(b.recommendedAgeMonths));
     return upcomingVaccines.first;
   }
 
@@ -352,7 +356,8 @@ class SriLankanVaccinationSchedule {
     if (months < 12) return '$months Months';
     if (months == 12) return '1 Year';
     if (months < 24) return '${months} Months';
-    if (months < 60) return '${months ~/ 12} Year${months ~/ 12 > 1 ? 's' : ''}';
+    if (months < 60)
+      return '${months ~/ 12} Year${months ~/ 12 > 1 ? 's' : ''}';
     return 'School Entry';
   }
 

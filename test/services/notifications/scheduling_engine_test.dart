@@ -34,10 +34,11 @@ void main() {
         // - Critical reminder at due date
       });
 
-      test('should adapt scheduling based on user engagement patterns', () async {
+      test('should adapt scheduling based on user engagement patterns',
+          () async {
         // Test that the engine learns from user interaction patterns
         // and adjusts notification timing accordingly
-        
+
         final testChild = Child(
           id: 'test-child-engagement',
           name: 'Engagement Test Child',
@@ -69,7 +70,8 @@ void main() {
         // Verify notifications are scheduled during high-engagement hours
       });
 
-      test('should handle multiple children with different schedules', () async {
+      test('should handle multiple children with different schedules',
+          () async {
         final children = [
           Child(
             id: 'child-1',
@@ -102,7 +104,8 @@ void main() {
     });
 
     group('Sri Lankan Vaccination Schedule Integration', () {
-      test('should schedule notifications for Sri Lankan vaccination timeline', () async {
+      test('should schedule notifications for Sri Lankan vaccination timeline',
+          () async {
         final newborn = Child(
           id: 'newborn-lk',
           name: 'Sri Lankan Newborn',
@@ -170,7 +173,8 @@ void main() {
         // for the first 12 months
       });
 
-      test('should schedule quarterly growth tracking after first year', () async {
+      test('should schedule quarterly growth tracking after first year',
+          () async {
         final toddler = Child(
           id: 'toddler-growth',
           name: 'Growth Tracking Toddler',
@@ -235,7 +239,8 @@ void main() {
     });
 
     group('Feeding Reminders', () {
-      test('should schedule age-appropriate feeding reminders for newborn', () async {
+      test('should schedule age-appropriate feeding reminders for newborn',
+          () async {
         final newborn = Child(
           id: 'newborn-feeding',
           name: 'Newborn Feeding',
@@ -275,7 +280,8 @@ void main() {
     });
 
     group('Medication Reminders', () {
-      test('should schedule medication reminders when medications are added', () async {
+      test('should schedule medication reminders when medications are added',
+          () async {
         final child = Child(
           id: 'child-medication',
           name: 'Child with Medication',
@@ -305,7 +311,8 @@ void main() {
     });
 
     group('WorkManager Integration', () {
-      test('should register background tasks for notification scheduling', () async {
+      test('should register background tasks for notification scheduling',
+          () async {
         // Test WorkManager integration initialization
         // Engine should already be initialized in setUp
         expect(() => engine.initialize(), returnsNormally);
@@ -397,7 +404,7 @@ void main() {
       test('should optimize scheduling based on effectiveness data', () async {
         // Test that the engine uses analytics data to improve
         // notification timing and content
-        
+
         final child = Child(
           id: 'child-optimization',
           name: 'Optimization Test Child',

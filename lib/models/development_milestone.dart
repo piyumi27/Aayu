@@ -222,7 +222,8 @@ class DevelopmentAlert {
       recommendations: map['recommendations'],
       requiresEvaluation: map['requiresEvaluation'] == 1,
       createdAt: DateTime.parse(map['createdAt']),
-      resolvedAt: map['resolvedAt'] != null ? DateTime.parse(map['resolvedAt']) : null,
+      resolvedAt:
+          map['resolvedAt'] != null ? DateTime.parse(map['resolvedAt']) : null,
     );
   }
 
@@ -234,15 +235,16 @@ class DevelopmentAlert {
     required int childAgeMonths,
   }) {
     final now = DateTime.now();
-    
-    final criticalMissed = missedMilestones.where((m) => m.priority <= 2).toList();
+
+    final criticalMissed =
+        missedMilestones.where((m) => m.priority <= 2).toList();
     final hasRedFlags = missedMilestones.any((m) => m.isRedFlag);
-    
+
     String severity = 'info';
     String title = 'Development Tracking';
     String description = 'Regular milestone monitoring';
     bool requiresEvaluation = false;
-    
+
     if (hasRedFlags || criticalMissed.length >= 3) {
       severity = 'severe';
       title = 'Development Delay Alert';
@@ -258,7 +260,7 @@ class DevelopmentAlert {
       title = 'Milestone Monitoring';
       description = 'Continue observing development progress';
     }
-    
+
     return DevelopmentAlert(
       id: 'dev_alert_${now.millisecondsSinceEpoch}',
       childId: childId,
@@ -267,7 +269,10 @@ class DevelopmentAlert {
       title: title,
       description: description,
       missedMilestones: missedMilestones.map((m) => m.milestone).toList(),
-      redFlags: missedMilestones.where((m) => m.isRedFlag).map((m) => m.milestone).toList(),
+      redFlags: missedMilestones
+          .where((m) => m.isRedFlag)
+          .map((m) => m.milestone)
+          .toList(),
       recommendations: _getRecommendationsForSeverity(severity),
       requiresEvaluation: requiresEvaluation,
       createdAt: now,
@@ -276,9 +281,12 @@ class DevelopmentAlert {
 
   static String _getRecommendationsForSeverity(String severity) {
     return switch (severity) {
-      'severe' => 'Immediate developmental evaluation recommended. Contact pediatrician for referral to early intervention services.',
-      'moderate' => 'Schedule appointment with pediatrician to discuss development. Consider early intervention assessment.',
-      'mild' => 'Continue monitoring and encouraging activities. Discuss with pediatrician at next visit.',
+      'severe' =>
+        'Immediate developmental evaluation recommended. Contact pediatrician for referral to early intervention services.',
+      'moderate' =>
+        'Schedule appointment with pediatrician to discuss development. Consider early intervention assessment.',
+      'mild' =>
+        'Continue monitoring and encouraging activities. Discuss with pediatrician at next visit.',
       _ => 'Continue regular development monitoring and activities.',
     };
   }

@@ -11,14 +11,17 @@ import 'local_notification_service.dart';
 /// Expert-level Push Notification Service
 /// Handles Firebase Cloud Messaging (FCM) integration
 class PushNotificationService {
-  static final PushNotificationService _instance = PushNotificationService._internal();
+  static final PushNotificationService _instance =
+      PushNotificationService._internal();
   factory PushNotificationService() => _instance;
   PushNotificationService._internal();
 
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
-  final LocalNotificationService _localNotificationService = LocalNotificationService();
+  final LocalNotificationService _localNotificationService =
+      LocalNotificationService();
   final DatabaseService _databaseService = DatabaseService();
-  final FirebaseInitializationService _firebaseService = FirebaseInitializationService();
+  final FirebaseInitializationService _firebaseService =
+      FirebaseInitializationService();
 
   bool _isInitialized = false;
   String? _fcmToken;
@@ -84,7 +87,8 @@ class PushNotificationService {
     );
 
     if (kDebugMode) {
-      print('📱 Notification permission status: ${settings.authorizationStatus}');
+      print(
+          '📱 Notification permission status: ${settings.authorizationStatus}');
     }
   }
 
@@ -281,7 +285,8 @@ class PushNotificationService {
   }
 
   /// Store remote message in database
-  Future<void> _storeRemoteMessage(RemoteMessage message, String context) async {
+  Future<void> _storeRemoteMessage(
+      RemoteMessage message, String context) async {
     try {
       final db = await _databaseService.database;
 
@@ -302,7 +307,8 @@ class PushNotificationService {
   }
 
   /// Store notification interaction
-  Future<void> _storeNotificationInteraction(String messageId, String action) async {
+  Future<void> _storeNotificationInteraction(
+      String messageId, String action) async {
     try {
       final db = await _databaseService.database;
 

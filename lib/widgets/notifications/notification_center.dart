@@ -17,7 +17,7 @@ class _NotificationCenterState extends State<NotificationCenter>
     with SingleTickerProviderStateMixin, SafeNavigationMixin {
   late TabController _tabController;
   final DatabaseService _databaseService = DatabaseService();
-  
+
   List<AppNotification> _allNotifications = [];
   List<AppNotification> _unreadNotifications = [];
   bool _isLoading = true;
@@ -43,7 +43,7 @@ class _NotificationCenterState extends State<NotificationCenter>
   Future<void> _loadNotifications() async {
     if (!mounted) return;
     setState(() => _isLoading = true);
-    
+
     try {
       final db = await _databaseService.database;
       final List<Map<String, dynamic>> results = await db.query(
@@ -51,8 +51,9 @@ class _NotificationCenterState extends State<NotificationCenter>
         orderBy: 'receivedAt DESC',
         limit: 100,
       );
-      
-      _allNotifications = results.map((map) => AppNotification.fromMap(map)).toList();
+
+      _allNotifications =
+          results.map((map) => AppNotification.fromMap(map)).toList();
       _unreadNotifications = _allNotifications.where((n) => !n.isRead).toList();
     } catch (e) {
       debugPrint('Error loading notifications: $e');
@@ -72,7 +73,7 @@ class _NotificationCenterState extends State<NotificationCenter>
         where: 'id = ?',
         whereArgs: [notificationId],
       );
-      
+
       await _loadNotifications();
     } catch (e) {
       debugPrint('Error marking notification as read: $e');
@@ -88,7 +89,7 @@ class _NotificationCenterState extends State<NotificationCenter>
         where: 'isRead = ?',
         whereArgs: [0],
       );
-      
+
       await _loadNotifications();
     } catch (e) {
       debugPrint('Error marking all notifications as read: $e');
@@ -103,7 +104,7 @@ class _NotificationCenterState extends State<NotificationCenter>
         where: 'id = ?',
         whereArgs: [notificationId],
       );
-      
+
       await _loadNotifications();
     } catch (e) {
       debugPrint('Error deleting notification: $e');
@@ -112,7 +113,7 @@ class _NotificationCenterState extends State<NotificationCenter>
 
   List<AppNotification> _getFilteredNotifications() {
     List<AppNotification> notifications;
-    
+
     switch (_tabController.index) {
       case 0: // All
         notifications = _allNotifications;
@@ -172,7 +173,7 @@ class _NotificationCenterState extends State<NotificationCenter>
 
   Widget _buildNotificationsList() {
     final notifications = _getFilteredNotifications();
-    
+
     if (notifications.isEmpty) {
       return Center(
         child: Column(
@@ -187,16 +188,17 @@ class _NotificationCenterState extends State<NotificationCenter>
             Text(
               'No notifications found',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: Theme.of(context).colorScheme.outline,
-              ),
+                    color: Theme.of(context).colorScheme.outline,
+                  ),
             ),
             if (_tabController.index == 1) ...[
-              SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 8)),
+              SizedBox(
+                  height: ResponsiveUtils.getResponsiveSpacing(context, 8)),
               Text(
                 'All caught up! 🎉',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.outline,
-                ),
+                      color: Theme.of(context).colorScheme.outline,
+                    ),
               ),
             ],
           ],

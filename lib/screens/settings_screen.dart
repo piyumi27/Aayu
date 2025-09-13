@@ -19,9 +19,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
   String _syncStatus = 'up-to-date'; // 'up-to-date', 'pending', 'error'
   UserAccount? _currentUser;
   VerificationStatus _verificationStatus = VerificationStatus.notLoggedIn;
-  
+
   final auth.LocalAuthService _authService = auth.LocalAuthService();
-  
+
   @override
   void initState() {
     super.initState();
@@ -42,12 +42,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Future<void> _loadUserData() async {
     final user = await _authService.getCurrentUser();
     final verificationStatus = await _authService.getVerificationStatus();
-    
+
     if (mounted) {
       setState(() {
         _currentUser = user;
         _verificationStatus = verificationStatus;
-        
+
         // Update sync status based on verification
         if (verificationStatus == VerificationStatus.pendingSync) {
           _syncStatus = 'pending';
@@ -67,7 +67,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
       });
     }
   }
-
 
   Map<String, String> _getLocalizedText() {
     final Map<String, Map<String, String>> texts = {
@@ -186,7 +185,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     final texts = _getLocalizedText();
-    
+
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
@@ -212,7 +211,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 8),
-            
+
             // Account Section
             _buildSectionHeader(texts['account']!),
             _buildSettingsCard([
@@ -235,9 +234,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 onTap: () => _showComingSoonDialog(context, texts),
               ),
             ]),
-            
+
             const SizedBox(height: 32),
-            
+
             // Children Section
             _buildSectionHeader(texts['children']!),
             _buildSettingsCard([
@@ -248,9 +247,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 hasChevron: true,
               ),
             ]),
-            
+
             const SizedBox(height: 32),
-            
+
             // Preferences Section
             _buildSectionHeader(texts['preferences']!),
             _buildSettingsCard([
@@ -260,9 +259,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 trailing: Text(
                   _getLanguageDisplayName(texts),
                   style: TextStyle(
-                    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
+                    fontSize:
+                        ResponsiveUtils.getResponsiveFontSize(context, 16),
                     color: const Color(0xFF6B7280),
-                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                    fontFamily:
+                        _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                   ),
                 ),
                 onTap: () => _showLanguagePicker(context, texts),
@@ -282,9 +283,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 trailing: Text(
                   texts['metric']!,
                   style: TextStyle(
-                    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
+                    fontSize:
+                        ResponsiveUtils.getResponsiveFontSize(context, 16),
                     color: const Color(0xFF6B7280),
-                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                    fontFamily:
+                        _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                   ),
                 ),
                 hasChevron: true,
@@ -297,9 +300,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 trailing: _buildSyncBadge(texts),
               ),
             ]),
-            
+
             const SizedBox(height: 32),
-            
+
             // Support Section
             _buildSectionHeader(texts['support']!),
             _buildSettingsCard([
@@ -317,9 +320,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 hasChevron: true,
               ),
             ]),
-            
+
             const SizedBox(height: 32),
-            
+
             // Session Section
             _buildSectionHeader(texts['session']!),
             _buildSettingsCard([
@@ -331,9 +334,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 onTap: () => _showLogoutDialog(context, texts),
               ),
             ]),
-            
+
             const SizedBox(height: 32),
-            
+
             // App Version Footer
             Center(
               child: Padding(
@@ -343,7 +346,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     Text(
                       'ආයු',
                       style: TextStyle(
-                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 24),
+                        fontSize:
+                            ResponsiveUtils.getResponsiveFontSize(context, 24),
                         fontWeight: FontWeight.w600,
                         color: const Color(0xFF0086FF),
                         fontFamily: 'NotoSerifSinhala',
@@ -353,7 +357,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     Text(
                       'Version 1.0.0',
                       style: TextStyle(
-                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
+                        fontSize:
+                            ResponsiveUtils.getResponsiveFontSize(context, 14),
                         color: const Color(0xFF9CA3AF),
                       ),
                     ),
@@ -370,11 +375,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget _buildVerificationBadge() {
     Color badgeColor = const Color(0xFF9CA3AF);
     String badgeText = 'Unknown';
-    
+
     switch (_verificationStatus) {
       case VerificationStatus.verified:
         badgeColor = const Color(0xFF0086FF);
-        badgeText = _selectedLanguage == 'si' 
+        badgeText = _selectedLanguage == 'si'
             ? _verificationStatus.displayTextSinhala
             : _selectedLanguage == 'ta'
                 ? _verificationStatus.displayTextTamil
@@ -382,7 +387,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         break;
       case VerificationStatus.pendingSync:
         badgeColor = const Color(0xFFF59E0B);
-        badgeText = _selectedLanguage == 'si' 
+        badgeText = _selectedLanguage == 'si'
             ? _verificationStatus.displayTextSinhala
             : _selectedLanguage == 'ta'
                 ? _verificationStatus.displayTextTamil
@@ -390,7 +395,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         break;
       case VerificationStatus.unverified:
         badgeColor = const Color(0xFFEF4444);
-        badgeText = _selectedLanguage == 'si' 
+        badgeText = _selectedLanguage == 'si'
             ? _verificationStatus.displayTextSinhala
             : _selectedLanguage == 'ta'
                 ? _verificationStatus.displayTextTamil
@@ -398,14 +403,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
         break;
       case VerificationStatus.notLoggedIn:
         badgeColor = const Color(0xFF9CA3AF);
-        badgeText = _selectedLanguage == 'si' 
+        badgeText = _selectedLanguage == 'si'
             ? _verificationStatus.displayTextSinhala
             : _selectedLanguage == 'ta'
                 ? _verificationStatus.displayTextTamil
                 : _verificationStatus.displayText;
         break;
     }
-    
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
@@ -488,12 +493,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
                   fontWeight: FontWeight.w500,
                   color: titleColor ?? const Color(0xFF1A1A1A),
-                  fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                  fontFamily:
+                      _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                 ),
               ),
             ),
             if (trailing != null) trailing,
-            if (hasChevron) 
+            if (hasChevron)
               const Icon(
                 Icons.chevron_right,
                 color: Color(0xFFD1D5DB),
@@ -516,7 +522,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget _buildSyncBadge(Map<String, String> texts) {
     Color badgeColor = const Color(0xFF0086FF);
     String badgeText = texts['upToDate']!;
-    
+
     switch (_syncStatus) {
       case 'up-to-date':
         badgeColor = const Color(0xFF0086FF);
@@ -534,7 +540,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         badgeColor = const Color(0xFF0086FF);
         badgeText = texts['upToDate']!;
     }
-    
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
@@ -589,7 +595,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
             ),
             const SizedBox(height: 20),
-            
+
             // Title
             Text(
               texts['selectLanguage']!,
@@ -597,16 +603,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 fontSize: ResponsiveUtils.getResponsiveFontSize(context, 20),
                 fontWeight: FontWeight.w600,
                 color: const Color(0xFF1A1A1A),
-                fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                fontFamily:
+                    _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
               ),
             ),
             const SizedBox(height: 24),
-            
+
             // Language options
             _buildLanguageOption('en', texts['english']!, '🇬🇧', texts),
             _buildLanguageOption('si', texts['sinhala']!, '🇱🇰', texts),
             _buildLanguageOption('ta', texts['tamil']!, '🇱🇰', texts),
-            
+
             const SizedBox(height: 24),
           ],
         ),
@@ -614,9 +621,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget _buildLanguageOption(String code, String name, String flag, Map<String, String> texts) {
+  Widget _buildLanguageOption(
+      String code, String name, String flag, Map<String, String> texts) {
     final isSelected = _selectedLanguage == code;
-    
+
     return SafeInkWell(
       onTap: () {
         _saveLanguagePreference(code);
@@ -626,10 +634,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
         margin: const EdgeInsets.only(bottom: 8),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF0086FF).withValues(alpha: 0.1) : Colors.transparent,
+          color: isSelected
+              ? const Color(0xFF0086FF).withValues(alpha: 0.1)
+              : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isSelected ? const Color(0xFF0086FF) : const Color(0xFFE5E7EB),
+            color:
+                isSelected ? const Color(0xFF0086FF) : const Color(0xFFE5E7EB),
             width: isSelected ? 2 : 1,
           ),
         ),
@@ -646,7 +657,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 style: TextStyle(
                   fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                  color: isSelected ? const Color(0xFF0086FF) : const Color(0xFF1A1A1A),
+                  color: isSelected
+                      ? const Color(0xFF0086FF)
+                      : const Color(0xFF1A1A1A),
                   fontFamily: code == 'si' ? 'NotoSerifSinhala' : null,
                 ),
               ),
@@ -693,7 +706,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
               texts['cancel']!,
               style: TextStyle(
                 color: const Color(0xFF6B7280),
-                fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                fontFamily:
+                    _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
               ),
             ),
           ),
@@ -708,7 +722,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
               style: TextStyle(
                 color: const Color(0xFFEF4444),
                 fontWeight: FontWeight.w600,
-                fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                fontFamily:
+                    _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
               ),
             ),
           ),
@@ -748,7 +763,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
               style: TextStyle(
                 color: const Color(0xFF0086FF),
                 fontWeight: FontWeight.w600,
-                fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                fontFamily:
+                    _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
               ),
             ),
           ),

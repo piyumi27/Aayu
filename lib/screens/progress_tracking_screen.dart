@@ -354,7 +354,7 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
     final daysRemaining = math.max(0, 180 - daysSinceBirth);
     final ageInMonths = (daysSinceBirth / 30.44).round();
     final weeksSinceBirth = (daysSinceBirth / 7).round();
-    
+
     // Calculate growth velocity and health score
     final growthVelocity = _calculateGrowthVelocity(child);
     final healthScore = _calculateHealthScore(child, daysSinceBirth);
@@ -388,7 +388,7 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
               ),
             ),
           ),
-          
+
           Padding(
             padding: const EdgeInsets.all(24),
             child: Column(
@@ -501,21 +501,21 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           _buildProgressStat(
-                            'Days Completed', 
+                            'Days Completed',
                             '$daysSinceBirth',
                             Icons.calendar_today_rounded,
                             const Color(0xFF0086FF),
                           ),
                           const SizedBox(height: 16),
                           _buildProgressStat(
-                            'Growth Velocity', 
+                            'Growth Velocity',
                             growthVelocity,
                             Icons.speed_rounded,
                             const Color(0xFF10B981),
                           ),
                           const SizedBox(height: 16),
                           _buildProgressStat(
-                            'Health Score', 
+                            'Health Score',
                             '$healthScore/100',
                             Icons.favorite_rounded,
                             const Color(0xFFEF4444),
@@ -534,7 +534,8 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
                   decoration: BoxDecoration(
                     color: const Color(0xFFFFFBEB),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: const Color(0xFFFBBF24).withValues(alpha: 0.3)),
+                    border: Border.all(
+                        color: const Color(0xFFFBBF24).withValues(alpha: 0.3)),
                   ),
                   child: Row(
                     children: [
@@ -546,7 +547,8 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
                       const SizedBox(width: 12),
                       Expanded(
                         child: Text(
-                          _getSmartInsight(child, daysSinceBirth, daysRemaining),
+                          _getSmartInsight(
+                              child, daysSinceBirth, daysRemaining),
                           style: TextStyle(
                             fontSize: 14,
                             color: const Color(0xFF92400E),
@@ -565,7 +567,8 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
     );
   }
 
-  Widget _buildProgressStat(String label, String value, IconData icon, Color color) {
+  Widget _buildProgressStat(
+      String label, String value, IconData icon, Color color) {
     return Row(
       children: [
         Container(
@@ -784,8 +787,14 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
   }
 
   Widget _buildAdvancedMetricCard(
-      String title, String value, String unit, IconData icon, Color color, 
-      List<double> trendData, String changeText, String statusText) {
+      String title,
+      String value,
+      String unit,
+      IconData icon,
+      Color color,
+      List<double> trendData,
+      String changeText,
+      String statusText) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -910,8 +919,8 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
     );
   }
 
-  Widget _buildCompactMetricCard(
-      String title, String value, IconData icon, Color color, String subtitle, double progress) {
+  Widget _buildCompactMetricCard(String title, String value, IconData icon,
+      Color color, String subtitle, double progress) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -997,7 +1006,7 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
   }
 
   List<double> _generateHeightTrend() {
-    // Mock trend data - in real app, this would come from actual measurements  
+    // Mock trend data - in real app, this would come from actual measurements
     return [48, 52, 57, 62, 66, 69, 72, 74];
   }
 
@@ -1059,9 +1068,9 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
               children: [
                 // Visual Timeline
                 _buildVisualTimeline(milestones),
-                
+
                 const SizedBox(height: 24),
-                
+
                 // Milestone Cards Grid
                 GridView.builder(
                   shrinkWrap: true,
@@ -1093,7 +1102,7 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
           final milestone = milestones[index];
           final isCompleted = milestone.currentDay >= milestone.targetDay;
           final isActive = index <= 4; // Mock: first 5 are active/completed
-          
+
           return Expanded(
             child: Row(
               children: [
@@ -1103,30 +1112,33 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
                   height: 40,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: isCompleted 
+                    color: isCompleted
                         ? const Color(0xFF10B981)
-                        : isActive 
+                        : isActive
                             ? const Color(0xFF0086FF)
                             : const Color(0xFFE5E7EB),
-                    boxShadow: isCompleted || isActive ? [
-                      BoxShadow(
-                        color: (isCompleted ? const Color(0xFF10B981) : const Color(0xFF0086FF)).withValues(alpha: 0.3),
-                        blurRadius: 8,
-                        spreadRadius: 2,
-                      ),
-                    ] : null,
+                    boxShadow: isCompleted || isActive
+                        ? [
+                            BoxShadow(
+                              color: (isCompleted
+                                      ? const Color(0xFF10B981)
+                                      : const Color(0xFF0086FF))
+                                  .withValues(alpha: 0.3),
+                              blurRadius: 8,
+                              spreadRadius: 2,
+                            ),
+                          ]
+                        : null,
                   ),
                   child: Icon(
-                    isCompleted 
-                        ? Icons.check_rounded 
-                        : milestone.icon,
-                    color: isCompleted || isActive 
-                        ? Colors.white 
+                    isCompleted ? Icons.check_rounded : milestone.icon,
+                    color: isCompleted || isActive
+                        ? Colors.white
                         : const Color(0xFF9CA3AF),
                     size: 20,
                   ),
                 ),
-                
+
                 // Connection Line
                 if (index < milestones.length - 1)
                   Expanded(
@@ -1134,7 +1146,7 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
                       height: 3,
                       margin: const EdgeInsets.symmetric(horizontal: 4),
                       decoration: BoxDecoration(
-                        color: isActive 
+                        color: isActive
                             ? const Color(0xFF0086FF).withValues(alpha: 0.3)
                             : const Color(0xFFE5E7EB),
                         borderRadius: BorderRadius.circular(2),
@@ -1152,13 +1164,13 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
   Widget _buildModernMilestoneCard(MilestoneData milestone) {
     final isCompleted = milestone.currentDay >= milestone.targetDay;
     final progress = math.min(1.0, milestone.currentDay / milestone.targetDay);
-    
+
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: isCompleted 
+          color: isCompleted
               ? const Color(0xFF10B981).withValues(alpha: 0.2)
               : const Color(0xFFE5E7EB),
         ),
@@ -1207,9 +1219,9 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
                   ),
               ],
             ),
-            
+
             const SizedBox(height: 6),
-            
+
             // Title
             Flexible(
               child: Text(
@@ -1223,9 +1235,9 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-            
+
             const SizedBox(height: 4),
-            
+
             // Progress
             LinearProgressIndicator(
               value: progress,
@@ -1236,11 +1248,11 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
               minHeight: 2,
               borderRadius: BorderRadius.circular(1),
             ),
-            
+
             const SizedBox(height: 2),
-            
+
             Text(
-              isCompleted 
+              isCompleted
                   ? 'Completed'
                   : 'Day ${milestone.currentDay}/${milestone.targetDay}',
               style: TextStyle(
@@ -1293,7 +1305,7 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
     final history = <Map<String, dynamic>>[];
     final baseWeight = child.birthWeight ?? 3.2;
     final baseHeight = child.birthHeight ?? 50;
-    
+
     for (int week = 0; week < 24; week += 2) {
       history.add({
         'week': week,
@@ -1304,7 +1316,6 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
     }
     return history;
   }
-
 }
 
 class MilestoneData {

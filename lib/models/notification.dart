@@ -12,9 +12,9 @@ enum NotificationCategory {
 /// Notification priority levels for intelligent sorting
 enum NotificationPriority {
   critical, // Red - Immediate action required
-  high,     // Orange - Action needed soon
-  medium,   // Blue - Informational
-  low,      // Gray - Background updates
+  high, // Orange - Action needed soon
+  medium, // Blue - Informational
+  low, // Gray - Background updates
 }
 
 /// Notification types with specific behaviors
@@ -24,7 +24,7 @@ enum NotificationType {
   growthStagnation,
   vaccinationOverdue,
   measurementGap,
-  
+
   // Reminders (High Priority)
   measurementDue,
   vaccinationDue,
@@ -35,14 +35,14 @@ enum NotificationType {
   medicationAdherence,
   phmVisit,
   milestoneCheck,
-  
+
   // Educational Content (Medium Priority)
   nutritionTip,
   recipeSuggestion,
   developmentalGuidance,
   feedingChallenge,
   culturalNutrition,
-  
+
   // System Updates (Low Priority)
   dataSync,
   appUpdate,
@@ -96,11 +96,11 @@ class AppNotification {
     this.actionData,
     this.imageUrl,
     this.actions = const [],
-  }) : titleKey = title,
-       contentKey = body,
-       category = _stringToCategory(category),
-       priority = _stringToPriority(priority),
-       type = _categoryToType(_stringToCategory(category));
+  })  : titleKey = title,
+        contentKey = body,
+        category = _stringToCategory(category),
+        priority = _stringToPriority(priority),
+        type = _categoryToType(_stringToCategory(category));
 
   // Helper methods for string conversion
   static NotificationCategory _stringToCategory(String category) {
@@ -171,14 +171,15 @@ class AppNotification {
       body: map['body']?.toString() ?? '',
       category: map['category']?.toString() ?? 'general',
       priority: map['priority']?.toString() ?? 'medium',
-      timestamp: DateTime.tryParse(map['receivedAt']?.toString() ?? '') ?? DateTime.now(),
+      timestamp: DateTime.tryParse(map['receivedAt']?.toString() ?? '') ??
+          DateTime.now(),
       isRead: (map['isRead'] as int?) == 1,
       childId: map['childId']?.toString(),
-      actionData: map['data'] != null ? 
-        (map['data'] is String ? 
-          <String, dynamic>{} : 
-          Map<String, dynamic>.from(map['data'])
-        ) : <String, dynamic>{},
+      actionData: map['data'] != null
+          ? (map['data'] is String
+              ? <String, dynamic>{}
+              : Map<String, dynamic>.from(map['data']))
+          : <String, dynamic>{},
     );
   }
 
@@ -294,8 +295,8 @@ class AppNotification {
 
   /// Check if notification requires immediate action
   bool get isUrgent {
-    return priority == NotificationPriority.critical || 
-           (priority == NotificationPriority.high && 
+    return priority == NotificationPriority.critical ||
+        (priority == NotificationPriority.high &&
             DateTime.now().difference(timestamp).inHours > 24);
   }
 
@@ -315,8 +316,20 @@ class AppNotification {
     } else if (diff.inDays < 7) {
       return '${diff.inDays} days ago';
     } else {
-      final month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-                    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',][timestamp.month - 1];
+      final month = [
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec',
+      ][timestamp.month - 1];
       return '$month ${timestamp.day}';
     }
   }

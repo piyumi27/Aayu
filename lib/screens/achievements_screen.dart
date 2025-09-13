@@ -19,7 +19,6 @@ class AchievementsScreen extends StatefulWidget {
 
 class _AchievementsScreenState extends State<AchievementsScreen>
     with TickerProviderStateMixin {
-  
   // Industrial color scheme - matching progress screen
   static const Color primaryBlue = Color(0xFF0086FF);
   static const Color successGreen = Color(0xFF10B981);
@@ -30,14 +29,14 @@ class _AchievementsScreenState extends State<AchievementsScreen>
   static const Color cardWhite = Colors.white;
   static const Color textPrimary = Color(0xFF111827);
   static const Color textSecondary = Color(0xFF6B7280);
-  
+
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
-  
+
   String _selectedLanguage = 'en';
   String _selectedCategory = 'all'; // all, milestones, daily, weekly, special
-  
+
   @override
   void initState() {
     super.initState();
@@ -187,7 +186,8 @@ class _AchievementsScreenState extends State<AchievementsScreen>
     return texts[_selectedLanguage] ?? texts['en']!;
   }
 
-  List<Achievement> _getAchievements(int daysSinceBirth, Map<String, String> texts) {
+  List<Achievement> _getAchievements(
+      int daysSinceBirth, Map<String, String> texts) {
     final achievements = <Achievement>[
       // Milestone Achievements
       Achievement(
@@ -203,7 +203,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
         isUnlocked: daysSinceBirth >= 7,
         rarity: AchievementRarity.bronze,
       ),
-      
+
       Achievement(
         id: 'milestone_30',
         title: texts['milestone30'] ?? '30 Days Strong',
@@ -217,7 +217,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
         isUnlocked: daysSinceBirth >= 30,
         rarity: AchievementRarity.silver,
       ),
-      
+
       Achievement(
         id: 'milestone_60',
         title: texts['milestone60'] ?? '60 Days Warrior',
@@ -231,7 +231,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
         isUnlocked: daysSinceBirth >= 60,
         rarity: AchievementRarity.silver,
       ),
-      
+
       Achievement(
         id: 'milestone_90',
         title: texts['milestone90'] ?? '90 Days Hero',
@@ -245,7 +245,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
         isUnlocked: daysSinceBirth >= 90,
         rarity: AchievementRarity.gold,
       ),
-      
+
       Achievement(
         id: 'milestone_120',
         title: texts['milestone120'] ?? '120 Days Legend',
@@ -259,7 +259,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
         isUnlocked: daysSinceBirth >= 120,
         rarity: AchievementRarity.gold,
       ),
-      
+
       Achievement(
         id: 'milestone_150',
         title: texts['milestone150'] ?? '150 Days Champion',
@@ -273,7 +273,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
         isUnlocked: daysSinceBirth >= 150,
         rarity: AchievementRarity.platinum,
       ),
-      
+
       Achievement(
         id: 'milestone_180',
         title: texts['milestone180'] ?? '180 Days Master',
@@ -287,7 +287,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
         isUnlocked: daysSinceBirth >= 180,
         rarity: AchievementRarity.diamond,
       ),
-      
+
       // Daily Achievements
       Achievement(
         id: 'early_riser',
@@ -302,7 +302,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
         isUnlocked: true,
         rarity: AchievementRarity.bronze,
       ),
-      
+
       Achievement(
         id: 'consistency',
         title: texts['consistency'] ?? 'Consistency Master',
@@ -316,7 +316,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
         isUnlocked: daysSinceBirth >= 10,
         rarity: AchievementRarity.silver,
       ),
-      
+
       Achievement(
         id: 'perfect_week',
         title: texts['perfectWeek'] ?? 'Perfect Week',
@@ -330,7 +330,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
         isUnlocked: daysSinceBirth >= 7,
         rarity: AchievementRarity.silver,
       ),
-      
+
       // Special Achievements
       Achievement(
         id: 'explorer',
@@ -345,7 +345,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
         isUnlocked: true,
         rarity: AchievementRarity.bronze,
       ),
-      
+
       Achievement(
         id: 'tracker',
         title: texts['tracker'] ?? 'Progress Tracker',
@@ -360,7 +360,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
         rarity: AchievementRarity.bronze,
       ),
     ];
-    
+
     return achievements;
   }
 
@@ -397,7 +397,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
     return Consumer<ChildProvider>(
       builder: (context, childProvider, child) {
         final selectedChild = childProvider.selectedChild;
-        
+
         if (selectedChild == null) {
           return const Scaffold(
             backgroundColor: Color(0xFFF8F9FA),
@@ -413,7 +413,8 @@ class _AchievementsScreenState extends State<AchievementsScreen>
         final totalPoints = _calculateTotalPoints(achievements);
         final currentLevel = _calculateCurrentLevel(totalPoints);
         final levelProgress = _calculateLevelProgress(totalPoints);
-        final unlockedAchievements = achievements.where((a) => a.isUnlocked).length;
+        final unlockedAchievements =
+            achievements.where((a) => a.isUnlocked).length;
 
         return Scaffold(
           backgroundColor: surfaceWhite,
@@ -437,23 +438,32 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                           totalPoints,
                           texts,
                         ),
-                        
-                        SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 24)),
-                        
+
+                        SizedBox(
+                            height: ResponsiveUtils.getResponsiveSpacing(
+                                context, 24)),
+
                         // Statistics Grid
-                        _buildStatsGrid(unlockedAchievements, achievements.length, texts),
-                        
-                        SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 24)),
-                        
+                        _buildStatsGrid(
+                            unlockedAchievements, achievements.length, texts),
+
+                        SizedBox(
+                            height: ResponsiveUtils.getResponsiveSpacing(
+                                context, 24)),
+
                         // Category Filter
                         _buildCategoryFilter(texts),
-                        
-                        SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 24)),
-                        
+
+                        SizedBox(
+                            height: ResponsiveUtils.getResponsiveSpacing(
+                                context, 24)),
+
                         // Achievements Section
                         _buildAchievementsGrid(filteredAchievements, texts),
-                        
-                        SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 32)),
+
+                        SizedBox(
+                            height: ResponsiveUtils.getResponsiveSpacing(
+                                context, 32)),
                       ],
                     ),
                   ),
@@ -466,7 +476,8 @@ class _AchievementsScreenState extends State<AchievementsScreen>
     );
   }
 
-  PreferredSizeWidget _buildIndustrialAppBar(BuildContext context, Map<String, String> texts) {
+  PreferredSizeWidget _buildIndustrialAppBar(
+      BuildContext context, Map<String, String> texts) {
     return AppBar(
       title: Text(
         texts['title'] ?? 'Achievements',
@@ -502,7 +513,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
     Map<String, String> texts,
   ) {
     final pointsToNext = 500 - (totalPoints % 500);
-    
+
     return Container(
       padding: ResponsiveUtils.getResponsivePadding(context),
       decoration: BoxDecoration(
@@ -534,7 +545,8 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                   size: ResponsiveUtils.getResponsiveIconSize(context, 32),
                 ),
               ),
-              SizedBox(width: ResponsiveUtils.getResponsiveSpacing(context, 16)),
+              SizedBox(
+                  width: ResponsiveUtils.getResponsiveSpacing(context, 16)),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -542,7 +554,8 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                     Text(
                       'Level $currentLevel',
                       style: TextStyle(
-                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 24),
+                        fontSize:
+                            ResponsiveUtils.getResponsiveFontSize(context, 24),
                         fontWeight: FontWeight.w700,
                         color: textPrimary,
                       ),
@@ -550,7 +563,8 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                     Text(
                       '$totalPoints total points earned',
                       style: TextStyle(
-                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
+                        fontSize:
+                            ResponsiveUtils.getResponsiveFontSize(context, 14),
                         color: textSecondary,
                       ),
                     ),
@@ -559,9 +573,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
               ),
             ],
           ),
-          
           SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 20)),
-          
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -571,7 +583,8 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                   Text(
                     'Progress to Level ${currentLevel + 1}',
                     style: TextStyle(
-                      fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
+                      fontSize:
+                          ResponsiveUtils.getResponsiveFontSize(context, 16),
                       fontWeight: FontWeight.w600,
                       color: textPrimary,
                     ),
@@ -579,14 +592,16 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                   Text(
                     '${(levelProgress * 100).toInt()}%',
                     style: TextStyle(
-                      fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
+                      fontSize:
+                          ResponsiveUtils.getResponsiveFontSize(context, 16),
                       fontWeight: FontWeight.w600,
                       color: warningAmber,
                     ),
                   ),
                 ],
               ),
-              SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 8)),
+              SizedBox(
+                  height: ResponsiveUtils.getResponsiveSpacing(context, 8)),
               LinearProgressIndicator(
                 value: levelProgress,
                 backgroundColor: const Color(0xFFF3F4F6),
@@ -594,7 +609,8 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                 minHeight: 8,
                 borderRadius: BorderRadius.circular(4),
               ),
-              SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 8)),
+              SizedBox(
+                  height: ResponsiveUtils.getResponsiveSpacing(context, 8)),
               Text(
                 '$pointsToNext more points needed for next level',
                 style: TextStyle(
@@ -609,7 +625,8 @@ class _AchievementsScreenState extends State<AchievementsScreen>
     );
   }
 
-  Widget _buildStatsGrid(int unlockedAchievements, int totalAchievements, Map<String, String> texts) {
+  Widget _buildStatsGrid(int unlockedAchievements, int totalAchievements,
+      Map<String, String> texts) {
     return GridView.count(
       crossAxisCount: ResponsiveUtils.isSmallWidth(context) ? 2 : 4,
       shrinkWrap: true,
@@ -646,7 +663,8 @@ class _AchievementsScreenState extends State<AchievementsScreen>
     );
   }
 
-  Widget _buildStatCard(String value, String label, IconData icon, Color color) {
+  Widget _buildStatCard(
+      String value, String label, IconData icon, Color color) {
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
@@ -706,7 +724,8 @@ class _AchievementsScreenState extends State<AchievementsScreen>
   }
 
   // Old stat card - replaced with new implementation above
-  Widget _buildOldStatCard(String value, String label, Color color, IconData icon) {
+  Widget _buildOldStatCard(
+      String value, String label, Color color, IconData icon) {
     return Expanded(
       child: Container(
         padding: ResponsiveUtils.getResponsivePadding(context),
@@ -735,7 +754,8 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                 fontSize: ResponsiveUtils.getResponsiveFontSize(context, 20),
                 fontWeight: FontWeight.bold,
                 color: color,
-                fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                fontFamily:
+                    _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
               ),
               textAlign: TextAlign.center,
             ),
@@ -745,7 +765,8 @@ class _AchievementsScreenState extends State<AchievementsScreen>
               style: TextStyle(
                 fontSize: ResponsiveUtils.getResponsiveFontSize(context, 12),
                 color: const Color(0xFF6B7280),
-                fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                fontFamily:
+                    _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
               ),
               textAlign: TextAlign.center,
               maxLines: 2,
@@ -759,7 +780,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
 
   Widget _buildCategoryFilter(Map<String, String> texts) {
     final categories = ['all', 'milestones', 'daily', 'weekly', 'special'];
-    
+
     return Container(
       height: ResponsiveUtils.getResponsiveSpacing(context, 50),
       child: ListView.builder(
@@ -768,7 +789,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
         itemBuilder: (context, index) {
           final category = categories[index];
           final isSelected = _selectedCategory == category;
-          
+
           return Padding(
             padding: EdgeInsets.only(
               right: ResponsiveUtils.getResponsiveSpacing(context, 12),
@@ -778,7 +799,8 @@ class _AchievementsScreenState extends State<AchievementsScreen>
               borderRadius: BorderRadius.circular(20),
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                 decoration: BoxDecoration(
                   color: isSelected ? primaryBlue : cardWhite,
                   borderRadius: BorderRadius.circular(20),
@@ -789,7 +811,8 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                 child: Text(
                   texts[category] ?? category,
                   style: TextStyle(
-                    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
+                    fontSize:
+                        ResponsiveUtils.getResponsiveFontSize(context, 14),
                     fontWeight: FontWeight.w500,
                     color: isSelected ? Colors.white : textSecondary,
                   ),
@@ -802,14 +825,14 @@ class _AchievementsScreenState extends State<AchievementsScreen>
     );
   }
 
-  Widget _buildAchievementsGrid(List<Achievement> achievements, Map<String, String> texts) {
+  Widget _buildAchievementsGrid(
+      List<Achievement> achievements, Map<String, String> texts) {
     return Padding(
       padding: ResponsiveUtils.getResponsivePadding(context),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 20)),
-          
           Text(
             texts['achievements'] ?? 'Achievements',
             style: TextStyle(
@@ -819,17 +842,18 @@ class _AchievementsScreenState extends State<AchievementsScreen>
               fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
             ),
           ),
-          
           SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 16)),
-          
           GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: ResponsiveUtils.getResponsiveColumnCount(context),
-              crossAxisSpacing: ResponsiveUtils.getResponsiveSpacing(context, 12),
-              mainAxisSpacing: ResponsiveUtils.getResponsiveSpacing(context, 12),
-              childAspectRatio: 0.75, // Fixed aspect ratio for consistent sizing
+              crossAxisSpacing:
+                  ResponsiveUtils.getResponsiveSpacing(context, 12),
+              mainAxisSpacing:
+                  ResponsiveUtils.getResponsiveSpacing(context, 12),
+              childAspectRatio:
+                  0.75, // Fixed aspect ratio for consistent sizing
             ),
             itemCount: achievements.length,
             itemBuilder: (context, index) {
@@ -842,7 +866,8 @@ class _AchievementsScreenState extends State<AchievementsScreen>
     );
   }
 
-  Widget _buildAchievementCard(Achievement achievement, Map<String, String> texts) {
+  Widget _buildAchievementCard(
+      Achievement achievement, Map<String, String> texts) {
     final progress = achievement.targetValue > 0
         ? (achievement.currentValue / achievement.targetValue).clamp(0.0, 1.0)
         : 1.0;
@@ -851,9 +876,11 @@ class _AchievementsScreenState extends State<AchievementsScreen>
       onTap: () => _showAchievementDetails(achievement, texts),
       child: Container(
         height: double.infinity, // Ensures all cards have same height
-        padding: EdgeInsets.all(ResponsiveUtils.getResponsiveSpacing(context, 12)),
+        padding:
+            EdgeInsets.all(ResponsiveUtils.getResponsiveSpacing(context, 12)),
         decoration: BoxDecoration(
-          color: achievement.isUnlocked ? Colors.white : const Color(0xFFF9FAFB),
+          color:
+              achievement.isUnlocked ? Colors.white : const Color(0xFFF9FAFB),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: achievement.isUnlocked
@@ -886,8 +913,10 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                     // Glow effect for unlocked achievements
                     if (achievement.isUnlocked)
                       Container(
-                        width: ResponsiveUtils.getResponsiveIconSize(context, 56),
-                        height: ResponsiveUtils.getResponsiveIconSize(context, 56),
+                        width:
+                            ResponsiveUtils.getResponsiveIconSize(context, 56),
+                        height:
+                            ResponsiveUtils.getResponsiveIconSize(context, 56),
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           gradient: RadialGradient(
@@ -902,7 +931,8 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                     // Icon container
                     Container(
                       width: ResponsiveUtils.getResponsiveIconSize(context, 48),
-                      height: ResponsiveUtils.getResponsiveIconSize(context, 48),
+                      height:
+                          ResponsiveUtils.getResponsiveIconSize(context, 48),
                       decoration: BoxDecoration(
                         color: achievement.isUnlocked
                             ? achievement.color.withOpacity(0.15)
@@ -910,8 +940,11 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
-                        achievement.isUnlocked ? achievement.icon : Icons.lock_outline,
-                        size: ResponsiveUtils.getResponsiveIconSize(context, 24),
+                        achievement.isUnlocked
+                            ? achievement.icon
+                            : Icons.lock_outline,
+                        size:
+                            ResponsiveUtils.getResponsiveIconSize(context, 24),
                         color: achievement.isUnlocked
                             ? achievement.color
                             : const Color(0xFF9CA3AF),
@@ -923,15 +956,18 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                         top: 0,
                         right: 0,
                         child: Container(
-                          width: ResponsiveUtils.getResponsiveIconSize(context, 16),
-                          height: ResponsiveUtils.getResponsiveIconSize(context, 16),
+                          width: ResponsiveUtils.getResponsiveIconSize(
+                              context, 16),
+                          height: ResponsiveUtils.getResponsiveIconSize(
+                              context, 16),
                           decoration: BoxDecoration(
                             color: _getRarityColor(achievement.rarity),
                             shape: BoxShape.circle,
                           ),
                           child: Icon(
                             Icons.check,
-                            size: ResponsiveUtils.getResponsiveIconSize(context, 10),
+                            size: ResponsiveUtils.getResponsiveIconSize(
+                                context, 10),
                             color: Colors.white,
                           ),
                         ),
@@ -940,7 +976,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                 ),
               ),
             ),
-            
+
             // Middle section: Title
             Expanded(
               flex: 2,
@@ -951,12 +987,14 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                 child: Text(
                   achievement.title,
                   style: TextStyle(
-                    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 12),
+                    fontSize:
+                        ResponsiveUtils.getResponsiveFontSize(context, 12),
                     fontWeight: FontWeight.w600,
                     color: achievement.isUnlocked
                         ? const Color(0xFF111827)
                         : const Color(0xFF6B7280),
-                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                    fontFamily:
+                        _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                     height: 1.2,
                   ),
                   textAlign: TextAlign.center,
@@ -965,19 +1003,21 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                 ),
               ),
             ),
-            
+
             // Bottom section: Progress/Status
             Expanded(
               flex: 2,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  if (!achievement.isUnlocked && achievement.targetValue > 0) ...[
+                  if (!achievement.isUnlocked &&
+                      achievement.targetValue > 0) ...[
                     // Progress bar for locked achievements
                     Container(
                       height: 4,
                       margin: EdgeInsets.only(
-                        bottom: ResponsiveUtils.getResponsiveSpacing(context, 4),
+                        bottom:
+                            ResponsiveUtils.getResponsiveSpacing(context, 4),
                       ),
                       child: LinearProgressIndicator(
                         value: progress,
@@ -991,17 +1031,22 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                     Text(
                       '${achievement.currentValue}/${achievement.targetValue}',
                       style: TextStyle(
-                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 10),
+                        fontSize:
+                            ResponsiveUtils.getResponsiveFontSize(context, 10),
                         color: const Color(0xFF9CA3AF),
-                        fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                        fontFamily: _selectedLanguage == 'si'
+                            ? 'NotoSerifSinhala'
+                            : null,
                       ),
                     ),
                   ] else ...[
                     // Points or locked status
                     Container(
                       padding: EdgeInsets.symmetric(
-                        horizontal: ResponsiveUtils.getResponsiveSpacing(context, 8),
-                        vertical: ResponsiveUtils.getResponsiveSpacing(context, 4),
+                        horizontal:
+                            ResponsiveUtils.getResponsiveSpacing(context, 8),
+                        vertical:
+                            ResponsiveUtils.getResponsiveSpacing(context, 4),
                       ),
                       decoration: BoxDecoration(
                         color: achievement.isUnlocked
@@ -1014,12 +1059,15 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                             ? '${achievement.points}pt'
                             : texts['locked'] ?? 'Locked',
                         style: TextStyle(
-                          fontSize: ResponsiveUtils.getResponsiveFontSize(context, 10),
+                          fontSize: ResponsiveUtils.getResponsiveFontSize(
+                              context, 10),
                           fontWeight: FontWeight.w600,
                           color: achievement.isUnlocked
                               ? achievement.color
                               : const Color(0xFF9CA3AF),
-                          fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                          fontFamily: _selectedLanguage == 'si'
+                              ? 'NotoSerifSinhala'
+                              : null,
                         ),
                       ),
                     ),
@@ -1048,7 +1096,8 @@ class _AchievementsScreenState extends State<AchievementsScreen>
     }
   }
 
-  void _showAchievementDetails(Achievement achievement, Map<String, String> texts) {
+  void _showAchievementDetails(
+      Achievement achievement, Map<String, String> texts) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -1086,36 +1135,43 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                     color: achievement.color,
                   ),
                 ),
-                
-                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 16)),
-                
+
+                SizedBox(
+                    height: ResponsiveUtils.getResponsiveSpacing(context, 16)),
+
                 // Achievement Title
                 Text(
                   achievement.title,
                   style: TextStyle(
-                    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 20),
+                    fontSize:
+                        ResponsiveUtils.getResponsiveFontSize(context, 20),
                     fontWeight: FontWeight.bold,
                     color: const Color(0xFF1A1A1A),
-                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                    fontFamily:
+                        _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                   ),
                   textAlign: TextAlign.center,
                 ),
-                
-                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 8)),
-                
+
+                SizedBox(
+                    height: ResponsiveUtils.getResponsiveSpacing(context, 8)),
+
                 // Achievement Description
                 Text(
                   achievement.description,
                   style: TextStyle(
-                    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
+                    fontSize:
+                        ResponsiveUtils.getResponsiveFontSize(context, 14),
                     color: const Color(0xFF6B7280),
-                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                    fontFamily:
+                        _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                   ),
                   textAlign: TextAlign.center,
                 ),
-                
-                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 16)),
-                
+
+                SizedBox(
+                    height: ResponsiveUtils.getResponsiveSpacing(context, 16)),
+
                 // Points and Status
                 Container(
                   padding: ResponsiveUtils.getResponsivePadding(context),
@@ -1129,10 +1185,13 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                       Text(
                         '${achievement.points} ${texts['points']}',
                         style: TextStyle(
-                          fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
+                          fontSize: ResponsiveUtils.getResponsiveFontSize(
+                              context, 16),
                           fontWeight: FontWeight.w600,
                           color: achievement.color,
-                          fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                          fontFamily: _selectedLanguage == 'si'
+                              ? 'NotoSerifSinhala'
+                              : null,
                         ),
                       ),
                       Text(
@@ -1140,17 +1199,21 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                             ? texts['unlocked'] ?? 'Unlocked'
                             : texts['locked'] ?? 'Locked',
                         style: TextStyle(
-                          fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
+                          fontSize: ResponsiveUtils.getResponsiveFontSize(
+                              context, 14),
                           color: const Color(0xFF6B7280),
-                          fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                          fontFamily: _selectedLanguage == 'si'
+                              ? 'NotoSerifSinhala'
+                              : null,
                         ),
                       ),
                     ],
                   ),
                 ),
-                
-                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 20)),
-                
+
+                SizedBox(
+                    height: ResponsiveUtils.getResponsiveSpacing(context, 20)),
+
                 // Close Button
                 SizedBox(
                   width: double.infinity,
@@ -1163,15 +1226,19 @@ class _AchievementsScreenState extends State<AchievementsScreen>
                         borderRadius: BorderRadius.circular(12),
                       ),
                       padding: EdgeInsets.symmetric(
-                        vertical: ResponsiveUtils.getResponsiveSpacing(context, 16),
+                        vertical:
+                            ResponsiveUtils.getResponsiveSpacing(context, 16),
                       ),
                     ),
                     child: Text(
                       'Close',
                       style: TextStyle(
-                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
+                        fontSize:
+                            ResponsiveUtils.getResponsiveFontSize(context, 16),
                         fontWeight: FontWeight.w600,
-                        fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                        fontFamily: _selectedLanguage == 'si'
+                            ? 'NotoSerifSinhala'
+                            : null,
                       ),
                     ),
                   ),
@@ -1229,18 +1296,19 @@ class ParticlesPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()..style = PaintingStyle.fill;
-    
+
     final random = math.Random(42); // Fixed seed for consistent particles
-    
+
     for (int i = 0; i < 50; i++) {
       final x = random.nextDouble() * size.width;
       final y = random.nextDouble() * size.height;
       final radius = random.nextDouble() * 3 + 1;
-      
+
       // Animate particle opacity and position
-      final opacity = (math.sin(animationValue * 2 * math.pi + i) * 0.5 + 0.5) * 0.3;
+      final opacity =
+          (math.sin(animationValue * 2 * math.pi + i) * 0.5 + 0.5) * 0.3;
       final animatedY = y + math.sin(animationValue * 2 * math.pi + i) * 20;
-      
+
       paint.color = Colors.white.withOpacity(opacity);
       canvas.drawCircle(Offset(x, animatedY), radius, paint);
     }

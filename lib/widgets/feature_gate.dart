@@ -12,7 +12,7 @@ class FeatureGate extends StatefulWidget {
   final VoidCallback? onVerifyNow;
   final VoidCallback? onRemindLater;
   final bool isEnabled;
-  
+
   const FeatureGate({
     super.key,
     required this.child,
@@ -29,13 +29,13 @@ class FeatureGate extends StatefulWidget {
 
 class _FeatureGateState extends State<FeatureGate> {
   String _selectedLanguage = 'en';
-  
+
   @override
   void initState() {
     super.initState();
     _loadPreferences();
   }
-  
+
   Future<void> _loadPreferences() async {
     final prefs = await SharedPreferences.getInstance();
     if (mounted) {
@@ -51,33 +51,45 @@ class _FeatureGateState extends State<FeatureGate> {
 
   String get _modalTitle {
     switch (_selectedLanguage) {
-      case 'si': return 'ගිණුම සත්‍යාපනය අවශ්‍යයි';
-      case 'ta': return 'கணக்கு சரிபார்ப்பு தேவை';
-      default: return 'Account Verification Required';
+      case 'si':
+        return 'ගිණුම සත්‍යාපනය අවශ්‍යයි';
+      case 'ta':
+        return 'கணக்கு சரிபார்ப்பு தேவை';
+      default:
+        return 'Account Verification Required';
     }
   }
 
   String get _modalMessage {
     switch (_selectedLanguage) {
-      case 'si': return 'ඔබේ දරුවාගේ දත්ත සමමුහුර්ත කිරීමට සහ ක්ලවුඩ් විශේෂාංග අගුළු ඇරීමට ඔබේ ඊමේල් හෝ දුරකථන අංකය සත්‍යාපනය කරන්න.';
-      case 'ta': return 'உங்கள் குழந்தையின் தரவை ஒத்திசைக்கவும், கிளவுட் அம்சங்களைத் திறக்கவும் உங்கள் மின்னஞ்சல் அல்லது தொலைபேசி எண்ணைச் சரிபார்க்கவும்.';
-      default: return 'Verify your email or phone to sync your child\'s data and unlock cloud features.';
+      case 'si':
+        return 'ඔබේ දරුවාගේ දත්ත සමමුහුර්ත කිරීමට සහ ක්ලවුඩ් විශේෂාංග අගුළු ඇරීමට ඔබේ ඊමේල් හෝ දුරකථන අංකය සත්‍යාපනය කරන්න.';
+      case 'ta':
+        return 'உங்கள் குழந்தையின் தரவை ஒத்திசைக்கவும், கிளவுட் அம்சங்களைத் திறக்கவும் உங்கள் மின்னஞ்சல் அல்லது தொலைபேசி எண்ணைச் சரிபார்க்கவும்.';
+      default:
+        return 'Verify your email or phone to sync your child\'s data and unlock cloud features.';
     }
   }
 
   String get _verifyNowText {
     switch (_selectedLanguage) {
-      case 'si': return 'දැන් සත්‍යාපනය කරන්න';
-      case 'ta': return 'இப்போது சரிபார்க்கவும்';
-      default: return 'Verify Now';
+      case 'si':
+        return 'දැන් සත්‍යාපනය කරන්න';
+      case 'ta':
+        return 'இப்போது சரிபார்க்கவும்';
+      default:
+        return 'Verify Now';
     }
   }
 
   String get _remindLaterText {
     switch (_selectedLanguage) {
-      case 'si': return 'පසුව මතක් කරන්න';
-      case 'ta': return 'பின்னர் நினைவூட்டவும்';
-      default: return 'Remind Me Later';
+      case 'si':
+        return 'පසුව මතක් කරන්න';
+      case 'ta':
+        return 'பின்னர் நினைவூட்டவும்';
+      default:
+        return 'Remind Me Later';
     }
   }
 
@@ -106,9 +118,10 @@ class _FeatureGateState extends State<FeatureGate> {
                   size: ResponsiveUtils.getResponsiveIconSize(context, 48),
                 ),
               ),
-              
-              SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 24)),
-              
+
+              SizedBox(
+                  height: ResponsiveUtils.getResponsiveSpacing(context, 24)),
+
               // Title
               Text(
                 _modalTitle,
@@ -119,9 +132,10 @@ class _FeatureGateState extends State<FeatureGate> {
                 ),
                 textAlign: TextAlign.center,
               ),
-              
-              SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 16)),
-              
+
+              SizedBox(
+                  height: ResponsiveUtils.getResponsiveSpacing(context, 16)),
+
               // Message
               Text(
                 _modalMessage,
@@ -132,9 +146,10 @@ class _FeatureGateState extends State<FeatureGate> {
                 ),
                 textAlign: TextAlign.center,
               ),
-              
-              SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 32)),
-              
+
+              SizedBox(
+                  height: ResponsiveUtils.getResponsiveSpacing(context, 32)),
+
               // Buttons
               Row(
                 children: [
@@ -146,7 +161,8 @@ class _FeatureGateState extends State<FeatureGate> {
                       },
                       style: OutlinedButton.styleFrom(
                         padding: EdgeInsets.symmetric(
-                          vertical: ResponsiveUtils.getResponsiveSpacing(context, 12),
+                          vertical:
+                              ResponsiveUtils.getResponsiveSpacing(context, 12),
                         ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
@@ -155,9 +171,8 @@ class _FeatureGateState extends State<FeatureGate> {
                       child: Text(_remindLaterText),
                     ),
                   ),
-                  
-                  SizedBox(width: ResponsiveUtils.getResponsiveSpacing(context, 12)),
-                  
+                  SizedBox(
+                      width: ResponsiveUtils.getResponsiveSpacing(context, 12)),
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {
@@ -168,7 +183,8 @@ class _FeatureGateState extends State<FeatureGate> {
                         backgroundColor: const Color(0xFFF59E0B),
                         foregroundColor: Colors.white,
                         padding: EdgeInsets.symmetric(
-                          vertical: ResponsiveUtils.getResponsiveSpacing(context, 12),
+                          vertical:
+                              ResponsiveUtils.getResponsiveSpacing(context, 12),
                         ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
@@ -192,7 +208,7 @@ class _FeatureGateState extends State<FeatureGate> {
     if (_isGateOpen || !widget.isEnabled) {
       return widget.child;
     }
-    
+
     // Otherwise, wrap with lock overlay
     return Stack(
       children: [
@@ -204,7 +220,7 @@ class _FeatureGateState extends State<FeatureGate> {
             child: widget.child,
           ),
         ),
-        
+
         // Lock overlay
         Positioned.fill(
           child: Material(

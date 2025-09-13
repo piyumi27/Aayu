@@ -44,7 +44,8 @@ class Article {
       category: map['category'] ?? 'general',
       tags: List<String>.from(map['tags'] ?? []),
       author: map['author'] ?? 'Aayu Team',
-      publishDate: DateTime.parse(map['publishDate'] ?? DateTime.now().toIso8601String()),
+      publishDate: DateTime.parse(
+          map['publishDate'] ?? DateTime.now().toIso8601String()),
       readTimeMinutes: map['readTimeMinutes'] ?? 5,
       featuredImage: map['featuredImage'],
       priority: ArticlePriority.values.firstWhere(
@@ -52,7 +53,8 @@ class Article {
         orElse: () => ArticlePriority.normal,
       ),
       localizedTitles: Map<String, String>.from(map['localizedTitles'] ?? {}),
-      localizedSummaries: Map<String, String>.from(map['localizedSummaries'] ?? {}),
+      localizedSummaries:
+          Map<String, String>.from(map['localizedSummaries'] ?? {}),
       isFeatured: map['isFeatured'] ?? false,
       relatedArticles: List<String>.from(map['relatedArticles'] ?? []),
     );
@@ -170,9 +172,9 @@ class Article {
 }
 
 enum ArticlePriority {
-  high,    // Important articles (safety, urgent health info)
-  normal,  // Regular articles
-  low,     // Optional reading
+  high, // Important articles (safety, urgent health info)
+  normal, // Regular articles
+  low, // Optional reading
 }
 
 class ArticleCategory {
@@ -297,9 +299,9 @@ class ArticleCategory {
 
   static ArticleCategory? getById(String id) {
     return defaultCategories.cast<ArticleCategory?>().firstWhere(
-      (category) => category?.id == id,
-      orElse: () => null,
-    );
+          (category) => category?.id == id,
+          orElse: () => null,
+        );
   }
 }
 
@@ -335,28 +337,25 @@ class ArticlesIndex {
 
   /// Get articles by category
   List<Article> getByCategory(String categoryId) {
-    return articles
-        .where((article) => article.category == categoryId)
-        .toList();
+    return articles.where((article) => article.category == categoryId).toList();
   }
 
   /// Get featured articles
   List<Article> getFeaturedArticles() {
-    return articles
-        .where((article) => article.isFeatured)
-        .toList()
+    return articles.where((article) => article.isFeatured).toList()
       ..sort((a, b) => b.priorityValue.compareTo(a.priorityValue));
   }
 
   /// Search articles by query
   List<Article> search(String query) {
     if (query.isEmpty) return [];
-    
+
     final lowercaseQuery = query.toLowerCase();
     return articles.where((article) {
       return article.title.toLowerCase().contains(lowercaseQuery) ||
           article.summary.toLowerCase().contains(lowercaseQuery) ||
-          article.tags.any((tag) => tag.toLowerCase().contains(lowercaseQuery)) ||
+          article.tags
+              .any((tag) => tag.toLowerCase().contains(lowercaseQuery)) ||
           article.author.toLowerCase().contains(lowercaseQuery);
     }).toList();
   }
@@ -367,7 +366,7 @@ class ArticlesIndex {
       (a) => a.id == articleId,
       orElse: () => throw ArgumentError('Article not found: $articleId'),
     );
-    
+
     return article.relatedArticles
         .map((id) {
           try {

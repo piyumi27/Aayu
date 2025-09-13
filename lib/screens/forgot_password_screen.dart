@@ -54,15 +54,18 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             setState(() {
               _successMessage = _getLocalizedText()['otpSent']!;
             });
-            
+
             // Navigate to OTP verification with password reset flag
             Future.delayed(const Duration(seconds: 2), () {
               if (mounted) {
-                context.push('/otp-verification', extra: {
-                  'phoneNumber': _phoneController.text,
-                  'verificationId': verificationId,
-                  'isPasswordReset': true,
-                },);
+                context.push(
+                  '/otp-verification',
+                  extra: {
+                    'phoneNumber': _phoneController.text,
+                    'verificationId': verificationId,
+                    'isPasswordReset': true,
+                  },
+                );
               }
             });
           }
@@ -76,11 +79,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           // For password reset, we don't want auto-verification
           // Always go through manual OTP entry for security
           if (mounted) {
-            context.push('/otp-verification', extra: {
-              'phoneNumber': _phoneController.text,
-              'verificationId': credential.verificationId,
-              'isPasswordReset': true,
-            },);
+            context.push(
+              '/otp-verification',
+              extra: {
+                'phoneNumber': _phoneController.text,
+                'verificationId': credential.verificationId,
+                'isPasswordReset': true,
+              },
+            );
           }
         },
       );
@@ -100,7 +106,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       'en': {
         'title': 'Forgot Password',
         'subtitle': 'Enter your phone number to reset your password',
-        'instructions': 'We will send you a verification code to reset your password securely.',
+        'instructions':
+            'We will send you a verification code to reset your password securely.',
         'phoneLabel': 'Phone Number',
         'phoneHint': 'Enter your phone number',
         'sendOtpButton': 'Send OTP',
@@ -112,7 +119,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       'si': {
         'title': 'මුරපදය අමතකද',
         'subtitle': 'ඔබේ මුරපදය නැවත සැකසීමට දුරකථන අංකය ඇතුළු කරන්න',
-        'instructions': 'ඔබේ මුරපදය ආරක්ෂිතව නැවත සැකසීම සඳහා අපි ඔබට සත්‍යාපන කේතයක් එවන්නෙමු.',
+        'instructions':
+            'ඔබේ මුරපදය ආරක්ෂිතව නැවත සැකසීම සඳහා අපි ඔබට සත්‍යාපන කේතයක් එවන්නෙමු.',
         'phoneLabel': 'දුරකථන අංකය',
         'phoneHint': 'ඔබේ දුරකථන අංකය ඇතුළු කරන්න',
         'sendOtpButton': 'OTP එවන්න',
@@ -124,14 +132,16 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       'ta': {
         'title': 'கடவுச்சொல் மறந்துவிட்டதா',
         'subtitle': 'உங்கள் கடவுச்சொல்லை மீட்டமைக்க தொலைபேசி எண்ணை உள்ளிடவும்',
-        'instructions': 'உங்கள் கடவுச்சொல்லை பாதுகாப்பாக மீட்டமைக்க நாங்கள் உங்களுக்கு ஒரு சரிபார்ப்பு குறியீட்டை அனுப்புவோம்.',
+        'instructions':
+            'உங்கள் கடவுச்சொல்லை பாதுகாப்பாக மீட்டமைக்க நாங்கள் உங்களுக்கு ஒரு சரிபார்ப்பு குறியீட்டை அனுப்புவோம்.',
         'phoneLabel': 'தொலைபேசி எண்',
         'phoneHint': 'உங்கள் தொலைபேசி எண்ணை உள்ளிடவும்',
         'sendOtpButton': 'OTP அனுப்பவும்',
         'backToLogin': 'உள்நுழைவுக்கு திரும்பவும்',
         'phoneRequired': 'தொலைபேசி எண் தேவை',
         'phoneInvalid': 'சரியான தொலைபேசி எண்ணை உள்ளிடவும்',
-        'otpSent': 'OTP வெற்றிகரமாக அனுப்பப்பட்டது! சரிபார்ப்புக்கு திருப்பி விடுகிறோம்...',
+        'otpSent':
+            'OTP வெற்றிகரமாக அனுப்பப்பட்டது! சரிபார்ப்புக்கு திருப்பி விடுகிறோம்...',
       },
     };
 
@@ -172,7 +182,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const SizedBox(height: 20),
-                
+
                 // Header
                 Text(
                   texts['title']!,
@@ -180,24 +190,26 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
                     color: Colors.black87,
-                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                    fontFamily:
+                        _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                   ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 16),
-                
+
                 // Subtitle
                 Text(
                   texts['subtitle']!,
                   style: TextStyle(
                     fontSize: 16,
                     color: const Color(0xFF6C757D),
-                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                    fontFamily:
+                        _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                   ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 32),
-                
+
                 // Instructions
                 Container(
                   padding: const EdgeInsets.all(16),
@@ -220,7 +232,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                             fontSize: 14,
                             color: const Color(0xFF6C757D),
                             height: 1.4,
-                            fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                            fontFamily: _selectedLanguage == 'si'
+                                ? 'NotoSerifSinhala'
+                                : null,
                           ),
                         ),
                       ),
@@ -228,7 +242,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   ),
                 ),
                 const SizedBox(height: 32),
-                
+
                 // Phone Number Field
                 Text(
                   texts['phoneLabel']!,
@@ -236,7 +250,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
                     color: Colors.black87,
-                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                    fontFamily:
+                        _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -250,7 +265,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     hintStyle: TextStyle(
                       color: const Color(0xFF6C757D),
                       fontSize: 16,
-                      fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                      fontFamily:
+                          _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                     ),
                     filled: true,
                     fillColor: const Color(0xFFF1F1F1),
@@ -289,7 +305,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   ),
                 ),
                 const SizedBox(height: 24),
-                
+
                 // Success Message
                 if (_successMessage != null)
                   Container(
@@ -317,14 +333,16 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                             style: TextStyle(
                               color: const Color(0xFF32CD32),
                               fontSize: 14,
-                              fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                              fontFamily: _selectedLanguage == 'si'
+                                  ? 'NotoSerifSinhala'
+                                  : null,
                             ),
                           ),
                         ),
                       ],
                     ),
                   ),
-                
+
                 // Error Message
                 if (_errorMessage != null)
                   Container(
@@ -352,14 +370,16 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                             style: TextStyle(
                               color: Colors.red[700],
                               fontSize: 14,
-                              fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                              fontFamily: _selectedLanguage == 'si'
+                                  ? 'NotoSerifSinhala'
+                                  : null,
                             ),
                           ),
                         ),
                       ],
                     ),
                   ),
-                
+
                 // Send OTP Button
                 SizedBox(
                   height: 48,
@@ -387,13 +407,15 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
-                              fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                              fontFamily: _selectedLanguage == 'si'
+                                  ? 'NotoSerifSinhala'
+                                  : null,
                             ),
                           ),
                   ),
                 ),
                 const SizedBox(height: 24),
-                
+
                 // Back to Login
                 Center(
                   child: TextButton(
@@ -406,13 +428,15 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         color: const Color(0xFF1E90FF),
                         fontWeight: FontWeight.w500,
                         fontSize: 16,
-                        fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                        fontFamily: _selectedLanguage == 'si'
+                            ? 'NotoSerifSinhala'
+                            : null,
                       ),
                     ),
                   ),
                 ),
                 const SizedBox(height: 40),
-                
+
                 // Additional Security Info
                 Container(
                   padding: const EdgeInsets.all(16),
@@ -434,7 +458,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                           fontSize: 12,
                           color: const Color(0xFF6C757D),
                           height: 1.4,
-                          fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                          fontFamily: _selectedLanguage == 'si'
+                              ? 'NotoSerifSinhala'
+                              : null,
                         ),
                         textAlign: TextAlign.center,
                       ),

@@ -35,11 +35,16 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
   String _selectedStandard = 'WHO'; // WHO or Sri Lankan
   bool _showZScores = false;
   bool _showPercentiles = true;
-  
-  final List<String> _tabs = ['Weight-Age', 'Height-Age', 'BMI', 'Weight-for-Height'];
+
+  final List<String> _tabs = [
+    'Weight-Age',
+    'Height-Age',
+    'BMI',
+    'Weight-for-Height'
+  ];
   final List<String> _ranges = ['3M', '6M', '1Y', 'All'];
   final List<String> _standards = ['WHO', 'Sri Lankan'];
-  
+
   late StandardsRepository _standardsRepository;
   late GrowthCalculationService _calculationService;
   late StandardsService _standardsService;
@@ -84,7 +89,8 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
     }
   }
 
-  Future<Map<String, dynamic>> _generateChartData(Child child, List<GrowthRecord> records) async {
+  Future<Map<String, dynamic>> _generateChartData(
+      Child child, List<GrowthRecord> records) async {
     final standards = await _standardsRepository.getGrowthStandards(
       source: _selectedStandard == 'WHO' ? 'WHO' : 'SriLanka',
     );
@@ -96,7 +102,7 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
     for (final record in records) {
       final ageInMonths = _calculateAgeInMonths(record.date, child.birthDate);
       double value = 0;
-      
+
       switch (_selectedTab) {
         case 'Weight-Age':
           value = record.weight;
@@ -105,7 +111,8 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
           value = record.height;
           break;
         case 'BMI':
-          value = record.weight / ((record.height / 100) * (record.height / 100));
+          value =
+              record.weight / ((record.height / 100) * (record.height / 100));
           break;
         case 'Weight-for-Height':
           value = record.weight;
@@ -124,7 +131,8 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
       );
 
       zScores.add(FlSpot(ageInMonths.toDouble(), zScore));
-      percentiles.add(FlSpot(ageInMonths.toDouble(), _zScoreToPercentile(zScore)));
+      percentiles
+          .add(FlSpot(ageInMonths.toDouble(), _zScoreToPercentile(zScore)));
     }
 
     return {
@@ -236,7 +244,8 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
         'age': 'Age',
         'percentile': 'percentile',
         'growthInsights': 'Growth Insights',
-        'healthyGrowth': 'weight is following a healthy growth curve, staying consistently around the',
+        'healthyGrowth':
+            'weight is following a healthy growth curve, staying consistently around the',
         'years': 'years',
         'months': 'months',
         'kg': 'kg',
@@ -355,7 +364,8 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
               ),
             ),
             IconButton(
-              icon: const Icon(Icons.analytics_outlined, color: Color(0xFF3A7AFE)),
+              icon: const Icon(Icons.analytics_outlined,
+                  color: Color(0xFF3A7AFE)),
               onPressed: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
@@ -432,16 +442,16 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
         children: [
           // Child Info Card
           _buildChildInfoCard(child, provider, texts),
-          
+
           // Tab Navigation
           _buildTabNavigation(texts),
-          
+
           // Range Filter
           _buildRangeFilter(),
-          
+
           // Standards Toggle & Display Options
           _buildControlsSection(texts),
-          
+
           // Chart Content
           Expanded(
             child: SingleChildScrollView(
@@ -451,19 +461,19 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
                 children: [
                   // Growth Chart
                   _buildGrowthChart(provider, texts),
-                  
+
                   const SizedBox(height: 24),
-                  
+
                   // Legend
                   _buildLegend(texts),
-                  
+
                   const SizedBox(height: 32),
-                  
+
                   // Data Points Section
                   _buildDataPointsSection(provider, texts),
-                  
+
                   const SizedBox(height: 32),
-                  
+
                   // Growth Insights
                   _buildGrowthInsights(child, texts),
                 ],
@@ -475,13 +485,15 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
     );
   }
 
-  Widget _buildChildInfoCard(Child child, ChildProvider provider, Map<String, String> texts) {
-    final latestRecord = provider.growthRecords.isNotEmpty ? provider.growthRecords.first : null;
+  Widget _buildChildInfoCard(
+      Child child, ChildProvider provider, Map<String, String> texts) {
+    final latestRecord =
+        provider.growthRecords.isNotEmpty ? provider.growthRecords.first : null;
     final ageString = provider.getAgeString(child.birthDate);
-    final daysSinceUpdate = latestRecord != null 
-        ? DateTime.now().difference(latestRecord.date).inDays 
-        : (child.birthWeight != null || child.birthHeight != null) 
-            ? DateTime.now().difference(child.birthDate).inDays 
+    final daysSinceUpdate = latestRecord != null
+        ? DateTime.now().difference(latestRecord.date).inDays
+        : (child.birthWeight != null || child.birthHeight != null)
+            ? DateTime.now().difference(child.birthDate).inDays
             : 0;
 
     return Container(
@@ -531,7 +543,9 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                             color: const Color(0xFF1A1A1A),
-                            fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                            fontFamily: _selectedLanguage == 'si'
+                                ? 'NotoSerifSinhala'
+                                : null,
                           ),
                         ),
                         const SizedBox(width: 8),
@@ -547,7 +561,9 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
                       style: TextStyle(
                         fontSize: 14,
                         color: const Color(0xFF6B7280),
-                        fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                        fontFamily: _selectedLanguage == 'si'
+                            ? 'NotoSerifSinhala'
+                            : null,
                       ),
                     ),
                   ],
@@ -561,20 +577,34 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
             children: [
               _buildMetricItem(
                 texts['weight']!,
-                latestRecord?.weight.toString() ?? child.birthWeight?.toString() ?? '--',
-                (latestRecord?.weight != null || child.birthWeight != null) ? texts['kg']! : '',
+                latestRecord?.weight.toString() ??
+                    child.birthWeight?.toString() ??
+                    '--',
+                (latestRecord?.weight != null || child.birthWeight != null)
+                    ? texts['kg']!
+                    : '',
               ),
               _buildMetricItem(
                 texts['height']!,
-                latestRecord?.height.toString() ?? child.birthHeight?.toString() ?? '--',
-                (latestRecord?.height != null || child.birthHeight != null) ? texts['cm']! : '',
+                latestRecord?.height.toString() ??
+                    child.birthHeight?.toString() ??
+                    '--',
+                (latestRecord?.height != null || child.birthHeight != null)
+                    ? texts['cm']!
+                    : '',
               ),
               _buildMetricItem(
                 texts['bmi']!,
-                latestRecord != null 
-                    ? (latestRecord.weight / ((latestRecord.height / 100) * (latestRecord.height / 100))).toStringAsFixed(1)
+                latestRecord != null
+                    ? (latestRecord.weight /
+                            ((latestRecord.height / 100) *
+                                (latestRecord.height / 100)))
+                        .toStringAsFixed(1)
                     : (child.birthWeight != null && child.birthHeight != null)
-                        ? (child.birthWeight! / ((child.birthHeight! / 100) * (child.birthHeight! / 100))).toStringAsFixed(1)
+                        ? (child.birthWeight! /
+                                ((child.birthHeight! / 100) *
+                                    (child.birthHeight! / 100)))
+                            .toStringAsFixed(1)
                         : '--',
                 '',
               ),
@@ -587,7 +617,9 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
                       style: TextStyle(
                         fontSize: 12,
                         color: const Color(0xFF9CA3AF),
-                        fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                        fontFamily: _selectedLanguage == 'si'
+                            ? 'NotoSerifSinhala'
+                            : null,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -676,11 +708,14 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
                   _loadChartData(); // Reload chart data for new tab
                 },
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   decoration: BoxDecoration(
                     border: Border(
                       bottom: BorderSide(
-                        color: isSelected ? const Color(0xFF3A7AFE) : Colors.transparent,
+                        color: isSelected
+                            ? const Color(0xFF3A7AFE)
+                            : Colors.transparent,
                         width: 2,
                       ),
                     ),
@@ -689,9 +724,13 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
                     tabTexts[tab] ?? tab,
                     style: TextStyle(
                       fontSize: 14,
-                      fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                      color: isSelected ? const Color(0xFF3A7AFE) : const Color(0xFF6B7280),
-                      fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                      fontWeight:
+                          isSelected ? FontWeight.w600 : FontWeight.normal,
+                      color: isSelected
+                          ? const Color(0xFF3A7AFE)
+                          : const Color(0xFF6B7280),
+                      fontFamily:
+                          _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                     ),
                   ),
                 ),
@@ -718,9 +757,12 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
                 _loadChartData(); // Reload chart data for new range
               },
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                 decoration: BoxDecoration(
-                  color: isSelected ? const Color(0xFF3A7AFE) : const Color(0xFFF3F4F6),
+                  color: isSelected
+                      ? const Color(0xFF3A7AFE)
+                      : const Color(0xFFF3F4F6),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Text(
@@ -742,12 +784,12 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
   Widget _buildGrowthChart(ChildProvider provider, Map<String, String> texts) {
     final records = _getFilteredRecords(provider.growthRecords);
     final child = provider.selectedChild;
-    
+
     // Check if we have any data (records or birth data)
-    final hasData = records.isNotEmpty || 
+    final hasData = records.isNotEmpty ||
         (child?.birthWeight != null && _selectedTab == 'Weight-Age') ||
         (child?.birthHeight != null && _selectedTab == 'Height-Age');
-    
+
     if (!hasData) {
       return Container(
         height: 300,
@@ -770,7 +812,8 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
                 style: TextStyle(
                   fontSize: 16,
                   color: const Color(0xFF6B7280),
-                  fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                  fontFamily:
+                      _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                 ),
               ),
               const SizedBox(height: 8),
@@ -787,7 +830,8 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
                   style: TextStyle(
                     color: const Color(0xFF3A7AFE),
                     fontWeight: FontWeight.w600,
-                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                    fontFamily:
+                        _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                   ),
                 ),
               ),
@@ -912,7 +956,6 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
     );
   }
 
-
   List<FlSpot> _getChartSpots(List<GrowthRecord> records) {
     final provider = Provider.of<ChildProvider>(context, listen: false);
     final child = provider.selectedChild;
@@ -925,8 +968,11 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
       spots.add(FlSpot(0, child.birthWeight!));
     } else if (child.birthHeight != null && _selectedTab == 'Height-Age') {
       spots.add(FlSpot(0, child.birthHeight!));
-    } else if (child.birthWeight != null && child.birthHeight != null && _selectedTab == 'BMI') {
-      final bmi = child.birthWeight! / ((child.birthHeight! / 100) * (child.birthHeight! / 100));
+    } else if (child.birthWeight != null &&
+        child.birthHeight != null &&
+        _selectedTab == 'BMI') {
+      final bmi = child.birthWeight! /
+          ((child.birthHeight! / 100) * (child.birthHeight! / 100));
       spots.add(FlSpot(0, bmi));
     }
 
@@ -935,7 +981,8 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
     sortedRecords.sort((a, b) => a.date.compareTo(b.date));
 
     for (final record in sortedRecords) {
-      final recordAgeInMonths = _calculateAgeInMonths(record.date, child.birthDate);
+      final recordAgeInMonths =
+          _calculateAgeInMonths(record.date, child.birthDate);
 
       double value;
       switch (_selectedTab) {
@@ -946,7 +993,8 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
           value = record.height;
           break;
         case 'BMI':
-          value = record.weight / ((record.height / 100) * (record.height / 100));
+          value =
+              record.weight / ((record.height / 100) * (record.height / 100));
           break;
         case 'Weight-for-Height':
           // For weight-for-height, we need to map height to appropriate scale
@@ -968,7 +1016,7 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
   List<GrowthRecord> _getFilteredRecords(List<GrowthRecord> allRecords) {
     final now = DateTime.now();
     DateTime startDate;
-    
+
     switch (_selectedRange) {
       case '3M':
         startDate = now.subtract(const Duration(days: 90));
@@ -982,15 +1030,17 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
       default:
         return allRecords;
     }
-    
-    return allRecords.where((record) => record.date.isAfter(startDate)).toList();
+
+    return allRecords
+        .where((record) => record.date.isAfter(startDate))
+        .toList();
   }
 
   Widget _buildLegend(Map<String, String> texts) {
     final provider = Provider.of<ChildProvider>(context, listen: false);
     final child = provider.selectedChild;
     final childName = child?.name ?? 'Child';
-    
+
     final legendItems = [
       {'color': const Color(0xFF3A7AFE), 'label': childName},
       {'color': const Color(0xFF10B981), 'label': '97th'},
@@ -1029,9 +1079,10 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
     );
   }
 
-  Widget _buildDataPointsSection(ChildProvider provider, Map<String, String> texts) {
+  Widget _buildDataPointsSection(
+      ChildProvider provider, Map<String, String> texts) {
     final records = _getFilteredRecords(provider.growthRecords);
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1044,7 +1095,8 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: const Color(0xFF1A1A1A),
-                fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                fontFamily:
+                    _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
               ),
             ),
             TextButton(
@@ -1060,7 +1112,8 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
                 style: TextStyle(
                   color: const Color(0xFF3A7AFE),
                   fontWeight: FontWeight.w600,
-                  fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                  fontFamily:
+                      _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                 ),
               ),
             ),
@@ -1075,7 +1128,7 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
   Widget _buildDataPointItem(GrowthRecord record, Map<String, String> texts) {
     final percentile = _calculatePercentile(record);
     final provider = Provider.of<ChildProvider>(context, listen: false);
-    
+
     return SafeGestureDetector(
       onTap: () {
         context.push(
@@ -1095,13 +1148,37 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
           border: Border.all(color: const Color(0xFFE5E7EB)),
         ),
         child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '${record.date.month}/${record.date.day}/${record.date.year}',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF1A1A1A),
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '${texts['age']}: ${_getAgeAtMeasurement(record)}',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: const Color(0xFF6B7280),
+                      fontFamily:
+                          _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  '${record.date.month}/${record.date.day}/${record.date.year}',
+                  '${record.weight} ${texts['kg']}',
                   style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
@@ -1110,39 +1187,16 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  '${texts['age']}: ${_getAgeAtMeasurement(record)}',
-                  style: TextStyle(
+                  '$percentile ${texts['percentile']}',
+                  style: const TextStyle(
                     fontSize: 12,
-                    color: const Color(0xFF6B7280),
-                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                    color: Color(0xFF34D399),
                   ),
                 ),
               ],
             ),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                '${record.weight} ${texts['kg']}',
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFF1A1A1A),
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                '$percentile ${texts['percentile']}',
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: Color(0xFF34D399),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
+          ],
+        ),
       ),
     );
   }
@@ -1242,7 +1296,8 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
           decoration: BoxDecoration(
             color: const Color(0xFFE0F2FE),
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: const Color(0xFF3A7AFE).withValues(alpha: 0.2)),
+            border: Border.all(
+                color: const Color(0xFF3A7AFE).withValues(alpha: 0.2)),
           ),
           child: Row(
             children: [
@@ -1258,7 +1313,8 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
                   style: TextStyle(
                     fontSize: 14,
                     color: const Color(0xFF1A1A1A),
-                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                    fontFamily:
+                        _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                   ),
                 ),
               ),
@@ -1271,44 +1327,52 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
 
   double _getMaxX(List<GrowthRecord> records, Child? child) {
     if (child == null) return 24;
-    
+
     final now = DateTime.now();
     final ageInMonths = now.difference(child.birthDate).inDays / 30.44;
-    
+
     // Show at least 6 months ahead or current age, whichever is greater
     return math.max(ageInMonths + 6, 24);
   }
-  
+
   double _getMinY(List<GrowthRecord> records, Child? child) {
     final spots = _getChartSpots(records);
     if (spots.isEmpty) {
       switch (_selectedTab) {
-        case 'Weight-Age': return 2;
-        case 'Height-Age': return 40;
-        case 'BMI': return 10;
-        default: return 0;
+        case 'Weight-Age':
+          return 2;
+        case 'Height-Age':
+          return 40;
+        case 'BMI':
+          return 10;
+        default:
+          return 0;
       }
     }
-    
+
     final minValue = spots.map((s) => s.y).reduce(math.min);
     return (minValue * 0.8).floorToDouble();
   }
-  
+
   double _getMaxY(List<GrowthRecord> records, Child? child) {
     final spots = _getChartSpots(records);
     if (spots.isEmpty) {
       switch (_selectedTab) {
-        case 'Weight-Age': return 20;
-        case 'Height-Age': return 120;
-        case 'BMI': return 25;
-        default: return 100;
+        case 'Weight-Age':
+          return 20;
+        case 'Height-Age':
+          return 120;
+        case 'BMI':
+          return 25;
+        default:
+          return 100;
       }
     }
-    
+
     final maxValue = spots.map((s) => s.y).reduce(math.max);
     return (maxValue * 1.2).ceilToDouble();
   }
-  
+
   List<LineChartBarData> _buildWHOPercentileLines(Child? child) {
     if (child == null) return [];
 
@@ -1317,7 +1381,8 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
 
     try {
       // Generate actual percentile lines using the standards data
-      final percentileLines = _generateStandardPercentileLines(child, maxX.toInt());
+      final percentileLines =
+          _generateStandardPercentileLines(child, maxX.toInt());
       lines.addAll(percentileLines);
     } catch (e) {
       print('Error generating percentile lines: $e');
@@ -1328,7 +1393,8 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
     return lines;
   }
 
-  List<LineChartBarData> _generateStandardPercentileLines(Child child, int maxAgeMonths) {
+  List<LineChartBarData> _generateStandardPercentileLines(
+      Child child, int maxAgeMonths) {
     final lines = <LineChartBarData>[];
     final percentileColors = [
       const Color(0xFFEF4444), // 3rd percentile
@@ -1407,16 +1473,22 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
     if (standardValues is GrowthStandard) {
       if (targetZScore <= -2.0) {
         return standardValues.zScoreMinus2 +
-               (targetZScore + 2.0) * (standardValues.zScoreMinus3 - standardValues.zScoreMinus2);
+            (targetZScore + 2.0) *
+                (standardValues.zScoreMinus3 - standardValues.zScoreMinus2);
       } else if (targetZScore <= 0.0) {
         return standardValues.zScoreMinus2 +
-               (targetZScore + 2.0) * (standardValues.median - standardValues.zScoreMinus2) / 2.0;
+            (targetZScore + 2.0) *
+                (standardValues.median - standardValues.zScoreMinus2) /
+                2.0;
       } else if (targetZScore <= 2.0) {
         return standardValues.median +
-               targetZScore * (standardValues.zScorePlus2 - standardValues.median) / 2.0;
+            targetZScore *
+                (standardValues.zScorePlus2 - standardValues.median) /
+                2.0;
       } else {
         return standardValues.zScorePlus2 +
-               (targetZScore - 2.0) * (standardValues.zScorePlus3 - standardValues.zScorePlus2);
+            (targetZScore - 2.0) *
+                (standardValues.zScorePlus3 - standardValues.zScorePlus2);
       }
     }
     return 0.0;
@@ -1428,42 +1500,57 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
     switch (_selectedTab) {
       case 'Weight-Age':
         lines.addAll([
-          _buildPercentileLine([2.5, 4, 6, 8, 10, 12], const Color(0xFFEF4444)), // 3rd
-          _buildPercentileLine([3, 5, 7, 9, 11, 13], const Color(0xFFFB923C)), // 15th
-          _buildPercentileLine([3.5, 5.5, 8, 10, 12, 14], const Color(0xFFFBBF24)), // 50th
-          _buildPercentileLine([4, 6.5, 9, 11, 13, 15], const Color(0xFF34D399)), // 85th
-          _buildPercentileLine([4.5, 7, 10, 12, 14, 16], const Color(0xFF10B981)), // 97th
+          _buildPercentileLine(
+              [2.5, 4, 6, 8, 10, 12], const Color(0xFFEF4444)), // 3rd
+          _buildPercentileLine(
+              [3, 5, 7, 9, 11, 13], const Color(0xFFFB923C)), // 15th
+          _buildPercentileLine(
+              [3.5, 5.5, 8, 10, 12, 14], const Color(0xFFFBBF24)), // 50th
+          _buildPercentileLine(
+              [4, 6.5, 9, 11, 13, 15], const Color(0xFF34D399)), // 85th
+          _buildPercentileLine(
+              [4.5, 7, 10, 12, 14, 16], const Color(0xFF10B981)), // 97th
         ]);
         break;
       case 'Height-Age':
         lines.addAll([
-          _buildPercentileLine([45, 55, 65, 75, 85, 95], const Color(0xFFEF4444)), // 3rd
-          _buildPercentileLine([47, 58, 68, 78, 88, 98], const Color(0xFFFB923C)), // 15th
-          _buildPercentileLine([50, 61, 71, 81, 91, 101], const Color(0xFFFBBF24)), // 50th
-          _buildPercentileLine([53, 64, 74, 84, 94, 104], const Color(0xFF34D399)), // 85th
-          _buildPercentileLine([55, 66, 76, 86, 96, 106], const Color(0xFF10B981)), // 97th
+          _buildPercentileLine(
+              [45, 55, 65, 75, 85, 95], const Color(0xFFEF4444)), // 3rd
+          _buildPercentileLine(
+              [47, 58, 68, 78, 88, 98], const Color(0xFFFB923C)), // 15th
+          _buildPercentileLine(
+              [50, 61, 71, 81, 91, 101], const Color(0xFFFBBF24)), // 50th
+          _buildPercentileLine(
+              [53, 64, 74, 84, 94, 104], const Color(0xFF34D399)), // 85th
+          _buildPercentileLine(
+              [55, 66, 76, 86, 96, 106], const Color(0xFF10B981)), // 97th
         ]);
         break;
       case 'BMI':
         lines.addAll([
-          _buildPercentileLine([12, 13, 14, 14.5, 15, 15.5], const Color(0xFFEF4444)), // 3rd
-          _buildPercentileLine([13, 14, 15, 15.5, 16, 16.5], const Color(0xFFFB923C)), // 15th
-          _buildPercentileLine([14, 15, 16, 16.5, 17, 17.5], const Color(0xFFFBBF24)), // 50th
-          _buildPercentileLine([15, 16, 17, 17.5, 18, 18.5], const Color(0xFF34D399)), // 85th
-          _buildPercentileLine([16, 17, 18, 18.5, 19, 19.5], const Color(0xFF10B981)), // 97th
+          _buildPercentileLine(
+              [12, 13, 14, 14.5, 15, 15.5], const Color(0xFFEF4444)), // 3rd
+          _buildPercentileLine(
+              [13, 14, 15, 15.5, 16, 16.5], const Color(0xFFFB923C)), // 15th
+          _buildPercentileLine(
+              [14, 15, 16, 16.5, 17, 17.5], const Color(0xFFFBBF24)), // 50th
+          _buildPercentileLine(
+              [15, 16, 17, 17.5, 18, 18.5], const Color(0xFF34D399)), // 85th
+          _buildPercentileLine(
+              [16, 17, 18, 18.5, 19, 19.5], const Color(0xFF10B981)), // 97th
         ]);
         break;
     }
 
     return lines;
   }
-  
+
   LineChartBarData _buildPercentileLine(List<double> values, Color color) {
     final spots = <FlSpot>[];
     for (int i = 0; i < values.length; i++) {
       spots.add(FlSpot(i * 6.0, values[i])); // 6 month intervals
     }
-    
+
     return LineChartBarData(
       spots: spots,
       isCurved: true,
@@ -1475,16 +1562,16 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
       dashArray: [5, 5],
     );
   }
-  
+
   String _getAgeAtMeasurement(GrowthRecord record) {
     final provider = Provider.of<ChildProvider>(context, listen: false);
     final child = provider.selectedChild;
     if (child == null) return '--';
-    
+
     final ageAtMeasurement = record.date.difference(child.birthDate);
     final years = (ageAtMeasurement.inDays / 365).floor();
     final months = ((ageAtMeasurement.inDays % 365) / 30.44).floor();
-    
+
     if (years == 0) {
       return '${months}m';
     } else if (months == 0) {
@@ -1526,16 +1613,21 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
                     },
                     child: Container(
                       decoration: BoxDecoration(
-                        color: isSelected ? const Color(0xFF0086FF) : Colors.transparent,
+                        color: isSelected
+                            ? const Color(0xFF0086FF)
+                            : Colors.transparent,
                         borderRadius: BorderRadius.circular(7),
                       ),
                       child: Center(
                         child: Text(
                           standard == 'WHO' ? 'WHO' : 'Sri Lankan',
                           style: TextStyle(
-                            fontSize: ResponsiveUtils.getResponsiveFontSize(context, 12),
+                            fontSize: ResponsiveUtils.getResponsiveFontSize(
+                                context, 12),
                             fontWeight: FontWeight.w600,
-                            color: isSelected ? Colors.white : const Color(0xFF6B7280),
+                            color: isSelected
+                                ? Colors.white
+                                : const Color(0xFF6B7280),
                           ),
                         ),
                       ),
@@ -1559,7 +1651,8 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
                       width: 24,
                       child: Checkbox(
                         value: _showPercentiles,
-                        onChanged: (value) => setState(() => _showPercentiles = value ?? true),
+                        onChanged: (value) =>
+                            setState(() => _showPercentiles = value ?? true),
                         activeColor: const Color(0xFF0086FF),
                         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       ),
@@ -1569,7 +1662,8 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
                       child: Text(
                         isMobile ? 'Percentiles' : texts['showPercentiles']!,
                         style: TextStyle(
-                          fontSize: ResponsiveUtils.getResponsiveFontSize(context, 11),
+                          fontSize: ResponsiveUtils.getResponsiveFontSize(
+                              context, 11),
                           color: const Color(0xFF374151),
                         ),
                         overflow: TextOverflow.ellipsis,
@@ -1586,7 +1680,8 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
                       width: 24,
                       child: Checkbox(
                         value: _showZScores,
-                        onChanged: (value) => setState(() => _showZScores = value ?? false),
+                        onChanged: (value) =>
+                            setState(() => _showZScores = value ?? false),
                         activeColor: const Color(0xFF0086FF),
                         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       ),
@@ -1596,7 +1691,8 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
                       child: Text(
                         isMobile ? 'Z-Scores' : texts['showZScores']!,
                         style: TextStyle(
-                          fontSize: ResponsiveUtils.getResponsiveFontSize(context, 11),
+                          fontSize: ResponsiveUtils.getResponsiveFontSize(
+                              context, 11),
                           color: const Color(0xFF374151),
                         ),
                         overflow: TextOverflow.ellipsis,
@@ -1611,5 +1707,4 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
       ),
     );
   }
-
 }

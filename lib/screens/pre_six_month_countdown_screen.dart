@@ -13,7 +13,8 @@ class PreSixMonthCountdownScreen extends StatefulWidget {
   const PreSixMonthCountdownScreen({super.key});
 
   @override
-  State<PreSixMonthCountdownScreen> createState() => _PreSixMonthCountdownScreenState();
+  State<PreSixMonthCountdownScreen> createState() =>
+      _PreSixMonthCountdownScreenState();
 }
 
 class _PreSixMonthCountdownScreenState extends State<PreSixMonthCountdownScreen>
@@ -47,10 +48,12 @@ class _PreSixMonthCountdownScreenState extends State<PreSixMonthCountdownScreen>
     _progressAnimation = Tween<double>(
       begin: 0.0,
       end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
-    ),);
+    ).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.easeInOut,
+      ),
+    );
 
     _animationController.forward();
   }
@@ -107,7 +110,6 @@ class _PreSixMonthCountdownScreenState extends State<PreSixMonthCountdownScreen>
     });
   }
 
-
   int _calculateDaysSinceBirth(Child child) {
     final now = DateTime.now();
     final difference = now.difference(child.birthDate);
@@ -128,8 +130,6 @@ class _PreSixMonthCountdownScreenState extends State<PreSixMonthCountdownScreen>
     )!;
   }
 
-
-
   Map<String, String> _getLocalizedText() {
     final Map<String, Map<String, String>> texts = {
       'en': {
@@ -142,7 +142,8 @@ class _PreSixMonthCountdownScreenState extends State<PreSixMonthCountdownScreen>
         'inDays': 'in',
         'daysUnit': 'days',
         'tipOfTheDay': 'Tip of the Day',
-        'tipContent': 'Set small daily goals to maintain momentum toward your 6-month target.',
+        'tipContent':
+            'Set small daily goals to maintain momentum toward your 6-month target.',
         'progress': 'Progress',
         'achievements': 'Achievements',
         'goToDashboard': 'Go to Dashboard',
@@ -199,7 +200,7 @@ class _PreSixMonthCountdownScreenState extends State<PreSixMonthCountdownScreen>
     return Consumer<ChildProvider>(
       builder: (context, childProvider, child) {
         final selectedChild = childProvider.selectedChild;
-        
+
         if (selectedChild == null) {
           return const Scaffold(
             backgroundColor: Colors.white,
@@ -280,147 +281,165 @@ class _PreSixMonthCountdownScreenState extends State<PreSixMonthCountdownScreen>
             Scaffold(
               backgroundColor: const Color(0xFFF8F9FA),
               appBar: AppBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            leading: Container(
-              margin: const EdgeInsets.only(left: 16, top: 8, bottom: 8),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.9),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: IconButton(
-                icon: const Icon(Icons.arrow_back, color: Color(0xFF1A1A1A), size: 20),
-                onPressed: () => SafeNavigation.safePop(context),
-              ),
-            ),
-            title: Text(
-              texts['title'] ?? '6-Month Goal',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: const Color(0xFF1A1A1A),
-                fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-              ),
-            ),
-            centerTitle: true,
-            actions: [
-              Container(
-                margin: const EdgeInsets.only(right: 16, top: 8, bottom: 8),
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.9),
-                  borderRadius: BorderRadius.circular(12),
+                backgroundColor: Colors.transparent,
+                elevation: 0,
+                leading: Container(
+                  margin: const EdgeInsets.only(left: 16, top: 8, bottom: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.9),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: IconButton(
+                    icon: const Icon(Icons.arrow_back,
+                        color: Color(0xFF1A1A1A), size: 20),
+                    onPressed: () => SafeNavigation.safePop(context),
+                  ),
                 ),
-                child: IconButton(
-                  icon: const Icon(Icons.more_vert, color: Color(0xFF1A1A1A), size: 20),
-                  onPressed: () {},
+                title: Text(
+                  texts['title'] ?? '6-Month Goal',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    color: const Color(0xFF1A1A1A),
+                    fontFamily:
+                        _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                  ),
                 ),
+                centerTitle: true,
+                actions: [
+                  Container(
+                    margin: const EdgeInsets.only(right: 16, top: 8, bottom: 8),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.9),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: IconButton(
+                      icon: const Icon(Icons.more_vert,
+                          color: Color(0xFF1A1A1A), size: 20),
+                      onPressed: () {},
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
-          body: SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(24),
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  minHeight: MediaQuery.of(context).size.height - 
-                             MediaQuery.of(context).padding.top - 
-                             MediaQuery.of(context).padding.bottom - 
-                             kToolbarHeight - 48,
-                ),
-                child: IntrinsicHeight(
-                  child: Column(
-                    children: [
-                      const SizedBox(height: 20),
-                      
-                      // Circular Progress Ring
-                      Semantics(
-                        label: '$daysSinceBirth ${texts['remainingDays']}',
-                        child: SizedBox(
-                          width: 260,
-                          height: 260,
-                          child: AnimatedBuilder(
-                            animation: _progressAnimation,
-                            builder: (context, child) {
-                              return CustomPaint(
-                                painter: CircularProgressPainter(
-                                  progress: progress * _progressAnimation.value,
-                                  progressColor: progressColor,
-                                  strokeWidth: 8,
-                                ),
-                                child: Center(
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      // Large day number
-                                      Text(
-                                        '$daysSinceBirth',
-                                        style: TextStyle(
-                                          fontSize: 56,
-                                          fontWeight: FontWeight.w300,
-                                          color: const Color(0xFF1A1A1A),
-                                          fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-                                        ),
+              body: SafeArea(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(24),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: MediaQuery.of(context).size.height -
+                          MediaQuery.of(context).padding.top -
+                          MediaQuery.of(context).padding.bottom -
+                          kToolbarHeight -
+                          48,
+                    ),
+                    child: IntrinsicHeight(
+                      child: Column(
+                        children: [
+                          const SizedBox(height: 20),
+
+                          // Circular Progress Ring
+                          Semantics(
+                            label: '$daysSinceBirth ${texts['remainingDays']}',
+                            child: SizedBox(
+                              width: 260,
+                              height: 260,
+                              child: AnimatedBuilder(
+                                animation: _progressAnimation,
+                                builder: (context, child) {
+                                  return CustomPaint(
+                                    painter: CircularProgressPainter(
+                                      progress:
+                                          progress * _progressAnimation.value,
+                                      progressColor: progressColor,
+                                      strokeWidth: 8,
+                                    ),
+                                    child: Center(
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          // Large day number
+                                          Text(
+                                            '$daysSinceBirth',
+                                            style: TextStyle(
+                                              fontSize: 56,
+                                              fontWeight: FontWeight.w300,
+                                              color: const Color(0xFF1A1A1A),
+                                              fontFamily:
+                                                  _selectedLanguage == 'si'
+                                                      ? 'NotoSerifSinhala'
+                                                      : null,
+                                            ),
+                                          ),
+                                          // Days completed
+                                          Text(
+                                            texts['daysCompleted'] ??
+                                                'days completed',
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              color: const Color(0xFF6B7280),
+                                              fontFamily:
+                                                  _selectedLanguage == 'si'
+                                                      ? 'NotoSerifSinhala'
+                                                      : null,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 6),
+                                          // Days left or achievement text
+                                          Text(
+                                            daysSinceBirth >= 180
+                                                ? '🎉 ${texts['goalAchieved'] ?? 'Goal Achieved!'} 🎉'
+                                                : '${180 - daysSinceBirth} ${texts['daysLeft'] ?? 'days left'}',
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              color: daysSinceBirth >= 180
+                                                  ? const Color(
+                                                      0xFF4CAF50) // Green for achievement
+                                                  : const Color(
+                                                      0xFF0086FF), // Blue for countdown
+                                              fontWeight: FontWeight.w600,
+                                              fontFamily:
+                                                  _selectedLanguage == 'si'
+                                                      ? 'NotoSerifSinhala'
+                                                      : null,
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                      // Days completed
-                                      Text(
-                                        texts['daysCompleted'] ?? 'days completed',
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          color: const Color(0xFF6B7280),
-                                          fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 6),
-                                      // Days left or achievement text
-                                      Text(
-                                        daysSinceBirth >= 180
-                                          ? '🎉 ${texts['goalAchieved'] ?? 'Goal Achieved!'} 🎉'
-                                          : '${180 - daysSinceBirth} ${texts['daysLeft'] ?? 'days left'}',
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          color: daysSinceBirth >= 180
-                                            ? const Color(0xFF4CAF50)  // Green for achievement
-                                            : const Color(0xFF0086FF), // Blue for countdown
-                                          fontWeight: FontWeight.w600,
-                                          fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            },
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
                           ),
-                        ),
+
+                          const SizedBox(height: 24),
+
+                          // Next milestone
+                          _buildNextMilestone(texts, daysSinceBirth),
+
+                          const Spacer(),
+
+                          // Tip-of-Day card
+                          if (!_tipDismissed) ...[
+                            _buildTipCard(texts),
+                            const SizedBox(height: 20),
+                          ],
+
+                          // Bottom buttons
+                          _buildBottomButtons(texts),
+
+                          const SizedBox(height: 12),
+
+                          // Go to Dashboard button
+                          _buildGoToDashboardButton(texts),
+                        ],
                       ),
-                      
-                      const SizedBox(height: 24),
-                      
-                      // Next milestone
-                      _buildNextMilestone(texts, daysSinceBirth),
-                      
-                      const Spacer(),
-                      
-                      // Tip-of-Day card
-                      if (!_tipDismissed) ...[
-                        _buildTipCard(texts),
-                        const SizedBox(height: 20),
-                      ],
-                      
-                      // Bottom buttons
-                      _buildBottomButtons(texts),
-                      
-                      const SizedBox(height: 12),
-                      
-                      // Go to Dashboard button
-                      _buildGoToDashboardButton(texts),
-                    ],
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        ),
           ], // Close Stack children
         );
       },
@@ -470,7 +489,8 @@ class _PreSixMonthCountdownScreenState extends State<PreSixMonthCountdownScreen>
                 fontSize: 14,
                 color: const Color(0xFF0086FF),
                 fontWeight: FontWeight.w500,
-                fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                fontFamily:
+                    _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
               ),
             ),
           ),
@@ -523,17 +543,20 @@ class _PreSixMonthCountdownScreenState extends State<PreSixMonthCountdownScreen>
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
                     color: const Color(0xFF1A1A1A),
-                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                    fontFamily:
+                        _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                   ),
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  texts['tipContent'] ?? 'Set small daily goals to maintain momentum toward your 6-month target.',
+                  texts['tipContent'] ??
+                      'Set small daily goals to maintain momentum toward your 6-month target.',
                   style: TextStyle(
                     fontSize: 14,
                     color: const Color(0xFF6B7280),
                     height: 1.5,
-                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                    fontFamily:
+                        _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                   ),
                 ),
               ],
@@ -602,7 +625,9 @@ class _PreSixMonthCountdownScreenState extends State<PreSixMonthCountdownScreen>
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
                         color: const Color(0xFF10B981),
-                        fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                        fontFamily: _selectedLanguage == 'si'
+                            ? 'NotoSerifSinhala'
+                            : null,
                       ),
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -657,7 +682,9 @@ class _PreSixMonthCountdownScreenState extends State<PreSixMonthCountdownScreen>
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
                         color: const Color(0xFF8B5CF6),
-                        fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                        fontFamily: _selectedLanguage == 'si'
+                            ? 'NotoSerifSinhala'
+                            : null,
                       ),
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -699,7 +726,8 @@ class _PreSixMonthCountdownScreenState extends State<PreSixMonthCountdownScreen>
                 fontSize: 16,
                 color: const Color(0xFF0086FF),
                 fontWeight: FontWeight.w600,
-                fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                fontFamily:
+                    _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
               ),
             ),
           ],
@@ -758,7 +786,7 @@ class CircularProgressPainter extends CustomPainter {
   @override
   bool shouldRepaint(CircularProgressPainter oldDelegate) {
     return oldDelegate.progress != progress ||
-           oldDelegate.progressColor != progressColor ||
-           oldDelegate.strokeWidth != strokeWidth;
+        oldDelegate.progressColor != progressColor ||
+        oldDelegate.strokeWidth != strokeWidth;
   }
 }

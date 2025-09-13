@@ -150,7 +150,8 @@ void main() {
 
           // Basic app verification
           expect(find.byType(MaterialApp), findsOneWidget);
-          print('✅ Notification system integration test - app loaded successfully');
+          print(
+              '✅ Notification system integration test - app loaded successfully');
         } catch (e) {
           print('Integration test expected behavior: $e');
         }

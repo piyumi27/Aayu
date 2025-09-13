@@ -32,10 +32,8 @@ class SafeNavigation {
 
   /// Safely push a route if the context is still mounted
   static Future<T?> safePush<T extends Object?>(
-    BuildContext context,
-    String location,
-    {Object? extra}
-  ) async {
+      BuildContext context, String location,
+      {Object? extra}) async {
     if (!context.mounted) return null;
 
     try {
@@ -47,7 +45,8 @@ class SafeNavigation {
   }
 
   /// Safely replace the current route if the context is still mounted
-  static bool safeReplace(BuildContext context, String location, {Object? extra}) {
+  static bool safeReplace(BuildContext context, String location,
+      {Object? extra}) {
     if (!context.mounted) return false;
 
     try {
@@ -79,7 +78,8 @@ class SafeNavigation {
     String operationName = 'navigation',
   }) async {
     if (!canNavigate(context)) {
-      debugPrint('⚠️ SafeNavigation: Cannot perform $operationName - context not safe');
+      debugPrint(
+          '⚠️ SafeNavigation: Cannot perform $operationName - context not safe');
       return null;
     }
 

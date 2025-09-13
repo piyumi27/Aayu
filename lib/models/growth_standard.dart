@@ -72,10 +72,12 @@ class GrowthStandard {
   double calculateZScore(double actualValue) {
     if (actualValue <= zScoreMinus3) return -3.0;
     if (actualValue <= zScoreMinus2) {
-      return -3.0 + ((actualValue - zScoreMinus3) / (zScoreMinus2 - zScoreMinus3));
+      return -3.0 +
+          ((actualValue - zScoreMinus3) / (zScoreMinus2 - zScoreMinus3));
     }
     if (actualValue <= median) {
-      return -2.0 + ((actualValue - zScoreMinus2) / (median - zScoreMinus2)) * 2.0;
+      return -2.0 +
+          ((actualValue - zScoreMinus2) / (median - zScoreMinus2)) * 2.0;
     }
     if (actualValue <= zScorePlus2) {
       return ((actualValue - median) / (zScorePlus2 - median)) * 2.0;
@@ -134,7 +136,8 @@ class NutritionalClassification {
       severity: 'severe',
       description: 'Child is severely underweight for their age',
       zScoreThreshold: -3.0,
-      recommendations: 'Immediate medical attention required. Refer to health facility.',
+      recommendations:
+          'Immediate medical attention required. Refer to health facility.',
     ),
     NutritionalClassification(
       category: 'Moderately Underweight',
@@ -155,7 +158,8 @@ class NutritionalClassification {
       severity: 'mild',
       description: 'Child is overweight for their age',
       zScoreThreshold: 3.0,
-      recommendations: 'Review feeding practices and increase physical activity.',
+      recommendations:
+          'Review feeding practices and increase physical activity.',
     ),
   ];
 
@@ -165,7 +169,8 @@ class NutritionalClassification {
       severity: 'severe',
       description: 'Child is severely stunted (chronic malnutrition)',
       zScoreThreshold: -3.0,
-      recommendations: 'Immediate intervention required. Long-term nutritional support.',
+      recommendations:
+          'Immediate intervention required. Long-term nutritional support.',
     ),
     NutritionalClassification(
       category: 'Moderately Stunted',

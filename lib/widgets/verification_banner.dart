@@ -10,7 +10,7 @@ class VerificationBanner extends StatefulWidget {
   final VoidCallback? onResendEmail;
   final VoidCallback? onUsePhone;
   final bool isDismissible;
-  
+
   const VerificationBanner({
     super.key,
     this.user,
@@ -24,13 +24,13 @@ class VerificationBanner extends StatefulWidget {
   State<VerificationBanner> createState() => _VerificationBannerState();
 }
 
-class _VerificationBannerState extends State<VerificationBanner> 
+class _VerificationBannerState extends State<VerificationBanner>
     with SingleTickerProviderStateMixin {
   String _selectedLanguage = 'en';
   bool _isDismissed = false;
   late AnimationController _animationController;
   late Animation<Offset> _slideAnimation;
-  
+
   @override
   void initState() {
     super.initState();
@@ -46,24 +46,25 @@ class _VerificationBannerState extends State<VerificationBanner>
       parent: _animationController,
       curve: Curves.easeOut,
     ));
-    
+
     // Start entrance animation
     _animationController.forward();
   }
-  
+
   @override
   void dispose() {
     _animationController.dispose();
     super.dispose();
   }
-  
+
   Future<void> _loadPreferences() async {
     final prefs = await SharedPreferences.getInstance();
     if (mounted) {
       setState(() {
         _selectedLanguage = prefs.getString('language') ?? 'en';
         // Use session-based dismissal key
-        final sessionKey = 'verification_banner_dismissed_${widget.user?.id ?? 'current'}';
+        final sessionKey =
+            'verification_banner_dismissed_${widget.user?.id ?? 'current'}';
         _isDismissed = prefs.getBool(sessionKey) ?? false;
       });
     }
@@ -71,13 +72,14 @@ class _VerificationBannerState extends State<VerificationBanner>
 
   Future<void> _dismissBanner() async {
     if (!widget.isDismissible) return;
-    
+
     await _animationController.reverse();
-    
+
     if (mounted) {
       final prefs = await SharedPreferences.getInstance();
       // Use session-based dismissal (reappears on next login)
-      final sessionKey = 'verification_banner_dismissed_${widget.user?.id ?? 'current'}';
+      final sessionKey =
+          'verification_banner_dismissed_${widget.user?.id ?? 'current'}';
       await prefs.setBool(sessionKey, true);
       setState(() => _isDismissed = true);
     }
@@ -85,41 +87,56 @@ class _VerificationBannerState extends State<VerificationBanner>
 
   String get _title {
     switch (_selectedLanguage) {
-      case 'si': return 'ගිණුම සත්‍යාපනය කරන්න';
-      case 'ta': return 'கணக்கைச் சரிபார்க்கவும்';
-      default: return 'Verify Account';
+      case 'si':
+        return 'ගිණුම සත්‍යාපනය කරන්න';
+      case 'ta':
+        return 'கணக்கைச் சரிபார்க்கவும்';
+      default:
+        return 'Verify Account';
     }
   }
 
   String get _message {
     switch (_selectedLanguage) {
-      case 'si': return 'ක්ලවුඩ් විශේෂාංග අගුළු ඇරීමට ඔබේ ගිණුම සත්‍යාපනය කරන්න';
-      case 'ta': return 'கிளவுட் அம்சங்களைத் திறக்க உங்கள் கணக்கைச் சரிபార்க்கவும்';
-      default: return 'Please verify your account to sync and unlock cloud features';
+      case 'si':
+        return 'ක්ලවුඩ් විශේෂාංග අගුළු ඇරීමට ඔබේ ගිණුම සත්‍යාපනය කරන්න';
+      case 'ta':
+        return 'கிளவுட் அம்சங்களைத் திறக்க உங்கள் கணக்கைச் சரிபార்க்கவும்';
+      default:
+        return 'Please verify your account to sync and unlock cloud features';
     }
   }
 
   String get _verifyNowText {
     switch (_selectedLanguage) {
-      case 'si': return 'දැන් සත්‍යාපනය කරන්න';
-      case 'ta': return 'இப்போது சரிபார்க்கவும்';
-      default: return 'Verify Now';
+      case 'si':
+        return 'දැන් සත්‍යාපනය කරන්න';
+      case 'ta':
+        return 'இப்போது சரிபார்க்கவும்';
+      default:
+        return 'Verify Now';
     }
   }
 
   String get _resendEmailText {
     switch (_selectedLanguage) {
-      case 'si': return 'ඊමේල් නැවත යවන්න';
-      case 'ta': return 'மின்னஞ்சலை மீண்டும் அனுப்பவும்';
-      default: return 'Resend Email';
+      case 'si':
+        return 'ඊමේල් නැවත යවන්න';
+      case 'ta':
+        return 'மின்னஞ்சலை மீண்டும் அனுப்பவும்';
+      default:
+        return 'Resend Email';
     }
   }
 
   String get _usePhoneText {
     switch (_selectedLanguage) {
-      case 'si': return 'දුරකථන භාවිතා කරන්න';
-      case 'ta': return 'தொலைபேசியைப் பயன்படுத்தவும்';
-      default: return 'Use Phone';
+      case 'si':
+        return 'දුරකථන භාවිතා කරන්න';
+      case 'ta':
+        return 'தொலைபேசியைப் பயன்படுத்தவும்';
+      default:
+        return 'Use Phone';
     }
   }
 
@@ -170,12 +187,14 @@ class _VerificationBannerState extends State<VerificationBanner>
                     color: const Color(0xFFF59E0B),
                     size: ResponsiveUtils.getResponsiveIconSize(context, 24),
                   ),
-                  SizedBox(width: ResponsiveUtils.getResponsiveSpacing(context, 12)),
+                  SizedBox(
+                      width: ResponsiveUtils.getResponsiveSpacing(context, 12)),
                   Expanded(
                     child: Text(
                       _title,
                       style: TextStyle(
-                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
+                        fontSize:
+                            ResponsiveUtils.getResponsiveFontSize(context, 16),
                         fontWeight: FontWeight.bold,
                         color: const Color(0xFF92400E),
                       ),
@@ -186,16 +205,18 @@ class _VerificationBannerState extends State<VerificationBanner>
                       icon: Icon(
                         Icons.close,
                         color: const Color(0xFF92400E),
-                        size: ResponsiveUtils.getResponsiveIconSize(context, 20),
+                        size:
+                            ResponsiveUtils.getResponsiveIconSize(context, 20),
                       ),
                       onPressed: _dismissBanner,
                       tooltip: 'Dismiss',
                     ),
                 ],
               ),
-              
-              SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 8)),
-              
+
+              SizedBox(
+                  height: ResponsiveUtils.getResponsiveSpacing(context, 8)),
+
               // Message
               Text(
                 _message,
@@ -205,9 +226,10 @@ class _VerificationBannerState extends State<VerificationBanner>
                   height: 1.4,
                 ),
               ),
-              
-              SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 16)),
-              
+
+              SizedBox(
+                  height: ResponsiveUtils.getResponsiveSpacing(context, 16)),
+
               // Action buttons
               Wrap(
                 spacing: ResponsiveUtils.getResponsiveSpacing(context, 12),
@@ -226,30 +248,35 @@ class _VerificationBannerState extends State<VerificationBanner>
                       foregroundColor: Colors.white,
                       elevation: 2,
                       padding: EdgeInsets.symmetric(
-                        horizontal: ResponsiveUtils.getResponsiveSpacing(context, 16),
-                        vertical: ResponsiveUtils.getResponsiveSpacing(context, 12),
+                        horizontal:
+                            ResponsiveUtils.getResponsiveSpacing(context, 16),
+                        vertical:
+                            ResponsiveUtils.getResponsiveSpacing(context, 12),
                       ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
                   ),
-                  
+
                   // Email verification actions
                   if (widget.user!.authMethod == AuthMethod.email) ...[
                     OutlinedButton.icon(
                       onPressed: widget.onResendEmail,
                       icon: Icon(
                         Icons.email,
-                        size: ResponsiveUtils.getResponsiveIconSize(context, 16),
+                        size:
+                            ResponsiveUtils.getResponsiveIconSize(context, 16),
                       ),
                       label: Text(_resendEmailText),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: const Color(0xFF92400E),
                         side: const BorderSide(color: Color(0xFF92400E)),
                         padding: EdgeInsets.symmetric(
-                          horizontal: ResponsiveUtils.getResponsiveSpacing(context, 16),
-                          vertical: ResponsiveUtils.getResponsiveSpacing(context, 12),
+                          horizontal:
+                              ResponsiveUtils.getResponsiveSpacing(context, 16),
+                          vertical:
+                              ResponsiveUtils.getResponsiveSpacing(context, 12),
                         ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
@@ -257,7 +284,7 @@ class _VerificationBannerState extends State<VerificationBanner>
                       ),
                     ),
                   ],
-                  
+
                   // Phone verification option
                   TextButton.icon(
                     onPressed: widget.onUsePhone,
@@ -269,8 +296,10 @@ class _VerificationBannerState extends State<VerificationBanner>
                     style: TextButton.styleFrom(
                       foregroundColor: const Color(0xFF92400E),
                       padding: EdgeInsets.symmetric(
-                        horizontal: ResponsiveUtils.getResponsiveSpacing(context, 16),
-                        vertical: ResponsiveUtils.getResponsiveSpacing(context, 12),
+                        horizontal:
+                            ResponsiveUtils.getResponsiveSpacing(context, 16),
+                        vertical:
+                            ResponsiveUtils.getResponsiveSpacing(context, 12),
                       ),
                     ),
                   ),

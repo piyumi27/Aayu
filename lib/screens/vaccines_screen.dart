@@ -47,7 +47,8 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
             final vaccineRecords = provider.vaccineRecords;
             final upcomingVaccines = provider.getUpcomingVaccines();
             final overdueVaccines = provider.getOverdueVaccines();
-            final givenVaccineIds = vaccineRecords.map((r) => r.vaccineId).toSet();
+            final givenVaccineIds =
+                vaccineRecords.map((r) => r.vaccineId).toSet();
 
             return TabBarView(
               children: [
@@ -68,9 +69,10 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
     Set<String> givenVaccineIds,
     ChildProvider provider,
   ) {
-    final ageInMonths = provider.calculateAgeInMonths(provider.selectedChild!.birthDate);
+    final ageInMonths =
+        provider.calculateAgeInMonths(provider.selectedChild!.birthDate);
     final groupedVaccines = <String, List<Vaccine>>{};
-    
+
     for (var vaccine in vaccines) {
       final key = _getAgeGroupLabel(vaccine.recommendedAgeMonths);
       groupedVaccines.putIfAbsent(key, () => []).add(vaccine);
@@ -93,8 +95,9 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
             ),
             ...entry.value.map((vaccine) {
               final isGiven = givenVaccineIds.contains(vaccine.id);
-              final isOverdue = !isGiven && vaccine.recommendedAgeMonths < ageInMonths;
-              
+              final isOverdue =
+                  !isGiven && vaccine.recommendedAgeMonths < ageInMonths;
+
               return Card(
                 color: isGiven
                     ? Colors.green.withValues(alpha: 0.1)
@@ -221,33 +224,38 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
                       const SizedBox(width: 8),
                       Text(
                         'Overdue Vaccines',
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              color: Colors.red,
-                              fontWeight: FontWeight.bold,
-                            ),
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  color: Colors.red,
+                                  fontWeight: FontWeight.bold,
+                                ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 8),
-                  ...overdue.map((vaccine) => Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 4),
-                        child: Row(
-                          children: [
-                            const Icon(Icons.circle, size: 8, color: Colors.red),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                '${vaccine.name} (${vaccine.nameLocal})',
-                                style: const TextStyle(fontWeight: FontWeight.w500),
-                              ),
+                  ...overdue.map(
+                    (vaccine) => Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.circle, size: 8, color: Colors.red),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              '${vaccine.name} (${vaccine.nameLocal})',
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.w500),
                             ),
-                            TextButton(
-                              onPressed: () => _addVaccineRecord(context, vaccine),
-                              child: const Text('Add'),
-                            ),
-                          ],
-                        ),
-                      ),),
+                          ),
+                          TextButton(
+                            onPressed: () =>
+                                _addVaccineRecord(context, vaccine),
+                            child: const Text('Add'),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -268,23 +276,26 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
                         ),
                   ),
                   const SizedBox(height: 8),
-                  ...upcoming.map((vaccine) => ListTile(
-                        leading: CircleAvatar(
-                          backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-                          child: Icon(
-                            Icons.vaccines,
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
+                  ...upcoming.map(
+                    (vaccine) => ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor:
+                            Theme.of(context).colorScheme.primaryContainer,
+                        child: Icon(
+                          Icons.vaccines,
+                          color: Theme.of(context).colorScheme.primary,
                         ),
-                        title: Text(vaccine.name),
-                        subtitle: Text(
-                          '${vaccine.nameLocal}\nRecommended at ${vaccine.recommendedAgeMonths} months',
-                        ),
-                        trailing: IconButton(
-                          icon: const Icon(Icons.add),
-                          onPressed: () => _addVaccineRecord(context, vaccine),
-                        ),
-                      ),),
+                      ),
+                      title: Text(vaccine.name),
+                      subtitle: Text(
+                        '${vaccine.nameLocal}\nRecommended at ${vaccine.recommendedAgeMonths} months',
+                      ),
+                      trailing: IconButton(
+                        icon: const Icon(Icons.add),
+                        onPressed: () => _addVaccineRecord(context, vaccine),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -389,7 +400,8 @@ class _AddVaccineRecordSheetState extends State<AddVaccineRecordSheet> {
                   final date = await showDatePicker(
                     context: context,
                     initialDate: _date,
-                    firstDate: DateTime.now().subtract(const Duration(days: 365 * 5)),
+                    firstDate:
+                        DateTime.now().subtract(const Duration(days: 365 * 5)),
                     lastDate: DateTime.now(),
                   );
                   if (date != null) {
@@ -462,27 +474,33 @@ class _AddVaccineRecordSheetState extends State<AddVaccineRecordSheet> {
     if (_formKey.currentState!.validate()) {
       final provider = context.read<ChildProvider>();
       final now = DateTime.now();
-      
+
       final record = VaccineRecord(
         id: now.millisecondsSinceEpoch.toString(),
         childId: provider.selectedChild!.id,
         vaccineId: widget.vaccine.id,
         givenDate: _date,
-        location: _locationController.text.isEmpty ? null : _locationController.text,
-        doctorName: _doctorController.text.isEmpty ? null : _doctorController.text,
-        batchNumber: _batchController.text.isEmpty ? null : _batchController.text,
+        location:
+            _locationController.text.isEmpty ? null : _locationController.text,
+        doctorName:
+            _doctorController.text.isEmpty ? null : _doctorController.text,
+        batchNumber:
+            _batchController.text.isEmpty ? null : _batchController.text,
         notes: _notesController.text.isEmpty ? null : _notesController.text,
-        sideEffectsNoted: _sideEffectsController.text.isEmpty ? null : _sideEffectsController.text,
+        sideEffectsNoted: _sideEffectsController.text.isEmpty
+            ? null
+            : _sideEffectsController.text,
         createdAt: now,
         updatedAt: now,
       );
 
       await provider.addVaccineRecord(record);
-      
+
       if (mounted) {
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${widget.vaccine.name} recorded successfully!')),
+          SnackBar(
+              content: Text('${widget.vaccine.name} recorded successfully!')),
         );
       }
     }

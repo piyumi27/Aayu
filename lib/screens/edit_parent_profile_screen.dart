@@ -14,7 +14,8 @@ class EditParentProfileScreen extends StatefulWidget {
   const EditParentProfileScreen({super.key});
 
   @override
-  State<EditParentProfileScreen> createState() => _EditParentProfileScreenState();
+  State<EditParentProfileScreen> createState() =>
+      _EditParentProfileScreenState();
 }
 
 class _EditParentProfileScreenState extends State<EditParentProfileScreen> {
@@ -22,14 +23,14 @@ class _EditParentProfileScreenState extends State<EditParentProfileScreen> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
-  
+
   String _selectedLanguage = 'en';
   File? _profileImage;
   bool _isLoading = false;
   bool _removeExistingPhoto = false;
   UserAccount? _currentUser;
   final LocalAuthService _authService = LocalAuthService();
-  
+
   @override
   void initState() {
     super.initState();
@@ -47,12 +48,12 @@ class _EditParentProfileScreenState extends State<EditParentProfileScreen> {
   Future<void> _loadUserData() async {
     final prefs = await SharedPreferences.getInstance();
     final user = await _authService.getCurrentUser();
-    
+
     if (mounted) {
       setState(() {
         _selectedLanguage = prefs.getString('language') ?? 'en';
         _currentUser = user;
-        
+
         if (user != null) {
           _nameController.text = user.fullName;
           _emailController.text = user.email ?? '';
@@ -60,7 +61,7 @@ class _EditParentProfileScreenState extends State<EditParentProfileScreen> {
         }
       });
     }
-    
+
     // Listen for changes
     _nameController.addListener(_onTextChanged);
   }
@@ -86,7 +87,8 @@ class _EditParentProfileScreenState extends State<EditParentProfileScreen> {
         'nameRequired': 'Name is required',
         'nameMinLength': 'Name must be at least 2 characters',
         'confirmDelete': 'Confirm Account Deletion',
-        'deleteWarning': 'This action cannot be undone. All your data, including child profiles, growth records, and settings will be permanently deleted.',
+        'deleteWarning':
+            'This action cannot be undone. All your data, including child profiles, growth records, and settings will be permanently deleted.',
         'typeDelete': 'Type "DELETE" to confirm:',
         'cancel': 'Cancel',
         'deleteConfirm': 'Delete Account',
@@ -102,7 +104,8 @@ class _EditParentProfileScreenState extends State<EditParentProfileScreen> {
       },
       'si': {
         'editProfile': 'පැතිකඩ සංස්කරණය',
-        'tapToChangeProfilePicture': 'පැතිකඩ පින්තූරය වෙනස් කිරීමට ස්පර්ශ කරන්න',
+        'tapToChangeProfilePicture':
+            'පැතිකඩ පින්තූරය වෙනස් කිරීමට ස්පර්ශ කරන්න',
         'fullName': 'සම්පූර්ණ නම',
         'emailAddress': 'ඊමේල් ලිපිනය',
         'phoneNumber': 'දුරකථන අංකය',
@@ -113,7 +116,8 @@ class _EditParentProfileScreenState extends State<EditParentProfileScreen> {
         'nameRequired': 'නම අවශ්‍යයි',
         'nameMinLength': 'නම අවම අක්ෂර 2ක් විය යුතුයි',
         'confirmDelete': 'ගිණුම මැකීම සනාථ කරන්න',
-        'deleteWarning': 'මෙම ක්‍රියාව අවලංගු කළ නොහැක. ළමා පැතිකඩ, වර්ධන වාර්තා සහ සැකසීම් ඇතුළුව ඔබේ සියලුම දත්ත ස්ථිරවම මකා දමනු ලැබේ.',
+        'deleteWarning':
+            'මෙම ක්‍රියාව අවලංගු කළ නොහැක. ළමා පැතිකඩ, වර්ධන වාර්තා සහ සැකසීම් ඇතුළුව ඔබේ සියලුම දත්ත ස්ථිරවම මකා දමනු ලැබේ.',
         'typeDelete': 'තහවුරු කිරීම සඳහා "DELETE" ටයිප් කරන්න:',
         'cancel': 'අවලංගු කරන්න',
         'deleteConfirm': 'ගිණුම මකන්න',
@@ -140,7 +144,8 @@ class _EditParentProfileScreenState extends State<EditParentProfileScreen> {
         'nameRequired': 'பெயர் தேவை',
         'nameMinLength': 'பெயர் குறைந்தது 2 எழுத்துகள் இருக்க வேண்டும்',
         'confirmDelete': 'கணக்கு நீக்கலை உறுதிப்படுத்தவும்',
-        'deleteWarning': 'இந்த செயலை மாற்ற முடியாது. உங்கள் அனைத்து தரவுகளும், குழந்தை சுயவிவரங்கள், வளர்ச்சி பதிவுகள் மற்றும் அமைப்புகள் ஆகியவை நிரந்தரமாக நீக்கப்படும்.',
+        'deleteWarning':
+            'இந்த செயலை மாற்ற முடியாது. உங்கள் அனைத்து தரவுகளும், குழந்தை சுயவிவரங்கள், வளர்ச்சி பதிவுகள் மற்றும் அமைப்புகள் ஆகியவை நிரந்தரமாக நீக்கப்படும்.',
         'typeDelete': 'உறுதிப்படுத்த "DELETE" என தட்டச்சு செய்யவும்:',
         'cancel': 'ரத்து செய்',
         'deleteConfirm': 'கணக்கை நீக்கு',
@@ -162,7 +167,9 @@ class _EditParentProfileScreenState extends State<EditParentProfileScreen> {
     if (_profileImage != null) {
       return FileImage(_profileImage!);
     }
-    if (_currentUser?.photoUrl != null && _currentUser!.photoUrl!.isNotEmpty && !_removeExistingPhoto) {
+    if (_currentUser?.photoUrl != null &&
+        _currentUser!.photoUrl!.isNotEmpty &&
+        !_removeExistingPhoto) {
       final file = File(_currentUser!.photoUrl!);
       if (file.existsSync()) {
         return FileImage(file);
@@ -174,7 +181,7 @@ class _EditParentProfileScreenState extends State<EditParentProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final texts = _getLocalizedText();
-    
+
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
@@ -204,33 +211,33 @@ class _EditParentProfileScreenState extends State<EditParentProfileScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const SizedBox(height: 32),
-                
+
                 // Profile Picture Section
                 _buildProfilePictureSection(texts),
-                
+
                 const SizedBox(height: 48),
-                
+
                 // Form Fields
                 _buildNameField(texts),
                 const SizedBox(height: 24),
-                
+
                 _buildEmailField(texts),
                 const SizedBox(height: 24),
-                
+
                 _buildPhoneField(texts),
                 const SizedBox(height: 32),
-                
+
                 // Change Password Button
                 _buildChangePasswordButton(texts),
-                
+
                 const SizedBox(height: 48),
-                
+
                 // Action Buttons
                 _buildSaveButton(texts),
                 const SizedBox(height: 16),
-                
+
                 _buildDeleteAccountButton(texts),
-                
+
                 const SizedBox(height: 32),
               ],
             ),
@@ -266,7 +273,7 @@ class _EditParentProfileScreenState extends State<EditParentProfileScreen> {
                 radius: 58,
                 backgroundColor: const Color(0xFFF3F4F6),
                 backgroundImage: _getUserProfileImage(),
-                child: _getUserProfileImage() == null 
+                child: _getUserProfileImage() == null
                     ? Icon(
                         Icons.person,
                         size: 60,
@@ -346,7 +353,8 @@ class _EditParentProfileScreenState extends State<EditParentProfileScreen> {
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide.none,
             ),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             hintText: texts['fullName']!,
             hintStyle: TextStyle(
               color: const Color(0xFF9CA3AF),
@@ -396,13 +404,15 @@ class _EditParentProfileScreenState extends State<EditParentProfileScreen> {
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide.none,
             ),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             suffixIcon: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 if (_currentUser?.isVerified == true) ...[
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
                       color: const Color(0xFF10B981),
                       borderRadius: BorderRadius.circular(12),
@@ -410,10 +420,13 @@ class _EditParentProfileScreenState extends State<EditParentProfileScreen> {
                     child: Text(
                       texts['verified']!,
                       style: TextStyle(
-                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 12),
+                        fontSize:
+                            ResponsiveUtils.getResponsiveFontSize(context, 12),
                         fontWeight: FontWeight.w600,
                         color: Colors.white,
-                        fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                        fontFamily: _selectedLanguage == 'si'
+                            ? 'NotoSerifSinhala'
+                            : null,
                       ),
                     ),
                   ),
@@ -462,13 +475,15 @@ class _EditParentProfileScreenState extends State<EditParentProfileScreen> {
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide.none,
             ),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             suffixIcon: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 if (_currentUser?.isVerified == true) ...[
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
                       color: const Color(0xFF10B981),
                       borderRadius: BorderRadius.circular(12),
@@ -476,10 +491,13 @@ class _EditParentProfileScreenState extends State<EditParentProfileScreen> {
                     child: Text(
                       texts['verified']!,
                       style: TextStyle(
-                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 12),
+                        fontSize:
+                            ResponsiveUtils.getResponsiveFontSize(context, 12),
                         fontWeight: FontWeight.w600,
                         color: Colors.white,
-                        fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                        fontFamily: _selectedLanguage == 'si'
+                            ? 'NotoSerifSinhala'
+                            : null,
                       ),
                     ),
                   ),
@@ -544,7 +562,8 @@ class _EditParentProfileScreenState extends State<EditParentProfileScreen> {
               style: TextStyle(
                 fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
                 fontWeight: FontWeight.w600,
-                fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                fontFamily:
+                    _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
               ),
             ),
     );
@@ -574,7 +593,7 @@ class _EditParentProfileScreenState extends State<EditParentProfileScreen> {
 
   void _showImageSourceDialog() {
     final texts = _getLocalizedText();
-    
+
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.white,
@@ -596,37 +615,42 @@ class _EditParentProfileScreenState extends State<EditParentProfileScreen> {
               ),
             ),
             const SizedBox(height: 20),
-            
+
             Text(
               texts['selectImageSource']!,
               style: TextStyle(
                 fontSize: ResponsiveUtils.getResponsiveFontSize(context, 18),
                 fontWeight: FontWeight.w600,
                 color: const Color(0xFF1A1A1A),
-                fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                fontFamily:
+                    _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
               ),
             ),
             const SizedBox(height: 24),
-            
+
             _buildImageSourceOption(Icons.camera_alt, texts['camera']!, () {
               Navigator.of(context).pop();
               _pickImage(ImageSource.camera);
             }),
-            
+
             _buildImageSourceOption(Icons.photo_library, texts['gallery']!, () {
               Navigator.of(context).pop();
               _pickImage(ImageSource.gallery);
             }),
-            
-            if (_profileImage != null || (_currentUser?.photoUrl != null && _currentUser!.photoUrl!.isNotEmpty && !_removeExistingPhoto))
-              _buildImageSourceOption(Icons.delete_outline, texts['removePhoto']!, () {
+
+            if (_profileImage != null ||
+                (_currentUser?.photoUrl != null &&
+                    _currentUser!.photoUrl!.isNotEmpty &&
+                    !_removeExistingPhoto))
+              _buildImageSourceOption(
+                  Icons.delete_outline, texts['removePhoto']!, () {
                 Navigator.of(context).pop();
                 setState(() {
                   _profileImage = null;
                   _removeExistingPhoto = true;
                 });
               }),
-            
+
             const SizedBox(height: 16),
           ],
         ),
@@ -634,7 +658,8 @@ class _EditParentProfileScreenState extends State<EditParentProfileScreen> {
     );
   }
 
-  Widget _buildImageSourceOption(IconData icon, String label, VoidCallback onTap) {
+  Widget _buildImageSourceOption(
+      IconData icon, String label, VoidCallback onTap) {
     return SafeInkWell(
       onTap: onTap,
       child: Container(
@@ -654,7 +679,8 @@ class _EditParentProfileScreenState extends State<EditParentProfileScreen> {
                 fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
                 fontWeight: FontWeight.w500,
                 color: const Color(0xFF1A1A1A),
-                fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                fontFamily:
+                    _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
               ),
             ),
           ],
@@ -672,7 +698,7 @@ class _EditParentProfileScreenState extends State<EditParentProfileScreen> {
         maxHeight: 800,
         imageQuality: 85,
       );
-      
+
       if (pickedFile != null) {
         setState(() {
           _profileImage = File(pickedFile.path);
@@ -686,19 +712,21 @@ class _EditParentProfileScreenState extends State<EditParentProfileScreen> {
 
   Future<void> _saveChanges() async {
     if (!_formKey.currentState!.validate()) return;
-    
+
     setState(() {
       _isLoading = true;
     });
-    
+
     try {
       // Save profile image to local storage if changed
       String? photoUrl = _currentUser?.photoUrl;
       if (_profileImage != null) {
         // Save new image to app documents directory
         final appDir = await getApplicationDocumentsDirectory();
-        final fileName = 'user_${_currentUser!.id}_${DateTime.now().millisecondsSinceEpoch}.png';
-        final savedImage = await _profileImage!.copy('${appDir.path}/$fileName');
+        final fileName =
+            'user_${_currentUser!.id}_${DateTime.now().millisecondsSinceEpoch}.png';
+        final savedImage =
+            await _profileImage!.copy('${appDir.path}/$fileName');
         photoUrl = savedImage.path;
       } else if (_removeExistingPhoto) {
         // Remove existing photo
@@ -707,24 +735,27 @@ class _EditParentProfileScreenState extends State<EditParentProfileScreen> {
 
       final result = await _authService.updateUserProfile(
         fullName: _nameController.text.trim(),
-        email: _emailController.text.trim().isNotEmpty ? _emailController.text.trim() : null,
+        email: _emailController.text.trim().isNotEmpty
+            ? _emailController.text.trim()
+            : null,
         photoUrl: photoUrl,
       );
-      
+
       final texts = _getLocalizedText();
-      
+
       if (result.success) {
         // Update local user data
         setState(() {
           _currentUser = result.user;
         });
-        
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
               texts['changesSaved']!,
               style: TextStyle(
-                fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                fontFamily:
+                    _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
               ),
             ),
             backgroundColor: const Color(0xFF10B981),
@@ -740,7 +771,8 @@ class _EditParentProfileScreenState extends State<EditParentProfileScreen> {
             content: Text(
               result.message,
               style: TextStyle(
-                fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                fontFamily:
+                    _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
               ),
             ),
             backgroundColor: const Color(0xFFFF4D4D),
@@ -751,7 +783,6 @@ class _EditParentProfileScreenState extends State<EditParentProfileScreen> {
           ),
         );
       }
-      
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -778,13 +809,14 @@ class _EditParentProfileScreenState extends State<EditParentProfileScreen> {
   void _showDeleteConfirmationDialog(Map<String, String> texts) {
     final confirmController = TextEditingController();
     bool canDelete = false;
-    
+
     showDialog(
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
           backgroundColor: Colors.white,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           title: Text(
             texts['confirmDelete']!,
             style: TextStyle(
@@ -804,7 +836,8 @@ class _EditParentProfileScreenState extends State<EditParentProfileScreen> {
                   fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
                   color: const Color(0xFF6B7280),
                   height: 1.5,
-                  fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                  fontFamily:
+                      _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                 ),
               ),
               const SizedBox(height: 16),
@@ -814,7 +847,8 @@ class _EditParentProfileScreenState extends State<EditParentProfileScreen> {
                   fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
                   fontWeight: FontWeight.w600,
                   color: const Color(0xFF1A1A1A),
-                  fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                  fontFamily:
+                      _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                 ),
               ),
               const SizedBox(height: 8),
@@ -827,7 +861,8 @@ class _EditParentProfileScreenState extends State<EditParentProfileScreen> {
                     borderRadius: BorderRadius.circular(8),
                     borderSide: BorderSide.none,
                   ),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                 ),
                 onChanged: (value) {
                   setDialogState(() {
@@ -844,21 +879,27 @@ class _EditParentProfileScreenState extends State<EditParentProfileScreen> {
                 texts['cancel']!,
                 style: TextStyle(
                   color: const Color(0xFF6B7280),
-                  fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                  fontFamily:
+                      _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                 ),
               ),
             ),
             TextButton(
-              onPressed: canDelete ? () {
-                Navigator.of(context).pop();
-                _showComingSoonDialog(texts);
-              } : null,
+              onPressed: canDelete
+                  ? () {
+                      Navigator.of(context).pop();
+                      _showComingSoonDialog(texts);
+                    }
+                  : null,
               child: Text(
                 texts['deleteConfirm']!,
                 style: TextStyle(
-                  color: canDelete ? const Color(0xFFFF4D4D) : const Color(0xFFD1D5DB),
+                  color: canDelete
+                      ? const Color(0xFFFF4D4D)
+                      : const Color(0xFFD1D5DB),
                   fontWeight: FontWeight.w600,
-                  fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                  fontFamily:
+                      _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                 ),
               ),
             ),
@@ -899,7 +940,8 @@ class _EditParentProfileScreenState extends State<EditParentProfileScreen> {
               style: TextStyle(
                 color: const Color(0xFF007BFF),
                 fontWeight: FontWeight.w600,
-                fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                fontFamily:
+                    _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
               ),
             ),
           ),

@@ -7,7 +7,8 @@ import 'package:sqflite/sqflite.dart';
 /// Expert-level Notification ID Generator
 /// Ensures truly unique notification IDs to prevent database conflicts
 class NotificationIdGenerator {
-  static final NotificationIdGenerator _instance = NotificationIdGenerator._internal();
+  static final NotificationIdGenerator _instance =
+      NotificationIdGenerator._internal();
   factory NotificationIdGenerator() => _instance;
   NotificationIdGenerator._internal();
 
@@ -30,7 +31,8 @@ class NotificationIdGenerator {
 
       // Combine: timestamp seconds (mod 10000000) + counter (mod 100000) + random (0-99)
       // This ensures we stay well within 32-bit limits (max ~2.1 billion)
-      final timeComponent = (nowSeconds % 10000000) * 10000; // Up to 99,999,990,000
+      final timeComponent =
+          (nowSeconds % 10000000) * 10000; // Up to 99,999,990,000
       final counterComponent = (counter % 1000) * 100; // Up to 99,900
       final randomComponent = random; // Up to 99
 
@@ -41,7 +43,6 @@ class NotificationIdGenerator {
 
       debugPrint('🆔 Generated unique notification ID: $safeId');
       return safeId == 0 ? 1 : safeId; // Ensure ID is never 0
-
     } catch (e) {
       debugPrint('⚠️ Error generating unique ID, using fallback: $e');
       // Fallback to simple safe random ID
@@ -68,13 +69,14 @@ class NotificationIdGenerator {
       final safeCounter = (counter % 2000); // Max 1,999
 
       // Combine ensuring we stay within 32-bit limits
-      final uniqueId = safeBaseId + (safeCounter * 1000000); // Max ~1,999,999,999
+      final uniqueId =
+          safeBaseId + (safeCounter * 1000000); // Max ~1,999,999,999
 
       final safeId = uniqueId % 2147483647; // Ensure within int32 range
 
-      debugPrint('🆔 Generated content-based ID: $safeId for content: ${content.length > 50 ? '${content.substring(0, 50)}...' : content}');
+      debugPrint(
+          '🆔 Generated content-based ID: $safeId for content: ${content.length > 50 ? '${content.substring(0, 50)}...' : content}');
       return safeId == 0 ? 1 : safeId; // Ensure ID is never 0
-
     } catch (e) {
       debugPrint('⚠️ Error generating content-based ID, using unique ID: $e');
       return await generateUniqueId();
@@ -134,7 +136,6 @@ class NotificationIdGenerator {
   /// This should be called once after updating to the new ID generation system
   static Future<void> cleanupDuplicateNotifications(Database db) async {
     try {
-
       debugPrint('🧹 Starting notification ID cleanup...');
 
       // Find duplicates based on id field
@@ -169,7 +170,8 @@ class NotificationIdGenerator {
         // Keep the first one, remove the rest
         for (int i = 1; i < rows.length; i++) {
           final rowId = rows[i]['rowid'] as int;
-          await db.execute('DELETE FROM scheduled_notifications WHERE rowid = ?', [rowId]);
+          await db.execute(
+              'DELETE FROM scheduled_notifications WHERE rowid = ?', [rowId]);
           debugPrint('🗑️ Deleted duplicate notification (rowid: $rowId)');
         }
 

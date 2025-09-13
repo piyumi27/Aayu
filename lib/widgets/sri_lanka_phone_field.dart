@@ -12,7 +12,7 @@ class SriLankaPhoneField extends StatefulWidget {
   final String? errorText;
   final bool enabled;
   final String? helperText;
-  
+
   const SriLankaPhoneField({
     super.key,
     this.initialValue,
@@ -31,24 +31,23 @@ class _SriLankaPhoneFieldState extends State<SriLankaPhoneField> {
   late TextEditingController _controller;
   String _selectedLanguage = 'en';
   bool _hasFocus = false;
-  
+
   @override
   void initState() {
     super.initState();
     _controller = TextEditingController(
-      text: widget.initialValue != null 
-        ? ValidationUtils.extractSriLankaLocal(widget.initialValue!)
-        : ''
-    );
+        text: widget.initialValue != null
+            ? ValidationUtils.extractSriLankaLocal(widget.initialValue!)
+            : '');
     _loadPreferences();
   }
-  
+
   @override
   void dispose() {
     _controller.dispose();
     super.dispose();
   }
-  
+
   Future<void> _loadPreferences() async {
     final prefs = await SharedPreferences.getInstance();
     if (mounted) {
@@ -60,34 +59,43 @@ class _SriLankaPhoneFieldState extends State<SriLankaPhoneField> {
 
   String get _placeholder {
     switch (_selectedLanguage) {
-      case 'si': return '7XXXXXXXX';
-      case 'ta': return '7XXXXXXXX';
-      default: return '7XXXXXXXX';
+      case 'si':
+        return '7XXXXXXXX';
+      case 'ta':
+        return '7XXXXXXXX';
+      default:
+        return '7XXXXXXXX';
     }
   }
 
   String get _labelText {
     switch (_selectedLanguage) {
-      case 'si': return 'දුරකථන අංකය';
-      case 'ta': return 'தொலைபேசி எண்';
-      default: return 'Phone Number';
+      case 'si':
+        return 'දුරකථන අංකය';
+      case 'ta':
+        return 'தொலைபேசி எண்';
+      default:
+        return 'Phone Number';
     }
   }
 
   String get _helperText {
     if (widget.helperText != null) return widget.helperText!;
-    
+
     switch (_selectedLanguage) {
-      case 'si': return '0 නොමැතිව 9 ඉලක්කම් ඇතුළත් කරන්න (උදා: 7XXXXXXXX)';
-      case 'ta': return '0 இல்லாமல் 9 இலக்கங்களை உள்ளிடவும் (உதா: 7XXXXXXXX)';
-      default: return 'Enter 9 digits without leading zero (e.g., 7XXXXXXXX)';
+      case 'si':
+        return '0 නොමැතිව 9 ඉලක්කම් ඇතුළත් කරන්න (උදා: 7XXXXXXXX)';
+      case 'ta':
+        return '0 இல்லாமல் 9 இலக்கங்களை உள்ளிடவும் (உதா: 7XXXXXXXX)';
+      default:
+        return 'Enter 9 digits without leading zero (e.g., 7XXXXXXXX)';
     }
   }
 
   void _onTextChanged(String text) {
     // Normalize input (remove leading 0, keep only digits)
     final normalized = ValidationUtils.normalizeSriLankaInput(text);
-    
+
     // Limit to 9 digits
     if (normalized.length > 9) {
       final truncated = normalized.substring(0, 9);
@@ -97,7 +105,7 @@ class _SriLankaPhoneFieldState extends State<SriLankaPhoneField> {
       );
       return;
     }
-    
+
     // Update controller if normalization changed the text
     if (normalized != text && normalized.length <= 9) {
       _controller.value = TextEditingValue(
@@ -105,12 +113,13 @@ class _SriLankaPhoneFieldState extends State<SriLankaPhoneField> {
         selection: TextSelection.collapsed(offset: normalized.length),
       );
     }
-    
+
     // Notify parent of changes
     if (widget.onChanged != null) {
-      final e164 = normalized.length == 9 && ValidationUtils.validateSriLankaLocal(normalized)
-        ? ValidationUtils.buildE164SriLanka(normalized)
-        : normalized;
+      final e164 = normalized.length == 9 &&
+              ValidationUtils.validateSriLankaLocal(normalized)
+          ? ValidationUtils.buildE164SriLanka(normalized)
+          : normalized;
       widget.onChanged!(e164);
     }
   }
@@ -118,7 +127,7 @@ class _SriLankaPhoneFieldState extends State<SriLankaPhoneField> {
   @override
   Widget build(BuildContext context) {
     final isValid = ValidationUtils.validateSriLankaLocal(_controller.text);
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -126,11 +135,11 @@ class _SriLankaPhoneFieldState extends State<SriLankaPhoneField> {
         Container(
           decoration: BoxDecoration(
             border: Border.all(
-              color: widget.errorText != null 
-                ? Theme.of(context).colorScheme.error
-                : _hasFocus 
-                  ? Theme.of(context).colorScheme.primary
-                  : Theme.of(context).dividerColor,
+              color: widget.errorText != null
+                  ? Theme.of(context).colorScheme.error
+                  : _hasFocus
+                      ? Theme.of(context).colorScheme.primary
+                      : Theme.of(context).dividerColor,
             ),
             borderRadius: BorderRadius.circular(8),
           ),
@@ -152,14 +161,18 @@ class _SriLankaPhoneFieldState extends State<SriLankaPhoneField> {
                     Text(
                       ValidationUtils.sriLankaFlag,
                       style: TextStyle(
-                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 20),
+                        fontSize:
+                            ResponsiveUtils.getResponsiveFontSize(context, 20),
                       ),
                     ),
-                    SizedBox(width: ResponsiveUtils.getResponsiveSpacing(context, 8)),
+                    SizedBox(
+                        width:
+                            ResponsiveUtils.getResponsiveSpacing(context, 8)),
                     Text(
                       ValidationUtils.sriLankaCountryCode,
                       style: TextStyle(
-                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
+                        fontSize:
+                            ResponsiveUtils.getResponsiveFontSize(context, 16),
                         fontWeight: FontWeight.w500,
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
@@ -167,14 +180,14 @@ class _SriLankaPhoneFieldState extends State<SriLankaPhoneField> {
                   ],
                 ),
               ),
-              
+
               // Divider
               Container(
                 width: 1,
                 height: 48,
                 color: Theme.of(context).dividerColor,
               ),
-              
+
               // Phone number input
               Expanded(
                 child: Focus(
@@ -192,27 +205,33 @@ class _SriLankaPhoneFieldState extends State<SriLankaPhoneField> {
                     onChanged: _onTextChanged,
                     onEditingComplete: widget.onEditingComplete,
                     style: TextStyle(
-                      fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
+                      fontSize:
+                          ResponsiveUtils.getResponsiveFontSize(context, 16),
                     ),
                     decoration: InputDecoration(
                       hintText: _placeholder,
                       hintStyle: TextStyle(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurfaceVariant
+                            .withValues(alpha: 0.6),
                       ),
                       border: InputBorder.none,
-                      contentPadding: ResponsiveUtils.getResponsivePadding(context),
+                      contentPadding:
+                          ResponsiveUtils.getResponsivePadding(context),
                       suffixIcon: _controller.text.isNotEmpty
-                        ? IconButton(
-                            icon: Icon(
-                              isValid ? Icons.check_circle : Icons.error,
-                              color: isValid 
-                                ? const Color(0xFF10B981)
-                                : Theme.of(context).colorScheme.error,
-                              size: ResponsiveUtils.getResponsiveIconSize(context, 20),
-                            ),
-                            onPressed: null,
-                          )
-                        : null,
+                          ? IconButton(
+                              icon: Icon(
+                                isValid ? Icons.check_circle : Icons.error,
+                                color: isValid
+                                    ? const Color(0xFF10B981)
+                                    : Theme.of(context).colorScheme.error,
+                                size: ResponsiveUtils.getResponsiveIconSize(
+                                    context, 20),
+                              ),
+                              onPressed: null,
+                            )
+                          : null,
                     ),
                   ),
                 ),
@@ -220,7 +239,7 @@ class _SriLankaPhoneFieldState extends State<SriLankaPhoneField> {
             ],
           ),
         ),
-        
+
         // Helper text or error text
         if (widget.errorText != null || _helperText.isNotEmpty)
           Padding(
@@ -232,13 +251,13 @@ class _SriLankaPhoneFieldState extends State<SriLankaPhoneField> {
               widget.errorText ?? _helperText,
               style: TextStyle(
                 fontSize: ResponsiveUtils.getResponsiveFontSize(context, 12),
-                color: widget.errorText != null 
-                  ? Theme.of(context).colorScheme.error
-                  : Theme.of(context).colorScheme.onSurfaceVariant,
+                color: widget.errorText != null
+                    ? Theme.of(context).colorScheme.error
+                    : Theme.of(context).colorScheme.onSurfaceVariant,
               ),
             ),
           ),
-        
+
         // Display formatted E.164 preview when valid
         if (isValid && _controller.text.isNotEmpty)
           Padding(

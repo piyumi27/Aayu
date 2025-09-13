@@ -1,4 +1,3 @@
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -119,7 +118,8 @@ class TestSetup {
     });
 
     // Mock workmanager
-    const MethodChannel('be.tramckrijte.workmanager/foreground_channel_work_manager')
+    const MethodChannel(
+            'be.tramckrijte.workmanager/foreground_channel_work_manager')
         .setMockMethodCallHandler((methodCall) async {
       switch (methodCall.method) {
         case 'initialize':
@@ -203,7 +203,8 @@ class TestData {
     return {
       'id': id ?? 'test-child-${DateTime.now().millisecondsSinceEpoch}',
       'name': name ?? 'Test Child',
-      'birth_date': (birthDate ?? now.subtract(const Duration(days: 90))).toIso8601String(),
+      'birth_date': (birthDate ?? now.subtract(const Duration(days: 90)))
+          .toIso8601String(),
       'gender': gender ?? 'male',
       'created_at': now.toIso8601String(),
       'updated_at': now.toIso8601String(),

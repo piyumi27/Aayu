@@ -237,16 +237,22 @@ class NutritionalAlert {
     required String measurementType,
   }) {
     final now = DateTime.now();
-    
+
     if (zScore < -3.0) {
       return NutritionalAlert(
         id: 'alert_${now.millisecondsSinceEpoch}',
         alertType: type,
         severity: 'severe',
         title: 'Severe Malnutrition Detected',
-        description: 'Child shows signs of severe acute malnutrition (Z-score < -3)',
-        recommendations: 'Immediate medical attention required. Refer to nearest health facility.',
-        symptoms: ['Very low weight/height for age', 'Visible wasting', 'Poor appetite'],
+        description:
+            'Child shows signs of severe acute malnutrition (Z-score < -3)',
+        recommendations:
+            'Immediate medical attention required. Refer to nearest health facility.',
+        symptoms: [
+          'Very low weight/height for age',
+          'Visible wasting',
+          'Poor appetite'
+        ],
         actionRequired: 'Seek immediate medical care',
         requiresImmediateAttention: true,
         createdAt: now,
@@ -257,7 +263,8 @@ class NutritionalAlert {
         alertType: type,
         severity: 'moderate',
         title: 'Moderate Malnutrition Detected',
-        description: 'Child shows signs of moderate malnutrition (Z-score < -2)',
+        description:
+            'Child shows signs of moderate malnutrition (Z-score < -2)',
         recommendations: 'Enhanced nutrition and regular monitoring required.',
         symptoms: ['Below normal weight/height for age', 'Reduced appetite'],
         actionRequired: 'Consult healthcare provider for nutrition plan',

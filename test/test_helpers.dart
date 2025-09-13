@@ -70,10 +70,12 @@ class TestHelpers {
       ],
       child: MaterialApp(
         title: 'Test App',
-        theme: theme ?? ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF0086FF)),
-          useMaterial3: true,
-        ),
+        theme: theme ??
+            ThemeData(
+              colorScheme:
+                  ColorScheme.fromSeed(seedColor: const Color(0xFF0086FF)),
+              useMaterial3: true,
+            ),
         home: Scaffold(body: child),
       ),
     );
@@ -171,7 +173,8 @@ class TestData {
     return {
       'id': id ?? 'test-child-${now.millisecondsSinceEpoch}',
       'name': name ?? 'Test Child',
-      'birth_date': (birthDate ?? now.subtract(const Duration(days: 90))).toIso8601String(),
+      'birth_date': (birthDate ?? now.subtract(const Duration(days: 90)))
+          .toIso8601String(),
       'gender': gender ?? 'male',
       'created_at': now.toIso8601String(),
       'updated_at': now.toIso8601String(),

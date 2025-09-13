@@ -3,7 +3,8 @@ import 'package:go_router/go_router.dart';
 import '../widgets/notifications/notification_badge.dart';
 import '../utils/responsive_utils.dart';
 
-class NotificationAppBar extends StatelessWidget implements PreferredSizeWidget {
+class NotificationAppBar extends StatelessWidget
+    implements PreferredSizeWidget {
   final String title;
   final bool showNotificationButton;
   final List<Widget>? actions;
@@ -28,7 +29,7 @@ class NotificationAppBar extends StatelessWidget implements PreferredSizeWidget 
   @override
   Widget build(BuildContext context) {
     final List<Widget> appBarActions = [];
-    
+
     // Add notification button if enabled
     if (showNotificationButton) {
       appBarActions.add(
@@ -47,7 +48,7 @@ class NotificationAppBar extends StatelessWidget implements PreferredSizeWidget 
         ),
       );
     }
-    
+
     // Add any additional actions
     if (actions != null) {
       appBarActions.addAll(actions!);

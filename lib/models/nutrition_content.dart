@@ -216,7 +216,11 @@ class NutritionContentDatabase {
               icon: Icons.egg_outlined,
               color: const Color(0xFFF59E0B),
               servingSize: '1/2 to 1 egg',
-              benefits: ['Complete protein', 'Brain development', 'Easy to digest'],
+              benefits: [
+                'Complete protein',
+                'Brain development',
+                'Easy to digest'
+              ],
             ),
             FoodItem(
               nameKey: 'fishTitle',
@@ -374,20 +378,25 @@ class NutritionContentDatabase {
     final Map<String, Map<String, String>> texts = {
       'en': {
         'proteinSources12To23Title': 'Protein Sources for 12-23 m Kids',
-        'proteinSources12To23Excerpt': 'Toddlers between 12-23 months need quality protein for growth. Here are the best local protein sources for Sri Lankan families.',
-        
+        'proteinSources12To23Excerpt':
+            'Toddlers between 12-23 months need quality protein for growth. Here are the best local protein sources for Sri Lankan families.',
+
         // Section titles
         'introductionTitle': 'Why Protein Matters',
         'animalProteinsTitle': 'Animal Proteins',
         'plantBasedOptionsTitle': 'Plant-Based Options',
         'servingGuidelinesTitle': 'Serving Guidelines',
-        
+
         // Content
-        'proteinIntroductionContent': 'Toddlers between 12-23 months need quality protein for proper growth and brain development. Protein helps build muscles, organs, and supports immune function. Sri Lankan cuisine offers excellent protein sources that are both nutritious and culturally appropriate.',
-        'animalProteinsContent': 'Animal proteins provide complete amino acid profiles essential for toddler development. Here are the best options available in Sri Lanka:',
-        'plantBasedOptionsContent': 'Plant-based proteins are excellent for variety and digestibility. These traditional Sri Lankan options are perfect for toddlers:',
-        'servingGuidelinesContent': 'Follow these guidelines to ensure your toddler gets adequate protein without overwhelming their small stomach:',
-        
+        'proteinIntroductionContent':
+            'Toddlers between 12-23 months need quality protein for proper growth and brain development. Protein helps build muscles, organs, and supports immune function. Sri Lankan cuisine offers excellent protein sources that are both nutritious and culturally appropriate.',
+        'animalProteinsContent':
+            'Animal proteins provide complete amino acid profiles essential for toddler development. Here are the best options available in Sri Lanka:',
+        'plantBasedOptionsContent':
+            'Plant-based proteins are excellent for variety and digestibility. These traditional Sri Lankan options are perfect for toddlers:',
+        'servingGuidelinesContent':
+            'Follow these guidelines to ensure your toddler gets adequate protein without overwhelming their small stomach:',
+
         // Animal proteins
         'eggsTitle': 'Eggs',
         'eggsDescription': 'Scrambled, boiled, or in curry',
@@ -397,7 +406,7 @@ class NutritionContentDatabase {
         'chickenDescription': 'Soft, well-cooked pieces',
         'yogurtTitle': 'Yogurt and milk products',
         'yogurtDescription': 'Natural yogurt without added sugar',
-        
+
         // Plant-based options
         'lentilsTitle': 'Red lentils (dhal)',
         'lentilsDescription': 'Easy to digest and versatile',
@@ -407,23 +416,28 @@ class NutritionContentDatabase {
         'greenGramDescription': 'As porridge or soup',
         'sesameTitle': 'Sesame seeds',
         'sesameDescription': 'Ground into paste',
-        
+
         // Serving guidelines
         'dailyPortionsTitle': 'Serve 2-3 small portions daily',
-        'dailyPortionsDescription': 'Spread protein intake across meals and snacks',
+        'dailyPortionsDescription':
+            'Spread protein intake across meals and snacks',
         'mixingFoodsTitle': 'Mix with familiar foods like rice',
-        'mixingFoodsDescription': 'Combine proteins with rice or bread for better acceptance',
+        'mixingFoodsDescription':
+            'Combine proteins with rice or bread for better acceptance',
         'textureTitle': 'Ensure proper cooking and soft texture',
-        'textureDescription': 'All proteins should be well-cooked and age-appropriate texture',
-        
+        'textureDescription':
+            'All proteins should be well-cooked and age-appropriate texture',
+
         // Dietitian tips
         'drEmilyChakma': 'Dr. Emily Chakma, Pediatric Nutritionist',
         'drSamalPerera': 'Dr. Samal Perera, Pediatrician',
         'startWithOneEggTip': 'Start with one egg per day for toddlers',
-        'startWithOneEggTipContent': 'Mix with rice for better acceptance and introduce gradually to check for allergies.',
+        'startWithOneEggTipContent':
+            'Mix with rice for better acceptance and introduce gradually to check for allergies.',
         'introduceProvidesGraduallyTip': 'Introduce new proteins gradually',
-        'introduceProvidesGraduallyTipContent': 'Watch for signs that your baby is ready for solid foods around 4-6 months: good head control, sitting with support, and showing interest in food.',
-        
+        'introduceProvidesGraduallyTipContent':
+            'Watch for signs that your baby is ready for solid foods around 4-6 months: good head control, sitting with support, and showing interest in food.',
+
         // Related articles
         'firstFoodsForBaby': 'First Foods for Baby',
         'healthySnacks': 'Healthy Snacks',
@@ -431,20 +445,25 @@ class NutritionContentDatabase {
       },
       'si': {
         'proteinSources12To23Title': '12-23 මාස දරුවන් සඳහා ප්‍රෝටීන් ප්‍රභව',
-        'proteinSources12To23Excerpt': '12-23 මාස අතර කුඩා දරුවන්ට වර්ධනය සඳහා ගුණාත්මක ප්‍රෝටීන් අවශ්‍ය වේ. ශ්‍රී ලාංකික පවුල් සඳහා හොඳම දේශීය ප්‍රෝටීන් ප්‍රභව මෙන්න.',
-        
+        'proteinSources12To23Excerpt':
+            '12-23 මාස අතර කුඩා දරුවන්ට වර්ධනය සඳහා ගුණාත්මක ප්‍රෝටීන් අවශ්‍ය වේ. ශ්‍රී ලාංකික පවුල් සඳහා හොඳම දේශීය ප්‍රෝටීන් ප්‍රභව මෙන්න.',
+
         // Section titles
         'introductionTitle': 'ප්‍රෝටීන් වැදගත් වන්නේ ඇයි',
         'animalProteinsTitle': 'සත්ව ප්‍රෝටීන්',
         'plantBasedOptionsTitle': 'ශාක පදනම් කළ විකල්ප',
         'servingGuidelinesTitle': 'සේවා කිරීමේ මාර්ගෝපදේශ',
-        
+
         // Content
-        'proteinIntroductionContent': '12-23 මාස අතර කුඩා දරුවන්ට නිසි වර්ධනය සහ මොළයේ සංවර්ධනය සඳහා ගුණාත්මක ප්‍රෝටීන් අවශ්‍ය වේ. ප්‍රෝටීන් මාංශ පේශි, අවයව ගොඩනැගීමට සහ ප්‍රතිශක්තිකරණ කාර්යයට උපකාර කරයි.',
-        'animalProteinsContent': 'සත්ව ප්‍රෝටීන් කුඩා දරුවන්ගේ සංවර්ධනයට අවශ්‍ය සම්පූර්ණ ඇමයිනෝ අම්ල පැතිකඩ සපයයි:',
-        'plantBasedOptionsContent': 'ශාක පදනම් ප්‍රෝටීන් විවිධත්වය සහ ජීර්ණය සඳහා විශිෂ්ටයි. මෙම සම්ප්‍රදායික ශ්‍රී ලාංකික විකල්ප කුඩා දරුවන්ට පරිපූර්ණයි:',
-        'servingGuidelinesContent': 'ඔබේ කුඩා දරුවාට ඔවුන්ගේ කුඩා ගරුත්වය අධිකම නොකර ප්‍රමාණවත් ප්‍රෝටීන් ලැබෙන බව සහතික කිරීමට මෙම මාර්ගෝපදේශ අනුගමනය කරන්න:',
-        
+        'proteinIntroductionContent':
+            '12-23 මාස අතර කුඩා දරුවන්ට නිසි වර්ධනය සහ මොළයේ සංවර්ධනය සඳහා ගුණාත්මක ප්‍රෝටීන් අවශ්‍ය වේ. ප්‍රෝටීන් මාංශ පේශි, අවයව ගොඩනැගීමට සහ ප්‍රතිශක්තිකරණ කාර්යයට උපකාර කරයි.',
+        'animalProteinsContent':
+            'සත්ව ප්‍රෝටීන් කුඩා දරුවන්ගේ සංවර්ධනයට අවශ්‍ය සම්පූර්ණ ඇමයිනෝ අම්ල පැතිකඩ සපයයි:',
+        'plantBasedOptionsContent':
+            'ශාක පදනම් ප්‍රෝටීන් විවිධත්වය සහ ජීර්ණය සඳහා විශිෂ්ටයි. මෙම සම්ප්‍රදායික ශ්‍රී ලාංකික විකල්ප කුඩා දරුවන්ට පරිපූර්ණයි:',
+        'servingGuidelinesContent':
+            'ඔබේ කුඩා දරුවාට ඔවුන්ගේ කුඩා ගරුත්වය අධිකම නොකර ප්‍රමාණවත් ප්‍රෝටීන් ලැබෙන බව සහතික කිරීමට මෙම මාර්ගෝපදේශ අනුගමනය කරන්න:',
+
         // Animal proteins
         'eggsTitle': 'බිත්තර',
         'eggsDescription': 'කලවම්, තම්බපු හෝ කරියේ',
@@ -454,7 +473,7 @@ class NutritionContentDatabase {
         'chickenDescription': 'මෘදු, හොඳින් පිසින ලද කැබලි',
         'yogurtTitle': 'දැඹරි සහ කිරි නිෂ්පාදන',
         'yogurtDescription': 'සීනි නොමැති ස්වාභාවික දැඹරි',
-        
+
         // Plant-based options
         'lentilsTitle': 'රතු පරිප්ප',
         'lentilsDescription': 'ජීර්ණයට පහසු සහ බහුකාර්ය',
@@ -464,23 +483,29 @@ class NutritionContentDatabase {
         'greenGramDescription': 'කදිල හෝ සුප් ලෙස',
         'sesameTitle': 'තල',
         'sesameDescription': 'පේස්ට් බවට අඹරා',
-        
+
         // Serving guidelines
         'dailyPortionsTitle': 'දිනකට කුඩා කොටස් 2-3ක් දෙන්න',
-        'dailyPortionsDescription': 'ප්‍රෝටීන් ප්‍රමාණය ආහාර වේල් සහ සුළු කෑම අතරට බෙදන්න',
+        'dailyPortionsDescription':
+            'ප්‍රෝටීන් ප්‍රමාණය ආහාර වේල් සහ සුළු කෑම අතරට බෙදන්න',
         'mixingFoodsTitle': 'බත් වැනි හුරුපුරුදු ආහාර සමඟ මිශ්‍ර කරන්න',
-        'mixingFoodsDescription': 'වඩා හොඳ පිළිගැනීම සඳහා ප්‍රෝටීන් බත් හෝ පාන් සමඟ ඒකාබද්ධ කරන්න',
+        'mixingFoodsDescription':
+            'වඩා හොඳ පිළිගැනීම සඳහා ප්‍රෝටීන් බත් හෝ පාන් සමඟ ඒකාබද්ධ කරන්න',
         'textureTitle': 'නිසි පිසීම සහ මෘදු වයනය සහතික කරන්න',
-        'textureDescription': 'සියලුම ප්‍රෝටීන් හොඳින් පිසින ලද සහ වයසට සුදුසු වයනයක් තිබිය යුතුයි',
-        
+        'textureDescription':
+            'සියලුම ප්‍රෝටීන් හොඳින් පිසින ලද සහ වයසට සුදුසු වයනයක් තිබිය යුතුයි',
+
         // Dietitian tips
         'drEmilyChakma': 'වෛද්‍ය එමිලි චක්‍රමා, ළමා පෝෂණවේදියෙකු',
         'drSamalPerera': 'වෛද්‍ය සමල් පෙරේරා, ළමා වෛද්‍යවරයෙකු',
-        'startWithOneEggTip': 'කුඩා දරුවන් සඳහා දිනකට බිත්තරයක් ගෙන් ආරම්භ කරන්න',
-        'startWithOneEggTipContent': 'වඩා හොඳ පිළිගැනීම සඳහා බත් සමඟ මිශ්‍ර කර අසාත්මිකතා පරීක්ෂා කිරීමට ක්‍රමයෙන් හඳුන්වා දෙන්න.',
+        'startWithOneEggTip':
+            'කුඩා දරුවන් සඳහා දිනකට බිත්තරයක් ගෙන් ආරම්භ කරන්න',
+        'startWithOneEggTipContent':
+            'වඩා හොඳ පිළිගැනීම සඳහා බත් සමඟ මිශ්‍ර කර අසාත්මිකතා පරීක්ෂා කිරීමට ක්‍රමයෙන් හඳුන්වා දෙන්න.',
         'introduceProvidesGraduallyTip': 'නව ප්‍රෝටීන් ක්‍රමයෙන් හඳුන්වා දෙන්න',
-        'introduceProvidesGraduallyTipContent': '4-6 මාස පමණ වන විට ඔබේ දරුවා ඝන ආහාර සඳහා සූදානම්ව ඇති සංඥා නිරීක්ෂණය කරන්න: හොඳ හිස පාලනය, ආධාරයෙන් වාඩි වීම සහ ආහාර කෙරෙහි උනන්දුව.',
-        
+        'introduceProvidesGraduallyTipContent':
+            '4-6 මාස පමණ වන විට ඔබේ දරුවා ඝන ආහාර සඳහා සූදානම්ව ඇති සංඥා නිරීක්ෂණය කරන්න: හොඳ හිස පාලනය, ආධාරයෙන් වාඩි වීම සහ ආහාර කෙරෙහි උනන්දුව.',
+
         // Related articles
         'firstFoodsForBaby': 'ළදරුවා සඳහා ප්‍රථම ආහාර',
         'healthySnacks': 'සෞඛ්‍යම්‍ය සුළු කෑම',
@@ -488,20 +513,25 @@ class NutritionContentDatabase {
       },
       'ta': {
         'proteinSources12To23Title': '12-23 மாத குழந்தைகளுக்கான புரத மூலங்கள்',
-        'proteinSources12To23Excerpt': '12-23 மாதங்களுக்கு இடையிலான குழந்தைகளுக்கு வளர்ச்சிக்கு தரமான புரதம் தேவை. இலங்கை குடும்பங்களுக்கான சிறந்த உள்ளூர் புரத மூலங்கள் இங்கே.',
-        
+        'proteinSources12To23Excerpt':
+            '12-23 மாதங்களுக்கு இடையிலான குழந்தைகளுக்கு வளர்ச்சிக்கு தரமான புரதம் தேவை. இலங்கை குடும்பங்களுக்கான சிறந்த உள்ளூர் புரத மூலங்கள் இங்கே.',
+
         // Section titles
         'introductionTitle': 'புரதம் ஏன் முக்கியம்',
         'animalProteinsTitle': 'விலங்கு புரதங்கள்',
         'plantBasedOptionsTitle': 'தாவர அடிப்படையிலான விருப்பங்கள்',
         'servingGuidelinesTitle': 'பரிமாறும் வழிகாட்டுதல்கள்',
-        
+
         // Content
-        'proteinIntroductionContent': '12-23 மாதங்களுக்கு இடையிலான குழந்தைகளுக்கு சரியான வளர்ச்சி மற்றும் மூளை வளர்ச்சிக்கு தரமான புரதம் தேவை. புரதம் தசைகள், உறுப்புகளை உருவாக்க உதவுகிறது மற்றும் நோய் எதிர்ப்பு சக்தியை ஆதரிக்கிறது.',
-        'animalProteinsContent': 'விலங்கு புரதங்கள் குழந்தை வளர்ச்சிக்கு அவசியமான முழுமையான அமினோ அமில விவரத்தை வழங்குகின்றன:',
-        'plantBasedOptionsContent': 'தாவர அடிப்படையிலான புரதங்கள் பல்வேறு மற்றும் செரிமானத்திற்கு சிறந்தவை. இந்த பாரம்பரிய இலங்கை விருப்பங்கள் குழந்தைகளுக்கு சிறந்தவை:',
-        'servingGuidelinesContent': 'உங்கள் குழந்தையின் சிறிய வயிறை அழுத்தாமல் போதுமான புரதம் பெறுவதை உறுதிசெய்ய இந்த வழிகாட்டுதல்களைப் பின்பற்றவும்:',
-        
+        'proteinIntroductionContent':
+            '12-23 மாதங்களுக்கு இடையிலான குழந்தைகளுக்கு சரியான வளர்ச்சி மற்றும் மூளை வளர்ச்சிக்கு தரமான புரதம் தேவை. புரதம் தசைகள், உறுப்புகளை உருவாக்க உதவுகிறது மற்றும் நோய் எதிர்ப்பு சக்தியை ஆதரிக்கிறது.',
+        'animalProteinsContent':
+            'விலங்கு புரதங்கள் குழந்தை வளர்ச்சிக்கு அவசியமான முழுமையான அமினோ அமில விவரத்தை வழங்குகின்றன:',
+        'plantBasedOptionsContent':
+            'தாவர அடிப்படையிலான புரதங்கள் பல்வேறு மற்றும் செரிமானத்திற்கு சிறந்தவை. இந்த பாரம்பரிய இலங்கை விருப்பங்கள் குழந்தைகளுக்கு சிறந்தவை:',
+        'servingGuidelinesContent':
+            'உங்கள் குழந்தையின் சிறிய வயிறை அழுத்தாமல் போதுமான புரதம் பெறுவதை உறுதிசெய்ய இந்த வழிகாட்டுதல்களைப் பின்பற்றவும்:',
+
         // Animal proteins
         'eggsTitle': 'முட்டைகள்',
         'eggsDescription': 'கிளறிய, வேகவைத்த அல்லது கறியில்',
@@ -511,7 +541,7 @@ class NutritionContentDatabase {
         'chickenDescription': 'மென்மையான, நன்கு சமைத்த துண்டுகள்',
         'yogurtTitle': 'தயிர் மற்றும் பால் பொருட்கள்',
         'yogurtDescription': 'சர்க்கரை சேர்க்காத இயற்கை தயிர்',
-        
+
         // Plant-based options
         'lentilsTitle': 'சிவப்பு பருப்பு (தால்)',
         'lentilsDescription': 'செரிமானம் எளிது மற்றும் பல்துறை',
@@ -521,30 +551,38 @@ class NutritionContentDatabase {
         'greenGramDescription': 'கஞ்சி அல்லது சூப் ஆக',
         'sesameTitle': 'எள்',
         'sesameDescription': 'பேஸ்ட் ஆக அரைத்து',
-        
+
         // Serving guidelines
         'dailyPortionsTitle': 'நாளொன்றுக்கு 2-3 சிறிய பகுதிகள் பரிமாறவும்',
-        'dailyPortionsDescription': 'புரத உட்கொள்ளல் உணவுகள் மற்றும் தின்பண்டங்களில் பரப்பவும்',
+        'dailyPortionsDescription':
+            'புரத உட்கொள்ளல் உணவுகள் மற்றும் தின்பண்டங்களில் பரப்பவும்',
         'mixingFoodsTitle': 'சாதம் போன்ற பழக்கமான உணவுகளுடன் கலக்கவும்',
-        'mixingFoodsDescription': 'சிறந்த ஏற்றுக்கொள்ளலுக்காக புரதங்களை சாதம் அல்லது ரொட்டியுடன் சேர்க்கவும்',
-        'textureTitle': 'சரியான சமையல் மற்றும் மென்மையான அமைப்பை உறுதிசெய்யவும்',
-        'textureDescription': 'அனைத்து புரதங்களும் நன்கு சமைக்கப்பட்ட மற்றும் வயதுக்கு ஏற்ற அமைப்பில் இருக்க வேண்டும்',
-        
+        'mixingFoodsDescription':
+            'சிறந்த ஏற்றுக்கொள்ளலுக்காக புரதங்களை சாதம் அல்லது ரொட்டியுடன் சேர்க்கவும்',
+        'textureTitle':
+            'சரியான சமையல் மற்றும் மென்மையான அமைப்பை உறுதிசெய்யவும்',
+        'textureDescription':
+            'அனைத்து புரதங்களும் நன்கு சமைக்கப்பட்ட மற்றும் வயதுக்கு ஏற்ற அமைப்பில் இருக்க வேண்டும்',
+
         // Dietitian tips
         'drEmilyChakma': 'டாக்டர் எமிலி சக்ரமா, குழந்தை ஊட்டச்சத்து நிபுணர்',
         'drSamalPerera': 'டாக்டர் சமல் பெரேரா, குழந்தைகள் மருத்துவர்',
-        'startWithOneEggTip': 'குழந்தைகளுக்கு நாளொன்றுக்கு ஒரு முட்டையுடன் தொடங்குங்கள்',
-        'startWithOneEggTipContent': 'சிறந்த ஏற்றுக்கொள்ளலுக்காக சாதத்துடன் கலந்து ஒவ்வாமைகளை சரிபார்க்க படிப்படியாக அறிமுகப்படுத்துங்கள்.',
-        'introduceProvidesGraduallyTip': 'புதிய புரதங்களை படிப்படியாக அறிமுகப்படுத்துங்கள்',
-        'introduceProvidesGraduallyTipContent': '4-6 மாதங்களில் உங்கள் குழந்தை திட உணவுக்கு தயாராக இருப்பதற்கான அறிகுறிகளை கவனியுங்கள்: நல்ல தலை கட்டுப்பாடு, ஆதரவுடன் உட்காருதல், மற்றும் உணவில் ஆர்வம்.',
-        
+        'startWithOneEggTip':
+            'குழந்தைகளுக்கு நாளொன்றுக்கு ஒரு முட்டையுடன் தொடங்குங்கள்',
+        'startWithOneEggTipContent':
+            'சிறந்த ஏற்றுக்கொள்ளலுக்காக சாதத்துடன் கலந்து ஒவ்வாமைகளை சரிபார்க்க படிப்படியாக அறிமுகப்படுத்துங்கள்.',
+        'introduceProvidesGraduallyTip':
+            'புதிய புரதங்களை படிப்படியாக அறிமுகப்படுத்துங்கள்',
+        'introduceProvidesGraduallyTipContent':
+            '4-6 மாதங்களில் உங்கள் குழந்தை திட உணவுக்கு தயாராக இருப்பதற்கான அறிகுறிகளை கவனியுங்கள்: நல்ல தலை கட்டுப்பாடு, ஆதரவுடன் உட்காருதல், மற்றும் உணவில் ஆர்வம்.',
+
         // Related articles
         'firstFoodsForBaby': 'குழந்தைக்கான முதல் உணவுகள்',
         'healthySnacks': 'ஆரோக்கியமான தின்பண்டங்கள்',
         'mealPlanning': 'உணவு திட்டமிடல்',
       },
     };
-    
+
     return texts[language] ?? texts['en']!;
   }
 }

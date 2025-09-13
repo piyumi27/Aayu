@@ -17,7 +17,7 @@ class StandardsRepository {
 
   Future<void> initialize() async {
     if (_isInitialized) return;
-    
+
     await _standardsService.initialize();
     await _populateDatabase();
     _isInitialized = true;
@@ -25,28 +25,43 @@ class StandardsRepository {
 
   Future<void> _populateDatabase() async {
     final db = await _databaseService.database;
-    
+
     final existingStandards = await db.query('growth_standards', limit: 1);
     if (existingStandards.isNotEmpty) {
       return;
     }
 
-    final whoGrowthStandards = _standardsService.getGrowthStandards(source: 'WHO');
-    final sriLankaGrowthStandards = _standardsService.getGrowthStandards(source: 'SriLanka');
-    final whoNutritionGuidelines = _standardsService.getNutritionGuidelines(source: 'WHO');
-    final sriLankaNutritionGuidelines = _standardsService.getNutritionGuidelines(source: 'SriLanka');
-    final whoDevelopmentMilestones = _standardsService.getDevelopmentMilestones(source: 'WHO');
-    final sriLankaDevelopmentMilestones = _standardsService.getDevelopmentMilestones(source: 'SriLanka');
+    final whoGrowthStandards =
+        _standardsService.getGrowthStandards(source: 'WHO');
+    final sriLankaGrowthStandards =
+        _standardsService.getGrowthStandards(source: 'SriLanka');
+    final whoNutritionGuidelines =
+        _standardsService.getNutritionGuidelines(source: 'WHO');
+    final sriLankaNutritionGuidelines =
+        _standardsService.getNutritionGuidelines(source: 'SriLanka');
+    final whoDevelopmentMilestones =
+        _standardsService.getDevelopmentMilestones(source: 'WHO');
+    final sriLankaDevelopmentMilestones =
+        _standardsService.getDevelopmentMilestones(source: 'SriLanka');
 
-    for (final standard in [...whoGrowthStandards, ...sriLankaGrowthStandards]) {
+    for (final standard in [
+      ...whoGrowthStandards,
+      ...sriLankaGrowthStandards
+    ]) {
       await db.insert('growth_standards', standard.toMap());
     }
 
-    for (final guideline in [...whoNutritionGuidelines, ...sriLankaNutritionGuidelines]) {
+    for (final guideline in [
+      ...whoNutritionGuidelines,
+      ...sriLankaNutritionGuidelines
+    ]) {
       await db.insert('nutrition_guidelines', guideline.toMap());
     }
 
-    for (final milestone in [...whoDevelopmentMilestones, ...sriLankaDevelopmentMilestones]) {
+    for (final milestone in [
+      ...whoDevelopmentMilestones,
+      ...sriLankaDevelopmentMilestones
+    ]) {
       await db.insert('development_milestones', milestone.toMap());
     }
   }
@@ -62,7 +77,7 @@ class StandardsRepository {
   Future<List<GrowthStandard>> getGrowthStandards({String? source}) async {
     await initialize();
     final db = await _databaseService.database;
-    
+
     final effectiveSource = source ?? _currentStandardSource;
     final maps = await db.query(
       'growth_standards',
@@ -82,11 +97,12 @@ class StandardsRepository {
   }) async {
     await initialize();
     final db = await _databaseService.database;
-    
+
     final effectiveSource = source ?? _currentStandardSource;
     final maps = await db.query(
       'growth_standards',
-      where: 'source = ? AND ageMonths = ? AND (gender = ? OR gender = ?) AND measurementType = ?',
+      where:
+          'source = ? AND ageMonths = ? AND (gender = ? OR gender = ?) AND measurementType = ?',
       whereArgs: [effectiveSource, ageMonths, gender, 'mixed', measurementType],
       limit: 1,
     );
@@ -95,10 +111,11 @@ class StandardsRepository {
     return GrowthStandard.fromMap(maps.first);
   }
 
-  Future<List<NutritionGuideline>> getNutritionGuidelines({String? source}) async {
+  Future<List<NutritionGuideline>> getNutritionGuidelines(
+      {String? source}) async {
     await initialize();
     final db = await _databaseService.database;
-    
+
     final effectiveSource = source ?? _currentStandardSource;
     final maps = await db.query(
       'nutrition_guidelines',
@@ -116,7 +133,7 @@ class StandardsRepository {
   }) async {
     await initialize();
     final db = await _databaseService.database;
-    
+
     final effectiveSource = source ?? _currentStandardSource;
     final maps = await db.query(
       'nutrition_guidelines',
@@ -128,10 +145,11 @@ class StandardsRepository {
     return maps.map((map) => NutritionGuideline.fromMap(map)).toList();
   }
 
-  Future<List<DevelopmentMilestone>> getDevelopmentMilestones({String? source}) async {
+  Future<List<DevelopmentMilestone>> getDevelopmentMilestones(
+      {String? source}) async {
     await initialize();
     final db = await _databaseService.database;
-    
+
     final effectiveSource = source ?? _currentStandardSource;
     final maps = await db.query(
       'development_milestones',
@@ -150,9 +168,10 @@ class StandardsRepository {
   }) async {
     await initialize();
     final db = await _databaseService.database;
-    
+
     final effectiveSource = source ?? _currentStandardSource;
-    String whereClause = 'source = ? AND ageMonthsMin <= ? AND ageMonthsMax >= ?';
+    String whereClause =
+        'source = ? AND ageMonthsMin <= ? AND ageMonthsMax >= ?';
     List<dynamic> whereArgs = [effectiveSource, ageMonths, ageMonths];
 
     if (domain != null) {
@@ -192,14 +211,16 @@ class StandardsRepository {
     required double zScore,
     required String measurementType,
   }) async {
-    return NutritionalClassification.getClassificationForZScore(zScore, measurementType);
+    return NutritionalClassification.getClassificationForZScore(
+        zScore, measurementType);
   }
 
   Future<List<String>> getAvailableSources() async {
     await initialize();
     final db = await _databaseService.database;
-    
-    final maps = await db.rawQuery('SELECT DISTINCT source FROM growth_standards');
+
+    final maps =
+        await db.rawQuery('SELECT DISTINCT source FROM growth_standards');
     return maps.map((map) => map['source'] as String).toList();
   }
 
@@ -255,11 +276,14 @@ class StandardsRepository {
   Future<Map<String, int>> getStandardsStats() async {
     await initialize();
     final db = await _databaseService.database;
-    
-    final growthStandardsCount = await db.rawQuery('SELECT COUNT(*) as count FROM growth_standards');
-    final nutritionGuidelinesCount = await db.rawQuery('SELECT COUNT(*) as count FROM nutrition_guidelines');
-    final milestonesCount = await db.rawQuery('SELECT COUNT(*) as count FROM development_milestones');
-    
+
+    final growthStandardsCount =
+        await db.rawQuery('SELECT COUNT(*) as count FROM growth_standards');
+    final nutritionGuidelinesCount =
+        await db.rawQuery('SELECT COUNT(*) as count FROM nutrition_guidelines');
+    final milestonesCount = await db
+        .rawQuery('SELECT COUNT(*) as count FROM development_milestones');
+
     return {
       'growthStandards': growthStandardsCount.first['count'] as int,
       'nutritionGuidelines': nutritionGuidelinesCount.first['count'] as int,
@@ -287,11 +311,12 @@ class StandardsRepository {
   }) async {
     await initialize();
     final db = await _databaseService.database;
-    
+
     final effectiveSource = source ?? _currentStandardSource;
     final maps = await db.query(
       'growth_standards',
-      where: 'source = ? AND measurementType = ? AND (gender = ? OR gender = ?)',
+      where:
+          'source = ? AND measurementType = ? AND (gender = ? OR gender = ?)',
       whereArgs: [effectiveSource, measurementType, gender, 'mixed'],
       orderBy: 'ageMonths ASC',
     );
@@ -302,7 +327,7 @@ class StandardsRepository {
   Future<bool> hasDataForAge(int ageMonths, {String? source}) async {
     await initialize();
     final db = await _databaseService.database;
-    
+
     final effectiveSource = source ?? _currentStandardSource;
     final growthData = await db.query(
       'growth_standards',

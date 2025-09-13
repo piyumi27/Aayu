@@ -45,9 +45,11 @@ class _GrowthScreenState extends State<GrowthScreen> {
                 _buildCurrentStats(context, provider),
                 const SizedBox(height: 24),
                 if (growthRecords.length >= 2) ...[
-                  _buildGrowthChart(context, growthRecords, 'Weight (kg)', true),
+                  _buildGrowthChart(
+                      context, growthRecords, 'Weight (kg)', true),
                   const SizedBox(height: 24),
-                  _buildGrowthChart(context, growthRecords, 'Height (cm)', false),
+                  _buildGrowthChart(
+                      context, growthRecords, 'Height (cm)', false),
                   const SizedBox(height: 24),
                 ],
                 _buildGrowthHistory(context, growthRecords),
@@ -64,10 +66,9 @@ class _GrowthScreenState extends State<GrowthScreen> {
   }
 
   Widget _buildCurrentStats(BuildContext context, ChildProvider provider) {
-    final latest = provider.growthRecords.isNotEmpty 
-        ? provider.growthRecords.first 
-        : null;
-    
+    final latest =
+        provider.growthRecords.isNotEmpty ? provider.growthRecords.first : null;
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -155,7 +156,8 @@ class _GrowthScreenState extends State<GrowthScreen> {
       ..sort((a, b) => a.date.compareTo(b.date));
 
     final spots = sortedRecords.map((record) {
-      final monthsFromStart = sortedRecords.first.date.difference(record.date).inDays.abs() / 30;
+      final monthsFromStart =
+          sortedRecords.first.date.difference(record.date).inDays.abs() / 30;
       final value = isWeight ? record.weight : record.height;
       return FlSpot(monthsFromStart, value);
     }).toList();
@@ -209,7 +211,10 @@ class _GrowthScreenState extends State<GrowthScreen> {
                       dotData: const FlDotData(show: true),
                       belowBarData: BarAreaData(
                         show: true,
-                        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                        color: Theme.of(context)
+                            .colorScheme
+                            .primary
+                            .withValues(alpha: 0.1),
                       ),
                     ),
                   ],
@@ -237,20 +242,23 @@ class _GrowthScreenState extends State<GrowthScreen> {
             if (records.isEmpty) ...[
               const Text('No growth records yet'),
             ] else ...[
-              ...records.take(5).map((record) => ListTile(
-                    leading: CircleAvatar(
-                      backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-                      child: Icon(
-                        Icons.trending_up,
-                        color: Theme.of(context).colorScheme.primary,
+              ...records.take(5).map(
+                    (record) => ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor:
+                            Theme.of(context).colorScheme.primaryContainer,
+                        child: Icon(
+                          Icons.trending_up,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
                       ),
+                      title: Text('${record.weight} kg, ${record.height} cm'),
+                      subtitle: Text(record.date.toString().split(' ')[0]),
+                      trailing: record.notes != null && record.notes!.isNotEmpty
+                          ? const Icon(Icons.note, size: 16)
+                          : null,
                     ),
-                    title: Text('${record.weight} kg, ${record.height} cm'),
-                    subtitle: Text(record.date.toString().split(' ')[0]),
-                    trailing: record.notes != null && record.notes!.isNotEmpty
-                        ? const Icon(Icons.note, size: 16)
-                        : null,
-                  ),),
+                  ),
             ],
           ],
         ),
@@ -327,7 +335,8 @@ class _AddGrowthRecordSheetState extends State<AddGrowthRecordSheet> {
                   final date = await showDatePicker(
                     context: context,
                     initialDate: _date,
-                    firstDate: DateTime.now().subtract(const Duration(days: 365)),
+                    firstDate:
+                        DateTime.now().subtract(const Duration(days: 365)),
                     lastDate: DateTime.now(),
                   );
                   if (date != null) {
@@ -347,7 +356,8 @@ class _AddGrowthRecordSheetState extends State<AddGrowthRecordSheet> {
                         labelText: 'Weight (kg)',
                         border: OutlineInputBorder(),
                       ),
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      keyboardType:
+                          const TextInputType.numberWithOptions(decimal: true),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Required';
@@ -364,7 +374,8 @@ class _AddGrowthRecordSheetState extends State<AddGrowthRecordSheet> {
                         labelText: 'Height (cm)',
                         border: OutlineInputBorder(),
                       ),
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      keyboardType:
+                          const TextInputType.numberWithOptions(decimal: true),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Required';
@@ -382,7 +393,8 @@ class _AddGrowthRecordSheetState extends State<AddGrowthRecordSheet> {
                   labelText: 'Head Circumference (cm) - Optional',
                   border: OutlineInputBorder(),
                 ),
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                keyboardType:
+                    const TextInputType.numberWithOptions(decimal: true),
               ),
               const SizedBox(height: 16),
               TextFormField(
@@ -413,15 +425,15 @@ class _AddGrowthRecordSheetState extends State<AddGrowthRecordSheet> {
     if (_formKey.currentState!.validate()) {
       final provider = context.read<ChildProvider>();
       final now = DateTime.now();
-      
+
       final record = GrowthRecord(
         id: now.millisecondsSinceEpoch.toString(),
         childId: provider.selectedChild!.id,
         date: _date,
         weight: double.parse(_weightController.text),
         height: double.parse(_heightController.text),
-        headCircumference: _headController.text.isEmpty 
-            ? null 
+        headCircumference: _headController.text.isEmpty
+            ? null
             : double.tryParse(_headController.text),
         notes: _notesController.text.isEmpty ? null : _notesController.text,
         createdAt: now,
@@ -429,7 +441,7 @@ class _AddGrowthRecordSheetState extends State<AddGrowthRecordSheet> {
       );
 
       await provider.addGrowthRecord(record);
-      
+
       if (mounted) {
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(

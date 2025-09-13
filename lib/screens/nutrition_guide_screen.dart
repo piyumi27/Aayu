@@ -58,11 +58,12 @@ class _NutritionGuideScreenState extends State<NutritionGuideScreen>
   void _autoSelectAgeGroup() {
     final provider = Provider.of<ChildProvider>(context, listen: false);
     final selectedChild = provider.selectedChild;
-    
+
     if (selectedChild != null) {
       final now = DateTime.now();
-      final ageInMonths = ((now.difference(selectedChild.birthDate).inDays) / 30).round();
-      
+      final ageInMonths =
+          ((now.difference(selectedChild.birthDate).inDays) / 30).round();
+
       setState(() {
         _selectedAgeGroup = _getAgeGroupForMonths(ageInMonths);
       });
@@ -80,7 +81,8 @@ class _NutritionGuideScreenState extends State<NutritionGuideScreen>
   /// Load articles based on current filters
   void _loadArticles() {
     setState(() {
-      _filteredArticles = _getArticlesForAgeAndCategory(_selectedAgeGroup, _selectedCategory);
+      _filteredArticles =
+          _getArticlesForAgeAndCategory(_selectedAgeGroup, _selectedCategory);
     });
   }
 
@@ -93,12 +95,20 @@ class _NutritionGuideScreenState extends State<NutritionGuideScreen>
 
     final texts = _getLocalizedTexts();
     setState(() {
-      _filteredArticles = _getArticlesForAgeAndCategory(_selectedAgeGroup, _selectedCategory)
-          .where((article) => 
-            article.getLocalizedTitle(texts).toLowerCase().contains(query.toLowerCase()) ||
-            article.getLocalizedExcerpt(texts).toLowerCase().contains(query.toLowerCase()) ||
-            article.tags.any((tag) => tag.toLowerCase().contains(query.toLowerCase())))
-          .toList();
+      _filteredArticles =
+          _getArticlesForAgeAndCategory(_selectedAgeGroup, _selectedCategory)
+              .where((article) =>
+                  article
+                      .getLocalizedTitle(texts)
+                      .toLowerCase()
+                      .contains(query.toLowerCase()) ||
+                  article
+                      .getLocalizedExcerpt(texts)
+                      .toLowerCase()
+                      .contains(query.toLowerCase()) ||
+                  article.tags.any(
+                      (tag) => tag.toLowerCase().contains(query.toLowerCase())))
+              .toList();
     });
   }
 
@@ -155,13 +165,15 @@ class _NutritionGuideScreenState extends State<NutritionGuideScreen>
                 border: InputBorder.none,
                 hintStyle: TextStyle(
                   color: const Color(0xFF9CA3AF),
-                  fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                  fontFamily:
+                      _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                 ),
               ),
               style: TextStyle(
                 color: const Color(0xFF1A1A1A),
                 fontSize: 16,
-                fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                fontFamily:
+                    _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
               ),
               onChanged: _filterArticles,
             )
@@ -171,7 +183,8 @@ class _NutritionGuideScreenState extends State<NutritionGuideScreen>
                 color: const Color(0xFF1A1A1A),
                 fontSize: ResponsiveUtils.getResponsiveFontSize(context, 18),
                 fontWeight: FontWeight.bold,
-                fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                fontFamily:
+                    _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
               ),
             ),
       actions: [
@@ -215,7 +228,7 @@ class _NutritionGuideScreenState extends State<NutritionGuideScreen>
         ),
         items: [
           '0-5 months',
-          '6-11 months', 
+          '6-11 months',
           '12-23 months',
           '24-59 months',
         ].map((ageGroup) {
@@ -224,7 +237,8 @@ class _NutritionGuideScreenState extends State<NutritionGuideScreen>
             child: Text(
               texts[ageGroup.replaceAll(' ', '_').replaceAll('-', '_')]!,
               style: TextStyle(
-                fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                fontFamily:
+                    _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
               ),
             ),
           );
@@ -244,10 +258,26 @@ class _NutritionGuideScreenState extends State<NutritionGuideScreen>
   /// Build category chips
   Widget _buildCategoryChips(Map<String, String> texts) {
     final categories = [
-      {'id': 'healthy_foods', 'icon': Icons.eco, 'color': const Color(0xFF10B981)},
-      {'id': 'meal_ideas', 'icon': Icons.restaurant_menu, 'color': const Color(0xFFF59E0B)},
-      {'id': 'feeding_tips', 'icon': Icons.lightbulb_outline, 'color': const Color(0xFF8B5CF6)},
-      {'id': 'common_issues', 'icon': Icons.help_outline, 'color': const Color(0xFFEF4444)},
+      {
+        'id': 'healthy_foods',
+        'icon': Icons.eco,
+        'color': const Color(0xFF10B981)
+      },
+      {
+        'id': 'meal_ideas',
+        'icon': Icons.restaurant_menu,
+        'color': const Color(0xFFF59E0B)
+      },
+      {
+        'id': 'feeding_tips',
+        'icon': Icons.lightbulb_outline,
+        'color': const Color(0xFF8B5CF6)
+      },
+      {
+        'id': 'common_issues',
+        'icon': Icons.help_outline,
+        'color': const Color(0xFFEF4444)
+      },
     ];
 
     return Container(
@@ -268,7 +298,9 @@ class _NutritionGuideScreenState extends State<NutritionGuideScreen>
                     Icon(
                       category['icon'] as IconData,
                       size: 16,
-                      color: isSelected ? Colors.white : category['color'] as Color,
+                      color: isSelected
+                          ? Colors.white
+                          : category['color'] as Color,
                     ),
                     const SizedBox(width: 6),
                     Text(
@@ -276,8 +308,11 @@ class _NutritionGuideScreenState extends State<NutritionGuideScreen>
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
-                        color: isSelected ? Colors.white : const Color(0xFF374151),
-                        fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                        color:
+                            isSelected ? Colors.white : const Color(0xFF374151),
+                        fontFamily: _selectedLanguage == 'si'
+                            ? 'NotoSerifSinhala'
+                            : null,
                       ),
                     ),
                   ],
@@ -286,7 +321,9 @@ class _NutritionGuideScreenState extends State<NutritionGuideScreen>
                 selectedColor: category['color'] as Color,
                 checkmarkColor: Colors.white,
                 side: BorderSide(
-                  color: isSelected ? category['color'] as Color : const Color(0xFFE5E7EB),
+                  color: isSelected
+                      ? category['color'] as Color
+                      : const Color(0xFFE5E7EB),
                 ),
                 onSelected: (selected) {
                   setState(() {
@@ -328,15 +365,18 @@ class _NutritionGuideScreenState extends State<NutritionGuideScreen>
   }
 
   /// Build individual article card
-  Widget _buildArticleCard(NutritionArticle article, Map<String, String> texts) {
+  Widget _buildArticleCard(
+      NutritionArticle article, Map<String, String> texts) {
     return Card(
       elevation: ResponsiveUtils.getResponsiveElevation(context),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(ResponsiveUtils.getResponsiveBorderRadius(context)),
+        borderRadius: BorderRadius.circular(
+            ResponsiveUtils.getResponsiveBorderRadius(context)),
       ),
       child: SafeInkWell(
         onTap: () => _openArticleDetail(article),
-        borderRadius: BorderRadius.circular(ResponsiveUtils.getResponsiveBorderRadius(context)),
+        borderRadius: BorderRadius.circular(
+            ResponsiveUtils.getResponsiveBorderRadius(context)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -344,8 +384,10 @@ class _NutritionGuideScreenState extends State<NutritionGuideScreen>
               flex: 3,
               child: ClipRRect(
                 borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(ResponsiveUtils.getResponsiveBorderRadius(context)),
-                  topRight: Radius.circular(ResponsiveUtils.getResponsiveBorderRadius(context)),
+                  topLeft: Radius.circular(
+                      ResponsiveUtils.getResponsiveBorderRadius(context)),
+                  topRight: Radius.circular(
+                      ResponsiveUtils.getResponsiveBorderRadius(context)),
                 ),
                 child: Container(
                   width: double.infinity,
@@ -364,7 +406,8 @@ class _NutritionGuideScreenState extends State<NutritionGuideScreen>
                       Center(
                         child: Icon(
                           article.icon,
-                          size: ResponsiveUtils.getResponsiveIconSize(context, 48),
+                          size: ResponsiveUtils.getResponsiveIconSize(
+                              context, 48),
                           color: article.primaryColor,
                         ),
                       ),
@@ -373,7 +416,8 @@ class _NutritionGuideScreenState extends State<NutritionGuideScreen>
                           top: 8,
                           right: 8,
                           child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 6, vertical: 2),
                             decoration: BoxDecoration(
                               color: Colors.black.withValues(alpha: 0.6),
                               borderRadius: BorderRadius.circular(10),
@@ -403,11 +447,14 @@ class _NutritionGuideScreenState extends State<NutritionGuideScreen>
                     Text(
                       article.getLocalizedTitle(texts),
                       style: TextStyle(
-                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
+                        fontSize:
+                            ResponsiveUtils.getResponsiveFontSize(context, 14),
                         fontWeight: FontWeight.bold,
                         color: const Color(0xFF1A1A1A),
                         height: 1.2,
-                        fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                        fontFamily: _selectedLanguage == 'si'
+                            ? 'NotoSerifSinhala'
+                            : null,
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
@@ -417,10 +464,13 @@ class _NutritionGuideScreenState extends State<NutritionGuideScreen>
                       child: Text(
                         article.getLocalizedExcerpt(texts),
                         style: TextStyle(
-                          fontSize: ResponsiveUtils.getResponsiveFontSize(context, 12),
+                          fontSize: ResponsiveUtils.getResponsiveFontSize(
+                              context, 12),
                           color: const Color(0xFF6B7280),
                           height: 1.3,
-                          fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                          fontFamily: _selectedLanguage == 'si'
+                              ? 'NotoSerifSinhala'
+                              : null,
                         ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
@@ -507,7 +557,7 @@ class _NutritionGuideScreenState extends State<NutritionGuideScreen>
   /// Show more options menu
   void _showMoreOptions(BuildContext context) {
     final texts = _getLocalizedTexts();
-    
+
     showModalBottomSheet(
       context: context,
       builder: (context) => SafeArea(
@@ -519,7 +569,8 @@ class _NutritionGuideScreenState extends State<NutritionGuideScreen>
               title: Text(
                 texts['savedArticles']!,
                 style: TextStyle(
-                  fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                  fontFamily:
+                      _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                 ),
               ),
               onTap: () {
@@ -532,7 +583,8 @@ class _NutritionGuideScreenState extends State<NutritionGuideScreen>
               title: Text(
                 texts['feedback']!,
                 style: TextStyle(
-                  fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                  fontFamily:
+                      _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                 ),
               ),
               onTap: () {
@@ -545,7 +597,8 @@ class _NutritionGuideScreenState extends State<NutritionGuideScreen>
               title: Text(
                 texts['about']!,
                 style: TextStyle(
-                  fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                  fontFamily:
+                      _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                 ),
               ),
               onTap: () {
@@ -562,19 +615,20 @@ class _NutritionGuideScreenState extends State<NutritionGuideScreen>
   /// Open article detail screen
   void _openArticleDetail(NutritionArticle article) {
     final texts = _getLocalizedTexts();
-    
+
     // Get rich content for specific articles
     NutritionContent? nutritionContent;
     if (article.id == 'protein_sources_12_23m') {
       nutritionContent = NutritionContentDatabase.getProteinSourcesContent();
     }
-    
+
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => NutritionArticleDetailScreen(
           articleId: article.id,
           title: article.getLocalizedTitle(texts),
-          content: article.getLocalizedExcerpt(texts), // In real app, would load full content
+          content: article.getLocalizedExcerpt(
+              texts), // In real app, would load full content
           icon: article.icon,
           primaryColor: article.primaryColor,
           readTime: article.readTime,
@@ -586,11 +640,12 @@ class _NutritionGuideScreenState extends State<NutritionGuideScreen>
   }
 
   /// Get articles for specific age group and category
-  List<NutritionArticle> _getArticlesForAgeAndCategory(String ageGroup, String category) {
+  List<NutritionArticle> _getArticlesForAgeAndCategory(
+      String ageGroup, String category) {
     return _getSriLankanNutritionArticles()
-        .where((article) => 
-          article.ageGroups.contains(ageGroup) && 
-          article.categories.contains(category))
+        .where((article) =>
+            article.ageGroups.contains(ageGroup) &&
+            article.categories.contains(category))
         .toList();
   }
 
@@ -620,7 +675,7 @@ class _NutritionGuideScreenState extends State<NutritionGuideScreen>
         readTime: 7,
         tags: ['breastfeeding', 'technique', 'comfort'],
       ),
-      
+
       // 6-11 months articles
       NutritionArticle(
         id: 'first_foods_sl',
@@ -644,8 +699,8 @@ class _NutritionGuideScreenState extends State<NutritionGuideScreen>
         readTime: 6,
         tags: ['මුං ආටා', 'කරකඳ', 'iron', 'anemia prevention'],
       ),
-      
-      // 12-23 months articles  
+
+      // 12-23 months articles
       NutritionArticle(
         id: 'family_meals',
         titleKey: 'adaptingFamilyMeals',
@@ -668,7 +723,7 @@ class _NutritionGuideScreenState extends State<NutritionGuideScreen>
         readTime: 12,
         tags: ['picky eating', 'behavior', 'variety'],
       ),
-      
+
       // Traditional Sri Lankan foods
       NutritionArticle(
         id: 'traditional_porridges',
@@ -692,7 +747,7 @@ class _NutritionGuideScreenState extends State<NutritionGuideScreen>
         readTime: 8,
         tags: ['කිරි ගස්', 'පේර', 'අරනේ', 'fruits', 'vitamins'],
       ),
-      
+
       // Common feeding issues
       NutritionArticle(
         id: 'feeding_difficulties',
@@ -705,7 +760,7 @@ class _NutritionGuideScreenState extends State<NutritionGuideScreen>
         readTime: 9,
         tags: ['feeding problems', 'solutions', 'professional help'],
       ),
-      
+
       // Protein sources for 12-23 months
       NutritionArticle(
         id: 'protein_sources_12_23m',
@@ -716,7 +771,13 @@ class _NutritionGuideScreenState extends State<NutritionGuideScreen>
         icon: Icons.fitness_center,
         primaryColor: const Color(0xFFEA580C),
         readTime: 8,
-        tags: ['protein', 'කිරි ගස්', 'මුං ආටා', 'animal protein', 'plant protein'],
+        tags: [
+          'protein',
+          'කිරි ගස්',
+          'මුං ආටා',
+          'animal protein',
+          'plant protein'
+        ],
       ),
     ];
   }
@@ -744,28 +805,38 @@ class _NutritionGuideScreenState extends State<NutritionGuideScreen>
         'savedArticles': 'Saved Articles',
         'feedback': 'Send Feedback',
         'about': 'About Nutrition Guide',
-        
+
         // Article titles and excerpts
         'breastfeedingBenefits': 'Benefits of Exclusive Breastfeeding',
-        'breastfeedingBenefitsExcerpt': 'Learn about the incredible benefits of breast milk for Sri Lankan babies in their first 6 months.',
+        'breastfeedingBenefitsExcerpt':
+            'Learn about the incredible benefits of breast milk for Sri Lankan babies in their first 6 months.',
         'properLatchTechnique': 'Proper Breastfeeding Latch',
-        'properLatchTechniqueExcerpt': 'Step-by-step guide to achieving comfortable and effective breastfeeding.',
+        'properLatchTechniqueExcerpt':
+            'Step-by-step guide to achieving comfortable and effective breastfeeding.',
         'sriLankanFirstFoods': 'Sri Lankan First Foods Guide',
-        'sriLankanFirstFoodsExcerpt': 'Traditional Lankan foods perfect for introducing solids: කිරි ගස්, rice water, and safe preparations.',
+        'sriLankanFirstFoodsExcerpt':
+            'Traditional Lankan foods perfect for introducing solids: කිරි ගස්, rice water, and safe preparations.',
         'ironRichSriLankanFoods': 'Iron-Rich Lankan Foods',
-        'ironRichSriLankanFoodsExcerpt': 'Prevent anemia with locally available iron sources like මුං ආටා and කරකඳ.',
+        'ironRichSriLankanFoodsExcerpt':
+            'Prevent anemia with locally available iron sources like මුං ආටා and කරකඳ.',
         'adaptingFamilyMeals': 'Adapting Family Rice & Curry',
-        'adaptingFamilyMealsExcerpt': 'How to modify traditional කරවල and පරිප්ප for toddlers safely.',
+        'adaptingFamilyMealsExcerpt':
+            'How to modify traditional කරවල and පරිප්ප for toddlers safely.',
         'dealingWithPickyEating': 'Overcoming Picky Eating',
-        'dealingWithPickyEatingExcerpt': 'Practical strategies for encouraging variety in your child\'s diet.',
+        'dealingWithPickyEatingExcerpt':
+            'Practical strategies for encouraging variety in your child\'s diet.',
         'traditionalSriLankanPorridges': 'Traditional Lankan Porridges',
-        'traditionalSriLankanPorridgesExcerpt': 'Nutritious කොල කේඩ recipes perfect for growing babies.',
+        'traditionalSriLankanPorridgesExcerpt':
+            'Nutritious කොල කේඩ recipes perfect for growing babies.',
         'sriLankanFruitsForBabies': 'Local Fruits for Babies',
-        'sriLankanFruitsForBabiesExcerpt': 'Safe ways to introduce කිරි ගස්, පේර, and අරනේ to your little one.',
+        'sriLankanFruitsForBabiesExcerpt':
+            'Safe ways to introduce කිරි ගස්, පේර, and අරනේ to your little one.',
         'commonFeedingDifficulties': 'Feeding Problem Solutions',
-        'commonFeedingDifficultiesExcerpt': 'Expert advice for overcoming common feeding challenges in Sri Lankan context.',
+        'commonFeedingDifficultiesExcerpt':
+            'Expert advice for overcoming common feeding challenges in Sri Lankan context.',
         'proteinSources12To23Title': 'Protein Sources for 12-23 Month Kids',
-        'proteinSources12To23Excerpt': 'Complete guide to animal proteins, plant-based options, and serving guidelines with Sri Lankan traditional foods.',
+        'proteinSources12To23Excerpt':
+            'Complete guide to animal proteins, plant-based options, and serving guidelines with Sri Lankan traditional foods.',
       },
       'si': {
         'title': 'පෝෂණ මාර්ගෝපදේශය',
@@ -787,28 +858,39 @@ class _NutritionGuideScreenState extends State<NutritionGuideScreen>
         'savedArticles': 'සුරකින ලද ලිපි',
         'feedback': 'ප්‍රතිපෝෂණ යවන්න',
         'about': 'පෝෂණ මාර්ගෝපදේශය පිළිබඳ',
-        
-        // Article titles and excerpts  
+
+        // Article titles and excerpts
         'breastfeedingBenefits': 'විශේෂිත මව්කිරි පාන ප්‍රතිලාභ',
-        'breastfeedingBenefitsExcerpt': 'ශ්‍රී ලාංකික ළදරුවන්ට මව්කිරි දීමේ අප්‍රතිම ප්‍රතිලාභ ගැන ඉගෙන ගන්න.',
+        'breastfeedingBenefitsExcerpt':
+            'ශ්‍රී ලාංකික ළදරුවන්ට මව්කිරි දීමේ අප්‍රතිම ප්‍රතිලාභ ගැන ඉගෙන ගන්න.',
         'properLatchTechnique': 'නිවැරදි මව්කිරි දීමේ ක්‍රමය',
-        'properLatchTechniqueExcerpt': 'සුවපහසු හා ඵලදායී මව්කිරි දීම සඳහා පියවරෙන් පියවර මාර්ගෝපදේශය.',
+        'properLatchTechniqueExcerpt':
+            'සුවපහසු හා ඵලදායී මව්කිරි දීම සඳහා පියවරෙන් පියවර මාර්ගෝපදේශය.',
         'sriLankanFirstFoods': 'ශ්‍රී ලාංකික ප්‍රථම ආහාර මාර්ගෝපදේශය',
-        'sriLankanFirstFoodsExcerpt': 'ඝන ආහාර හඳුන්වා දීම සඳහා සම්ප්‍රදායික ලාංකික ආහාර: කිරි ගස්, බත් වතුර සහ ආරක්ෂිත සැකසීම්.',
+        'sriLankanFirstFoodsExcerpt':
+            'ඝන ආහාර හඳුන්වා දීම සඳහා සම්ප්‍රදායික ලාංකික ආහාර: කිරි ගස්, බත් වතුර සහ ආරක්ෂිත සැකසීම්.',
         'ironRichSriLankanFoods': 'යකඩ බහුල ලාංකික ආහාර',
-        'ironRichSriLankanFoodsExcerpt': 'මුං ආටා සහ කරකඳ වැනි දේශීයව ලබා ගත හැකි යකඩ ප්‍රභවයන් සමඟ රක්තහීනතාවය වළක්වන්න.',
+        'ironRichSriLankanFoodsExcerpt':
+            'මුං ආටා සහ කරකඳ වැනි දේශීයව ලබා ගත හැකි යකඩ ප්‍රභවයන් සමඟ රක්තහීනතාවය වළක්වන්න.',
         'adaptingFamilyMeals': 'පවුලේ බත් කරී අනුවර්තනය',
-        'adaptingFamilyMealsExcerpt': 'කුඩා දරුවන් සඳහා සම්ප්‍රදායික කරවල සහ පරිප්ප ආරක්ෂිතව වෙනස් කරන්නේ කෙසේද.',
+        'adaptingFamilyMealsExcerpt':
+            'කුඩා දරුවන් සඳහා සම්ප්‍රදායික කරවල සහ පරිප්ප ආරක්ෂිතව වෙනස් කරන්නේ කෙසේද.',
         'dealingWithPickyEating': 'ආහාර තේරීමේ ගැටලු ජයගැනීම',
-        'dealingWithPickyEatingExcerpt': 'ඔබේ දරුවාගේ ආහාර වේලේ විවිධත්වය දිරිමත් කිරීම සඳහා ප්‍රායෝගික උපාය මාර්ග.',
+        'dealingWithPickyEatingExcerpt':
+            'ඔබේ දරුවාගේ ආහාර වේලේ විවිධත්වය දිරිමත් කිරීම සඳහා ප්‍රායෝගික උපාය මාර්ග.',
         'traditionalSriLankanPorridges': 'සම්ප්‍රදායික ලාංකික කොල කේඩ',
-        'traditionalSriLankanPorridgesExcerpt': 'වැඩෙන ළදරුවන් සඳහා පෝෂ්‍යදායී කොල කේඩ වට්ටෝරු.',
+        'traditionalSriLankanPorridgesExcerpt':
+            'වැඩෙන ළදරුවන් සඳහා පෝෂ්‍යදායී කොල කේඩ වට්ටෝරු.',
         'sriLankanFruitsForBabies': 'ළදරුවන් සඳහා දේශීය පලතුරු',
-        'sriLankanFruitsForBabiesExcerpt': 'ඔබේ කුඩා දරුවාට කිරි ගස්, පේර, සහ අරනේ හඳුන්වා දීමේ ආරක්ෂිත ක්‍රම.',
+        'sriLankanFruitsForBabiesExcerpt':
+            'ඔබේ කුඩා දරුවාට කිරි ගස්, පේර, සහ අරනේ හඳුන්වා දීමේ ආරක්ෂිත ක්‍රම.',
         'commonFeedingDifficulties': 'ආහාර ගැටලු විසඳුම්',
-        'commonFeedingDifficultiesExcerpt': 'ශ්‍රී ලාංකික සන්දර්භය තුළ පොදු ආහාර දීමේ අභියෝග ජයගැනීම සඳහා ප්‍රවීණ උපදෙස්.',
-        'proteinSources12To23Title': '12-23 මාස වයස් දරුවන් සඳහා ප්‍රෝටීන් ප්‍රභව',
-        'proteinSources12To23Excerpt': 'සත්ව ප්‍රෝටීන්, ශාක ජාතීය විකල්ප, සහ ශ්‍රී ලාංකික සම්ප්‍රදායික ආහාර සමඟ සේවන මාර්ගෝපදේශය.',
+        'commonFeedingDifficultiesExcerpt':
+            'ශ්‍රී ලාංකික සන්දර්භය තුළ පොදු ආහාර දීමේ අභියෝග ජයගැනීම සඳහා ප්‍රවීණ උපදෙස්.',
+        'proteinSources12To23Title':
+            '12-23 මාස වයස් දරුවන් සඳහා ප්‍රෝටීන් ප්‍රභව',
+        'proteinSources12To23Excerpt':
+            'සත්ව ප්‍රෝටීන්, ශාක ජාතීය විකල්ප, සහ ශ්‍රී ලාංකික සම්ප්‍රදායික ආහාර සමඟ සේවන මාර්ගෝපදේශය.',
       },
       'ta': {
         'title': 'ஊட்டச்சத்து வழிகாட்டி',
@@ -830,28 +912,39 @@ class _NutritionGuideScreenState extends State<NutritionGuideScreen>
         'savedArticles': 'சேமிக்கப்பட்ட கட்டுரைகள்',
         'feedback': 'கருத்து அனுப்பவும்',
         'about': 'ஊட்டச்சத்து வழிகாட்டி பற்றி',
-        
+
         // Article titles and excerpts
         'breastfeedingBenefits': 'பிரத்யேக தாய்ப்பாலின் நன்மைகள்',
-        'breastfeedingBenefitsExcerpt': 'இலங்கை குழந்தைகளுக்கு தாய்ப்பாலின் அற்புதமான நன்மைகளைப் பற்றி அறியுங்கள்.',
+        'breastfeedingBenefitsExcerpt':
+            'இலங்கை குழந்தைகளுக்கு தாய்ப்பாலின் அற்புதமான நன்மைகளைப் பற்றி அறியுங்கள்.',
         'properLatchTechnique': 'சரியான தாய்ப்பால் கொடுக்கும் முறை',
-        'properLatchTechniqueExcerpt': 'வசதியான மற்றும் திறமையான தாய்ப்பால் கொடுப்பதற்கான படிப்படியான வழிகாட்டி.',
+        'properLatchTechniqueExcerpt':
+            'வசதியான மற்றும் திறமையான தாய்ப்பால் கொடுப்பதற்கான படிப்படியான வழிகாட்டி.',
         'sriLankanFirstFoods': 'இலங்கை முதல் உணவுகள் வழிகாட்டி',
-        'sriLankanFirstFoodsExcerpt': 'திட உணவுகளை அறிமுகப்படுத்துவதற்கான பாரம்பரிய இலங்கை உணவுகள்: கிரி கஸ், சாதம் தண்ணீர், மற்றும் பாதுகாப்பான தயாரிப்புகள்.',
+        'sriLankanFirstFoodsExcerpt':
+            'திட உணவுகளை அறிமுகப்படுத்துவதற்கான பாரம்பரிய இலங்கை உணவுகள்: கிரி கஸ், சாதம் தண்ணீர், மற்றும் பாதுகாப்பான தயாரிப்புகள்.',
         'ironRichSriLankanFoods': 'இரும்புச்சத்து நிறைந்த இலங்கை உணவுகள்',
-        'ironRichSriLankanFoodsExcerpt': 'மூங் ஆடா மற்றும் கரகட் போன்ற உள்நாட்டில் கிடைக்கும் இரும்பு மூலங்களுடன் இரத்த சோகையைத் தடுக்கவும்.',
+        'ironRichSriLankanFoodsExcerpt':
+            'மூங் ஆடா மற்றும் கரகட் போன்ற உள்நாட்டில் கிடைக்கும் இரும்பு மூலங்களுடன் இரத்த சோகையைத் தடுக்கவும்.',
         'adaptingFamilyMeals': 'குடும்ப சாதம் மற்றும் கறியை மாற்றியமைத்தல்',
-        'adaptingFamilyMealsExcerpt': 'குழந்தைகளுக்கு பாரம்பரிய கரவல் மற்றும் பரிப்பை பாதுகாப்பாக மாற்றுவது எப்படி.',
-        'dealingWithPickyEating': 'தேர்ந்தெடுத்து சாப்பிடும் பழக்கத்தை சமாளித்தல்',
-        'dealingWithPickyEatingExcerpt': 'உங்கள் குழந்தையின் உணவில் பல்வேறு வகைகளை ஊக்குவிப்பதற்கான நடைமுறை உத்திகள்.',
+        'adaptingFamilyMealsExcerpt':
+            'குழந்தைகளுக்கு பாரம்பரிய கரவல் மற்றும் பரிப்பை பாதுகாப்பாக மாற்றுவது எப்படி.',
+        'dealingWithPickyEating':
+            'தேர்ந்தெடுத்து சாப்பிடும் பழக்கத்தை சமாளித்தல்',
+        'dealingWithPickyEatingExcerpt':
+            'உங்கள் குழந்தையின் உணவில் பல்வேறு வகைகளை ஊக்குவிப்பதற்கான நடைமுறை உத்திகள்.',
         'traditionalSriLankanPorridges': 'பாரம்பரிய இலங்கை கஞ்சி',
-        'traditionalSriLankanPorridgesExcerpt': 'வளரும் குழந்தைகளுக்கு ஏற்ற சத்தான கொல் கேட வகைகள்.',
+        'traditionalSriLankanPorridgesExcerpt':
+            'வளரும் குழந்தைகளுக்கு ஏற்ற சத்தான கொல் கேட வகைகள்.',
         'sriLankanFruitsForBabies': 'குழந்தைகளுக்கான உள்ளூர் பழங்கள்',
-        'sriLankanFruitsForBabiesExcerpt': 'உங்கள் சிறு குழந்தைக்கு கிரி கஸ், பேர், மற்றும் அரனே அறிமுகப்படுத்தும் பாதுகாப்பான வழிகள்.',
+        'sriLankanFruitsForBabiesExcerpt':
+            'உங்கள் சிறு குழந்தைக்கு கிரி கஸ், பேர், மற்றும் அரனே அறிமுகப்படுத்தும் பாதுகாப்பான வழிகள்.',
         'commonFeedingDifficulties': 'உணவு பிரச்சினை தீர்வுகள்',
-        'commonFeedingDifficultiesExcerpt': 'இலங்கை சூழலில் பொதுவான உணவு கொடுக்கும் சவால்களை சமாளிப்பதற்கான நிபுணர் அறிவுரை.',
+        'commonFeedingDifficultiesExcerpt':
+            'இலங்கை சூழலில் பொதுவான உணவு கொடுக்கும் சவால்களை சமாளிப்பதற்கான நிபுணர் அறிவுரை.',
         'proteinSources12To23Title': '12-23 மாத குழந்தைகளுக்கான புரத ஆதாரங்கள்',
-        'proteinSources12To23Excerpt': 'விலங்கு புரதங்கள், தாவர அடிப்படையிலான விருப்பங்கள், மற்றும் இலங்கை பாரம்பரிய உணவுகளுடன் வழங்கும் வழிகாட்டுதல்கள்.',
+        'proteinSources12To23Excerpt':
+            'விலங்கு புரதங்கள், தாவர அடிப்படையிலான விருப்பங்கள், மற்றும் இலங்கை பாரம்பரிய உணவுகளுடன் வழங்கும் வழிகாட்டுதல்கள்.',
       },
     };
     return texts[_selectedLanguage] ?? texts['en']!;

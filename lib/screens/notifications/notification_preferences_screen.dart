@@ -8,19 +8,23 @@ class NotificationPreferencesScreen extends StatefulWidget {
   const NotificationPreferencesScreen({super.key});
 
   @override
-  State<NotificationPreferencesScreen> createState() => _NotificationPreferencesScreenState();
+  State<NotificationPreferencesScreen> createState() =>
+      _NotificationPreferencesScreenState();
 }
 
-class _NotificationPreferencesScreenState extends State<NotificationPreferencesScreen> {
-  final LocalNotificationService _localNotificationService = LocalNotificationService();
-  final PushNotificationService _pushNotificationService = PushNotificationService();
-  
+class _NotificationPreferencesScreenState
+    extends State<NotificationPreferencesScreen> {
+  final LocalNotificationService _localNotificationService =
+      LocalNotificationService();
+  final PushNotificationService _pushNotificationService =
+      PushNotificationService();
+
   bool _pushNotificationsEnabled = true;
   bool _localNotificationsEnabled = true;
   bool _soundEnabled = true;
   bool _vibrationEnabled = true;
   bool _badgeEnabled = true;
-  
+
   Map<String, bool> _categoryPreferences = {
     'critical_health_alerts': true,
     'health_alerts': true,
@@ -32,12 +36,12 @@ class _NotificationPreferencesScreenState extends State<NotificationPreferencesS
     'appointment_reminders': true,
     'general_notifications': false,
   };
-  
+
   Map<String, TimeOfDay> _quietHours = {
     'start': const TimeOfDay(hour: 22, minute: 0),
     'end': const TimeOfDay(hour: 7, minute: 0),
   };
-  
+
   bool _quietHoursEnabled = true;
   String _notificationFrequency = 'normal'; // normal, minimal, maximum
   bool _isLoading = true;
@@ -50,24 +54,29 @@ class _NotificationPreferencesScreenState extends State<NotificationPreferencesS
 
   Future<void> _loadPreferences() async {
     setState(() => _isLoading = true);
-    
+
     try {
       final prefs = await SharedPreferences.getInstance();
-      
+
       setState(() {
-        _pushNotificationsEnabled = prefs.getBool('push_notifications_enabled') ?? true;
-        _localNotificationsEnabled = prefs.getBool('local_notifications_enabled') ?? true;
+        _pushNotificationsEnabled =
+            prefs.getBool('push_notifications_enabled') ?? true;
+        _localNotificationsEnabled =
+            prefs.getBool('local_notifications_enabled') ?? true;
         _soundEnabled = prefs.getBool('notification_sound_enabled') ?? true;
-        _vibrationEnabled = prefs.getBool('notification_vibration_enabled') ?? true;
+        _vibrationEnabled =
+            prefs.getBool('notification_vibration_enabled') ?? true;
         _badgeEnabled = prefs.getBool('notification_badge_enabled') ?? true;
         _quietHoursEnabled = prefs.getBool('quiet_hours_enabled') ?? true;
-        _notificationFrequency = prefs.getString('notification_frequency') ?? 'normal';
-        
+        _notificationFrequency =
+            prefs.getString('notification_frequency') ?? 'normal';
+
         // Load category preferences
         _categoryPreferences.forEach((key, defaultValue) {
-          _categoryPreferences[key] = prefs.getBool('category_$key') ?? defaultValue;
+          _categoryPreferences[key] =
+              prefs.getBool('category_$key') ?? defaultValue;
         });
-        
+
         // Load quiet hours
         _quietHours['start'] = TimeOfDay(
           hour: prefs.getInt('quiet_hours_start_hour') ?? 22,
@@ -81,33 +90,36 @@ class _NotificationPreferencesScreenState extends State<NotificationPreferencesS
     } catch (e) {
       debugPrint('Error loading notification preferences: $e');
     }
-    
+
     setState(() => _isLoading = false);
   }
 
   Future<void> _savePreferences() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      
-      await prefs.setBool('push_notifications_enabled', _pushNotificationsEnabled);
-      await prefs.setBool('local_notifications_enabled', _localNotificationsEnabled);
+
+      await prefs.setBool(
+          'push_notifications_enabled', _pushNotificationsEnabled);
+      await prefs.setBool(
+          'local_notifications_enabled', _localNotificationsEnabled);
       await prefs.setBool('notification_sound_enabled', _soundEnabled);
       await prefs.setBool('notification_vibration_enabled', _vibrationEnabled);
       await prefs.setBool('notification_badge_enabled', _badgeEnabled);
       await prefs.setBool('quiet_hours_enabled', _quietHoursEnabled);
       await prefs.setString('notification_frequency', _notificationFrequency);
-      
+
       // Save category preferences
       for (final entry in _categoryPreferences.entries) {
         await prefs.setBool('category_${entry.key}', entry.value);
       }
-      
+
       // Save quiet hours
       await prefs.setInt('quiet_hours_start_hour', _quietHours['start']!.hour);
-      await prefs.setInt('quiet_hours_start_minute', _quietHours['start']!.minute);
+      await prefs.setInt(
+          'quiet_hours_start_minute', _quietHours['start']!.minute);
       await prefs.setInt('quiet_hours_end_hour', _quietHours['end']!.hour);
       await prefs.setInt('quiet_hours_end_minute', _quietHours['end']!.minute);
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Notification preferences saved')),
@@ -127,9 +139,11 @@ class _NotificationPreferencesScreenState extends State<NotificationPreferencesS
     final TimeOfDay? picked = await showTimePicker(
       context: context,
       initialTime: _quietHours[type]!,
-      helpText: type == 'start' ? 'Select quiet hours start' : 'Select quiet hours end',
+      helpText: type == 'start'
+          ? 'Select quiet hours start'
+          : 'Select quiet hours end',
     );
-    
+
     if (picked != null) {
       setState(() {
         _quietHours[type] = picked;
@@ -159,9 +173,13 @@ class _NotificationPreferencesScreenState extends State<NotificationPreferencesS
       case 'general_notifications':
         return 'General Notifications';
       default:
-        return key.replaceAll('_', ' ').split(' ').map((word) => 
-          word.isNotEmpty ? '${word[0].toUpperCase()}${word.substring(1)}' : word
-        ).join(' ');
+        return key
+            .replaceAll('_', ' ')
+            .split(' ')
+            .map((word) => word.isNotEmpty
+                ? '${word[0].toUpperCase()}${word.substring(1)}'
+                : word)
+            .join(' ');
     }
   }
 
@@ -207,18 +225,20 @@ class _NotificationPreferencesScreenState extends State<NotificationPreferencesS
             Text(
               title,
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-                fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
-              ),
+                    fontWeight: FontWeight.w600,
+                    fontSize:
+                        ResponsiveUtils.getResponsiveFontSize(context, 16),
+                  ),
             ),
             if (subtitle != null) ...[
               const SizedBox(height: 4),
               Text(
                 subtitle,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.outline,
-                  fontSize: ResponsiveUtils.getResponsiveFontSize(context, 12),
-                ),
+                      color: Theme.of(context).colorScheme.outline,
+                      fontSize:
+                          ResponsiveUtils.getResponsiveFontSize(context, 12),
+                    ),
               ),
             ],
             SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 12)),
@@ -238,24 +258,32 @@ class _NotificationPreferencesScreenState extends State<NotificationPreferencesS
     bool enabled = true,
   }) {
     return ListTile(
-      leading: icon != null ? Icon(icon, 
-        size: ResponsiveUtils.getResponsiveIconSize(context, 24),
-        color: enabled ? null : Theme.of(context).disabledColor,
-      ) : null,
+      leading: icon != null
+          ? Icon(
+              icon,
+              size: ResponsiveUtils.getResponsiveIconSize(context, 24),
+              color: enabled ? null : Theme.of(context).disabledColor,
+            )
+          : null,
       title: Text(
         title,
         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-          fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
-          color: enabled ? null : Theme.of(context).disabledColor,
-        ),
+              fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
+              color: enabled ? null : Theme.of(context).disabledColor,
+            ),
       ),
-      subtitle: subtitle != null ? Text(
-        subtitle,
-        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-          fontSize: ResponsiveUtils.getResponsiveFontSize(context, 12),
-          color: enabled ? Theme.of(context).colorScheme.outline : Theme.of(context).disabledColor,
-        ),
-      ) : null,
+      subtitle: subtitle != null
+          ? Text(
+              subtitle,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    fontSize:
+                        ResponsiveUtils.getResponsiveFontSize(context, 12),
+                    color: enabled
+                        ? Theme.of(context).colorScheme.outline
+                        : Theme.of(context).disabledColor,
+                  ),
+            )
+          : null,
       trailing: Switch(
         value: value,
         onChanged: enabled ? onChanged : null,
@@ -325,7 +353,8 @@ class _NotificationPreferencesScreenState extends State<NotificationPreferencesS
                 subtitle: 'Play sound for notifications',
                 value: _soundEnabled,
                 icon: Icons.volume_up,
-                enabled: _localNotificationsEnabled || _pushNotificationsEnabled,
+                enabled:
+                    _localNotificationsEnabled || _pushNotificationsEnabled,
                 onChanged: (value) {
                   setState(() => _soundEnabled = value);
                   _savePreferences();
@@ -336,7 +365,8 @@ class _NotificationPreferencesScreenState extends State<NotificationPreferencesS
                 subtitle: 'Vibrate device for notifications',
                 value: _vibrationEnabled,
                 icon: Icons.vibration,
-                enabled: _localNotificationsEnabled || _pushNotificationsEnabled,
+                enabled:
+                    _localNotificationsEnabled || _pushNotificationsEnabled,
                 onChanged: (value) {
                   setState(() => _vibrationEnabled = value);
                   _savePreferences();
@@ -347,7 +377,8 @@ class _NotificationPreferencesScreenState extends State<NotificationPreferencesS
                 subtitle: 'Show unread count on app icon',
                 value: _badgeEnabled,
                 icon: Icons.circle_notifications,
-                enabled: _localNotificationsEnabled || _pushNotificationsEnabled,
+                enabled:
+                    _localNotificationsEnabled || _pushNotificationsEnabled,
                 onChanged: (value) {
                   setState(() => _badgeEnabled = value);
                   _savePreferences();
@@ -361,9 +392,11 @@ class _NotificationPreferencesScreenState extends State<NotificationPreferencesS
             title: 'Notification Categories',
             subtitle: 'Choose which types of notifications to receive',
             children: _categoryPreferences.entries.map((entry) {
-              final isEnabled = (_localNotificationsEnabled || _pushNotificationsEnabled) &&
-                  (entry.key != 'critical_health_alerts'); // Critical alerts always enabled
-              
+              final isEnabled = (_localNotificationsEnabled ||
+                      _pushNotificationsEnabled) &&
+                  (entry.key !=
+                      'critical_health_alerts'); // Critical alerts always enabled
+
               return _buildSwitchTile(
                 title: _getCategoryDisplayName(entry.key),
                 subtitle: _getCategoryDescription(entry.key),
@@ -384,10 +417,12 @@ class _NotificationPreferencesScreenState extends State<NotificationPreferencesS
             children: [
               _buildSwitchTile(
                 title: 'Enable Quiet Hours',
-                subtitle: 'Silence non-critical notifications during specified hours',
+                subtitle:
+                    'Silence non-critical notifications during specified hours',
                 value: _quietHoursEnabled,
                 icon: Icons.bedtime,
-                enabled: _localNotificationsEnabled || _pushNotificationsEnabled,
+                enabled:
+                    _localNotificationsEnabled || _pushNotificationsEnabled,
                 onChanged: (value) {
                   setState(() => _quietHoursEnabled = value);
                   _savePreferences();
@@ -419,39 +454,44 @@ class _NotificationPreferencesScreenState extends State<NotificationPreferencesS
             children: [
               RadioListTile<String>(
                 title: const Text('Minimal'),
-                subtitle: const Text('Only critical and high-priority notifications'),
+                subtitle:
+                    const Text('Only critical and high-priority notifications'),
                 value: 'minimal',
                 groupValue: _notificationFrequency,
-                onChanged: (_localNotificationsEnabled || _pushNotificationsEnabled) 
-                    ? (value) {
-                        setState(() => _notificationFrequency = value!);
-                        _savePreferences();
-                      }
-                    : null,
+                onChanged:
+                    (_localNotificationsEnabled || _pushNotificationsEnabled)
+                        ? (value) {
+                            setState(() => _notificationFrequency = value!);
+                            _savePreferences();
+                          }
+                        : null,
               ),
               RadioListTile<String>(
                 title: const Text('Normal'),
                 subtitle: const Text('Balanced notification frequency'),
                 value: 'normal',
                 groupValue: _notificationFrequency,
-                onChanged: (_localNotificationsEnabled || _pushNotificationsEnabled)
-                    ? (value) {
-                        setState(() => _notificationFrequency = value!);
-                        _savePreferences();
-                      }
-                    : null,
+                onChanged:
+                    (_localNotificationsEnabled || _pushNotificationsEnabled)
+                        ? (value) {
+                            setState(() => _notificationFrequency = value!);
+                            _savePreferences();
+                          }
+                        : null,
               ),
               RadioListTile<String>(
                 title: const Text('Maximum'),
-                subtitle: const Text('All available notifications and reminders'),
+                subtitle:
+                    const Text('All available notifications and reminders'),
                 value: 'maximum',
                 groupValue: _notificationFrequency,
-                onChanged: (_localNotificationsEnabled || _pushNotificationsEnabled)
-                    ? (value) {
-                        setState(() => _notificationFrequency = value!);
-                        _savePreferences();
-                      }
-                    : null,
+                onChanged:
+                    (_localNotificationsEnabled || _pushNotificationsEnabled)
+                        ? (value) {
+                            setState(() => _notificationFrequency = value!);
+                            _savePreferences();
+                          }
+                        : null,
               ),
             ],
           ),
@@ -470,7 +510,8 @@ class _NotificationPreferencesScreenState extends State<NotificationPreferencesS
                     context: context,
                     builder: (context) => AlertDialog(
                       title: const Text('Clear Notification History'),
-                      content: const Text('This will permanently delete all notification history. This action cannot be undone.'),
+                      content: const Text(
+                          'This will permanently delete all notification history. This action cannot be undone.'),
                       actions: [
                         TextButton(
                           onPressed: () => Navigator.of(context).pop(false),
@@ -483,13 +524,14 @@ class _NotificationPreferencesScreenState extends State<NotificationPreferencesS
                       ],
                     ),
                   );
-                  
+
                   if (confirmed == true) {
                     // Clear notification history
                     // This would be implemented in the database service
                     if (mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Notification history cleared')),
+                        const SnackBar(
+                            content: Text('Notification history cleared')),
                       );
                     }
                   }

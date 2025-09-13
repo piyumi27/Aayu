@@ -16,7 +16,8 @@ class NavigationManager {
     bool replace = false,
   }) {
     if (!_isContextValid(context)) {
-      debugPrint('⚠️ NavigationManager: Context is not valid, skipping navigation to $route');
+      debugPrint(
+          '⚠️ NavigationManager: Context is not valid, skipping navigation to $route');
       return;
     }
 
@@ -51,7 +52,8 @@ class NavigationManager {
       try {
         context.go('/');
       } catch (fallbackError) {
-        debugPrint('❌ NavigationManager: Fallback navigation failed - $fallbackError');
+        debugPrint(
+            '❌ NavigationManager: Fallback navigation failed - $fallbackError');
       }
     }
   }
@@ -87,7 +89,8 @@ class NavigationManager {
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: Text(confirmationTitle ?? 'Confirm Navigation'),
-        content: Text(confirmationMessage ?? 'Are you sure you want to navigate?'),
+        content:
+            Text(confirmationMessage ?? 'Are you sure you want to navigate?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(false),
@@ -173,7 +176,8 @@ class NavigationManager {
 mixin SafeNavigationMixin<T extends StatefulWidget> on State<T> {
   void navigateSafely(String route, {Object? extra, bool replace = false}) {
     if (mounted) {
-      NavigationManager.safeNavigate(context, route, extra: extra, replace: replace);
+      NavigationManager.safeNavigate(context, route,
+          extra: extra, replace: replace);
     }
   }
 

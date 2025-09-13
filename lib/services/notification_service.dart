@@ -43,14 +43,14 @@ class NotificationService {
   }
 
   /// Get notifications by category
-  List<AppNotification> getNotificationsByCategory(NotificationCategory category) {
+  List<AppNotification> getNotificationsByCategory(
+      NotificationCategory category) {
     if (category == NotificationCategory.all) {
       return getAllNotifications();
     }
-    
-    final filtered = _notifications
-        .where((n) => n.category == category)
-        .toList();
+
+    final filtered =
+        _notifications.where((n) => n.category == category).toList();
     filtered.sort(_compareNotifications);
     return filtered;
   }
@@ -60,7 +60,7 @@ class NotificationService {
     final notifications = getNotificationsByCategory(category);
     final unreadCount = notifications.where((n) => !n.isRead).length;
     final hasUrgent = notifications.any((n) => n.isUrgent);
-    
+
     NotificationPriority highestPriority = NotificationPriority.low;
     for (final notification in notifications) {
       if (notification.priority.index < highestPriority.index) {
@@ -78,11 +78,15 @@ class NotificationService {
   /// Get default tab based on urgent notifications
   NotificationCategory getDefaultTab() {
     final urgentAlerts = _notifications
-        .where((n) => n.category == NotificationCategory.healthAlerts && n.isUrgent)
+        .where((n) =>
+            n.category == NotificationCategory.healthAlerts && n.isUrgent)
         .length;
     final overdueReminders = _notifications
-        .where((n) => n.category == NotificationCategory.reminders && 
-                      n.priority == NotificationPriority.critical,)
+        .where(
+          (n) =>
+              n.category == NotificationCategory.reminders &&
+              n.priority == NotificationPriority.critical,
+        )
         .length;
 
     if (urgentAlerts > 0) {
@@ -161,7 +165,7 @@ class NotificationService {
 
   /// Generate intelligent health notifications based on child data
   Future<void> generateHealthNotifications(
-    Child child, 
+    Child child,
     List<GrowthRecord> records, {
     List<Vaccine>? vaccines,
     List<VaccineRecord>? vaccineRecords,
@@ -173,10 +177,13 @@ class NotificationService {
     // Check for measurement gaps
     if (records.isNotEmpty) {
       final latestRecord = records.first;
-      final daysSinceLastMeasurement = DateTime.now().difference(latestRecord.date).inDays;
-      
-      if (daysSinceLastMeasurement > 42) { // 6 weeks
-        notifications.add(_createMeasurementGapNotification(child, daysSinceLastMeasurement));
+      final daysSinceLastMeasurement =
+          DateTime.now().difference(latestRecord.date).inDays;
+
+      if (daysSinceLastMeasurement > 42) {
+        // 6 weeks
+        notifications.add(
+            _createMeasurementGapNotification(child, daysSinceLastMeasurement));
       }
     }
 
@@ -202,13 +209,15 @@ class NotificationService {
 
     // Generate vaccination reminders
     if (vaccines != null && vaccineRecords != null) {
-      final vaccinationReminders = _generateVaccinationReminders(child, vaccines, vaccineRecords);
+      final vaccinationReminders =
+          _generateVaccinationReminders(child, vaccines, vaccineRecords);
       notifications.addAll(vaccinationReminders);
     }
 
     // Generate medication reminders
     if (medications != null && doseRecords != null) {
-      final medicationReminders = _generateMedicationReminders(child, medications, doseRecords);
+      final medicationReminders =
+          _generateMedicationReminders(child, medications, doseRecords);
       notifications.addAll(medicationReminders);
     }
 
@@ -313,10 +322,13 @@ class NotificationService {
   }
 
   /// Generate measurement reminder based on child age
-  AppNotification? _generateMeasurementReminder(Child child, List<GrowthRecord> records) {
+  AppNotification? _generateMeasurementReminder(
+      Child child, List<GrowthRecord> records) {
     final ageInMonths = child.ageInMonths;
-    final lastMeasurement = records.isNotEmpty ? records.first.date : child.birthDate;
-    final daysSinceLastMeasurement = DateTime.now().difference(lastMeasurement).inDays;
+    final lastMeasurement =
+        records.isNotEmpty ? records.first.date : child.birthDate;
+    final daysSinceLastMeasurement =
+        DateTime.now().difference(lastMeasurement).inDays;
 
     int recommendedInterval;
     if (ageInMonths <= 12) {
@@ -327,19 +339,24 @@ class NotificationService {
       recommendedInterval = 90; // Quarterly for 24+ months
     }
 
-    if (daysSinceLastMeasurement >= recommendedInterval - 7) { // 7 days before due
+    if (daysSinceLastMeasurement >= recommendedInterval - 7) {
+      // 7 days before due
       return AppNotification(
         id: 'measurement_reminder_${child.id}',
         titleKey: 'measurementReminderTitle',
         contentKey: 'measurementReminderContent',
         category: NotificationCategory.reminders,
-        priority: daysSinceLastMeasurement >= recommendedInterval 
-            ? NotificationPriority.high 
+        priority: daysSinceLastMeasurement >= recommendedInterval
+            ? NotificationPriority.high
             : NotificationPriority.medium,
         type: NotificationType.measurementDue,
         timestamp: DateTime.now(),
         childId: child.id,
-        actionData: {'childName': child.name, 'daysOverdue': math.max(0, daysSinceLastMeasurement - recommendedInterval)},
+        actionData: {
+          'childName': child.name,
+          'daysOverdue':
+              math.max(0, daysSinceLastMeasurement - recommendedInterval)
+        },
         actions: [
           NotificationAction(
             id: 'add_measurement',
@@ -363,26 +380,31 @@ class NotificationService {
 
     // Generate weekly nutrition tips based on age
     if (ageInMonths >= 6 && ageInMonths <= 11) {
-      tips.add(_createNutritionTip(
-        'nutrition_tip_6_11m',
-        'nutritionTip6To11Title',
-        'nutritionTip6To11Content',
-        child,
-      ),);
+      tips.add(
+        _createNutritionTip(
+          'nutrition_tip_6_11m',
+          'nutritionTip6To11Title',
+          'nutritionTip6To11Content',
+          child,
+        ),
+      );
     } else if (ageInMonths >= 12 && ageInMonths <= 23) {
-      tips.add(_createNutritionTip(
-        'nutrition_tip_12_23m',
-        'nutritionTip12To23Title',
-        'nutritionTip12To23Content',
-        child,
-      ),);
+      tips.add(
+        _createNutritionTip(
+          'nutrition_tip_12_23m',
+          'nutritionTip12To23Title',
+          'nutritionTip12To23Content',
+          child,
+        ),
+      );
     }
 
     return tips;
   }
 
   /// Create nutrition tip notification
-  AppNotification _createNutritionTip(String id, String titleKey, String contentKey, Child child) {
+  AppNotification _createNutritionTip(
+      String id, String titleKey, String contentKey, Child child) {
     return AppNotification(
       id: id,
       titleKey: titleKey,
@@ -433,11 +455,13 @@ class NotificationService {
       final current = recent[i];
       final previous = recent[i + 1];
 
-      if (current.weight - previous.weight > 0.2) { // 200g gain
+      if (current.weight - previous.weight > 0.2) {
+        // 200g gain
         weightStagnant = false;
       }
 
-      if (current.height - previous.height > 1.0) { // 1cm gain
+      if (current.height - previous.height > 1.0) {
+        // 1cm gain
         heightStagnant = false;
       }
     }
@@ -456,19 +480,23 @@ class NotificationService {
   /// Save notifications to local storage
   Future<void> _saveNotifications() async {
     final prefs = await SharedPreferences.getInstance();
-    final notificationData = _notifications.map((n) => {
-      'id': n.id,
-      'titleKey': n.titleKey,
-      'contentKey': n.contentKey,
-      'category': n.category.index,
-      'priority': n.priority.index,
-      'type': n.type.index,
-      'timestamp': n.timestamp.millisecondsSinceEpoch,
-      'isRead': n.isRead,
-      'isStarred': n.isStarred,
-      'childId': n.childId,
-    },).toList();
-    
+    final notificationData = _notifications
+        .map(
+          (n) => {
+            'id': n.id,
+            'titleKey': n.titleKey,
+            'contentKey': n.contentKey,
+            'category': n.category.index,
+            'priority': n.priority.index,
+            'type': n.type.index,
+            'timestamp': n.timestamp.millisecondsSinceEpoch,
+            'isRead': n.isRead,
+            'isStarred': n.isStarred,
+            'childId': n.childId,
+          },
+        )
+        .toList();
+
     await prefs.setString('notifications_data', notificationData.toString());
   }
 
@@ -482,7 +510,7 @@ class NotificationService {
   /// Generate sample notifications for testing
   Future<void> _generateSampleNotifications() async {
     final now = DateTime.now();
-    
+
     final samples = [
       AppNotification(
         id: 'sample_1',
@@ -520,7 +548,8 @@ class NotificationService {
   }
 
   /// Generate vaccination reminders
-  List<AppNotification> _generateVaccinationReminders(Child child, List<Vaccine> vaccines, List<VaccineRecord> records) {
+  List<AppNotification> _generateVaccinationReminders(
+      Child child, List<Vaccine> vaccines, List<VaccineRecord> records) {
     final notifications = <AppNotification>[];
     final ageInMonths = child.ageInMonths;
     final givenVaccineIds = records.map((r) => r.vaccineId).toSet();
@@ -528,9 +557,9 @@ class NotificationService {
 
     // Check for overdue vaccines
     final overdueVaccines = vaccines.where((vaccine) {
-      return !givenVaccineIds.contains(vaccine.id) && 
-             vaccine.recommendedAgeMonths <= ageInMonths &&
-             vaccine.recommendedAgeMonths < (ageInMonths - 2); // 2 months overdue
+      return !givenVaccineIds.contains(vaccine.id) &&
+          vaccine.recommendedAgeMonths <= ageInMonths &&
+          vaccine.recommendedAgeMonths < (ageInMonths - 2); // 2 months overdue
     }).toList();
 
     for (final vaccine in overdueVaccines) {
@@ -539,7 +568,9 @@ class NotificationService {
         titleKey: 'vaccineOverdueTitle',
         contentKey: 'vaccineOverdueContent',
         category: NotificationCategory.healthAlerts,
-        priority: vaccine.isMandatory ? NotificationPriority.critical : NotificationPriority.high,
+        priority: vaccine.isMandatory
+            ? NotificationPriority.critical
+            : NotificationPriority.high,
         type: NotificationType.vaccineDue,
         timestamp: now,
         childId: child.id,
@@ -565,19 +596,21 @@ class NotificationService {
   }
 
   /// Generate medication reminders
-  List<AppNotification> _generateMedicationReminders(Child child, List<Medication> medications, List<MedicationDoseRecord> doseRecords) {
+  List<AppNotification> _generateMedicationReminders(Child child,
+      List<Medication> medications, List<MedicationDoseRecord> doseRecords) {
     final notifications = <AppNotification>[];
     final now = DateTime.now();
 
     // Check for overdue medications
     final activeMeds = medications.where((med) => med.isActive).toList();
-    
+
     for (final medication in activeMeds) {
       if (medication.frequency == MedicationFrequency.asNeeded) continue;
 
       // Get last dose record for this medication
       final lastDose = doseRecords
-          .where((record) => record.medicationId == medication.id && record.isTaken)
+          .where((record) =>
+              record.medicationId == medication.id && record.isTaken)
           .fold<MedicationDoseRecord?>(null, (prev, current) {
         if (prev == null) return current;
         return current.actualTime!.isAfter(prev.actualTime!) ? current : prev;
@@ -587,8 +620,9 @@ class NotificationService {
       final hoursSinceLastDose = now.difference(lastDoseTime).inHours;
       final expectedFrequencyHours = medication.frequencyInHours;
 
-      if (hoursSinceLastDose >= expectedFrequencyHours + 1) { // 1 hour grace period
-        final priority = medication.isImportant 
+      if (hoursSinceLastDose >= expectedFrequencyHours + 1) {
+        // 1 hour grace period
+        final priority = medication.isImportant
             ? NotificationPriority.critical
             : NotificationPriority.high;
 

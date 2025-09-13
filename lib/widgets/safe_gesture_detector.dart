@@ -56,7 +56,8 @@ class _SafeGestureDetectorState extends State<SafeGestureDetector> {
     };
   }
 
-  GestureTapDownCallback? _safeTapDownCallback(GestureTapDownCallback? callback) {
+  GestureTapDownCallback? _safeTapDownCallback(
+      GestureTapDownCallback? callback) {
     if (callback == null) return null;
     return (details) {
       if (!_isDisposed && mounted) {
@@ -74,7 +75,8 @@ class _SafeGestureDetectorState extends State<SafeGestureDetector> {
     };
   }
 
-  GestureTapCancelCallback? _safeTapCancelCallback(GestureTapCancelCallback? callback) {
+  GestureTapCancelCallback? _safeTapCancelCallback(
+      GestureTapCancelCallback? callback) {
     if (callback == null) return null;
     return () {
       if (!_isDisposed && mounted) {
@@ -83,7 +85,8 @@ class _SafeGestureDetectorState extends State<SafeGestureDetector> {
     };
   }
 
-  GestureLongPressStartCallback? _safeLongPressStartCallback(GestureLongPressStartCallback? callback) {
+  GestureLongPressStartCallback? _safeLongPressStartCallback(
+      GestureLongPressStartCallback? callback) {
     if (callback == null) return null;
     return (details) {
       if (!_isDisposed && mounted) {
@@ -92,7 +95,8 @@ class _SafeGestureDetectorState extends State<SafeGestureDetector> {
     };
   }
 
-  GestureLongPressMoveUpdateCallback? _safeLongPressMoveUpdateCallback(GestureLongPressMoveUpdateCallback? callback) {
+  GestureLongPressMoveUpdateCallback? _safeLongPressMoveUpdateCallback(
+      GestureLongPressMoveUpdateCallback? callback) {
     if (callback == null) return null;
     return (details) {
       if (!_isDisposed && mounted) {
@@ -101,7 +105,8 @@ class _SafeGestureDetectorState extends State<SafeGestureDetector> {
     };
   }
 
-  GestureLongPressUpCallback? _safeLongPressUpCallback(GestureLongPressUpCallback? callback) {
+  GestureLongPressUpCallback? _safeLongPressUpCallback(
+      GestureLongPressUpCallback? callback) {
     if (callback == null) return null;
     return () {
       if (!_isDisposed && mounted) {
@@ -110,7 +115,8 @@ class _SafeGestureDetectorState extends State<SafeGestureDetector> {
     };
   }
 
-  GestureLongPressEndCallback? _safeLongPressEndCallback(GestureLongPressEndCallback? callback) {
+  GestureLongPressEndCallback? _safeLongPressEndCallback(
+      GestureLongPressEndCallback? callback) {
     if (callback == null) return null;
     return (details) {
       if (!_isDisposed && mounted) {
@@ -129,7 +135,8 @@ class _SafeGestureDetectorState extends State<SafeGestureDetector> {
       onTapUp: _safeTapUpCallback(widget.onTapUp),
       onTapCancel: _safeTapCancelCallback(widget.onTapCancel),
       onLongPressStart: _safeLongPressStartCallback(widget.onLongPressStart),
-      onLongPressMoveUpdate: _safeLongPressMoveUpdateCallback(widget.onLongPressMoveUpdate),
+      onLongPressMoveUpdate:
+          _safeLongPressMoveUpdateCallback(widget.onLongPressMoveUpdate),
       onLongPressUp: _safeLongPressUpCallback(widget.onLongPressUp),
       onLongPressEnd: _safeLongPressEndCallback(widget.onLongPressEnd),
       behavior: widget.behavior,

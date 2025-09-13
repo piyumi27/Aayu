@@ -13,7 +13,7 @@ import '../widgets/safe_ink_well.dart';
 
 class EditChildProfileScreen extends StatefulWidget {
   final String? childId;
-  
+
   const EditChildProfileScreen({
     super.key,
     this.childId,
@@ -28,7 +28,7 @@ class _EditChildProfileScreenState extends State<EditChildProfileScreen> {
   final _nameController = TextEditingController();
   final _birthWeightController = TextEditingController();
   final _birthHeightController = TextEditingController();
-  
+
   String _selectedLanguage = 'en';
   String _selectedGender = 'Male';
   DateTime? _birthDate;
@@ -36,7 +36,7 @@ class _EditChildProfileScreenState extends State<EditChildProfileScreen> {
   bool _isLoading = false;
   bool _removeExistingPhoto = false;
   Child? _child;
-  
+
   @override
   void initState() {
     super.initState();
@@ -55,10 +55,10 @@ class _EditChildProfileScreenState extends State<EditChildProfileScreen> {
     final prefs = await SharedPreferences.getInstance();
     if (!mounted) return;
     final childProvider = Provider.of<ChildProvider>(context, listen: false);
-    
+
     setState(() {
       _selectedLanguage = prefs.getString('language') ?? 'en';
-      
+
       // Load specific child if childId provided, otherwise use selected child or first child
       if (widget.childId != null) {
         try {
@@ -67,14 +67,18 @@ class _EditChildProfileScreenState extends State<EditChildProfileScreen> {
           );
         } catch (e) {
           // Child not found, use selected child or first child
-          _child = childProvider.selectedChild ?? 
-                   (childProvider.children.isNotEmpty ? childProvider.children.first : null);
+          _child = childProvider.selectedChild ??
+              (childProvider.children.isNotEmpty
+                  ? childProvider.children.first
+                  : null);
         }
       } else {
-        _child = childProvider.selectedChild ?? 
-                 (childProvider.children.isNotEmpty ? childProvider.children.first : null);
+        _child = childProvider.selectedChild ??
+            (childProvider.children.isNotEmpty
+                ? childProvider.children.first
+                : null);
       }
-      
+
       if (_child != null) {
         _nameController.text = _child!.name;
         _selectedGender = _child!.gender;
@@ -83,7 +87,7 @@ class _EditChildProfileScreenState extends State<EditChildProfileScreen> {
         _birthHeightController.text = _child!.birthHeight?.toString() ?? '';
       }
     });
-    
+
     // Listen for changes
     _nameController.addListener(_onTextChanged);
     _birthWeightController.addListener(_onTextChanged);
@@ -116,7 +120,8 @@ class _EditChildProfileScreenState extends State<EditChildProfileScreen> {
         'dobRequired': 'Date of birth is required',
         'selectBirthDate': 'Select birth date',
         'confirmDelete': 'Confirm Child Profile Deletion',
-        'deleteWarning': 'This action cannot be undone. All data for this child, including growth records, vaccination history, and measurements will be permanently deleted.',
+        'deleteWarning':
+            'This action cannot be undone. All data for this child, including growth records, vaccination history, and measurements will be permanently deleted.',
         'typeChildName': 'Type the child\'s name to confirm:',
         'cancel': 'Cancel',
         'deleteConfirm': 'Delete Child Profile',
@@ -133,7 +138,8 @@ class _EditChildProfileScreenState extends State<EditChildProfileScreen> {
       },
       'si': {
         'editChildProfile': 'ළමා පැතිකඩ සංස්කරණය',
-        'tapToChangeProfilePicture': 'පැතිකඩ පින්තූරය වෙනස් කිරීමට ස්පර්ශ කරන්න',
+        'tapToChangeProfilePicture':
+            'පැතිකඩ පින්තූරය වෙනස් කිරීමට ස්පර්ශ කරන්න',
         'childName': 'ළමයාගේ නම',
         'dateOfBirth': 'උපන් දිනය',
         'gender': 'ලිංගය',
@@ -149,7 +155,8 @@ class _EditChildProfileScreenState extends State<EditChildProfileScreen> {
         'dobRequired': 'උපන් දිනය අවශ්‍යයි',
         'selectBirthDate': 'උපන් දිනය තෝරන්න',
         'confirmDelete': 'ළමා පැතිකඩ මැකීම සනාථ කරන්න',
-        'deleteWarning': 'මෙම ක්‍රියාව අවලංගු කළ නොහැක. මෙම ළමයා සඳහා වන සියලුම දත්ත, වර්ධන වාර්තා, එන්නත් ඉතිහාසය සහ මිනුම් ස්ථිරවම මකා දමනු ලැබේ.',
+        'deleteWarning':
+            'මෙම ක්‍රියාව අවලංගු කළ නොහැක. මෙම ළමයා සඳහා වන සියලුම දත්ත, වර්ධන වාර්තා, එන්නත් ඉතිහාසය සහ මිනුම් ස්ථිරවම මකා දමනු ලැබේ.',
         'typeChildName': 'තහවුරු කිරීම සඳහා ළමයාගේ නම ටයිප් කරන්න:',
         'cancel': 'අවලංගු කරන්න',
         'deleteConfirm': 'ළමා පැතිකඩ මකන්න',
@@ -182,7 +189,8 @@ class _EditChildProfileScreenState extends State<EditChildProfileScreen> {
         'dobRequired': 'பிறந்த தேதி தேவை',
         'selectBirthDate': 'பிறந்த தேதியைத் தேர்ந்தெடுக்கவும்',
         'confirmDelete': 'குழந்தை சுயவிவர நீக்கலை உறுதிப்படுத்தவும்',
-        'deleteWarning': 'இந்த செயலை மாற்ற முடியாது. இந்த குழந்தைக்கான அனைத்து தரவுகளும், வளர்ச்சி பதிவுகள், தடுப்பூசி வரலாறு மற்றும் அளவீடுகள் ஆகியவை நிரந்தரமாக நீக்கப்படும்.',
+        'deleteWarning':
+            'இந்த செயலை மாற்ற முடியாது. இந்த குழந்தைக்கான அனைத்து தரவுகளும், வளர்ச்சி பதிவுகள், தடுப்பூசி வரலாறு மற்றும் அளவீடுகள் ஆகியவை நிரந்தரமாக நீக்கப்படும்.',
         'typeChildName': 'உறுதிப்படுத்த குழந்தையின் பெயரை தட்டச்சு செய்யவும்:',
         'cancel': 'ரத்து செய்',
         'deleteConfirm': 'குழந்தை சுயவிவரத்தை நீக்கு',
@@ -195,7 +203,8 @@ class _EditChildProfileScreenState extends State<EditChildProfileScreen> {
         'ageDisplay': 'வயது: {age}',
         'selectChild': 'குழந்தையைத் தேர்ந்தெடுக்கவும்',
         'noChildren': 'குழந்தைகள் எதுவும் கிடைக்கவில்லை',
-        'addChildFirst': 'முதல் பக்கத்தில் இருந்து முதலில் ஒரு குழந்தையைச் சேர்க்கவும்',
+        'addChildFirst':
+            'முதல் பக்கத்தில் இருந்து முதலில் ஒரு குழந்தையைச் சேர்க்கவும்',
       },
     };
     return texts[_selectedLanguage] ?? texts['en']!;
@@ -204,7 +213,7 @@ class _EditChildProfileScreenState extends State<EditChildProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final texts = _getLocalizedText();
-    
+
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
@@ -234,39 +243,39 @@ class _EditChildProfileScreenState extends State<EditChildProfileScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const SizedBox(height: 32),
-                
+
                 // Child Selector
                 _buildChildSelector(texts),
-                
+
                 const SizedBox(height: 32),
-                
+
                 // Profile Picture Section
                 if (_child != null) _buildProfilePictureSection(texts),
-                
+
                 if (_child != null) ...[
                   const SizedBox(height: 48),
-                  
+
                   // Form Fields
                   _buildNameField(texts),
                   const SizedBox(height: 24),
-                  
+
                   _buildDateOfBirthField(texts),
-                const SizedBox(height: 24),
-                
-                _buildGenderSelection(texts),
-                const SizedBox(height: 24),
-                
-                // Optional measurements section
-                _buildOptionalMeasurementsSection(texts),
-                
-                const SizedBox(height: 48),
-                
+                  const SizedBox(height: 24),
+
+                  _buildGenderSelection(texts),
+                  const SizedBox(height: 24),
+
+                  // Optional measurements section
+                  _buildOptionalMeasurementsSection(texts),
+
+                  const SizedBox(height: 48),
+
                   // Action Buttons
                   _buildSaveButton(texts),
                   const SizedBox(height: 16),
-                  
+
                   _buildDeleteChildButton(texts),
-                  
+
                   const SizedBox(height: 32),
                 ],
               ],
@@ -305,10 +314,12 @@ class _EditChildProfileScreenState extends State<EditChildProfileScreen> {
                 Text(
                   texts['noChildren']!,
                   style: TextStyle(
-                    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
+                    fontSize:
+                        ResponsiveUtils.getResponsiveFontSize(context, 16),
                     fontWeight: FontWeight.w600,
                     color: const Color(0xFF374151),
-                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                    fontFamily:
+                        _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -316,9 +327,11 @@ class _EditChildProfileScreenState extends State<EditChildProfileScreen> {
                   texts['addChildFirst']!,
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
+                    fontSize:
+                        ResponsiveUtils.getResponsiveFontSize(context, 14),
                     color: const Color(0xFF6B7280),
-                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                    fontFamily:
+                        _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                   ),
                 ),
               ],
@@ -346,10 +359,12 @@ class _EditChildProfileScreenState extends State<EditChildProfileScreen> {
                 child: Text(
                   texts['selectChild']!,
                   style: TextStyle(
-                    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
+                    fontSize:
+                        ResponsiveUtils.getResponsiveFontSize(context, 16),
                     fontWeight: FontWeight.w600,
                     color: const Color(0xFF374151),
-                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                    fontFamily:
+                        _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                   ),
                 ),
               ),
@@ -363,17 +378,17 @@ class _EditChildProfileScreenState extends State<EditChildProfileScreen> {
                   final child = childProvider.children[index];
                   final isSelected = _child?.id == child.id;
                   final age = _calculateAge(child.birthDate);
-                  
+
                   return ListTile(
                     leading: CircleAvatar(
-                      backgroundColor: isSelected 
-                          ? const Color(0xFF0086FF) 
+                      backgroundColor: isSelected
+                          ? const Color(0xFF0086FF)
                           : const Color(0xFFF3F4F6),
                       child: Icon(
                         child.gender == 'Male' ? Icons.boy : Icons.girl,
-                        color: isSelected 
+                        color: isSelected
                             ? Colors.white
-                            : (child.gender == 'Male' 
+                            : (child.gender == 'Male'
                                 ? const Color(0xFF0086FF)
                                 : const Color(0xFFFF69B4)),
                       ),
@@ -381,21 +396,27 @@ class _EditChildProfileScreenState extends State<EditChildProfileScreen> {
                     title: Text(
                       child.name,
                       style: TextStyle(
-                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
+                        fontSize:
+                            ResponsiveUtils.getResponsiveFontSize(context, 16),
                         fontWeight: FontWeight.w600,
                         color: const Color(0xFF1A1A1A),
-                        fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                        fontFamily: _selectedLanguage == 'si'
+                            ? 'NotoSerifSinhala'
+                            : null,
                       ),
                     ),
                     subtitle: Text(
                       texts['ageDisplay']!.replaceAll('{age}', age),
                       style: TextStyle(
-                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
+                        fontSize:
+                            ResponsiveUtils.getResponsiveFontSize(context, 14),
                         color: const Color(0xFF6B7280),
-                        fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                        fontFamily: _selectedLanguage == 'si'
+                            ? 'NotoSerifSinhala'
+                            : null,
                       ),
                     ),
-                    trailing: isSelected 
+                    trailing: isSelected
                         ? const Icon(
                             Icons.check_circle,
                             color: Color(0xFF10B981),
@@ -419,7 +440,7 @@ class _EditChildProfileScreenState extends State<EditChildProfileScreen> {
     final now = DateTime.now();
     final difference = now.difference(birthDate);
     final days = difference.inDays;
-    
+
     if (days < 30) {
       return '$days days';
     } else if (days < 365) {
@@ -489,7 +510,7 @@ class _EditChildProfileScreenState extends State<EditChildProfileScreen> {
                     ? Icon(
                         _selectedGender == 'Male' ? Icons.boy : Icons.girl,
                         size: 60,
-                        color: _selectedGender == 'Male' 
+                        color: _selectedGender == 'Male'
                             ? const Color(0xFF0086FF)
                             : const Color(0xFFFF69B4),
                       )
@@ -538,7 +559,8 @@ class _EditChildProfileScreenState extends State<EditChildProfileScreen> {
         if (_birthDate != null) ...[
           const SizedBox(height: 8),
           Text(
-            texts['ageDisplay']!.replaceAll('{age}', _child?.formattedAge ?? ''),
+            texts['ageDisplay']!
+                .replaceAll('{age}', _child?.formattedAge ?? ''),
             style: TextStyle(
               fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
               fontWeight: FontWeight.w500,
@@ -579,7 +601,8 @@ class _EditChildProfileScreenState extends State<EditChildProfileScreen> {
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide.none,
             ),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             hintText: texts['childName']!,
             hintStyle: TextStyle(
               color: const Color(0xFF9CA3AF),
@@ -631,13 +654,18 @@ class _EditChildProfileScreenState extends State<EditChildProfileScreen> {
                         ? texts['selectBirthDate']!
                         : _birthDate!.toString().split(' ')[0],
                     style: TextStyle(
-                      fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
-                      color: _birthDate == null ? const Color(0xFF9CA3AF) : const Color(0xFF1A1A1A),
-                      fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                      fontSize:
+                          ResponsiveUtils.getResponsiveFontSize(context, 16),
+                      color: _birthDate == null
+                          ? const Color(0xFF9CA3AF)
+                          : const Color(0xFF1A1A1A),
+                      fontFamily:
+                          _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                     ),
                   ),
                 ),
-                const Icon(Icons.calendar_today_outlined, color: Color(0xFF0086FF), size: 20),
+                const Icon(Icons.calendar_today_outlined,
+                    color: Color(0xFF0086FF), size: 20),
               ],
             ),
           ),
@@ -692,7 +720,7 @@ class _EditChildProfileScreenState extends State<EditChildProfileScreen> {
     required Color color,
   }) {
     final isSelected = _selectedGender == value;
-    
+
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -702,7 +730,9 @@ class _EditChildProfileScreenState extends State<EditChildProfileScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
         decoration: BoxDecoration(
-          color: isSelected ? color.withValues(alpha: 0.1) : const Color(0xFFF9FAFB),
+          color: isSelected
+              ? color.withValues(alpha: 0.1)
+              : const Color(0xFFF9FAFB),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isSelected ? color : const Color(0xFFE5E7EB),
@@ -724,7 +754,8 @@ class _EditChildProfileScreenState extends State<EditChildProfileScreen> {
                 fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
                 fontWeight: FontWeight.w600,
                 color: isSelected ? color : const Color(0xFF6B7280),
-                fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                fontFamily:
+                    _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
               ),
             ),
           ],
@@ -753,7 +784,8 @@ class _EditChildProfileScreenState extends State<EditChildProfileScreen> {
               child: _buildTextField(
                 controller: _birthWeightController,
                 label: texts['birthWeight']!,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                keyboardType:
+                    const TextInputType.numberWithOptions(decimal: true),
               ),
             ),
             const SizedBox(width: 16),
@@ -761,7 +793,8 @@ class _EditChildProfileScreenState extends State<EditChildProfileScreen> {
               child: _buildTextField(
                 controller: _birthHeightController,
                 label: texts['birthHeight']!,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                keyboardType:
+                    const TextInputType.numberWithOptions(decimal: true),
               ),
             ),
           ],
@@ -803,7 +836,8 @@ class _EditChildProfileScreenState extends State<EditChildProfileScreen> {
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide.none,
             ),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             hintText: label,
             hintStyle: TextStyle(
               color: const Color(0xFF9CA3AF),
@@ -841,7 +875,8 @@ class _EditChildProfileScreenState extends State<EditChildProfileScreen> {
               style: TextStyle(
                 fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
                 fontWeight: FontWeight.w600,
-                fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                fontFamily:
+                    _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
               ),
             ),
     );
@@ -872,21 +907,22 @@ class _EditChildProfileScreenState extends State<EditChildProfileScreen> {
   Future<void> _selectDate() async {
     final DateTime? date = await showDatePicker(
       context: context,
-      initialDate: _birthDate ?? DateTime.now().subtract(const Duration(days: 365)),
+      initialDate:
+          _birthDate ?? DateTime.now().subtract(const Duration(days: 365)),
       firstDate: DateTime(1900),
       lastDate: DateTime.now(),
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: Theme.of(context).colorScheme.copyWith(
-              primary: const Color(0xFF0086FF),
-            ),
+                  primary: const Color(0xFF0086FF),
+                ),
           ),
           child: child!,
         );
       },
     );
-    
+
     if (date != null) {
       setState(() {
         _birthDate = date;
@@ -896,7 +932,7 @@ class _EditChildProfileScreenState extends State<EditChildProfileScreen> {
 
   void _showImageSourceDialog() {
     final texts = _getLocalizedText();
-    
+
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.white,
@@ -917,37 +953,34 @@ class _EditChildProfileScreenState extends State<EditChildProfileScreen> {
               ),
             ),
             const SizedBox(height: 20),
-            
             Text(
               texts['selectImageSource']!,
               style: TextStyle(
                 fontSize: ResponsiveUtils.getResponsiveFontSize(context, 18),
                 fontWeight: FontWeight.w600,
                 color: const Color(0xFF1A1A1A),
-                fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                fontFamily:
+                    _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
               ),
             ),
             const SizedBox(height: 24),
-            
             _buildImageSourceOption(Icons.camera_alt, texts['camera']!, () {
               Navigator.of(context).pop();
               _pickImage(ImageSource.camera);
             }),
-            
             _buildImageSourceOption(Icons.photo_library, texts['gallery']!, () {
               Navigator.of(context).pop();
               _pickImage(ImageSource.gallery);
             }),
-            
             if (_getProfileImageProvider() != null)
-              _buildImageSourceOption(Icons.delete_outline, texts['removePhoto']!, () {
+              _buildImageSourceOption(
+                  Icons.delete_outline, texts['removePhoto']!, () {
                 Navigator.of(context).pop();
                 setState(() {
                   _profileImage = null;
                   _removeExistingPhoto = true;
                 });
               }),
-            
             const SizedBox(height: 16),
           ],
         ),
@@ -955,7 +988,8 @@ class _EditChildProfileScreenState extends State<EditChildProfileScreen> {
     );
   }
 
-  Widget _buildImageSourceOption(IconData icon, String label, VoidCallback onTap) {
+  Widget _buildImageSourceOption(
+      IconData icon, String label, VoidCallback onTap) {
     return SafeInkWell(
       onTap: onTap,
       child: Container(
@@ -975,7 +1009,8 @@ class _EditChildProfileScreenState extends State<EditChildProfileScreen> {
                 fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
                 fontWeight: FontWeight.w500,
                 color: const Color(0xFF1A1A1A),
-                fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                fontFamily:
+                    _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
               ),
             ),
           ],
@@ -993,11 +1028,12 @@ class _EditChildProfileScreenState extends State<EditChildProfileScreen> {
         maxHeight: 800,
         imageQuality: 85,
       );
-      
+
       if (pickedFile != null) {
         setState(() {
           _profileImage = File(pickedFile.path);
-          _removeExistingPhoto = false; // Reset removal flag when new image is selected
+          _removeExistingPhoto =
+              false; // Reset removal flag when new image is selected
         });
       }
     } catch (e) {
@@ -1016,25 +1052,27 @@ class _EditChildProfileScreenState extends State<EditChildProfileScreen> {
       );
       return;
     }
-    
+
     setState(() {
       _isLoading = true;
     });
-    
+
     try {
       // Save profile image to local storage if changed
       String? photoUrl = _child?.photoUrl;
       if (_profileImage != null) {
         // Save new image to app documents directory
         final appDir = await getApplicationDocumentsDirectory();
-        final fileName = 'child_${_child!.id}_${DateTime.now().millisecondsSinceEpoch}.png';
-        final savedImage = await _profileImage!.copy('${appDir.path}/$fileName');
+        final fileName =
+            'child_${_child!.id}_${DateTime.now().millisecondsSinceEpoch}.png';
+        final savedImage =
+            await _profileImage!.copy('${appDir.path}/$fileName');
         photoUrl = savedImage.path;
       } else if (_removeExistingPhoto) {
         // Remove existing photo
         photoUrl = null;
       }
-      
+
       // Create updated child object
       final updatedChild = _child!.copyWith(
         name: _nameController.text.trim(),
@@ -1045,15 +1083,15 @@ class _EditChildProfileScreenState extends State<EditChildProfileScreen> {
         photoUrl: photoUrl,
         updatedAt: DateTime.now(),
       );
-      
+
       // Update child through provider
       final childProvider = Provider.of<ChildProvider>(context, listen: false);
       await childProvider.updateChild(updatedChild);
-      
+
       if (!mounted) return;
-      
+
       final texts = _getLocalizedText();
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -1069,14 +1107,13 @@ class _EditChildProfileScreenState extends State<EditChildProfileScreen> {
           ),
         ),
       );
-      
+
       // Update local state to reflect saved changes
       setState(() {
         _child = updatedChild;
         _profileImage = null;
         _removeExistingPhoto = false;
       });
-      
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -1101,13 +1138,14 @@ class _EditChildProfileScreenState extends State<EditChildProfileScreen> {
     final confirmController = TextEditingController();
     bool canDelete = false;
     final childName = _nameController.text.trim();
-    
+
     showDialog(
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
           backgroundColor: Colors.white,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           title: Text(
             texts['confirmDelete']!,
             style: TextStyle(
@@ -1127,7 +1165,8 @@ class _EditChildProfileScreenState extends State<EditChildProfileScreen> {
                   fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
                   color: const Color(0xFF6B7280),
                   height: 1.5,
-                  fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                  fontFamily:
+                      _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                 ),
               ),
               const SizedBox(height: 16),
@@ -1137,7 +1176,8 @@ class _EditChildProfileScreenState extends State<EditChildProfileScreen> {
                   fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
                   fontWeight: FontWeight.w600,
                   color: const Color(0xFF1A1A1A),
-                  fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                  fontFamily:
+                      _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                 ),
               ),
               const SizedBox(height: 8),
@@ -1150,11 +1190,13 @@ class _EditChildProfileScreenState extends State<EditChildProfileScreen> {
                     borderRadius: BorderRadius.circular(8),
                     borderSide: BorderSide.none,
                   ),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                 ),
                 onChanged: (value) {
                   setDialogState(() {
-                    canDelete = value.trim().toLowerCase() == childName.toLowerCase();
+                    canDelete =
+                        value.trim().toLowerCase() == childName.toLowerCase();
                   });
                 },
               ),
@@ -1167,22 +1209,28 @@ class _EditChildProfileScreenState extends State<EditChildProfileScreen> {
                 texts['cancel']!,
                 style: TextStyle(
                   color: const Color(0xFF6B7280),
-                  fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                  fontFamily:
+                      _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                 ),
               ),
             ),
             TextButton(
-              onPressed: canDelete ? () {
-                Navigator.of(context).pop();
-                // TODO: Implement delete child functionality
-                Navigator.of(context).pop(); // Return to previous screen
-              } : null,
+              onPressed: canDelete
+                  ? () {
+                      Navigator.of(context).pop();
+                      // TODO: Implement delete child functionality
+                      Navigator.of(context).pop(); // Return to previous screen
+                    }
+                  : null,
               child: Text(
                 texts['deleteConfirm']!,
                 style: TextStyle(
-                  color: canDelete ? const Color(0xFFFF4D4D) : const Color(0xFFD1D5DB),
+                  color: canDelete
+                      ? const Color(0xFFFF4D4D)
+                      : const Color(0xFFD1D5DB),
                   fontWeight: FontWeight.w600,
-                  fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                  fontFamily:
+                      _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                 ),
               ),
             ),

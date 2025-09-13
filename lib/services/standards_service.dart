@@ -12,7 +12,7 @@ class StandardsService {
 
   Map<String, dynamic>? _whoData;
   Map<String, dynamic>? _sriLankaData;
-  
+
   List<GrowthStandard>? _whoGrowthStandards;
   List<GrowthStandard>? _sriLankaGrowthStandards;
   List<NutritionGuideline>? _whoNutritionGuidelines;
@@ -25,7 +25,7 @@ class StandardsService {
       _loadWhoData(),
       _loadSriLankaData(),
     ]);
-    
+
     await Future.wait([
       _parseWhoStandards(),
       _parseSriLankaStandards(),
@@ -34,7 +34,8 @@ class StandardsService {
 
   Future<void> _loadWhoData() async {
     try {
-      final String jsonString = await rootBundle.loadString('assets/data/WHO.json');
+      final String jsonString =
+          await rootBundle.loadString('assets/data/WHO.json');
       _whoData = json.decode(jsonString);
     } catch (e) {
       throw Exception('Failed to load WHO data: $e');
@@ -151,20 +152,11 @@ class StandardsService {
             'Sits without support',
             'Transfers objects between hands'
           ],
-          '9_to_12_months': [
-            'Pulls to standing',
-            'Walks with support'
-          ]
+          '9_to_12_months': ['Pulls to standing', 'Walks with support']
         },
         'cognitive': {
-          '6_to_9_months': [
-            'Responds to name',
-            'Shows stranger anxiety'
-          ],
-          '9_to_12_months': [
-            'Follows simple commands',
-            'Points to objects'
-          ]
+          '6_to_9_months': ['Responds to name', 'Shows stranger anxiety'],
+          '9_to_12_months': ['Follows simple commands', 'Points to objects']
         }
       }
     };
@@ -183,7 +175,8 @@ class StandardsService {
 
     _sriLankaGrowthStandards = await _parseSriLankaGrowthStandards();
     _sriLankaNutritionGuidelines = await _parseSriLankaNutritionGuidelines();
-    _sriLankaDevelopmentMilestones = await _parseSriLankaDevelopmentMilestones();
+    _sriLankaDevelopmentMilestones =
+        await _parseSriLankaDevelopmentMilestones();
   }
 
   Future<List<GrowthStandard>> _parseWhoGrowthStandards() async {
@@ -191,14 +184,20 @@ class StandardsService {
     final now = DateTime.now();
 
     // Create comprehensive WHO growth standards for common measurements
-    final measurements = ['weight_for_age', 'height_for_age', 'bmi_for_age', 'weight_for_height'];
+    final measurements = [
+      'weight_for_age',
+      'height_for_age',
+      'bmi_for_age',
+      'weight_for_height'
+    ];
     final genders = ['male', 'female'];
 
     for (final measurement in measurements) {
       for (final gender in genders) {
         // Create standards for key age points (birth to 60 months)
         for (int ageMonths = 0; ageMonths <= 60; ageMonths += 3) {
-          final standardValues = _generateWhoStandardValues(measurement, gender, ageMonths);
+          final standardValues =
+              _generateWhoStandardValues(measurement, gender, ageMonths);
 
           standards.add(GrowthStandard(
             id: 'who_${measurement}_${ageMonths}m_$gender',
@@ -222,7 +221,8 @@ class StandardsService {
 
     // If we have actual WHO data, use it to override the generated values
     if (_whoData?['growth_standards']?['anthropometric_measurements'] != null) {
-      final measurements = _whoData!['growth_standards']['anthropometric_measurements'];
+      final measurements =
+          _whoData!['growth_standards']['anthropometric_measurements'];
 
       for (final measurementType in measurements.keys) {
         final measurementData = measurements[measurementType];
@@ -230,10 +230,9 @@ class StandardsService {
         if (measurementData['sample_values_12_months_boys'] != null) {
           final values = measurementData['sample_values_12_months_boys'];
           final existingIndex = standards.indexWhere((s) =>
-            s.measurementType == measurementType &&
-            s.gender == 'male' &&
-            s.ageMonths == 12
-          );
+              s.measurementType == measurementType &&
+              s.gender == 'male' &&
+              s.ageMonths == 12);
 
           if (existingIndex != -1) {
             standards[existingIndex] = GrowthStandard(
@@ -258,10 +257,9 @@ class StandardsService {
         if (measurementData['sample_values_24_months_girls'] != null) {
           final values = measurementData['sample_values_24_months_girls'];
           final existingIndex = standards.indexWhere((s) =>
-            s.measurementType == measurementType &&
-            s.gender == 'female' &&
-            s.ageMonths == 24
-          );
+              s.measurementType == measurementType &&
+              s.gender == 'female' &&
+              s.ageMonths == 24);
 
           if (existingIndex != -1) {
             standards[existingIndex] = GrowthStandard(
@@ -294,10 +292,10 @@ class StandardsService {
 
     if (_sriLankaData?['growth_monitoring_chdr'] != null) {
       final growthData = _sriLankaData!['growth_monitoring_chdr'];
-      
+
       if (growthData['sample_chdr_values'] != null) {
         final sampleValues = growthData['sample_chdr_values'];
-        
+
         for (final entry in sampleValues.entries) {
           final ageData = entry.value;
           if (ageData is Map<String, dynamic>) {
@@ -305,7 +303,7 @@ class StandardsService {
               if (ageData[measurement] != null) {
                 final values = ageData[measurement];
                 final ageMonths = _parseAgeInMonths(entry.key);
-                
+
                 standards.add(GrowthStandard(
                   id: 'srilanka_${measurement}_${ageMonths}m_mixed',
                   standardType: 'SriLanka',
@@ -313,10 +311,13 @@ class StandardsService {
                   gender: 'mixed',
                   ageMonths: ageMonths,
                   zScoreMinus3: _parseValue(values['below_third_percentile']),
-                  zScoreMinus2: _parseValue(values['third_to_tenth_percentile']),
+                  zScoreMinus2:
+                      _parseValue(values['third_to_tenth_percentile']),
                   median: _parseValue(values['median']),
-                  zScorePlus2: _parseValue(values['ninetieth_to_ninetyseventh_percentile']),
-                  zScorePlus3: _parseValue(values['above_ninetyseventh_percentile']),
+                  zScorePlus2: _parseValue(
+                      values['ninetieth_to_ninetyseventh_percentile']),
+                  zScorePlus3:
+                      _parseValue(values['above_ninetyseventh_percentile']),
                   measurementType: '${measurement}_for_age',
                   unit: measurement == 'weight' ? 'kg' : 'cm',
                   createdAt: now,
@@ -338,12 +339,12 @@ class StandardsService {
 
     if (_whoData?['nutrition_guidelines'] != null) {
       final nutritionData = _whoData!['nutrition_guidelines'];
-      
+
       for (final ageGroup in nutritionData.keys) {
         final ageData = nutritionData[ageGroup];
         if (ageData is Map<String, dynamic>) {
           final ageRange = _parseAgeRange(ageGroup);
-          
+
           guidelines.add(NutritionGuideline(
             id: 'who_nutrition_$ageGroup',
             source: 'WHO',
@@ -376,12 +377,12 @@ class StandardsService {
 
     if (_sriLankaData?['feeding_guidelines'] != null) {
       final feedingData = _sriLankaData!['feeding_guidelines'];
-      
+
       for (final ageGroup in feedingData.keys) {
         final ageData = feedingData[ageGroup];
         if (ageData is Map<String, dynamic>) {
           final ageRange = _parseAgeRange(ageGroup);
-          
+
           guidelines.add(NutritionGuideline(
             id: 'srilanka_nutrition_$ageGroup',
             source: 'Sri Lanka',
@@ -393,7 +394,8 @@ class StandardsService {
             dailyCaloriesMin: _parseDouble(ageData['daily_calories']),
             dailyCaloriesMax: _parseDouble(ageData['daily_calories']) * 1.2,
             proteinGramsMin: _parseDouble(ageData['protein_requirements']),
-            proteinGramsMax: _parseDouble(ageData['protein_requirements']) * 1.3,
+            proteinGramsMax:
+                _parseDouble(ageData['protein_requirements']) * 1.3,
             feedingFrequency: ageData['feeding_frequency'] ?? 'Regular',
             recommendedFoods: _parseStringList(ageData['local_foods']),
             avoidedFoods: _parseStringList(ageData['foods_to_limit']),
@@ -414,7 +416,7 @@ class StandardsService {
 
     if (_whoData?['development_milestones'] != null) {
       final milestonesData = _whoData!['development_milestones'];
-      
+
       for (final domain in milestonesData.keys) {
         final domainData = milestonesData[domain];
         if (domainData is Map<String, dynamic>) {
@@ -422,7 +424,7 @@ class StandardsService {
             final ageData = domainData[ageGroup];
             if (ageData is List) {
               final ageRange = _parseAgeRange(ageGroup);
-              
+
               for (int i = 0; i < ageData.length; i++) {
                 final milestone = ageData[i];
                 if (milestone is String) {
@@ -439,7 +441,8 @@ class StandardsService {
                     priority: 2,
                     activities: ['Encourage practice', 'Provide opportunities'],
                     redFlagSigns: [],
-                    interventionGuidance: 'Consult if not achieved by upper age limit',
+                    interventionGuidance:
+                        'Consult if not achieved by upper age limit',
                     createdAt: now,
                     updatedAt: now,
                   ));
@@ -454,13 +457,14 @@ class StandardsService {
     return milestones;
   }
 
-  Future<List<DevelopmentMilestone>> _parseSriLankaDevelopmentMilestones() async {
+  Future<List<DevelopmentMilestone>>
+      _parseSriLankaDevelopmentMilestones() async {
     final milestones = <DevelopmentMilestone>[];
     final now = DateTime.now();
 
     if (_sriLankaData?['development_milestones'] != null) {
       final milestonesData = _sriLankaData!['development_milestones'];
-      
+
       for (final domain in milestonesData.keys) {
         final domainData = milestonesData[domain];
         if (domainData is Map<String, dynamic>) {
@@ -468,7 +472,7 @@ class StandardsService {
             final ageData = domainData[ageGroup];
             if (ageData is List) {
               final ageRange = _parseAgeRange(ageGroup);
-              
+
               for (int i = 0; i < ageData.length; i++) {
                 final milestone = ageData[i];
                 if (milestone is String) {
@@ -501,7 +505,7 @@ class StandardsService {
   }
 
   List<GrowthStandard> getGrowthStandards({String source = 'WHO'}) {
-    return source == 'WHO' 
+    return source == 'WHO'
         ? _whoGrowthStandards ?? []
         : _sriLankaGrowthStandards ?? [];
   }
@@ -525,12 +529,13 @@ class StandardsService {
     String source = 'WHO',
   }) {
     final standards = getGrowthStandards(source: source);
-    
-    return standards.where((standard) =>
-      standard.ageMonths == ageMonths &&
-      (standard.gender == gender || standard.gender == 'mixed') &&
-      standard.measurementType == measurementType
-    ).firstOrNull;
+
+    return standards
+        .where((standard) =>
+            standard.ageMonths == ageMonths &&
+            (standard.gender == gender || standard.gender == 'mixed') &&
+            standard.measurementType == measurementType)
+        .firstOrNull;
   }
 
   List<NutritionGuideline> getNutritionGuidelinesForAge({
@@ -538,10 +543,10 @@ class StandardsService {
     String source = 'WHO',
   }) {
     final guidelines = getNutritionGuidelines(source: source);
-    
-    return guidelines.where((guideline) =>
-      guideline.isApplicableForAge(ageMonths)
-    ).toList();
+
+    return guidelines
+        .where((guideline) => guideline.isApplicableForAge(ageMonths))
+        .toList();
   }
 
   List<DevelopmentMilestone> getMilestonesForAge({
@@ -550,11 +555,12 @@ class StandardsService {
     String? domain,
   }) {
     final milestones = getDevelopmentMilestones(source: source);
-    
-    return milestones.where((milestone) =>
-      milestone.isApplicableForAge(ageMonths) &&
-      (domain == null || milestone.domain == domain)
-    ).toList();
+
+    return milestones
+        .where((milestone) =>
+            milestone.isApplicableForAge(ageMonths) &&
+            (domain == null || milestone.domain == domain))
+        .toList();
   }
 
   double _parseValue(dynamic value) {
@@ -621,10 +627,12 @@ class StandardsService {
     if (ageString.contains('6') && ageString.contains('month')) {
       return {'min': 6, 'max': 12};
     }
-    if (ageString.contains('12') || ageString.contains('1') && ageString.contains('year')) {
+    if (ageString.contains('12') ||
+        ageString.contains('1') && ageString.contains('year')) {
       return {'min': 12, 'max': 24};
     }
-    if (ageString.contains('24') || ageString.contains('2') && ageString.contains('year')) {
+    if (ageString.contains('24') ||
+        ageString.contains('2') && ageString.contains('year')) {
       return {'min': 24, 'max': 60};
     }
 
@@ -640,7 +648,8 @@ class StandardsService {
   }
 
   /// Generate realistic WHO-based standard values for different measurements
-  Map<String, double> _generateWhoStandardValues(String measurement, String gender, int ageMonths) {
+  Map<String, double> _generateWhoStandardValues(
+      String measurement, String gender, int ageMonths) {
     switch (measurement) {
       case 'weight_for_age':
         return _generateWeightForAge(gender, ageMonths);
@@ -651,7 +660,13 @@ class StandardsService {
       case 'weight_for_height':
         return _generateWeightForHeight(gender, ageMonths);
       default:
-        return {'minus3': 0.0, 'minus2': 0.0, 'median': 0.0, 'plus2': 0.0, 'plus3': 0.0};
+        return {
+          'minus3': 0.0,
+          'minus2': 0.0,
+          'median': 0.0,
+          'plus2': 0.0,
+          'plus3': 0.0
+        };
     }
   }
 
@@ -727,7 +742,8 @@ class StandardsService {
 
     // Adjust weight values based on height relationship
     final heightMedian = heightValues['median']! / 100; // Convert to meters
-    final adjustedMedian = weightValues['median']! / (heightMedian * heightMedian);
+    final adjustedMedian =
+        weightValues['median']! / (heightMedian * heightMedian);
 
     return {
       'minus3': adjustedMedian * 0.7,

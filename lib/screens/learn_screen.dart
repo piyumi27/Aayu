@@ -29,7 +29,7 @@ class _LearnScreenState extends State<LearnScreen>
   String searchQuery = '';
   List<Article> searchResults = [];
   bool isSearching = false;
-  
+
   late TabController _tabController;
 
   @override
@@ -57,10 +57,10 @@ class _LearnScreenState extends State<LearnScreen>
         ArticleService.getFeaturedArticles(),
         ArticleService.loadAllArticles(),
       ]);
-      
+
       final featured = futures[0];
       final allArticles = futures[1];
-      
+
       // Calculate category counts
       final counts = <String, int>{};
       for (final article in allArticles) {
@@ -108,7 +108,7 @@ class _LearnScreenState extends State<LearnScreen>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -163,17 +163,19 @@ class _LearnScreenState extends State<LearnScreen>
                   ),
                 ),
               ),
-              
+
               // Tab bar (only show if not searching)
               if (!isSearching)
                 TabBar(
                   controller: _tabController,
                   labelColor: theme.colorScheme.primary,
-                  unselectedLabelColor: theme.colorScheme.onSurface.withOpacity(0.6),
+                  unselectedLabelColor:
+                      theme.colorScheme.onSurface.withOpacity(0.6),
                   indicatorColor: theme.colorScheme.primary,
                   labelStyle: GoogleFonts.notoSerifSinhala(
                     fontWeight: FontWeight.w600,
-                    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
+                    fontSize:
+                        ResponsiveUtils.getResponsiveFontSize(context, 16),
                   ),
                   tabs: const [
                     Tab(text: 'Featured'),
@@ -200,7 +202,7 @@ class _LearnScreenState extends State<LearnScreen>
 
   Widget _buildErrorWidget() {
     final theme = Theme.of(context);
-    
+
     return ResponsiveLayout(
       child: Center(
         child: Column(
@@ -238,7 +240,7 @@ class _LearnScreenState extends State<LearnScreen>
 
   Widget _buildSearchResults() {
     final theme = Theme.of(context);
-    
+
     return ResponsiveLayout(
       child: searchResults.isEmpty
           ? Center(
@@ -250,14 +252,17 @@ class _LearnScreenState extends State<LearnScreen>
                     size: ResponsiveUtils.getResponsiveIconSize(context, 64),
                     color: theme.colorScheme.onSurface.withOpacity(0.5),
                   ),
-                  SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 16)),
+                  SizedBox(
+                      height:
+                          ResponsiveUtils.getResponsiveSpacing(context, 16)),
                   Text(
                     'No articles found',
                     style: theme.textTheme.headlineSmall?.copyWith(
                       color: theme.colorScheme.onSurface.withOpacity(0.7),
                     ),
                   ),
-                  SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 8)),
+                  SizedBox(
+                      height: ResponsiveUtils.getResponsiveSpacing(context, 8)),
                   Text(
                     'Try adjusting your search terms',
                     style: theme.textTheme.bodyMedium?.copyWith(
@@ -337,9 +342,7 @@ class _LearnScreenState extends State<LearnScreen>
                 fontWeight: FontWeight.bold,
               ),
             ),
-            
             SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 16)),
-            
             CategoryGrid(
               categories: ArticleCategory.defaultCategories,
               onCategoryTap: _navigateToCategory,
@@ -379,7 +382,7 @@ class _LearnScreenState extends State<LearnScreen>
 
   Widget _buildEmptyState(String message) {
     final theme = Theme.of(context);
-    
+
     return ResponsiveLayout(
       child: Center(
         child: Column(

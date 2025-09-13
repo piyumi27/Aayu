@@ -4,8 +4,9 @@ import '../models/article.dart';
 
 class ArticleService {
   static const String _articlesBasePath = 'assets/articles';
-  static const String _articlesIndexPath = '$_articlesBasePath/articles_index.json';
-  
+  static const String _articlesIndexPath =
+      '$_articlesBasePath/articles_index.json';
+
   // Cache for loaded articles
   static final Map<String, Article> _articleCache = {};
   static final Map<String, String> _contentCache = {};
@@ -19,16 +20,17 @@ class ArticleService {
     }
 
     try {
-      final String indexContent = await rootBundle.loadString(_articlesIndexPath);
+      final String indexContent =
+          await rootBundle.loadString(_articlesIndexPath);
       final Map<String, dynamic> indexData = json.decode(indexContent);
-      
+
       _articlesIndexCache = ArticlesIndex.fromJson(indexData);
-      
+
       // Cache individual articles
       for (final article in _articlesIndexCache!.articles) {
         _articleCache[article.id] = article;
       }
-      
+
       return _articlesIndexCache!;
     } catch (e) {
       print('Error loading articles index: $e');
@@ -56,7 +58,7 @@ class ArticleService {
         // First sort by priority (high priority first)
         final priorityComparison = b.priorityValue.compareTo(a.priorityValue);
         if (priorityComparison != 0) return priorityComparison;
-        
+
         // Then by date (newest first)
         return b.publishDate.compareTo(a.publishDate);
       });
@@ -82,9 +84,10 @@ class ArticleService {
         throw Exception('Article not found: $articleId');
       }
 
-      final String contentPath = '$_articlesBasePath/${article.category}/$articleId.md';
+      final String contentPath =
+          '$_articlesBasePath/${article.category}/$articleId.md';
       final String content = await rootBundle.loadString(contentPath);
-      
+
       _contentCache[articleId] = content;
       return content;
     } catch (e) {
@@ -158,16 +161,20 @@ class ArticleService {
 
     // Find articles with similar tags or same category
     final allArticles = await loadAllArticles();
-    final similarArticles = allArticles.where((other) {
-      if (other.id == articleId) return false;
-      
-      // Same category gets priority
-      if (other.category == article.category) return true;
-      
-      // Articles with shared tags
-      final sharedTags = article.tags.where((tag) => other.tags.contains(tag));
-      return sharedTags.isNotEmpty;
-    }).take(5).toList();
+    final similarArticles = allArticles
+        .where((other) {
+          if (other.id == articleId) return false;
+
+          // Same category gets priority
+          if (other.category == article.category) return true;
+
+          // Articles with shared tags
+          final sharedTags =
+              article.tags.where((tag) => other.tags.contains(tag));
+          return sharedTags.isNotEmpty;
+        })
+        .take(5)
+        .toList();
 
     return similarArticles;
   }
@@ -221,44 +228,45 @@ class ArticleService {
   /// Validate article structure (for development)
   static Future<List<String>> validateArticles() async {
     final errors = <String>[];
-    
+
     try {
       final articles = await loadAllArticles();
-      
+
       for (final article in articles) {
         // Check required fields
         if (article.id.isEmpty) {
           errors.add('Article missing ID: ${article.title}');
         }
-        
+
         if (article.title.isEmpty) {
           errors.add('Article missing title: ${article.id}');
         }
-        
+
         if (article.category.isEmpty) {
           errors.add('Article missing category: ${article.id}');
         }
-        
+
         // Check if content file exists
         try {
           await loadArticleContent(article.id);
         } catch (e) {
           errors.add('Content file missing for article: ${article.id}');
         }
-        
+
         // Check if featured image exists (if specified)
         if (article.featuredImage != null) {
           try {
             await rootBundle.load(article.featuredImage!);
           } catch (e) {
-            errors.add('Featured image missing: ${article.featuredImage} for article: ${article.id}');
+            errors.add(
+                'Featured image missing: ${article.featuredImage} for article: ${article.id}');
           }
         }
       }
     } catch (e) {
       errors.add('Failed to validate articles: $e');
     }
-    
+
     return errors;
   }
 }

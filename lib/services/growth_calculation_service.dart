@@ -5,7 +5,8 @@ import '../models/growth_standard.dart';
 import '../repositories/standards_repository.dart';
 
 class GrowthCalculationService {
-  static final GrowthCalculationService _instance = GrowthCalculationService._internal();
+  static final GrowthCalculationService _instance =
+      GrowthCalculationService._internal();
   factory GrowthCalculationService() => _instance;
   GrowthCalculationService._internal();
 
@@ -16,8 +17,9 @@ class GrowthCalculationService {
     required GrowthRecord growthRecord,
     String? standardSource,
   }) async {
-    final childAgeMonths = _calculateAgeInMonths(child.birthDate, growthRecord.date);
-    
+    final childAgeMonths =
+        _calculateAgeInMonths(child.birthDate, growthRecord.date);
+
     final weightForAgeZScore = await _calculateWeightForAgeZScore(
       weight: growthRecord.weight,
       ageMonths: childAgeMonths,
@@ -149,7 +151,7 @@ class GrowthCalculationService {
     String? standardSource,
   }) async {
     final bmi = weight / math.pow(height / 100, 2);
-    
+
     final standard = await _standardsRepository.getGrowthStandardForChild(
       ageMonths: ageMonths,
       gender: gender,
@@ -188,9 +190,13 @@ class GrowthCalculationService {
     required double heightForAgeZScore,
     required double weightForHeightZScore,
   }) {
-    if (weightForAgeZScore < -3 || heightForAgeZScore < -3 || weightForHeightZScore < -3) {
+    if (weightForAgeZScore < -3 ||
+        heightForAgeZScore < -3 ||
+        weightForHeightZScore < -3) {
       return NutritionalStatus.severeAcuteMalnutrition;
-    } else if (weightForAgeZScore < -2 || heightForAgeZScore < -2 || weightForHeightZScore < -2) {
+    } else if (weightForAgeZScore < -2 ||
+        heightForAgeZScore < -2 ||
+        weightForHeightZScore < -2) {
       return NutritionalStatus.moderateAcuteMalnutrition;
     } else if (heightForAgeZScore < -2) {
       return NutritionalStatus.stunting;
@@ -208,11 +214,17 @@ class GrowthCalculationService {
     required double heightForAgeZScore,
     required double weightForHeightZScore,
   }) {
-    if (weightForAgeZScore < -3 || heightForAgeZScore < -3 || weightForHeightZScore < -3) {
+    if (weightForAgeZScore < -3 ||
+        heightForAgeZScore < -3 ||
+        weightForHeightZScore < -3) {
       return RiskLevel.critical;
-    } else if (weightForAgeZScore < -2 || heightForAgeZScore < -2 || weightForHeightZScore < -2) {
+    } else if (weightForAgeZScore < -2 ||
+        heightForAgeZScore < -2 ||
+        weightForHeightZScore < -2) {
       return RiskLevel.high;
-    } else if (weightForAgeZScore < -1 || heightForAgeZScore < -1 || weightForHeightZScore < -1) {
+    } else if (weightForAgeZScore < -1 ||
+        heightForAgeZScore < -1 ||
+        weightForHeightZScore < -1) {
       return RiskLevel.moderate;
     } else if (weightForHeightZScore > 2 || weightForAgeZScore > 2) {
       return RiskLevel.moderate;
@@ -229,7 +241,9 @@ class GrowthCalculationService {
   }) {
     final recommendations = <String>[];
 
-    if (weightForAgeZScore < -3 || heightForAgeZScore < -3 || weightForHeightZScore < -3) {
+    if (weightForAgeZScore < -3 ||
+        heightForAgeZScore < -3 ||
+        weightForHeightZScore < -3) {
       recommendations.addAll([
         'Immediate medical attention required',
         'Refer to nutrition specialist',
@@ -237,7 +251,9 @@ class GrowthCalculationService {
         'Monitor daily weight and height',
         'Check for underlying medical conditions',
       ]);
-    } else if (weightForAgeZScore < -2 || heightForAgeZScore < -2 || weightForHeightZScore < -2) {
+    } else if (weightForAgeZScore < -2 ||
+        heightForAgeZScore < -2 ||
+        weightForHeightZScore < -2) {
       recommendations.addAll([
         'Increase feeding frequency and quantity',
         'Focus on energy-dense foods',
@@ -282,24 +298,24 @@ class GrowthCalculationService {
     }
 
     growthRecords.sort((a, b) => a.date.compareTo(b.date));
-    
+
     final first = growthRecords.first;
     final last = growthRecords.last;
     final timeDiffMonths = _calculateAgeInMonths(first.date, last.date);
-    
+
     if (timeDiffMonths == 0) {
       return GrowthVelocity.insufficient();
     }
 
     final weightVelocity = (last.weight - first.weight) / timeDiffMonths;
     final heightVelocity = (last.height - first.height) / timeDiffMonths;
-    
+
     final expectedWeightVelocity = await _getExpectedWeightVelocity(
       ageMonths: _calculateAgeInMonths(child.birthDate, last.date),
       gender: child.gender,
       standardSource: standardSource,
     );
-    
+
     final expectedHeightVelocity = await _getExpectedHeightVelocity(
       ageMonths: _calculateAgeInMonths(child.birthDate, last.date),
       gender: child.gender,
@@ -347,7 +363,7 @@ class GrowthCalculationService {
     String? standardSource,
   }) async {
     final assessments = <GrowthAssessment>[];
-    
+
     for (final record in growthRecords) {
       final assessment = await calculateGrowthAssessment(
         child: child,
@@ -356,7 +372,7 @@ class GrowthCalculationService {
       );
       assessments.add(assessment);
     }
-    
+
     return assessments;
   }
 }

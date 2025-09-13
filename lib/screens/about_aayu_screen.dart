@@ -36,12 +36,14 @@ class _AboutAayuScreenState extends State<AboutAayuScreen> {
         'appName': 'ආයු (Aayu)',
         'subtitle': 'Child Nutrition Tracking for Sri Lankan Families',
         'version': 'Version 1.0.0',
-        'description': 'Aayu is a comprehensive child nutrition tracking app designed specifically for Sri Lankan families. Track your child\'s growth, manage vaccination schedules, and get personalized nutrition guidance.',
+        'description':
+            'Aayu is a comprehensive child nutrition tracking app designed specifically for Sri Lankan families. Track your child\'s growth, manage vaccination schedules, and get personalized nutrition guidance.',
         'features': 'Key Features',
         'featureGrowth': '• Growth tracking with WHO standards',
         'featureVaccines': '• Vaccination calendar management',
         'featureNutrition': '• Personalized nutrition recommendations',
-        'featureMultilingual': '• Multilingual support (English, Sinhala, Tamil)',
+        'featureMultilingual':
+            '• Multilingual support (English, Sinhala, Tamil)',
         'featureOffline': '• Offline-first with cloud sync',
         'featureSecure': '• Secure and private data storage',
         'founder': 'Founder',
@@ -59,16 +61,19 @@ class _AboutAayuScreenState extends State<AboutAayuScreen> {
         'email': 'Email: support@aayu.dev',
         'website': 'Website: www.aayu.dev',
         'visitGithub': 'Visit GitHub Profile',
-        'openSourceNotice': 'This app is built with Flutter and uses various open-source libraries.',
+        'openSourceNotice':
+            'This app is built with Flutter and uses various open-source libraries.',
       },
       'si': {
         'title': 'ආයු ගැන',
         'appName': 'ආයු (Aayu)',
         'subtitle': 'ශ්‍රී ලාංකික පවුල් සඳහා ළමා පෝෂණ ට්‍රැකර්',
         'version': 'අනුවාදය 1.0.0',
-        'description': 'ආයු යනු ශ්‍රී ලාංකික පවුල් සඳහා විශේෂයෙන් නිර්මාණය කරන ලද සම්පූර්ණ ළමා පෝෂණ ට්‍රැකින් යෙදුමකි. ඔබේ දරුවාගේ වර්ධනය ලුහුබඳින්න, එන්නත් කාලසටහන් කළමනාකරණය කරන්න, සහ පුද්ගලාරෝපිත පෝෂණ මඟපෙන්වීම් ලබාගන්න.',
+        'description':
+            'ආයු යනු ශ්‍රී ලාංකික පවුල් සඳහා විශේෂයෙන් නිර්මාණය කරන ලද සම්පූර්ණ ළමා පෝෂණ ට්‍රැකින් යෙදුමකි. ඔබේ දරුවාගේ වර්ධනය ලුහුබඳින්න, එන්නත් කාලසටහන් කළමනාකරණය කරන්න, සහ පුද්ගලාරෝපිත පෝෂණ මඟපෙන්වීම් ලබාගන්න.',
         'features': 'ප්‍රධාන විශේෂාංග',
-        'featureGrowth': '• ලෝක සෞඛ්‍ය සංවිධානයේ ප්‍රමිතීන් සමඟ වර්ධන ලුහුබැඳීම',
+        'featureGrowth':
+            '• ලෝක සෞඛ්‍ය සංවිධානයේ ප්‍රමිතීන් සමඟ වර්ධන ලුහුබැඳීම',
         'featureVaccines': '• එන්නත් දිනදර්ශන කළමනාකරණය',
         'featureNutrition': '• පුද්ගලාරෝපිත පෝෂණ නිර්දේශ',
         'featureMultilingual': '• බහුභාෂා සහාය (ඉංග්‍රීසි, සිංහල, දමිළ)',
@@ -89,14 +94,16 @@ class _AboutAayuScreenState extends State<AboutAayuScreen> {
         'email': 'ඊමේල්: support@aayu.dev',
         'website': 'වෙබ් අඩවිය: www.aayu.dev',
         'visitGithub': 'GitHub පැතිකඩ බලන්න',
-        'openSourceNotice': 'මෙම යෙදුම Flutter සමඟ ගොඩනගා ඇති අතර විවිධ විවෘත මූලාශ්‍ර පුස්තකාල භාවිතා කරයි.',
+        'openSourceNotice':
+            'මෙම යෙදුම Flutter සමඟ ගොඩනගා ඇති අතර විවිධ විවෘත මූලාශ්‍ර පුස්තකාල භාවිතා කරයි.',
       },
       'ta': {
         'title': 'Aayu பற்றி',
         'appName': 'ආයු (Aayu)',
         'subtitle': 'இலங்கை குடும்பங்களுக்கான குழந்தை ஊட்டச்சத்து கண்காணிப்பு',
         'version': 'பதிப்பு 1.0.0',
-        'description': 'Aayu என்பது இலங்கை குடும்பங்களுக்காக பிரத்யேகமாக வடிவமைக்கப்பட்ட ஒரு விரிவான குழந்தை ஊட்டச்சத்து கண்காணிப்பு பயன்பாடு. உங்கள் குழந்தையின் வளர்ச்சியை கண்காணித்து, தடுப்பூசி அட்டவணைகளை நிர்வகித்து, தனிப்பட்ட ஊட்டச்சத்து வழிகாட்டுதலைப் பெறுங்கள்.',
+        'description':
+            'Aayu என்பது இலங்கை குடும்பங்களுக்காக பிரத்யேகமாக வடிவமைக்கப்பட்ட ஒரு விரிவான குழந்தை ஊட்டச்சத்து கண்காணிப்பு பயன்பாடு. உங்கள் குழந்தையின் வளர்ச்சியை கண்காணித்து, தடுப்பூசி அட்டவணைகளை நிர்வகித்து, தனிப்பட்ட ஊட்டச்சத்து வழிகாட்டுதலைப் பெறுங்கள்.',
         'features': 'முக்கிய அம்சங்கள்',
         'featureGrowth': '• WHO தரநிலைகளுடன் வளர்ச்சி கண்காணிப்பு',
         'featureVaccines': '• தடுப்பூசி நாட்காட்டி நிர்வாகம்',
@@ -119,7 +126,8 @@ class _AboutAayuScreenState extends State<AboutAayuScreen> {
         'email': 'மின்னஞ்சல்: support@aayu.dev',
         'website': 'வலைதளம்: www.aayu.dev',
         'visitGithub': 'GitHub சுயவிவரத்தைப் பார்வையிடு',
-        'openSourceNotice': 'இந்த பயன்பாடு Flutter உடன் கட்டமைக்கப்பட்டு பல்வேறு திறந்த மூல நூலகங்களைப் பயன்படுத்துகிறது.',
+        'openSourceNotice':
+            'இந்த பயன்பாடு Flutter உடன் கட்டமைக்கப்பட்டு பல்வேறு திறந்த மூல நூலகங்களைப் பயன்படுத்துகிறது.',
       },
     };
     return texts[_selectedLanguage] ?? texts['en']!;
@@ -207,7 +215,7 @@ class _AboutAayuScreenState extends State<AboutAayuScreen> {
   @override
   Widget build(BuildContext context) {
     final texts = _getLocalizedText();
-    
+
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA),
       appBar: AppBar(
@@ -233,37 +241,37 @@ class _AboutAayuScreenState extends State<AboutAayuScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 24),
-            
+
             // App Logo & Info Card
             _buildAppInfoCard(texts),
-            
+
             const SizedBox(height: 32),
-            
+
             // Features Section
             _buildFeaturesSection(texts),
-            
+
             const SizedBox(height: 32),
-            
+
             // Founder Section
             _buildFounderSection(texts),
-            
+
             const SizedBox(height: 32),
-            
+
             // Developer Section
             _buildDeveloperSection(texts),
-            
+
             const SizedBox(height: 32),
-            
+
             // Contact Section
             _buildContactSection(texts),
-            
+
             const SizedBox(height: 32),
-            
+
             // Legal Section
             _buildLegalSection(texts),
-            
+
             const SizedBox(height: 24),
-            
+
             // Made with love
             Center(
               child: Text(
@@ -272,12 +280,13 @@ class _AboutAayuScreenState extends State<AboutAayuScreen> {
                   fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
                   color: const Color(0xFF6B7280),
                   fontWeight: FontWeight.w500,
-                  fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                  fontFamily:
+                      _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                 ),
                 textAlign: TextAlign.center,
               ),
             ),
-            
+
             const SizedBox(height: 32),
           ],
         ),
@@ -288,7 +297,8 @@ class _AboutAayuScreenState extends State<AboutAayuScreen> {
   Widget _buildAppInfoCard(Map<String, String> texts) {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(ResponsiveUtils.getResponsiveSpacing(context, 24)),
+      padding:
+          EdgeInsets.all(ResponsiveUtils.getResponsiveSpacing(context, 24)),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -336,9 +346,9 @@ class _AboutAayuScreenState extends State<AboutAayuScreen> {
               ),
             ),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // App Name
           Text(
             texts['appName']!,
@@ -350,9 +360,9 @@ class _AboutAayuScreenState extends State<AboutAayuScreen> {
             ),
             textAlign: TextAlign.center,
           ),
-          
+
           const SizedBox(height: 8),
-          
+
           // Subtitle
           Text(
             texts['subtitle']!,
@@ -363,9 +373,9 @@ class _AboutAayuScreenState extends State<AboutAayuScreen> {
             ),
             textAlign: TextAlign.center,
           ),
-          
+
           const SizedBox(height: 12),
-          
+
           // Version
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -379,13 +389,14 @@ class _AboutAayuScreenState extends State<AboutAayuScreen> {
                 fontSize: ResponsiveUtils.getResponsiveFontSize(context, 12),
                 color: const Color(0xFF0086FF),
                 fontWeight: FontWeight.w600,
-                fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                fontFamily:
+                    _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
               ),
             ),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Description
           Text(
             texts['description']!,
@@ -405,7 +416,8 @@ class _AboutAayuScreenState extends State<AboutAayuScreen> {
   Widget _buildFeaturesSection(Map<String, String> texts) {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(ResponsiveUtils.getResponsiveSpacing(context, 20)),
+      padding:
+          EdgeInsets.all(ResponsiveUtils.getResponsiveSpacing(context, 20)),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -459,7 +471,8 @@ class _AboutAayuScreenState extends State<AboutAayuScreen> {
   Widget _buildFounderSection(Map<String, String> texts) {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(ResponsiveUtils.getResponsiveSpacing(context, 20)),
+      padding:
+          EdgeInsets.all(ResponsiveUtils.getResponsiveSpacing(context, 20)),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -484,7 +497,7 @@ class _AboutAayuScreenState extends State<AboutAayuScreen> {
             ),
           ),
           const SizedBox(height: 16),
-          
+
           // Founder Avatar & Info
           Row(
             children: [
@@ -504,19 +517,25 @@ class _AboutAayuScreenState extends State<AboutAayuScreen> {
                     Text(
                       texts['founderName']!,
                       style: TextStyle(
-                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
+                        fontSize:
+                            ResponsiveUtils.getResponsiveFontSize(context, 16),
                         fontWeight: FontWeight.w600,
                         color: const Color(0xFF1A1A1A),
-                        fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                        fontFamily: _selectedLanguage == 'si'
+                            ? 'NotoSerifSinhala'
+                            : null,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       texts['founderRole']!,
                       style: TextStyle(
-                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
+                        fontSize:
+                            ResponsiveUtils.getResponsiveFontSize(context, 14),
                         color: const Color(0xFF6B7280),
-                        fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                        fontFamily: _selectedLanguage == 'si'
+                            ? 'NotoSerifSinhala'
+                            : null,
                       ),
                     ),
                   ],
@@ -524,9 +543,9 @@ class _AboutAayuScreenState extends State<AboutAayuScreen> {
               ),
             ],
           ),
-          
+
           const SizedBox(height: 20),
-          
+
           // Social Links
           Text(
             'Connect with Piyumi',
@@ -537,9 +556,9 @@ class _AboutAayuScreenState extends State<AboutAayuScreen> {
               fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
             ),
           ),
-          
+
           const SizedBox(height: 12),
-          
+
           Row(
             children: [
               _buildSocialButton(
@@ -575,7 +594,8 @@ class _AboutAayuScreenState extends State<AboutAayuScreen> {
   Widget _buildDeveloperSection(Map<String, String> texts) {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(ResponsiveUtils.getResponsiveSpacing(context, 20)),
+      padding:
+          EdgeInsets.all(ResponsiveUtils.getResponsiveSpacing(context, 20)),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -600,7 +620,7 @@ class _AboutAayuScreenState extends State<AboutAayuScreen> {
             ),
           ),
           const SizedBox(height: 16),
-          
+
           // Developer Avatar & Info
           Row(
             children: [
@@ -620,19 +640,25 @@ class _AboutAayuScreenState extends State<AboutAayuScreen> {
                     Text(
                       texts['developerName']!,
                       style: TextStyle(
-                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
+                        fontSize:
+                            ResponsiveUtils.getResponsiveFontSize(context, 16),
                         fontWeight: FontWeight.w600,
                         color: const Color(0xFF1A1A1A),
-                        fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                        fontFamily: _selectedLanguage == 'si'
+                            ? 'NotoSerifSinhala'
+                            : null,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       texts['developerRole']!,
                       style: TextStyle(
-                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
+                        fontSize:
+                            ResponsiveUtils.getResponsiveFontSize(context, 14),
                         color: const Color(0xFF6B7280),
-                        fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                        fontFamily: _selectedLanguage == 'si'
+                            ? 'NotoSerifSinhala'
+                            : null,
                       ),
                     ),
                   ],
@@ -640,9 +666,9 @@ class _AboutAayuScreenState extends State<AboutAayuScreen> {
               ),
             ],
           ),
-          
+
           const SizedBox(height: 20),
-          
+
           // Social Links
           Text(
             'Connect with Akash',
@@ -653,9 +679,9 @@ class _AboutAayuScreenState extends State<AboutAayuScreen> {
               fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
             ),
           ),
-          
+
           const SizedBox(height: 12),
-          
+
           Row(
             children: [
               _buildSocialButton(
@@ -697,7 +723,8 @@ class _AboutAayuScreenState extends State<AboutAayuScreen> {
   Widget _buildContactSection(Map<String, String> texts) {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(ResponsiveUtils.getResponsiveSpacing(context, 20)),
+      padding:
+          EdgeInsets.all(ResponsiveUtils.getResponsiveSpacing(context, 20)),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -722,7 +749,7 @@ class _AboutAayuScreenState extends State<AboutAayuScreen> {
             ),
           ),
           const SizedBox(height: 16),
-          
+
           // Email
           GestureDetector(
             onTap: _openEmail,
@@ -745,17 +772,19 @@ class _AboutAayuScreenState extends State<AboutAayuScreen> {
                 Text(
                   texts['email']!,
                   style: TextStyle(
-                    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
+                    fontSize:
+                        ResponsiveUtils.getResponsiveFontSize(context, 14),
                     color: const Color(0xFF4B5563),
-                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                    fontFamily:
+                        _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                   ),
                 ),
               ],
             ),
           ),
-          
+
           const SizedBox(height: 12),
-          
+
           // Website
           GestureDetector(
             onTap: _openWebsite,
@@ -778,9 +807,11 @@ class _AboutAayuScreenState extends State<AboutAayuScreen> {
                 Text(
                   texts['website']!,
                   style: TextStyle(
-                    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
+                    fontSize:
+                        ResponsiveUtils.getResponsiveFontSize(context, 14),
                     color: const Color(0xFF4B5563),
-                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                    fontFamily:
+                        _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                   ),
                 ),
               ],
@@ -794,7 +825,8 @@ class _AboutAayuScreenState extends State<AboutAayuScreen> {
   Widget _buildLegalSection(Map<String, String> texts) {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.all(ResponsiveUtils.getResponsiveSpacing(context, 20)),
+      padding:
+          EdgeInsets.all(ResponsiveUtils.getResponsiveSpacing(context, 20)),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -845,7 +877,8 @@ class _AboutAayuScreenState extends State<AboutAayuScreen> {
                 style: TextStyle(
                   fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
                   color: const Color(0xFF4B5563),
-                  fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                  fontFamily:
+                      _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                 ),
               ),
             ),
@@ -908,7 +941,7 @@ class _AboutAayuScreenState extends State<AboutAayuScreen> {
                 ),
               );
             }
-            
+
             if (snapshot.hasData && snapshot.data == true) {
               // Image exists, try to load it
               return Image.asset(
@@ -916,8 +949,9 @@ class _AboutAayuScreenState extends State<AboutAayuScreen> {
                 width: 80,
                 height: 80,
                 fit: BoxFit.cover,
-                alignment: imagePath.contains('founder') 
-                    ? const Alignment(0, -0.7) // Position face slightly up from center for founder
+                alignment: imagePath.contains('founder')
+                    ? const Alignment(0,
+                        -0.7) // Position face slightly up from center for founder
                     : Alignment.center, // Keep developer image centered
                 errorBuilder: (context, error, stackTrace) {
                   print('Image loading error for $imagePath: $error');

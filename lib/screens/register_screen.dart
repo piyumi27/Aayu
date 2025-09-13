@@ -25,7 +25,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _isLoading = false;
   String _selectedLanguage = 'en';
   String? _errorMessage;
-  
+
   final LocalAuthService _authService = LocalAuthService();
 
   @override
@@ -43,14 +43,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Future<void> _register() async {
     if (!_formKey.currentState!.validate()) return;
-    
+
     if (_password != _confirmPassword) {
       setState(() {
         _errorMessage = 'Passwords do not match';
       });
       return;
     }
-    
+
     setState(() {
       _isLoading = true;
       _errorMessage = null;
@@ -63,11 +63,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
         password: _password,
         email: _email.isNotEmpty ? _email : null,
       );
-      
+
       if (result.success && mounted) {
         // Registration successful - navigate to verification center
         context.go('/verification-center');
-        
+
         // Show success message
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -110,11 +110,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
         'haveAccount': 'Already have an account?',
         'signIn': 'Sign In',
         'loading': 'Creating account...',
-        'privacyText': 'By creating an account, you agree to our Terms of Service and Privacy Policy',
+        'privacyText':
+            'By creating an account, you agree to our Terms of Service and Privacy Policy',
       },
       'si': {
         'title': 'ගිණුමක් සාදන්න',
-        'subtitle': 'ඔබේ දරුවාගේ පෝෂණය සහ වර්ධනය නිරීක්ෂණ කිරීමට ආයු වෙත සම්බන්ධ වන්න',
+        'subtitle':
+            'ඔබේ දරුවාගේ පෝෂණය සහ වර්ධනය නිරීක්ෂණ කිරීමට ආයු වෙත සම්බන්ධ වන්න',
         'fullNameLabel': 'සම්පූර්ණ නම',
         'fullNameHint': 'ඔබේ සම්පූර්ණ නම ඇතුළත් කරන්න',
         'emailLabel': 'විද්‍යුත් තැපෑල (විකල්පයකි)',
@@ -125,11 +127,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
         'haveAccount': 'දැනටමත් ගිණුමක් තිබේද?',
         'signIn': 'ප්‍රවේශ වන්න',
         'loading': 'ගිණුම සාදමින්...',
-        'privacyText': 'ගිණුමක් සෑදීමෙන්, ඔබ අපගේ සේවා නියමයන්ට සහ රහස්‍යතා ප්‍රතිපත්තියට එකඟ වේ',
+        'privacyText':
+            'ගිණුමක් සෑදීමෙන්, ඔබ අපගේ සේවා නියමයන්ට සහ රහස්‍යතා ප්‍රතිපත්තියට එකඟ වේ',
       },
       'ta': {
         'title': 'கணக்கை உருவாக்கு',
-        'subtitle': 'உங்கள் குழந்தையின் ஊட்டச்சத்து மற்றும் வளர்ச்சியைக் கண்காணிக்க ஆயுவில் சேரவும்',
+        'subtitle':
+            'உங்கள் குழந்தையின் ஊட்டச்சத்து மற்றும் வளர்ச்சியைக் கண்காணிக்க ஆயுவில் சேரவும்',
         'fullNameLabel': 'முழு பெயர்',
         'fullNameHint': 'உங்கள் முழு பெயரை உள்ளிடுங்கள்',
         'emailLabel': 'மின்னஞ்சல் (விரும்பினால்)',
@@ -140,7 +144,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
         'haveAccount': 'ஏற்கனவே கணக்கு உள்ளதா?',
         'signIn': 'உள்நுழையுங்கள்',
         'loading': 'கணக்கை உருவாக்குகிறது...',
-        'privacyText': 'கணக்கை உருவாக்குவதன் மூலம், எங்கள் சேவை நிபந்தனைகள் மற்றும் தனியுரிமைக் கொள்கையை ஒப்புக்கொள்கிறீர்கள்',
+        'privacyText':
+            'கணக்கை உருவாக்குவதன் மூலம், எங்கள் சேவை நிபந்தனைகள் மற்றும் தனியுரிமைக் கொள்கையை ஒப்புக்கொள்கிறீர்கள்',
       },
     };
     return texts[_selectedLanguage] ?? texts['en']!;
@@ -149,7 +154,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     final texts = _getLocalizedText();
-    
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -174,15 +179,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ),
                 ),
-                
-                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 20)),
-                
+
+                SizedBox(
+                    height: ResponsiveUtils.getResponsiveSpacing(context, 20)),
+
                 // Header with icon
                 Column(
                   children: [
                     Container(
                       width: ResponsiveUtils.getResponsiveIconSize(context, 80),
-                      height: ResponsiveUtils.getResponsiveIconSize(context, 80),
+                      height:
+                          ResponsiveUtils.getResponsiveIconSize(context, 80),
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         gradient: LinearGradient(
@@ -195,75 +202,100 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       child: Icon(
                         Icons.person_add,
                         color: Colors.white,
-                        size: ResponsiveUtils.getResponsiveIconSize(context, 40),
+                        size:
+                            ResponsiveUtils.getResponsiveIconSize(context, 40),
                       ),
                     ),
-                    SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 24)),
+                    SizedBox(
+                        height:
+                            ResponsiveUtils.getResponsiveSpacing(context, 24)),
                     Text(
                       texts['title']!,
                       style: TextStyle(
-                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 28),
+                        fontSize:
+                            ResponsiveUtils.getResponsiveFontSize(context, 28),
                         fontWeight: FontWeight.bold,
                         color: const Color(0xFF1A1A1A),
-                        fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                        fontFamily: _selectedLanguage == 'si'
+                            ? 'NotoSerifSinhala'
+                            : null,
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 8)),
+                    SizedBox(
+                        height:
+                            ResponsiveUtils.getResponsiveSpacing(context, 8)),
                     Text(
                       texts['subtitle']!,
                       style: TextStyle(
-                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
+                        fontSize:
+                            ResponsiveUtils.getResponsiveFontSize(context, 16),
                         color: const Color(0xFF6B7280),
-                        fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                        fontFamily: _selectedLanguage == 'si'
+                            ? 'NotoSerifSinhala'
+                            : null,
                       ),
                       textAlign: TextAlign.center,
                     ),
                   ],
                 ),
-                
-                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 32)),
-                
+
+                SizedBox(
+                    height: ResponsiveUtils.getResponsiveSpacing(context, 32)),
+
                 // Error message
                 if (_errorMessage != null) ...[
                   Container(
-                    padding: ResponsiveUtils.getResponsivePadding(context, scale: 0.75),
+                    padding: ResponsiveUtils.getResponsivePadding(context,
+                        scale: 0.75),
                     decoration: BoxDecoration(
                       color: Colors.red.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
+                      border:
+                          Border.all(color: Colors.red.withValues(alpha: 0.3)),
                     ),
                     child: Row(
                       children: [
                         Icon(
                           Icons.error_outline,
                           color: Colors.red,
-                          size: ResponsiveUtils.getResponsiveIconSize(context, 20),
+                          size: ResponsiveUtils.getResponsiveIconSize(
+                              context, 20),
                         ),
-                        SizedBox(width: ResponsiveUtils.getResponsiveSpacing(context, 8)),
+                        SizedBox(
+                            width: ResponsiveUtils.getResponsiveSpacing(
+                                context, 8)),
                         Expanded(
                           child: Text(
                             _errorMessage!,
                             style: TextStyle(
                               color: Colors.red,
-                              fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
-                              fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                              fontSize: ResponsiveUtils.getResponsiveFontSize(
+                                  context, 14),
+                              fontFamily: _selectedLanguage == 'si'
+                                  ? 'NotoSerifSinhala'
+                                  : null,
                             ),
                           ),
                         ),
                       ],
                     ),
                   ),
-                  SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 16)),
+                  SizedBox(
+                      height:
+                          ResponsiveUtils.getResponsiveSpacing(context, 16)),
                 ],
-                
+
                 // Full name field
                 TextFormField(
-                  onChanged: (value) => setState(() => _fullName = value.trim()),
+                  onChanged: (value) =>
+                      setState(() => _fullName = value.trim()),
                   enabled: !_isLoading,
                   style: TextStyle(
-                    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
-                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                    fontSize:
+                        ResponsiveUtils.getResponsiveFontSize(context, 16),
+                    fontFamily:
+                        _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                   ),
                   decoration: InputDecoration(
                     labelText: texts['fullNameLabel']!,
@@ -283,7 +315,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         color: Theme.of(context).colorScheme.primary,
                       ),
                     ),
-                    contentPadding: ResponsiveUtils.getResponsivePadding(context),
+                    contentPadding:
+                        ResponsiveUtils.getResponsivePadding(context),
                   ),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
@@ -292,51 +325,59 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     return null;
                   },
                 ),
-                
-                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 16)),
-                
+
+                SizedBox(
+                    height: ResponsiveUtils.getResponsiveSpacing(context, 16)),
+
                 // Email field (optional)
                 GmailField(
                   onChanged: (email) => setState(() => _email = email),
                   enabled: !_isLoading,
                   helperText: 'Optional - for account recovery',
                 ),
-                
-                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 16)),
-                
+
+                SizedBox(
+                    height: ResponsiveUtils.getResponsiveSpacing(context, 16)),
+
                 // Phone number field
                 SriLankaPhoneField(
                   onChanged: (phone) => setState(() => _phoneNumber = phone),
                   enabled: !_isLoading,
                 ),
-                
-                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 16)),
-                
+
+                SizedBox(
+                    height: ResponsiveUtils.getResponsiveSpacing(context, 16)),
+
                 // Password field
                 PasswordStrengthField(
                   onChanged: (password) => setState(() => _password = password),
                   enabled: !_isLoading,
                 ),
-                
-                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 16)),
-                
+
+                SizedBox(
+                    height: ResponsiveUtils.getResponsiveSpacing(context, 16)),
+
                 // Confirm password field
                 PasswordStrengthField(
                   isConfirmField: true,
                   passwordToMatch: _password,
-                  onChanged: (password) => setState(() => _confirmPassword = password),
+                  onChanged: (password) =>
+                      setState(() => _confirmPassword = password),
                   enabled: !_isLoading,
                 ),
-                
-                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 24)),
-                
+
+                SizedBox(
+                    height: ResponsiveUtils.getResponsiveSpacing(context, 24)),
+
                 // Register button
                 SizedBox(
                   height: ResponsiveUtils.getResponsiveSpacing(context, 48),
                   child: ElevatedButton(
                     onPressed: _isLoading ? null : _register,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: _isLoading ? const Color(0xFFE5E7EB) : const Color(0xFF0086FF),
+                      backgroundColor: _isLoading
+                          ? const Color(0xFFE5E7EB)
+                          : const Color(0xFF0086FF),
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
@@ -348,21 +389,29 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               SizedBox(
-                                width: ResponsiveUtils.getResponsiveIconSize(context, 20),
-                                height: ResponsiveUtils.getResponsiveIconSize(context, 20),
+                                width: ResponsiveUtils.getResponsiveIconSize(
+                                    context, 20),
+                                height: ResponsiveUtils.getResponsiveIconSize(
+                                    context, 20),
                                 child: const CircularProgressIndicator(
                                   color: Color(0xFF6B7280),
                                   strokeWidth: 2,
                                 ),
                               ),
-                              SizedBox(width: ResponsiveUtils.getResponsiveSpacing(context, 8)),
+                              SizedBox(
+                                  width: ResponsiveUtils.getResponsiveSpacing(
+                                      context, 8)),
                               Text(
                                 texts['loading']!,
                                 style: TextStyle(
-                                  fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
+                                  fontSize:
+                                      ResponsiveUtils.getResponsiveFontSize(
+                                          context, 16),
                                   fontWeight: FontWeight.w600,
                                   color: const Color(0xFF6B7280),
-                                  fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                                  fontFamily: _selectedLanguage == 'si'
+                                      ? 'NotoSerifSinhala'
+                                      : null,
                                 ),
                               ),
                             ],
@@ -370,29 +419,36 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         : Text(
                             texts['registerButton']!,
                             style: TextStyle(
-                              fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
+                              fontSize: ResponsiveUtils.getResponsiveFontSize(
+                                  context, 16),
                               fontWeight: FontWeight.w600,
-                              fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                              fontFamily: _selectedLanguage == 'si'
+                                  ? 'NotoSerifSinhala'
+                                  : null,
                             ),
                           ),
                   ),
                 ),
-                
-                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 16)),
-                
+
+                SizedBox(
+                    height: ResponsiveUtils.getResponsiveSpacing(context, 16)),
+
                 // Privacy policy text
                 Text(
                   texts['privacyText']!,
                   style: TextStyle(
-                    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 12),
+                    fontSize:
+                        ResponsiveUtils.getResponsiveFontSize(context, 12),
                     color: const Color(0xFF9CA3AF),
-                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                    fontFamily:
+                        _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                   ),
                   textAlign: TextAlign.center,
                 ),
-                
-                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 24)),
-                
+
+                SizedBox(
+                    height: ResponsiveUtils.getResponsiveSpacing(context, 24)),
+
                 // Sign in link
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -400,12 +456,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     Text(
                       texts['haveAccount']!,
                       style: TextStyle(
-                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
+                        fontSize:
+                            ResponsiveUtils.getResponsiveFontSize(context, 14),
                         color: const Color(0xFF6B7280),
-                        fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                        fontFamily: _selectedLanguage == 'si'
+                            ? 'NotoSerifSinhala'
+                            : null,
                       ),
                     ),
-                    SizedBox(width: ResponsiveUtils.getResponsiveSpacing(context, 4)),
+                    SizedBox(
+                        width:
+                            ResponsiveUtils.getResponsiveSpacing(context, 4)),
                     TextButton(
                       onPressed: _isLoading ? null : () => context.pop(),
                       style: TextButton.styleFrom(
@@ -416,10 +477,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       child: Text(
                         texts['signIn']!,
                         style: TextStyle(
-                          fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
+                          fontSize: ResponsiveUtils.getResponsiveFontSize(
+                              context, 14),
                           color: const Color(0xFF0086FF),
                           fontWeight: FontWeight.w600,
-                          fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                          fontFamily: _selectedLanguage == 'si'
+                              ? 'NotoSerifSinhala'
+                              : null,
                         ),
                       ),
                     ),

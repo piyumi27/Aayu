@@ -28,10 +28,10 @@ class NotificationBadge extends StatelessWidget {
     return StreamBuilder<int>(
       stream: _getUnreadNotificationCountStream(context),
       builder: (context, snapshot) {
-        final count = customCount != null 
+        final count = customCount != null
             ? int.tryParse(customCount!) ?? 0
             : snapshot.data ?? 0;
-        
+
         if (count == 0 && !showZeroCount) {
           return child;
         }
@@ -41,12 +41,14 @@ class NotificationBadge extends StatelessWidget {
             count > 99 ? '99+' : count.toString(),
             style: TextStyle(
               color: textColor ?? Theme.of(context).colorScheme.onError,
-              fontSize: fontSize ?? ResponsiveUtils.getResponsiveFontSize(context, 11),
+              fontSize: fontSize ??
+                  ResponsiveUtils.getResponsiveFontSize(context, 11),
               fontWeight: FontWeight.bold,
             ),
           ),
           backgroundColor: badgeColor ?? Theme.of(context).colorScheme.error,
-          padding: padding ?? const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+          padding:
+              padding ?? const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
           child: child,
         );
       },
@@ -55,7 +57,7 @@ class NotificationBadge extends StatelessWidget {
 
   Stream<int> _getUnreadNotificationCountStream(BuildContext context) async* {
     final databaseService = DatabaseService();
-    
+
     while (true) {
       try {
         final db = await databaseService.database;
@@ -65,10 +67,10 @@ class NotificationBadge extends StatelessWidget {
           where: 'isRead = ?',
           whereArgs: [0],
         );
-        
+
         final count = result.first['count'] as int? ?? 0;
         yield count;
-        
+
         // Wait before next update
         await Future.delayed(const Duration(seconds: 5));
       } catch (e) {
@@ -96,7 +98,7 @@ class CriticalNotificationBadge extends StatelessWidget {
       stream: _getCriticalNotificationCountStream(context),
       builder: (context, snapshot) {
         final count = snapshot.data ?? 0;
-        
+
         if (count == 0) {
           return child;
         }
@@ -138,7 +140,7 @@ class CriticalNotificationBadge extends StatelessWidget {
 
   Stream<int> _getCriticalNotificationCountStream(BuildContext context) async* {
     final databaseService = DatabaseService();
-    
+
     while (true) {
       try {
         final db = await databaseService.database;
@@ -148,10 +150,10 @@ class CriticalNotificationBadge extends StatelessWidget {
           where: 'isRead = ? AND (category = ? OR category = ?)',
           whereArgs: [0, 'critical_health_alert', 'health_alert'],
         );
-        
+
         final count = result.first['count'] as int? ?? 0;
         yield count;
-        
+
         await Future.delayed(const Duration(seconds: 3));
       } catch (e) {
         debugPrint('Error getting critical notification count: $e');
@@ -180,7 +182,7 @@ class CategoryNotificationBadge extends StatelessWidget {
       stream: _getCategoryNotificationCountStream(context),
       builder: (context, snapshot) {
         final count = snapshot.data ?? 0;
-        
+
         if (count == 0 && !showZeroCount) {
           return child;
         }
@@ -234,7 +236,7 @@ class CategoryNotificationBadge extends StatelessWidget {
 
   Stream<int> _getCategoryNotificationCountStream(BuildContext context) async* {
     final databaseService = DatabaseService();
-    
+
     while (true) {
       try {
         final db = await databaseService.database;
@@ -244,10 +246,10 @@ class CategoryNotificationBadge extends StatelessWidget {
           where: 'isRead = ? AND category = ?',
           whereArgs: [0, category],
         );
-        
+
         final count = result.first['count'] as int? ?? 0;
         yield count;
-        
+
         await Future.delayed(const Duration(seconds: 5));
       } catch (e) {
         debugPrint('Error getting category notification count: $e');
@@ -341,7 +343,7 @@ class _SmartNotificationBadgeState extends State<SmartNotificationBadge>
                     child: Container(
                       padding: const EdgeInsets.all(2),
                       decoration: BoxDecoration(
-                        color: criticalCount > 0 
+                        color: criticalCount > 0
                             ? Theme.of(context).colorScheme.error
                             : recentCount > 0
                                 ? Theme.of(context).colorScheme.primary
@@ -360,7 +362,8 @@ class _SmartNotificationBadgeState extends State<SmartNotificationBadge>
                         totalCount > 99 ? '99+' : totalCount.toString(),
                         style: TextStyle(
                           color: Theme.of(context).colorScheme.onError,
-                          fontSize: ResponsiveUtils.getResponsiveFontSize(context, 10),
+                          fontSize: ResponsiveUtils.getResponsiveFontSize(
+                              context, 10),
                           fontWeight: FontWeight.bold,
                         ),
                         textAlign: TextAlign.center,
@@ -376,13 +379,14 @@ class _SmartNotificationBadgeState extends State<SmartNotificationBadge>
     );
   }
 
-  Stream<Map<String, int>> _getSmartNotificationData(BuildContext context) async* {
+  Stream<Map<String, int>> _getSmartNotificationData(
+      BuildContext context) async* {
     final databaseService = DatabaseService();
-    
+
     while (true) {
       try {
         final db = await databaseService.database;
-        
+
         // Get total unread count
         final totalResult = await db.query(
           'notification_history',
@@ -390,7 +394,7 @@ class _SmartNotificationBadgeState extends State<SmartNotificationBadge>
           where: 'isRead = ?',
           whereArgs: [0],
         );
-        
+
         // Get critical unread count
         final criticalResult = await db.query(
           'notification_history',
@@ -398,22 +402,23 @@ class _SmartNotificationBadgeState extends State<SmartNotificationBadge>
           where: 'isRead = ? AND (category = ? OR category = ?)',
           whereArgs: [0, 'critical_health_alert', 'health_alert'],
         );
-        
+
         // Get recent (last 24 hours) unread count
-        final twentyFourHoursAgo = DateTime.now().subtract(const Duration(hours: 24));
+        final twentyFourHoursAgo =
+            DateTime.now().subtract(const Duration(hours: 24));
         final recentResult = await db.query(
           'notification_history',
           columns: ['COUNT(*) as count'],
           where: 'isRead = ? AND receivedAt > ?',
           whereArgs: [0, twentyFourHoursAgo.toIso8601String()],
         );
-        
+
         yield {
           'total': totalResult.first['count'] as int? ?? 0,
           'critical': criticalResult.first['count'] as int? ?? 0,
           'recent': recentResult.first['count'] as int? ?? 0,
         };
-        
+
         await Future.delayed(widget.updateInterval);
       } catch (e) {
         debugPrint('Error getting smart notification data: $e');

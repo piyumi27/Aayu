@@ -85,7 +85,7 @@ void main() {
     group('Notification Management', () {
       test('should cancel notification by ID', () async {
         const notificationId = 12345;
-        
+
         // Test cancellation - should not throw errors
         expect(() async {
           await service.cancelNotification(notificationId);
@@ -94,7 +94,7 @@ void main() {
 
       test('should cancel all notifications for child', () async {
         const childId = 'test-child-cancel';
-        
+
         // Test bulk cancellation - should not throw errors
         expect(() async {
           // await service.cancelAllNotificationsForChild(childId);
@@ -114,13 +114,15 @@ void main() {
     });
 
     group('Channel Configuration', () {
-      test('should configure critical health alerts channel correctly', () async {
+      test('should configure critical health alerts channel correctly',
+          () async {
         // Test critical health alerts channel configuration
         // Since we have mocked implementations, we verify initialization succeeds
         expect(service.isInitialized, isTrue);
       });
 
-      test('should configure vaccination reminders channel correctly', () async {
+      test('should configure vaccination reminders channel correctly',
+          () async {
         // Test vaccination reminders channel configuration
         // Since we have mocked implementations, we verify initialization succeeds
         expect(service.isInitialized, isTrue);
