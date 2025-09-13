@@ -9,9 +9,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/child.dart';
 import '../models/growth_record.dart';
+import '../models/growth_standard.dart';
 import '../providers/child_provider.dart';
 import '../repositories/standards_repository.dart';
 import '../services/growth_calculation_service.dart';
+import '../services/standards_service.dart';
 import '../utils/responsive_utils.dart';
 import '../widgets/notifications/notification_badge.dart';
 import '../widgets/safe_gesture_detector.dart';
@@ -40,6 +42,7 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
   
   late StandardsRepository _standardsRepository;
   late GrowthCalculationService _calculationService;
+  late StandardsService _standardsService;
   Map<String, dynamic>? _chartData;
 
   @override
@@ -47,6 +50,7 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
     super.initState();
     _standardsRepository = StandardsRepository();
     _calculationService = GrowthCalculationService();
+    _standardsService = StandardsService();
     _loadLanguage();
     _loadChartData();
   }
@@ -54,12 +58,29 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
   Future<void> _loadChartData() async {
     final provider = Provider.of<ChildProvider>(context, listen: false);
     final child = provider.selectedChild;
-    
+
     if (child != null) {
-      final data = await _generateChartData(child, provider.growthRecords);
-      setState(() {
-        _chartData = data;
-      });
+      try {
+        final data = await _generateChartData(child, provider.growthRecords);
+        if (mounted) {
+          setState(() {
+            _chartData = data;
+          });
+        }
+      } catch (e) {
+        print('Error loading chart data: $e');
+        // Set empty data to prevent errors
+        if (mounted) {
+          setState(() {
+            _chartData = {
+              'chartPoints': <FlSpot>[],
+              'zScores': <FlSpot>[],
+              'percentiles': <FlSpot>[],
+              'standards': [],
+            };
+          });
+        }
+      }
     }
   }
 
@@ -163,8 +184,18 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
   }
 
   int _calculateAgeInMonths(DateTime measurementDate, DateTime birthDate) {
-    final diff = measurementDate.difference(birthDate);
-    return (diff.inDays / 30.44).round();
+    final years = measurementDate.year - birthDate.year;
+    final months = measurementDate.month - birthDate.month;
+    final days = measurementDate.day - birthDate.day;
+
+    int totalMonths = years * 12 + months;
+
+    // Adjust if the day hasn't reached yet
+    if (days < 0) {
+      totalMonths -= 1;
+    }
+
+    return totalMonths.clamp(0, 120); // Clamp to reasonable range
   }
 
   Future<void> _loadLanguage() async {
@@ -648,7 +679,10 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
             return Padding(
               padding: const EdgeInsets.only(right: 8),
               child: SafeGestureDetector(
-                onTap: () => setState(() => _selectedTab = tab),
+                onTap: () {
+                  setState(() => _selectedTab = tab);
+                  _loadChartData(); // Reload chart data for new tab
+                },
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   decoration: BoxDecoration(
@@ -687,7 +721,10 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
           return Padding(
             padding: const EdgeInsets.only(right: 8),
             child: SafeGestureDetector(
-              onTap: () => setState(() => _selectedRange = range),
+              onTap: () {
+                setState(() => _selectedRange = range);
+                _loadChartData(); // Reload chart data for new range
+              },
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                 decoration: BoxDecoration(
@@ -890,23 +927,24 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
     if (child == null) return [];
 
     List<FlSpot> spots = [];
-    
+
     // Add birth data as first point if available
     if (child.birthWeight != null && _selectedTab == 'Weight-Age') {
       spots.add(FlSpot(0, child.birthWeight!));
     } else if (child.birthHeight != null && _selectedTab == 'Height-Age') {
       spots.add(FlSpot(0, child.birthHeight!));
+    } else if (child.birthWeight != null && child.birthHeight != null && _selectedTab == 'BMI') {
+      final bmi = child.birthWeight! / ((child.birthHeight! / 100) * (child.birthHeight! / 100));
+      spots.add(FlSpot(0, bmi));
     }
-    
+
     // Add growth records
     final sortedRecords = List<GrowthRecord>.from(records);
     sortedRecords.sort((a, b) => a.date.compareTo(b.date));
-    
-    for (int i = 0; i < sortedRecords.length; i++) {
-      final record = sortedRecords[i];
-      final ageInMonths = DateTime.now().difference(child.birthDate).inDays / 30.44;
-      final recordAgeInMonths = record.date.difference(child.birthDate).inDays / 30.44;
-      
+
+    for (final record in sortedRecords) {
+      final recordAgeInMonths = _calculateAgeInMonths(record.date, child.birthDate);
+
       double value;
       switch (_selectedTab) {
         case 'Weight-Age':
@@ -919,15 +957,19 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
           value = record.weight / ((record.height / 100) * (record.height / 100));
           break;
         case 'Weight-for-Height':
-          value = record.weight / (record.height / 100);
+          // For weight-for-height, we need to map height to appropriate scale
+          value = record.weight;
           break;
         default:
           value = record.weight;
       }
-      
-      spots.add(FlSpot(recordAgeInMonths, value));
+
+      // Only add valid data points
+      if (value > 0 && recordAgeInMonths >= 0 && recordAgeInMonths <= 60) {
+        spots.add(FlSpot(recordAgeInMonths.toDouble(), value));
+      }
     }
-    
+
     return spots;
   }
 
@@ -1117,43 +1159,76 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
     final provider = Provider.of<ChildProvider>(context, listen: false);
     final child = provider.selectedChild;
     if (child == null) return '--';
-    
-    // Calculate age at time of measurement
-    final ageInMonths = record.date.difference(child.birthDate).inDays / 30.44;
-    
-    // This is a simplified percentile calculation
-    // In a real app, this would use WHO growth standards tables
+
+    // Calculate age at time of measurement using consistent method
+    final ageInMonths = _calculateAgeInMonths(record.date, child.birthDate);
+
     double value;
+    String measurementType;
     switch (_selectedTab) {
       case 'Weight-Age':
         value = record.weight;
+        measurementType = 'weight_for_age';
         break;
       case 'Height-Age':
         value = record.height;
+        measurementType = 'height_for_age';
         break;
       case 'BMI':
         value = record.weight / ((record.height / 100) * (record.height / 100));
+        measurementType = 'bmi_for_age';
+        break;
+      case 'Weight-for-Height':
+        value = record.weight;
+        measurementType = 'weight_for_height';
         break;
       default:
         value = record.weight;
+        measurementType = 'weight_for_age';
     }
-    
-    // Simplified percentile estimation based on rough WHO standards
-    if (_selectedTab == 'Weight-Age') {
-      if (value > 15) return '90th';
-      if (value > 13) return '75th';
-      if (value > 11) return '50th';
-      if (value > 9) return '25th';
-      return '10th';
-    } else if (_selectedTab == 'Height-Age') {
-      if (value > 90) return '90th';
-      if (value > 85) return '75th';
-      if (value > 80) return '50th';
-      if (value > 75) return '25th';
-      return '10th';
+
+    try {
+      // Use the actual standards to calculate z-score and percentile
+      final zScore = _calculateZScoreForMeasurement(
+        value,
+        ageInMonths,
+        child.gender,
+        _selectedTab,
+        _selectedStandard == 'WHO' ? 'WHO' : 'SriLanka',
+      );
+
+      // Convert z-score to percentile using the helper function
+      return '${_zScoreToPercentile(zScore as double).round()}th';
+    } catch (e) {
+      // Fallback to simplified estimation
+      return _getSimplifiedPercentile(value, measurementType);
     }
-    
-    return '50th';
+  }
+
+  String _getSimplifiedPercentile(double value, String measurementType) {
+    // Fallback simplified percentile estimation
+    switch (measurementType) {
+      case 'weight_for_age':
+        if (value > 15) return '90th';
+        if (value > 13) return '75th';
+        if (value > 11) return '50th';
+        if (value > 9) return '25th';
+        return '10th';
+      case 'height_for_age':
+        if (value > 90) return '90th';
+        if (value > 85) return '75th';
+        if (value > 80) return '50th';
+        if (value > 75) return '25th';
+        return '10th';
+      case 'bmi_for_age':
+        if (value > 18) return '90th';
+        if (value > 17) return '75th';
+        if (value > 16) return '50th';
+        if (value > 15) return '25th';
+        return '10th';
+      default:
+        return '50th';
+    }
   }
 
   Widget _buildGrowthInsights(Child child, Map<String, String> texts) {
@@ -1244,12 +1319,120 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
   
   List<LineChartBarData> _buildWHOPercentileLines(Child? child) {
     if (child == null) return [];
-    
-    // These are simplified WHO percentile lines - in a real app, these would be calculated
-    // using actual WHO growth standards data tables
+
     final lines = <LineChartBarData>[];
     final maxX = _getMaxX([], child);
-    
+
+    try {
+      // Generate actual percentile lines using the standards data
+      final percentileLines = _generateStandardPercentileLines(child, maxX.toInt());
+      lines.addAll(percentileLines);
+    } catch (e) {
+      print('Error generating percentile lines: $e');
+      // Fallback to simplified lines
+      lines.addAll(_generateFallbackPercentileLines());
+    }
+
+    return lines;
+  }
+
+  List<LineChartBarData> _generateStandardPercentileLines(Child child, int maxAgeMonths) {
+    final lines = <LineChartBarData>[];
+    final percentileColors = [
+      const Color(0xFFEF4444), // 3rd percentile
+      const Color(0xFFFB923C), // 15th percentile
+      const Color(0xFFFBBF24), // 50th percentile
+      const Color(0xFF34D399), // 85th percentile
+      const Color(0xFF10B981), // 97th percentile
+    ];
+
+    // Z-score values corresponding to percentiles: 3rd, 15th, 50th, 85th, 97th
+    final zScores = [-1.88, -1.04, 0.0, 1.04, 1.88];
+
+    String measurementType;
+    switch (_selectedTab) {
+      case 'Weight-Age':
+        measurementType = 'weight_for_age';
+        break;
+      case 'Height-Age':
+        measurementType = 'height_for_age';
+        break;
+      case 'BMI':
+        measurementType = 'bmi_for_age';
+        break;
+      case 'Weight-for-Height':
+        measurementType = 'weight_for_height';
+        break;
+      default:
+        measurementType = 'weight_for_age';
+    }
+
+    for (int i = 0; i < zScores.length; i++) {
+      final spots = <FlSpot>[];
+      final zScore = zScores[i];
+
+      // Generate spots for each month up to maxAgeMonths
+      for (int ageMonths = 0; ageMonths <= maxAgeMonths; ageMonths += 3) {
+        try {
+          final standardValues = _standardsService.getGrowthStandardForChild(
+            ageMonths: ageMonths,
+            gender: child.gender,
+            measurementType: measurementType,
+          );
+
+          if (standardValues != null) {
+            final value = _interpolateFromZScore(standardValues, zScore);
+            if (value > 0) {
+              spots.add(FlSpot(ageMonths.toDouble(), value));
+            }
+          }
+        } catch (e) {
+          // Skip this data point on error
+          continue;
+        }
+      }
+
+      if (spots.isNotEmpty) {
+        lines.add(LineChartBarData(
+          spots: spots,
+          isCurved: true,
+          color: percentileColors[i].withValues(alpha: 0.6),
+          barWidth: 1.5,
+          isStrokeCapRound: false,
+          dotData: const FlDotData(show: false),
+          belowBarData: BarAreaData(show: false),
+          dashArray: [3, 3],
+        ));
+      }
+    }
+
+    return lines;
+  }
+
+  double _interpolateFromZScore(dynamic standardValues, double targetZScore) {
+    // This is a simplified interpolation - in a real implementation,
+    // you would use the actual z-score interpolation from the GrowthStandard model
+    if (standardValues is GrowthStandard) {
+      if (targetZScore <= -2.0) {
+        return standardValues.zScoreMinus2 +
+               (targetZScore + 2.0) * (standardValues.zScoreMinus3 - standardValues.zScoreMinus2);
+      } else if (targetZScore <= 0.0) {
+        return standardValues.zScoreMinus2 +
+               (targetZScore + 2.0) * (standardValues.median - standardValues.zScoreMinus2) / 2.0;
+      } else if (targetZScore <= 2.0) {
+        return standardValues.median +
+               targetZScore * (standardValues.zScorePlus2 - standardValues.median) / 2.0;
+      } else {
+        return standardValues.zScorePlus2 +
+               (targetZScore - 2.0) * (standardValues.zScorePlus3 - standardValues.zScorePlus2);
+      }
+    }
+    return 0.0;
+  }
+
+  List<LineChartBarData> _generateFallbackPercentileLines() {
+    final lines = <LineChartBarData>[];
+
     switch (_selectedTab) {
       case 'Weight-Age':
         lines.addAll([
@@ -1269,8 +1452,17 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
           _buildPercentileLine([55, 66, 76, 86, 96, 106], const Color(0xFF10B981)), // 97th
         ]);
         break;
+      case 'BMI':
+        lines.addAll([
+          _buildPercentileLine([12, 13, 14, 14.5, 15, 15.5], const Color(0xFFEF4444)), // 3rd
+          _buildPercentileLine([13, 14, 15, 15.5, 16, 16.5], const Color(0xFFFB923C)), // 15th
+          _buildPercentileLine([14, 15, 16, 16.5, 17, 17.5], const Color(0xFFFBBF24)), // 50th
+          _buildPercentileLine([15, 16, 17, 17.5, 18, 18.5], const Color(0xFF34D399)), // 85th
+          _buildPercentileLine([16, 17, 18, 18.5, 19, 19.5], const Color(0xFF10B981)), // 97th
+        ]);
+        break;
     }
-    
+
     return lines;
   }
   
@@ -1334,10 +1526,12 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
                 final isSelected = _selectedStandard == standard;
                 return Expanded(
                   child: SafeGestureDetector(
-                    onTap: () => setState(() {
-                      _selectedStandard = standard;
-                      _loadChartData();
-                    }),
+                    onTap: () {
+                      setState(() {
+                        _selectedStandard = standard;
+                      });
+                      _loadChartData(); // Reload chart data with new standard
+                    },
                     child: Container(
                       decoration: BoxDecoration(
                         color: isSelected ? const Color(0xFF0086FF) : Colors.transparent,

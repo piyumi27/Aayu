@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:confetti/confetti.dart';
 
 import '../models/child.dart';
 import '../providers/child_provider.dart';
@@ -18,8 +19,10 @@ class _PreSixMonthCountdownScreenState extends State<PreSixMonthCountdownScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _progressAnimation;
+  late ConfettiController _confettiController;
   String _selectedLanguage = 'en';
   bool _tipDismissed = false;
+  bool _achievementShown = false;
 
   @override
   void initState() {
@@ -35,7 +38,11 @@ class _PreSixMonthCountdownScreenState extends State<PreSixMonthCountdownScreen>
       duration: const Duration(milliseconds: 1500),
       vsync: this,
     );
-    
+
+    _confettiController = ConfettiController(
+      duration: const Duration(seconds: 3),
+    );
+
     _progressAnimation = Tween<double>(
       begin: 0.0,
       end: 1.0,
@@ -43,7 +50,7 @@ class _PreSixMonthCountdownScreenState extends State<PreSixMonthCountdownScreen>
       parent: _animationController,
       curve: Curves.easeInOut,
     ),);
-    
+
     _animationController.forward();
   }
 
@@ -73,14 +80,112 @@ class _PreSixMonthCountdownScreenState extends State<PreSixMonthCountdownScreen>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final childProvider = Provider.of<ChildProvider>(context, listen: false);
       final selectedChild = childProvider.selectedChild;
-      
+
       if (selectedChild != null) {
         final daysSinceBirth = _calculateDaysSinceBirth(selectedChild);
-        if (daysSinceBirth >= 181) {
-          context.go('/');
+        if (daysSinceBirth >= 180 && !_achievementShown) {
+          _showAchievementCelebration();
+        } else if (daysSinceBirth >= 181) {
+          // Auto-redirect after celebration
+          Future.delayed(const Duration(seconds: 4), () {
+            if (mounted) {
+              context.go('/growth');
+            }
+          });
         }
       }
     });
+  }
+
+  void _showAchievementCelebration() {
+    setState(() {
+      _achievementShown = true;
+    });
+
+    _confettiController.play();
+
+    // Show achievement dialog
+    Future.delayed(const Duration(milliseconds: 500), () {
+      if (mounted) {
+        _showAchievementDialog();
+      }
+    });
+  }
+
+  void _showAchievementDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                const Color(0xFF0086FF),
+                const Color(0xFF00B894),
+              ],
+            ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.celebration,
+                size: 64,
+                color: Colors.white,
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                '🎉 Congratulations! 🎉',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Your baby has completed 6 months!\nTime to start the growth tracking journey.',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.white,
+                  height: 1.4,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  context.go('/growth');
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  foregroundColor: const Color(0xFF0086FF),
+                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(25),
+                  ),
+                ),
+                child: const Text(
+                  'Start Growth Tracking',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   int _calculateDaysSinceBirth(Child child) {
@@ -148,6 +253,7 @@ class _PreSixMonthCountdownScreenState extends State<PreSixMonthCountdownScreen>
   @override
   void dispose() {
     _animationController.dispose();
+    _confettiController.dispose();
     super.dispose();
   }
 
@@ -172,9 +278,69 @@ class _PreSixMonthCountdownScreenState extends State<PreSixMonthCountdownScreen>
         final progress = _calculateProgress(daysSinceBirth);
         final progressColor = _getProgressColor(daysSinceBirth);
 
-        return Scaffold(
-          backgroundColor: const Color(0xFFF8F9FA),
-          appBar: AppBar(
+        return Stack(
+          children: [
+            // Confetti widgets
+            Align(
+              alignment: Alignment.topCenter,
+              child: ConfettiWidget(
+                confettiController: _confettiController,
+                blastDirection: math.pi / 2, // Downward
+                particleDrag: 0.05,
+                emissionFrequency: 0.05,
+                numberOfParticles: 50,
+                gravity: 0.05,
+                shouldLoop: false,
+                colors: const [
+                  Colors.green,
+                  Colors.blue,
+                  Colors.pink,
+                  Colors.orange,
+                  Colors.purple,
+                ],
+              ),
+            ),
+            Align(
+              alignment: Alignment.topLeft,
+              child: ConfettiWidget(
+                confettiController: _confettiController,
+                blastDirection: 0,
+                particleDrag: 0.05,
+                emissionFrequency: 0.05,
+                numberOfParticles: 30,
+                gravity: 0.05,
+                shouldLoop: false,
+                colors: const [
+                  Colors.green,
+                  Colors.blue,
+                  Colors.pink,
+                  Colors.orange,
+                  Colors.purple,
+                ],
+              ),
+            ),
+            Align(
+              alignment: Alignment.topRight,
+              child: ConfettiWidget(
+                confettiController: _confettiController,
+                blastDirection: math.pi,
+                particleDrag: 0.05,
+                emissionFrequency: 0.05,
+                numberOfParticles: 30,
+                gravity: 0.05,
+                shouldLoop: false,
+                colors: const [
+                  Colors.green,
+                  Colors.blue,
+                  Colors.pink,
+                  Colors.orange,
+                  Colors.purple,
+                ],
+              ),
+            ),
+            Scaffold(
+              backgroundColor: const Color(0xFFF8F9FA),
+              appBar: AppBar(
             backgroundColor: Colors.transparent,
             elevation: 0,
             leading: Container(
@@ -185,7 +351,7 @@ class _PreSixMonthCountdownScreenState extends State<PreSixMonthCountdownScreen>
               ),
               child: IconButton(
                 icon: const Icon(Icons.arrow_back, color: Color(0xFF1A1A1A), size: 20),
-                onPressed: () => context.go('/'),
+                onPressed: () => context.pop(),
               ),
             ),
             title: Text(
@@ -311,6 +477,8 @@ class _PreSixMonthCountdownScreenState extends State<PreSixMonthCountdownScreen>
               ),
             ),
           ),
+        ),
+          ], // Close Stack children
         );
       },
     );
