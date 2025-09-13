@@ -4,6 +4,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:workmanager/workmanager.dart';
+import 'package:flutter/foundation.dart';
 
 import '../models/migration_queue.dart';
 import '../models/user_account.dart';
@@ -12,6 +13,7 @@ import '../models/nutrition_guideline.dart';
 import '../models/development_milestone.dart';
 import '../repositories/standards_repository.dart';
 import 'local_auth_service.dart';
+import 'firebase_initialization_service.dart';
 
 /// Firebase sync service that handles background synchronization
 class FirebaseSyncService {
@@ -30,12 +32,24 @@ class FirebaseSyncService {
   // Migration queue storage key
   static const String _migrationQueueKey = 'migration_queue';
   
-  /// Initialize WorkManager for background sync
+  /// Initialize WorkManager for background sync (only if Firebase is available)
   static Future<void> initialize() async {
-    await Workmanager().initialize(
-      _callbackDispatcher,
-      isInDebugMode: false, // Set to true for debugging
-    );
+    final firebaseService = FirebaseInitializationService();
+
+    if (!firebaseService.isInitialized) {
+      debugPrint('⚠️ Skipping WorkManager initialization - Firebase not available');
+      return;
+    }
+
+    try {
+      await Workmanager().initialize(
+        _callbackDispatcher,
+        isInDebugMode: kDebugMode,
+      );
+      debugPrint('✅ WorkManager initialized successfully');
+    } catch (e) {
+      debugPrint('❌ Failed to initialize WorkManager: $e');
+    }
   }
 
   /// Schedule periodic sync job

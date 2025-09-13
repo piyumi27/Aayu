@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../providers/child_provider.dart';
 import '../utils/responsive_utils.dart';
+import '../utils/navigation_manager.dart';
 
 /// Professional Add Health Record screen for vaccines, supplements, and medications
 class AddHealthRecordScreen extends StatefulWidget {
@@ -244,7 +245,7 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Color(0xFF1A1A1A)),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => NavigationManager.safePop(context),
         ),
         title: Text(
           texts['title']!,

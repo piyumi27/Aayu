@@ -2,6 +2,140 @@
 
 All notable changes to the Aayu project will be documented in this file.
 
+## [2025-09-13] - Critical Database & Notification System Fixes
+
+### **Critical Database Fixes**
+- **UNIQUE Constraint Violation**: Fixed "DatabaseException(UNIQUE constraint failed: scheduled_notifications.id)" error
+- **Missing Column Error**: Fixed "table growth_records has no column named photoPath" SQLite error
+- **Database Migration**: Added proper schema migration from version 4 to 5 with photoPath column
+- **32-bit Integer Compliance**: Fixed notification IDs exceeding 32-bit integer limits (2^31 - 1)
+
+### **Notification ID System Overhaul**
+- **32-bit Safe Generation**: Completely redesigned ID generation to stay within [-2^31, 2^31 - 1] range
+- **Smart Algorithm**: Uses timestamp seconds + counter + randomness within safe mathematical bounds
+- **Collision Prevention**: Multi-layer approach prevents ID conflicts while respecting system limits
+- **Automatic Cleanup**: Self-healing database cleanup during app initialization
+
+### **Database Schema & Migration**
+- **PhotoPath Column**: Added missing photoPath column to growth_records table schema
+- **Backward Compatibility**: Proper database migration handles existing users without schema changes
+- **Version Management**: Incremented database version from 4 to 5 for seamless upgrades
+- **Error Handling**: Graceful migration with fallback for existing column scenarios
+
+### **Technical Implementation**
+- **notification_id_generator.dart**: Redesigned with 32-bit safe mathematical algorithms
+- **database_service.dart**: Added photoPath column and migration function _addPhotoPathToGrowthRecords()
+- **scheduling_engine.dart**: All notification scheduling uses safe 32-bit ID generation
+- **local_notification_service.dart**: Fixed FCM remote message handling with safe IDs
+
+### **System Stability & Reliability**
+- **Error Prevention**: Eliminates both database schema and integer overflow crashes
+- **Range Safety**: All generated IDs guaranteed within platform integer limits
+- **Migration Safety**: Database upgrades handle all edge cases gracefully
+- **Debug Monitoring**: Enhanced logging for ID generation, migration, and error tracking
+
+---
+
+## [2025-09-13] - Navigation & Firebase Connection Issues Complete Resolution
+
+### **Critical Bug Fixes**
+- **GoRouter Navigation Error**: Fixed "You have popped the last page off of the stack" error in AddHealthRecordScreen
+- **Safe Navigation Implementation**: Replaced direct Navigator.pop() calls with NavigationManager.safePop()
+- **Firebase Channel Error**: Resolved "Unable to establish connection on channel" platform exceptions
+- **Proper Firebase Configuration**: Added comprehensive Firebase options and connectivity checks
+
+### **Navigation System Fixes**
+- **SafeNavigationManager**: All screen navigation now uses safe navigation patterns
+- **Route Stack Management**: Prevents popping from empty navigation stacks
+- **Error Boundary Protection**: Navigation errors caught and handled gracefully
+- **Back Button Safety**: Secure back button handling across all screens
+
+### **Firebase Connection Resolution**
+- **Platform-Specific Options**: Added DefaultFirebaseOptions with correct configuration for Android/iOS
+- **Connectivity Pre-Check**: Network connectivity verification before Firebase initialization attempts
+- **Enhanced Debugging**: Comprehensive logging for Firebase initialization process
+- **Graceful Degradation**: App works perfectly offline when Firebase connection fails
+
+### **Configuration Updates**
+- **firebase_options.dart**: Created with proper API keys and project configuration
+- **Enhanced Error Handling**: Detailed Firebase error reporting and recovery
+- **Network Awareness**: Connectivity detection integrated with Firebase initialization
+- **Retry Logic**: Intelligent retry mechanism with exponential backoff
+
+## [2025-09-13] - Firebase Initialization Error Fix & Offline Mode Implementation
+
+### **Firebase Connection Error Resolution**
+- **Root Cause**: Firebase initialization failing due to channel connection issues on some devices/environments
+- **Robust Firebase Initialization**: Created comprehensive Firebase initialization service with retry logic and graceful failure handling
+- **Offline-First Architecture**: App now works seamlessly without Firebase, using local SQLite storage exclusively
+- **Graceful Degradation**: Services that depend on Firebase automatically disable when connection is unavailable
+
+### **Firebase Initialization Service**
+- **FirebaseInitializationService**: Centralized Firebase initialization with retry mechanism (3 attempts)
+- **Error Recovery**: Comprehensive error handling for FirebaseException and general exceptions
+- **Service Availability Checks**: Dynamic checking of Firebase service availability throughout the app
+- **Status Reporting**: Real-time status reporting for Firebase connection state
+
+### **Offline Mode Features**
+- **Local-Only Operation**: Full app functionality using SQLite database when Firebase is unavailable
+- **Connection Status Bar**: Visual indicator showing offline mode with user-friendly explanations
+- **Service Conditional Loading**: Push notifications, cloud sync, and remote features gracefully disable
+- **Data Persistence**: All user data (children, measurements, milestones) stored locally regardless of connection
+
+### **Service Architecture Updates**
+- **Conditional Service Initialization**: Background sync, push notifications only initialize when Firebase is available
+- **Firebase Dependency Checks**: All Firebase-dependent services check availability before initialization
+- **Local Notification Fallback**: Local notifications work independently of Firebase Cloud Messaging
+- **Graceful Service Failures**: Services fail gracefully without crashing the app
+
+### **User Experience Improvements**
+- **Transparent Offline Mode**: Users can use all core features without internet connection
+- **Status Communication**: Clear communication about offline mode through UI indicators
+- **No Feature Loss**: Growth tracking, vaccination schedules, milestones work fully offline
+- **Automatic Sync**: When connection is restored, app will automatically sync to cloud
+
+### **Performance & Stability**
+- **Faster App Launch**: App starts immediately without waiting for Firebase connection
+- **Error Prevention**: Prevents Firebase-related crashes and channel errors
+- **Resource Efficiency**: Reduced resource usage when offline
+- **Battery Optimization**: No continuous retry attempts for failed connections
+
+## [2025-09-13] - Navigator Disposal Error Fix & App Stability Enhancement
+
+### **Navigation System Overhaul**
+- **SafeNavigationWrapper**: Created comprehensive navigation safety wrapper to prevent Navigator disposal errors
+- **NavigationManager**: Centralized navigation management with safety checks and error handling
+- **Safe Context Validation**: Added context validity checks before navigation operations
+- **Fallback Navigation**: Implemented safe fallback navigation patterns for error scenarios
+
+### **Error Handling Infrastructure**
+- **AayuErrorHandler**: Global error handler specifically designed to catch and handle Navigator disposal errors
+- **Widget Safety Mixin**: Created safety mixins for stateful widgets to prevent common lifecycle errors
+- **Error Boundaries**: Implemented error boundary widgets to isolate and handle build errors
+- **Safe setState Operations**: Added mounted checks for all setState calls to prevent disposal errors
+
+### **App Lifecycle Management**
+- **AppLifecycleManager**: Comprehensive app lifecycle management to handle app state transitions safely
+- **SystemUIManager**: Safe system UI operations wrapper
+- **MemoryManager**: Memory management utilities to prevent memory-related crashes
+
+### **Navigation Safety Features**
+- **Safe Pop Operations**: PopScope implementation with proper canPop validation
+- **Route Validation**: Current route safety checks before navigation operations
+- **Back Button Handling**: Comprehensive back button handling with exit confirmation
+- **Navigation Confirmation**: Optional confirmation dialogs for critical navigation actions
+
+### **Widget Disposal Safety**
+- **TabController Safety**: Safe TabController disposal in NotificationCenter
+- **Mounted Checks**: Added mounted property checks for all async operations
+- **Stream Safety**: Safe stream subscription and disposal patterns
+- **Timer Safety**: Automatic timer cancellation on widget disposal
+
+### **Performance Optimizations**
+- **Navigation Performance**: Optimized navigation transitions to reduce disposal errors
+- **Memory Leak Prevention**: Implemented proper resource cleanup patterns
+- **Async Safety**: Safe async operation wrappers with error recovery
+
 ## [2025-09-13] - Test Infrastructure Improvements
 
 ### **Critical Test Infrastructure Fixes**

@@ -22,7 +22,7 @@ class DatabaseService {
     final path = join(await getDatabasesPath(), 'aayu.db');
     return await openDatabase(
       path,
-      version: 4,
+      version: 5,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
     );
@@ -53,6 +53,7 @@ class DatabaseService {
         height REAL NOT NULL,
         headCircumference REAL,
         notes TEXT,
+        photoPath TEXT,
         createdAt TEXT NOT NULL,
         updatedAt TEXT NOT NULL,
         FOREIGN KEY (childId) REFERENCES children (id)
@@ -503,6 +504,9 @@ class DatabaseService {
     if (oldVersion < 4) {
       await _upgradeNotificationHistoryTable(db);
     }
+    if (oldVersion < 5) {
+      await _addPhotoPathToGrowthRecords(db);
+    }
   }
 
   Future<void> _upgradeNotificationHistoryTable(Database db) async {
@@ -539,6 +543,18 @@ class DatabaseService {
     } catch (e) {
       // If the columns already exist, ignore the error
       print('Migration note: notification_history columns may already exist');
+    }
+  }
+
+  /// Add photoPath column to growth_records table for existing users
+  Future<void> _addPhotoPathToGrowthRecords(Database db) async {
+    try {
+      // Add photoPath column to growth_records table
+      await db.execute('ALTER TABLE growth_records ADD COLUMN photoPath TEXT');
+      print('✅ Added photoPath column to growth_records table');
+    } catch (e) {
+      // If the column already exists, ignore the error
+      print('Migration note: photoPath column may already exist in growth_records table');
     }
   }
 

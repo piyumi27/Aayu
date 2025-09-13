@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../models/notification.dart';
 import '../../services/database_service.dart';
 import '../../utils/responsive_utils.dart';
+import '../../utils/navigation_manager.dart';
 import 'notification_card.dart';
 
 class NotificationCenter extends StatefulWidget {
@@ -13,7 +14,7 @@ class NotificationCenter extends StatefulWidget {
 }
 
 class _NotificationCenterState extends State<NotificationCenter>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, SafeNavigationMixin {
   late TabController _tabController;
   final DatabaseService _databaseService = DatabaseService();
   
@@ -31,11 +32,16 @@ class _NotificationCenterState extends State<NotificationCenter>
 
   @override
   void dispose() {
-    _tabController.dispose();
+    try {
+      _tabController.dispose();
+    } catch (e) {
+      debugPrint('⚠️ Error disposing TabController in NotificationCenter: $e');
+    }
     super.dispose();
   }
 
   Future<void> _loadNotifications() async {
+    if (!mounted) return;
     setState(() => _isLoading = true);
     
     try {
@@ -51,8 +57,10 @@ class _NotificationCenterState extends State<NotificationCenter>
     } catch (e) {
       debugPrint('Error loading notifications: $e');
     }
-    
-    setState(() => _isLoading = false);
+
+    if (mounted) {
+      setState(() => _isLoading = false);
+    }
   }
 
   Future<void> _markAsRead(String notificationId) async {

@@ -12,6 +12,7 @@ import 'package:timezone/data/latest.dart' as tz;
 
 import '../../models/child.dart';
 import '../../models/notification.dart';
+import '../../utils/notification_id_generator.dart';
 import '../database_service.dart';
 
 /// Expert-level Local Notification Service with comprehensive scheduling
@@ -381,9 +382,9 @@ class LocalNotificationService {
 
     final data = message.data;
     final notificationType = data['type'] ?? 'general';
-    
+
     await showNotification(
-      id: message.hashCode,
+      id: await NotificationIdGenerator.generateUniqueId(),
       title: notification.title ?? 'Health Notification',
       body: notification.body ?? '',
       channelId: _getChannelIdFromNotificationType(notificationType),

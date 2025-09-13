@@ -10,6 +10,7 @@ import 'package:sqflite/sqflite.dart';
 import '../../models/child.dart';
 import '../../models/notification.dart';
 import '../database_service.dart';
+import '../firebase_initialization_service.dart';
 import 'local_notification_service.dart';
 
 /// Expert-level Push Notification Service with FCM integration
@@ -40,30 +41,33 @@ class PushNotificationService {
   Future<void> initialize() async {
     if (_isInitialized) return;
 
+    final firebaseService = FirebaseInitializationService();
+    if (!firebaseService.isInitialized) {
+      debugPrint('⚠️ Cannot initialize Push Notifications - Firebase not available');
+      return;
+    }
+
     try {
-      // Ensure Firebase is initialized
-      await Firebase.initializeApp();
-      
       // Request notification permissions
       await _requestPermissions();
-      
+
       // Get FCM token
       await _getFCMToken();
-      
+
       // Setup message handlers
       await _setupMessageHandlers();
-      
+
       // Setup notification channels
       await _setupNotificationChannels();
-      
+
       // Handle notification taps when app is terminated
       await _handleTerminatedAppNotifications();
-      
+
       _isInitialized = true;
-      
+
+      debugPrint('✅ Push Notification Service initialized successfully');
       if (kDebugMode) {
-        print('✅ Push Notification Service initialized successfully');
-        print('📱 FCM Token: $_fcmToken');
+        debugPrint('📱 FCM Token: $_fcmToken');
       }
     } catch (e) {
       if (kDebugMode) {

@@ -6,8 +6,12 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'utils/navigation_manager.dart';
+import 'utils/error_handler.dart';
+
 import 'providers/child_provider.dart';
 import 'services/local_auth_service.dart';
+import 'services/firebase_initialization_service.dart';
 import 'services/notifications/local_notification_service.dart';
 import 'services/notifications/push_notification_service.dart';
 import 'services/notifications/scheduling_engine.dart';
@@ -44,35 +48,90 @@ import 'widgets/bottom_navigation.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-  
+
+  // Initialize error handling
+  AayuErrorHandler.initialize();
+
+  // Initialize Firebase with robust error handling
+  await _initializeFirebaseServices();
+
   // Initialize notification services
   await _initializeNotificationServices();
-  
-  // Initialize WorkManager for background sync
-  await FirebaseSyncService.initialize();
-  
+
+  // Initialize WorkManager for background sync (only if Firebase is available)
+  await _initializeBackgroundServices();
+
   runApp(const AayuApp());
+}
+
+/// Initialize Firebase services with comprehensive error handling
+Future<void> _initializeFirebaseServices() async {
+  try {
+    final firebaseService = FirebaseInitializationService();
+    final initialized = await firebaseService.initializeFirebase(maxRetries: 3);
+
+    if (initialized) {
+      print('✅ Firebase services initialized successfully');
+    } else {
+      print('⚠️ Firebase initialization failed - running in offline mode');
+      print('🔄 App will work with local storage only');
+    }
+  } catch (e) {
+    print('❌ Critical error during Firebase initialization: $e');
+    print('🔄 Continuing with offline-only mode');
+  }
 }
 
 /// Initialize all notification services
 Future<void> _initializeNotificationServices() async {
   try {
-    // Initialize local notifications
+    final firebaseService = FirebaseInitializationService();
+
+    // Initialize local notifications (always available)
     final localNotificationService = LocalNotificationService();
     await localNotificationService.initialize();
-    
-    // Initialize push notifications
-    final pushNotificationService = PushNotificationService();
-    await pushNotificationService.initialize();
-    
+    print('✅ Local notifications initialized');
+
+    // Initialize push notifications (only if Firebase is available)
+    if (firebaseService.isInitialized) {
+      try {
+        final pushNotificationService = PushNotificationService();
+        await pushNotificationService.initialize();
+        print('✅ Push notifications initialized');
+      } catch (e) {
+        print('⚠️ Push notifications failed to initialize: $e');
+      }
+    } else {
+      print('⚠️ Push notifications disabled - Firebase not available');
+    }
+
     // Initialize scheduling engine
     final schedulingEngine = NotificationSchedulingEngine();
     await schedulingEngine.initialize();
-    
-    print('✅ All notification services initialized successfully');
+    print('✅ Notification scheduling initialized');
+
+    print('✅ Notification services setup completed');
   } catch (e) {
     print('❌ Failed to initialize notification services: $e');
+  }
+}
+
+/// Initialize background services with Firebase dependency checks
+Future<void> _initializeBackgroundServices() async {
+  try {
+    final firebaseService = FirebaseInitializationService();
+
+    if (firebaseService.isInitialized) {
+      // Initialize WorkManager for background sync
+      await FirebaseSyncService.initialize();
+      print('✅ Background sync services initialized');
+    } else {
+      print('⚠️ Background sync disabled - Firebase not available');
+      print('🔄 App will work with local data only');
+    }
+  } catch (e) {
+    print('❌ Failed to initialize background services: $e');
+    print('🔄 Continuing without background sync');
   }
 }
 
@@ -337,10 +396,10 @@ final _router = GoRouter(
   ],
 );
 
-class ScaffoldWithNavBar extends StatelessWidget {
+class ScaffoldWithNavBar extends StatefulWidget {
   final Widget child;
   final bool showBottomNav;
-  
+
   const ScaffoldWithNavBar({
     required this.child,
     this.showBottomNav = true,
@@ -348,24 +407,35 @@ class ScaffoldWithNavBar extends StatelessWidget {
   });
 
   @override
+  State<ScaffoldWithNavBar> createState() => _ScaffoldWithNavBarState();
+}
+
+class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
+  @override
   Widget build(BuildContext context) {
-    // Determine if we should show bottom navigation based on current route
-    final String location = GoRouterState.of(context).uri.path;
-    
-    // List of routes that should show bottom navigation
-    final showNavRoutes = [
-      '/',  // Home Dashboard
-      '/growth',  // Growth Charts
-      '/vaccines',  // Vaccination Calendar (Medicine)
-      '/learn',  // Learning Center
-      '/profile',  // Profile/Settings
-    ];
-    
-    final shouldShowNav = showNavRoutes.contains(location);
-    
-    return Scaffold(
-      body: child,
-      bottomNavigationBar: shouldShowNav ? const BottomNavigation() : null,
+    return SafeNavigationWrapper(
+      child: Builder(
+        builder: (context) {
+          // Safely get current location
+          final location = NavigationManager.getCurrentRoute(context) ?? '/';
+
+          // List of routes that should show bottom navigation
+          final showNavRoutes = [
+            '/',  // Home Dashboard
+            '/growth',  // Growth Charts
+            '/vaccines',  // Vaccination Calendar (Medicine)
+            '/learn',  // Learning Center
+            '/profile',  // Profile/Settings
+          ];
+
+          final shouldShowNav = showNavRoutes.contains(location);
+
+          return Scaffold(
+            body: widget.child,
+            bottomNavigationBar: shouldShowNav ? const BottomNavigation() : null,
+          );
+        },
+      ),
     );
   }
 }

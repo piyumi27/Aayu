@@ -10,6 +10,7 @@ import '../../models/growth_record.dart';
 import '../../models/development_milestone.dart';
 import '../../models/notification.dart';
 import '../../repositories/standards_repository.dart';
+import '../../utils/notification_id_generator.dart';
 import '../database_service.dart';
 import '../health_alert_service.dart';
 import 'local_notification_service.dart';
@@ -52,6 +53,17 @@ class NotificationSchedulingEngine {
     if (_isInitialized) return;
 
     try {
+      // Clean up duplicate notification IDs from previous hashCode-based system
+      try {
+        final db = await _databaseService.database;
+        await NotificationIdGenerator.cleanupDuplicateNotifications(db);
+      } catch (cleanupError) {
+        if (kDebugMode) {
+          print('⚠️ Notification cleanup failed (non-critical): $cleanupError');
+        }
+        // Continue initialization even if cleanup fails
+      }
+
       // Initialize WorkManager for background tasks
       await Workmanager().initialize(
         _callbackDispatcher,
@@ -273,12 +285,12 @@ class NotificationSchedulingEngine {
 
         for (int i = 0; i < reminderDates.length; i++) {
           final reminderDate = reminderDates[i];
-          
+
           // Only schedule future reminders
           if (reminderDate.isAfter(now)) {
-            final notificationId = '${vaccine.id}_${child.id}_reminder_$i'.hashCode;
+            final notificationId = await NotificationIdGenerator.generateUniqueId();
             final isOverdue = reminderDate.isAfter(dueDate);
-            
+
             await _localNotificationService.scheduleNotification(
               id: notificationId,
               title: _getVaccinationReminderTitle(vaccine, isOverdue),
@@ -334,8 +346,8 @@ class NotificationSchedulingEngine {
       final endDate = DateTime.now().add(const Duration(days: 180));
       
       while (nextReminderDate.isBefore(endDate)) {
-        final notificationId = _generateSafeNotificationId('growth_reminder_${child.id}_${nextReminderDate.day}');
-        
+        final notificationId = await NotificationIdGenerator.generateUniqueId();
+
         await _localNotificationService.scheduleNotification(
           id: notificationId,
           title: _getGrowthReminderTitle(child),
@@ -394,8 +406,8 @@ class NotificationSchedulingEngine {
         
         // Only schedule future reminders
         if (reminderDate.isAfter(DateTime.now())) {
-          final notificationId = 'milestone_${milestone.id}_${child.id}'.hashCode;
-          
+          final notificationId = await NotificationIdGenerator.generateUniqueId();
+
           await _localNotificationService.scheduleNotification(
             id: notificationId,
             title: _getMilestoneReminderTitle(milestone),
@@ -446,8 +458,8 @@ class NotificationSchedulingEngine {
           
           // Only schedule future feeding times
           if (scheduledTime.isAfter(DateTime.now())) {
-            final notificationId = _generateSafeNotificationId('feeding_${child.id}_${scheduledTime.hour}_${scheduledTime.day}');
-            
+            final notificationId = await NotificationIdGenerator.generateUniqueId();
+
             await _localNotificationService.scheduleNotification(
               id: notificationId,
               title: _getFeedingReminderTitle(child),
@@ -480,7 +492,7 @@ class NotificationSchedulingEngine {
       final weeklyCheckDate = today.add(const Duration(days: 7));
       
       await _localNotificationService.scheduleNotification(
-        id: 'health_check_${child.id}_weekly'.hashCode,
+        id: await NotificationIdGenerator.generateUniqueId(),
         title: 'Weekly Health Check',
         body: 'Time to review ${child.name}\'s health progress and any concerns',
         scheduledDate: _getOptimalNotificationTime(weeklyCheckDate),
@@ -499,7 +511,7 @@ class NotificationSchedulingEngine {
       final monthlyReviewDate = today.add(const Duration(days: 30));
       
       await _localNotificationService.scheduleNotification(
-        id: 'health_review_${child.id}_monthly'.hashCode,
+        id: await NotificationIdGenerator.generateUniqueId(),
         title: 'Monthly Health Review',
         body: 'Time for ${child.name}\'s comprehensive health and development review',
         scheduledDate: _getOptimalNotificationTime(monthlyReviewDate),
@@ -863,13 +875,3 @@ Future<void> _performHealthMonitoring() async {
   }
 }
 
-/// Generate a safe 32-bit integer notification ID from a string
-int _generateSafeNotificationId(String identifier) {
-  // Get hash code and ensure it's within 32-bit signed integer range
-  final hashCode = identifier.hashCode;
-
-  // Convert to positive range and keep within 32-bit limits
-  final safeId = hashCode.abs() % 1073741824; // 2^30
-
-  return safeId == 0 ? 1 : safeId; // Ensure ID is never 0
-}
