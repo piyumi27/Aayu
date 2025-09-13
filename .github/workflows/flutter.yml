@@ -1,0 +1,266 @@
+name: Ayu Flutter CI/CD
+
+on:
+  push:
+    branches: [ "master", "cleanup/git-repository-cleanup" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  test:
+    name: Test and Analyze
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          channel: 'stable'
+          cache: true
+
+      - name: Get Flutter dependencies
+        run: flutter pub get
+
+      - name: Check for dependency conflicts
+        run: |
+          if ! flutter pub deps; then
+            echo "Running pub cache clean to resolve conflicts..."
+            flutter pub cache clean
+            flutter pub get
+          fi
+
+      - name: Verify formatting (Dart & Flutter files)
+        run: dart format --output=none --set-exit-if-changed .
+
+      - name: Analyze project source (with fatal-infos)
+        run: flutter analyze --fatal-infos
+
+      - name: Run unit tests with coverage
+        run: |
+          if [ -d "test" ]; then
+            echo "Running tests from test/ directory with subfolders..."
+            flutter test --coverage test/
+            echo "Unit tests completed successfully"
+          else
+            echo "No tests found in test/ directory"
+            exit 1
+          fi
+
+      - name: Run integration tests
+        run: |
+          if [ -d "integration_test" ]; then
+            flutter test integration_test/
+            echo "Integration tests completed successfully"
+          elif [ -d "test/integration" ]; then
+            echo "Running integration tests from test/integration/..."
+            flutter test test/integration/
+            echo "Integration tests completed successfully"
+          else
+            echo "No integration tests found"
+          fi
+
+      - name: Check code generation (if needed)
+        run: |
+          if grep -q "build_runner" pubspec.yaml; then
+            echo "Running code generation..."
+            flutter pub run build_runner build --delete-conflicting-outputs
+          else
+            echo "No code generation needed"
+          fi
+
+      - name: Test coverage report
+        run: |
+          if [ -f "coverage/lcov.info" ]; then
+            echo "Coverage report generated"
+            echo "Coverage file size: $(stat -f%z coverage/lcov.info 2>/dev/null || stat -c%s coverage/lcov.info)"
+          else
+            echo "No coverage report found"
+          fi
+
+  build_android:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          channel: 'stable'
+          cache: true
+
+      - name: Get Flutter dependencies
+        run: flutter pub get
+
+      - name: Build Android APK (Release)
+        run: |
+          echo "Building Android APK for Ayu..."
+          flutter build apk --release --target-platform android-arm64
+          echo "Android APK build completed"
+
+      - name: Upload Android APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: ayu-android-apk-${{ github.sha }}
+          path: build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 30
+
+      - name: Build Android App Bundle (AAB)
+        run: |
+          echo "Building Android App Bundle..."
+          flutter build appbundle --release --target-platform android-arm64
+          echo "Android AAB build completed"
+
+      - name: Upload Android AAB
+        uses: actions/upload-artifact@v4
+        with:
+          name: ayu-android-aab-${{ github.sha }}
+          path: build/app/outputs/bundle/release/app-release.aab
+          retention-days: 30
+
+  build_ios:
+    name: Build iOS App
+    runs-on: macos-latest
+    needs: test
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          channel: 'stable'
+          cache: true
+
+      - name: Get Flutter dependencies
+        run: flutter pub get
+
+      - name: Build iOS app (Release, no code signing)
+        run: |
+          echo "Building iOS app for Ayu..."
+          flutter build ios --release --no-codesign
+          echo "iOS build completed (unsigned)"
+
+      - name: Archive iOS build
+        run: |
+          cd build/ios/iphoneos
+          tar -czf Runner.app.tar.gz Runner.app
+          echo "iOS app archived successfully"
+
+      - name: Upload iOS build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ayu-ios-build-${{ github.sha }}
+          path: build/ios/iphoneos/Runner.app.tar.gz
+          retention-days: 30
+
+  security_check:
+    name: Security & Quality Check
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          channel: 'stable'
+          cache: true
+
+      - name: Get Flutter dependencies
+        run: flutter pub get
+
+      - name: Check for sensitive data in code
+        run: |
+          echo "Scanning for potential security issues..."
+          
+          # Check for hardcoded secrets/keys
+          if grep -r --include="*.dart" --include="*.yaml" -E "(api_key|password|secret|token|firebase_api_key)" . --exclude-dir=.git; then
+            echo "ERROR: Potential hardcoded secrets found!"
+            exit 1
+          else
+            echo "No hardcoded secrets detected"
+          fi
+          
+          # Check for debug prints in production code (except debug builds)
+          if grep -r --include="*.dart" -E "print\(|debugPrint\(" lib/ | grep -v "if (kDebugMode)"; then
+            echo "WARNING: Debug prints found that may leak information in production"
+          else
+            echo "No unsafe debug prints found"
+          fi
+
+      - name: Check dependencies for vulnerabilities
+        run: |
+          echo "Checking dependencies..."
+          flutter pub deps --style=compact
+          
+          # Check for outdated packages
+          flutter pub outdated || echo "Some packages may be outdated"
+
+      - name: Verify project structure follows guidelines
+        run: |
+          echo "Verifying project structure..."
+          
+          # Check if CLAUDE.md exists and is up to date
+          if [ ! -f "CLAUDE.md" ]; then
+            echo "ERROR: CLAUDE.md file missing!"
+            exit 1
+          else
+            echo "CLAUDE.md found"
+          fi
+          
+          # Check directory structure
+          directories=("lib/models" "lib/services" "lib/providers" "lib/screens" "lib/widgets" "lib/utils")
+          for dir in "${directories[@]}"; do
+            if [ -d "$dir" ]; then
+              echo "PASS: $dir directory exists"
+            else
+              echo "WARNING: $dir directory missing"
+            fi
+          done
+          
+          # Check test structure
+          test_dirs=("test/services" "test/widgets" "test/integration")
+          for dir in "${test_dirs[@]}"; do
+            if [ -d "$dir" ]; then
+              echo "PASS: $dir directory exists"
+            else
+              echo "INFO: $dir directory not found"
+            fi
+          done
+
+      - name: Check responsive design compliance
+        run: |
+          echo "Checking responsive design compliance..."
+          
+          # Look for hardcoded values that should use ResponsiveUtils
+          if grep -r --include="*.dart" -E "EdgeInsets\.(all|symmetric|only)\([0-9]|fontSize: [0-9]" lib/ | head -5; then
+            echo "WARNING: Found potential hardcoded UI values - consider using ResponsiveUtils"
+          else
+            echo "No obvious responsive design violations found"
+          fi
