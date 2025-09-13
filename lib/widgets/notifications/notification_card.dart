@@ -19,23 +19,15 @@ class NotificationCard extends StatelessWidget {
 
   IconData _getCategoryIcon() {
     switch (notification.category) {
-      case 'vaccination':
-        return Icons.vaccines_outlined;
-      case 'growth':
-        return Icons.trending_up_outlined;
-      case 'milestone':
-        return Icons.celebration_outlined;
-      case 'feeding':
-        return Icons.restaurant_outlined;
-      case 'medication':
-        return Icons.medication_outlined;
-      case 'health_alert':
+      case NotificationCategory.healthAlerts:
         return Icons.warning_amber_outlined;
-      case 'critical_health_alert':
-        return Icons.emergency_outlined;
-      case 'appointment':
-        return Icons.event_outlined;
-      case 'general':
+      case NotificationCategory.reminders:
+        return Icons.alarm_on_outlined;
+      case NotificationCategory.tipsGuidance:
+        return Icons.lightbulb_outlined;
+      case NotificationCategory.systemUpdates:
+        return Icons.system_update_outlined;
+      case NotificationCategory.all:
       default:
         return Icons.notifications_outlined;
     }
@@ -43,24 +35,17 @@ class NotificationCard extends StatelessWidget {
 
   Color _getCategoryColor(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    
+
     switch (notification.category) {
-      case 'critical_health_alert':
+      case NotificationCategory.healthAlerts:
         return colorScheme.error;
-      case 'health_alert':
-        return colorScheme.tertiary;
-      case 'vaccination':
+      case NotificationCategory.reminders:
         return colorScheme.primary;
-      case 'growth':
-        return colorScheme.secondary;
-      case 'milestone':
-        return Colors.amber;
-      case 'feeding':
+      case NotificationCategory.tipsGuidance:
         return Colors.green;
-      case 'medication':
-        return Colors.purple;
-      case 'appointment':
-        return colorScheme.outline;
+      case NotificationCategory.systemUpdates:
+        return colorScheme.secondary;
+      case NotificationCategory.all:
       default:
         return colorScheme.primary;
     }
@@ -68,23 +53,15 @@ class NotificationCard extends StatelessWidget {
 
   String _getCategoryDisplayName() {
     switch (notification.category) {
-      case 'vaccination':
-        return 'Vaccination';
-      case 'growth':
-        return 'Growth Check';
-      case 'milestone':
-        return 'Milestone';
-      case 'feeding':
-        return 'Feeding';
-      case 'medication':
-        return 'Medication';
-      case 'health_alert':
+      case NotificationCategory.healthAlerts:
         return 'Health Alert';
-      case 'critical_health_alert':
-        return 'Critical Alert';
-      case 'appointment':
-        return 'Appointment';
-      case 'general':
+      case NotificationCategory.reminders:
+        return 'Reminder';
+      case NotificationCategory.tipsGuidance:
+        return 'Tips & Guidance';
+      case NotificationCategory.systemUpdates:
+        return 'System Update';
+      case NotificationCategory.all:
       default:
         return 'Notification';
     }
@@ -95,31 +72,31 @@ class NotificationCard extends StatelessWidget {
     String priorityText;
     
     switch (notification.priority) {
-      case 'critical':
+      case NotificationPriority.critical:
         priorityColor = Theme.of(context).colorScheme.error;
         priorityText = 'URGENT';
         break;
-      case 'high':
+      case NotificationPriority.high:
         priorityColor = Colors.orange;
         priorityText = 'HIGH';
         break;
-      case 'medium':
+      case NotificationPriority.medium:
         priorityColor = Colors.blue;
         priorityText = 'MEDIUM';
         break;
-      case 'low':
+      case NotificationPriority.low:
       default:
         priorityColor = Theme.of(context).colorScheme.outline;
         priorityText = 'LOW';
         break;
     }
 
-    if (notification.priority == 'low') return const SizedBox.shrink();
+    if (notification.priority == NotificationPriority.low) return const SizedBox.shrink();
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
-        color: priorityColor.withOpacity(0.1),
+        color: priorityColor.withValues(alpha: 0.1),
         border: Border.all(color: priorityColor, width: 1),
         borderRadius: BorderRadius.circular(4),
       ),

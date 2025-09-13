@@ -19,12 +19,17 @@ class PushNotificationService {
   factory PushNotificationService() => _instance;
   PushNotificationService._internal();
 
-  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+  FirebaseMessaging? _firebaseMessaging;
   final LocalNotificationService _localNotificationService = LocalNotificationService();
   final DatabaseService _databaseService = DatabaseService();
-  
+
   String? _fcmToken;
   bool _isInitialized = false;
+
+  FirebaseMessaging get firebaseMessaging {
+    _firebaseMessaging ??= FirebaseMessaging.instance;
+    return _firebaseMessaging!;
+  }
   
   // Notification handlers
   Function(RemoteMessage)? _foregroundMessageHandler;
@@ -70,7 +75,7 @@ class PushNotificationService {
 
   /// Request notification permissions with comprehensive setup
   Future<void> _requestPermissions() async {
-    NotificationSettings settings = await _firebaseMessaging.requestPermission(
+    NotificationSettings settings = await firebaseMessaging.requestPermission(
       alert: true,
       announcement: false,
       badge: true,
@@ -86,7 +91,7 @@ class PushNotificationService {
 
     // Additional iOS setup
     if (Platform.isIOS) {
-      await _firebaseMessaging.setForegroundNotificationPresentationOptions(
+      await firebaseMessaging.setForegroundNotificationPresentationOptions(
         alert: true,
         badge: true,
         sound: true,
@@ -97,7 +102,7 @@ class PushNotificationService {
   /// Get and store FCM token
   Future<void> _getFCMToken() async {
     try {
-      _fcmToken = await _firebaseMessaging.getToken();
+      _fcmToken = await firebaseMessaging.getToken();
       
       if (_fcmToken != null) {
         // Store token locally
@@ -109,7 +114,7 @@ class PushNotificationService {
       }
       
       // Listen for token refresh
-      _firebaseMessaging.onTokenRefresh.listen((newToken) async {
+      firebaseMessaging.onTokenRefresh.listen((newToken) async {
         _fcmToken = newToken;
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('fcm_token', newToken);
@@ -200,7 +205,7 @@ class PushNotificationService {
 
   /// Handle notifications when app is terminated
   Future<void> _handleTerminatedAppNotifications() async {
-    RemoteMessage? initialMessage = await _firebaseMessaging.getInitialMessage();
+    RemoteMessage? initialMessage = await firebaseMessaging.getInitialMessage();
     
     if (initialMessage != null) {
       if (kDebugMode) {
@@ -381,7 +386,7 @@ class PushNotificationService {
   /// Subscribe to topic for targeted notifications
   Future<void> subscribeToTopic(String topic) async {
     try {
-      await _firebaseMessaging.subscribeToTopic(topic);
+      await firebaseMessaging.subscribeToTopic(topic);
       if (kDebugMode) {
         print('✅ Subscribed to topic: $topic');
       }
@@ -395,7 +400,7 @@ class PushNotificationService {
   /// Unsubscribe from topic
   Future<void> unsubscribeFromTopic(String topic) async {
     try {
-      await _firebaseMessaging.unsubscribeFromTopic(topic);
+      await firebaseMessaging.unsubscribeFromTopic(topic);
       if (kDebugMode) {
         print('✅ Unsubscribed from topic: $topic');
       }
