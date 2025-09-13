@@ -85,109 +85,28 @@ class _PreSixMonthCountdownScreenState extends State<PreSixMonthCountdownScreen>
       if (selectedChild != null) {
         final daysSinceBirth = _calculateDaysSinceBirth(selectedChild);
         if (daysSinceBirth >= 180 && !_achievementShown) {
-          _showAchievementCelebration();
-        } else if (daysSinceBirth >= 181) {
-          // Auto-redirect after celebration
-          Future.delayed(const Duration(seconds: 4), () {
-            if (mounted) {
-              SafeNavigation.safeGo(context, '/growth');
-            }
-          });
+          _showBackgroundCelebration();
         }
       }
     });
   }
 
-  void _showAchievementCelebration() {
+  void _showBackgroundCelebration() {
     setState(() {
       _achievementShown = true;
     });
 
+    // Start confetti animation in background (no blocking dialog)
     _confettiController.play();
 
-    // Show achievement dialog
-    Future.delayed(const Duration(milliseconds: 500), () {
+    // Stop confetti after 5 seconds
+    Future.delayed(const Duration(seconds: 5), () {
       if (mounted) {
-        _showAchievementDialog();
+        _confettiController.stop();
       }
     });
   }
 
-  void _showAchievementDialog() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        child: Container(
-          padding: const EdgeInsets.all(24),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                const Color(0xFF0086FF),
-                const Color(0xFF00B894),
-              ],
-            ),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(
-                Icons.celebration,
-                size: 64,
-                color: Colors.white,
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                '🎉 Congratulations! 🎉',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'Your baby has completed 6 months!\nTime to start the growth tracking journey.',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.white,
-                  height: 1.4,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  SafeNavigation.safeGo(context, '/growth');
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  foregroundColor: const Color(0xFF0086FF),
-                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(25),
-                  ),
-                ),
-                child: const Text(
-                  'Start Growth Tracking',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 16,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 
   int _calculateDaysSinceBirth(Child child) {
     final now = DateTime.now();
@@ -218,6 +137,7 @@ class _PreSixMonthCountdownScreenState extends State<PreSixMonthCountdownScreen>
         'dayCounter': '',
         'daysCompleted': 'days completed',
         'daysLeft': 'days left',
+        'goalAchieved': 'Goal Achieved!',
         'nextMilestone': 'Next milestone:',
         'inDays': 'in',
         'daysUnit': 'days',
@@ -295,61 +215,65 @@ class _PreSixMonthCountdownScreenState extends State<PreSixMonthCountdownScreen>
 
         return Stack(
           children: [
-            // Confetti widgets
-            Align(
-              alignment: Alignment.topCenter,
+            // Background confetti widgets (behind the circle)
+            Positioned(
+              top: 100,
+              left: MediaQuery.of(context).size.width / 2 - 150,
               child: ConfettiWidget(
                 confettiController: _confettiController,
                 blastDirection: math.pi / 2, // Downward
-                particleDrag: 0.05,
-                emissionFrequency: 0.05,
-                numberOfParticles: 50,
-                gravity: 0.05,
+                maxBlastForce: 5,
+                minBlastForce: 2,
+                particleDrag: 0.03,
+                emissionFrequency: 0.1,
+                numberOfParticles: 20,
+                gravity: 0.03,
                 shouldLoop: false,
                 colors: const [
-                  Colors.green,
-                  Colors.blue,
-                  Colors.pink,
-                  Colors.orange,
-                  Colors.purple,
+                  Color(0xFF4CAF50), // Green
+                  Color(0xFF0086FF), // Blue
+                  Color(0xFFFF9800), // Orange
+                  Color(0xFFE91E63), // Pink
                 ],
               ),
             ),
-            Align(
-              alignment: Alignment.topLeft,
+            Positioned(
+              top: 120,
+              left: 50,
               child: ConfettiWidget(
                 confettiController: _confettiController,
-                blastDirection: 0,
-                particleDrag: 0.05,
-                emissionFrequency: 0.05,
-                numberOfParticles: 30,
-                gravity: 0.05,
+                blastDirection: math.pi / 4, // Diagonal
+                maxBlastForce: 4,
+                minBlastForce: 2,
+                particleDrag: 0.03,
+                emissionFrequency: 0.08,
+                numberOfParticles: 15,
+                gravity: 0.03,
                 shouldLoop: false,
                 colors: const [
-                  Colors.green,
-                  Colors.blue,
-                  Colors.pink,
-                  Colors.orange,
-                  Colors.purple,
+                  Color(0xFF4CAF50),
+                  Color(0xFF0086FF),
+                  Color(0xFFFF9800),
                 ],
               ),
             ),
-            Align(
-              alignment: Alignment.topRight,
+            Positioned(
+              top: 120,
+              right: 50,
               child: ConfettiWidget(
                 confettiController: _confettiController,
-                blastDirection: math.pi,
-                particleDrag: 0.05,
-                emissionFrequency: 0.05,
-                numberOfParticles: 30,
-                gravity: 0.05,
+                blastDirection: 3 * math.pi / 4, // Diagonal
+                maxBlastForce: 4,
+                minBlastForce: 2,
+                particleDrag: 0.03,
+                emissionFrequency: 0.08,
+                numberOfParticles: 15,
+                gravity: 0.03,
                 shouldLoop: false,
                 colors: const [
-                  Colors.green,
-                  Colors.blue,
-                  Colors.pink,
-                  Colors.orange,
-                  Colors.purple,
+                  Color(0xFF4CAF50),
+                  Color(0xFF0086FF),
+                  Color(0xFFE91E63),
                 ],
               ),
             ),
@@ -447,12 +371,16 @@ class _PreSixMonthCountdownScreenState extends State<PreSixMonthCountdownScreen>
                                         ),
                                       ),
                                       const SizedBox(height: 6),
-                                      // Days left
+                                      // Days left or achievement text
                                       Text(
-                                        '${180 - daysSinceBirth} ${texts['daysLeft'] ?? 'days left'}',
+                                        daysSinceBirth >= 180
+                                          ? '🎉 ${texts['goalAchieved'] ?? 'Goal Achieved!'} 🎉'
+                                          : '${180 - daysSinceBirth} ${texts['daysLeft'] ?? 'days left'}',
                                         style: TextStyle(
                                           fontSize: 14,
-                                          color: const Color(0xFF0086FF),
+                                          color: daysSinceBirth >= 180
+                                            ? const Color(0xFF4CAF50)  // Green for achievement
+                                            : const Color(0xFF0086FF), // Blue for countdown
                                           fontWeight: FontWeight.w600,
                                           fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                                         ),

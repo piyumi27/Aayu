@@ -2,6 +2,27 @@
 
 All notable changes to the Aayu project will be documented in this file.
 
+## [2025-09-13] - 6-Month Countdown UX Improvements
+
+### **Non-Blocking Confetti Celebration**
+- **Background Confetti Animation**: Confetti now falls behind the progress circle without blocking screen access
+- **Positioned Confetti Widgets**: Used Positioned widgets with strategic placement (top: 100-120px) for subtle effect
+- **Reduced Particle Count**: Optimized from 50+30+30 to 20+15+15 particles for better performance
+- **Custom Colors**: Applied app theme colors (green, blue, orange, pink) for visual consistency
+- **Auto-Stop Timer**: Confetti automatically stops after 5 seconds to conserve resources
+
+### **Achievement Text Display**
+- **Dynamic Text Logic**: Shows "🎉 Goal Achieved! 🎉" when 180+ days instead of negative numbers
+- **Color Coding**: Green text for achievement (#4CAF50) vs blue for countdown (#0086FF)
+- **Localized Strings**: Added 'goalAchieved' text in English, Sinhala, and Tamil
+- **Emoji Enhancement**: Added celebration emojis for visual appeal
+
+### **Improved User Flow**
+- **No Blocking Dialogs**: Removed popup dialog that prevented screen access
+- **Continuous Access**: Users can interact with countdown screen normally even after goal completion
+- **Background Celebration**: Achievement is acknowledged without disrupting user workflow
+- **Subtle Animation**: Confetti provides visual feedback without overwhelming the interface
+
 ## [2025-09-13] - Critical Framework Stability and Asset Loading Fixes
 
 ### **Navigator Disposal Crash Fix**
