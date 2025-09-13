@@ -29,14 +29,32 @@ jobs:
           cache: true
 
       - name: Get Flutter dependencies
-        run: flutter pub get
-
-      - name: Check for dependency conflicts
         run: |
-          if ! flutter pub deps; then
-            echo "Running pub cache clean to resolve conflicts..."
+          echo "Installing Flutter dependencies..."
+          if ! flutter pub get; then
+            echo "Initial pub get failed, attempting to resolve conflicts..."
             flutter pub cache clean
             flutter pub get
+          fi
+          echo "Dependencies installed successfully"
+
+      - name: Validate dependency resolution
+        run: |
+          echo "Validating dependency tree..."
+          flutter pub deps --style=compact
+          
+          # Check for version conflicts
+          if flutter pub deps 2>&1 | grep -i "conflict\|error\|failed"; then
+            echo "WARNING: Potential dependency conflicts detected"
+            echo "Consider reviewing pubspec.yaml for version constraints"
+          else
+            echo "No dependency conflicts detected"
+          fi
+          
+          # Specific check for common intl package conflicts
+          if flutter pub deps 2>&1 | grep -i "intl.*pinned"; then
+            echo "INFO: intl package version is pinned by Flutter SDK"
+            echo "This is normal and expected for Flutter applications"
           fi
 
       - name: Verify formatting (Dart & Flutter files)
