@@ -3,14 +3,9 @@ name: Ayu CI/CD Pipeline
 on:
   push:
     branches: [ "master", "cleanup/git-repository-cleanup" ]
-    paths-ignore:
-      - '**.md'
-      - 'docs/**'
   pull_request:
     branches: [ "master" ]
-    paths-ignore:
-      - '**.md'
-      - 'docs/**'
+  workflow_dispatch:
 
 env:
   FLUTTER_VERSION: '3.24.0'
@@ -29,8 +24,11 @@ jobs:
       flutter: ${{ steps.changes.outputs.flutter }}
       android: ${{ steps.changes.outputs.android }}
       ios: ${{ steps.changes.outputs.ios }}
+      any_code: ${{ steps.changes.outputs.any_code }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: dorny/paths-filter@v3
         id: changes
         with:
@@ -40,20 +38,31 @@ jobs:
               - 'test/**'
               - 'pubspec.yaml'
               - 'pubspec.lock'
+              - '.github/workflows/**'
             android:
               - 'android/**'
               - 'lib/**'
               - 'pubspec.yaml'
+              - 'pubspec.lock'
             ios:
               - 'ios/**'
               - 'lib/**'
               - 'pubspec.yaml'
+              - 'pubspec.lock'
+            any_code:
+              - 'lib/**'
+              - 'test/**'
+              - 'android/**'
+              - 'ios/**'
+              - 'pubspec.yaml'
+              - 'pubspec.lock'
+              - '.github/workflows/**'
 
   quality:
     name: Quality Gate
     runs-on: ubuntu-latest
     needs: changes
-    if: needs.changes.outputs.flutter == 'true'
+    if: always() && (needs.changes.outputs.flutter == 'true' || github.event_name == 'push' || github.event_name == 'workflow_dispatch')
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -113,7 +122,7 @@ jobs:
     name: Build Android
     runs-on: ubuntu-latest
     needs: [changes, quality]
-    if: needs.changes.outputs.android == 'true'
+    if: always() && needs.quality.result == 'success' && (needs.changes.outputs.android == 'true' || github.event_name == 'push' || github.event_name == 'workflow_dispatch')
     strategy:
       matrix:
         build-type: [debug, release]
@@ -169,7 +178,7 @@ jobs:
     name: Build iOS
     runs-on: macos-14
     needs: [changes, quality]
-    if: needs.changes.outputs.ios == 'true'
+    if: always() && needs.quality.result == 'success' && (needs.changes.outputs.ios == 'true' || github.event_name == 'push' || github.event_name == 'workflow_dispatch')
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -209,7 +218,7 @@ jobs:
     name: Deploy Preview
     runs-on: ubuntu-latest
     needs: [build-android]
-    if: github.event_name == 'pull_request'
+    if: always() && github.event_name == 'pull_request' && needs.build-android.result == 'success'
     steps:
       - name: Download artifacts
         uses: actions/download-artifact@v4
@@ -251,8 +260,8 @@ jobs:
   performance-test:
     name: Performance Test
     runs-on: ubuntu-latest
-    needs: quality
-    if: github.event_name == 'pull_request'
+    needs: [changes, quality]
+    if: always() && github.event_name == 'pull_request' && needs.quality.result == 'success' && needs.changes.outputs.any_code == 'true'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
