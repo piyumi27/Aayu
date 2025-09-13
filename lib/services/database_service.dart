@@ -21,8 +21,9 @@ class DatabaseService {
     final path = join(await getDatabasesPath(), 'aayu.db');
     return await openDatabase(
       path,
-      version: 1,
+      version: 2,
       onCreate: _onCreate,
+      onUpgrade: _onUpgrade,
     );
   }
 
@@ -86,6 +87,7 @@ class DatabaseService {
       )
     ''');
 
+    await _createStandardsTables(db);
     await _insertDefaultVaccines(db);
   }
 
@@ -106,6 +108,144 @@ class DatabaseService {
 
     for (var vaccine in vaccines) {
       await db.insert('vaccines', vaccine);
+    }
+  }
+
+  Future<void> _createStandardsTables(Database db) async {
+    await db.execute('''
+      CREATE TABLE growth_standards (
+        id TEXT PRIMARY KEY,
+        standardType TEXT NOT NULL,
+        source TEXT NOT NULL,
+        gender TEXT NOT NULL,
+        ageMonths INTEGER NOT NULL,
+        zScoreMinus3 REAL NOT NULL,
+        zScoreMinus2 REAL NOT NULL,
+        median REAL NOT NULL,
+        zScorePlus2 REAL NOT NULL,
+        zScorePlus3 REAL NOT NULL,
+        measurementType TEXT NOT NULL,
+        unit TEXT NOT NULL,
+        createdAt TEXT NOT NULL,
+        updatedAt TEXT NOT NULL
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE nutrition_guidelines (
+        id TEXT PRIMARY KEY,
+        source TEXT NOT NULL,
+        ageMonthsMin INTEGER NOT NULL,
+        ageMonthsMax INTEGER NOT NULL,
+        feedingType TEXT NOT NULL,
+        dailyMealsCount INTEGER NOT NULL,
+        dailySnacksCount INTEGER NOT NULL,
+        dailyCaloriesMin REAL NOT NULL,
+        dailyCaloriesMax REAL NOT NULL,
+        proteinGramsMin REAL NOT NULL,
+        proteinGramsMax REAL NOT NULL,
+        feedingFrequency TEXT NOT NULL,
+        recommendedFoods TEXT NOT NULL,
+        avoidedFoods TEXT NOT NULL,
+        specialInstructions TEXT NOT NULL,
+        createdAt TEXT NOT NULL,
+        updatedAt TEXT NOT NULL
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE feeding_recommendations (
+        id TEXT PRIMARY KEY,
+        source TEXT NOT NULL,
+        ageMonthsMin INTEGER NOT NULL,
+        ageMonthsMax INTEGER NOT NULL,
+        mealType TEXT NOT NULL,
+        foodCategory TEXT NOT NULL,
+        foodItem TEXT NOT NULL,
+        portionSize TEXT NOT NULL,
+        frequency TEXT NOT NULL,
+        preparationNotes TEXT NOT NULL,
+        isLocalFood INTEGER NOT NULL,
+        nutritionalBenefits TEXT NOT NULL,
+        createdAt TEXT NOT NULL,
+        updatedAt TEXT NOT NULL
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE development_milestones (
+        id TEXT PRIMARY KEY,
+        source TEXT NOT NULL,
+        ageMonthsMin INTEGER NOT NULL,
+        ageMonthsMax INTEGER NOT NULL,
+        domain TEXT NOT NULL,
+        milestone TEXT NOT NULL,
+        description TEXT NOT NULL,
+        observationTips TEXT NOT NULL,
+        isRedFlag INTEGER NOT NULL,
+        priority INTEGER NOT NULL,
+        activities TEXT NOT NULL,
+        redFlagSigns TEXT NOT NULL,
+        interventionGuidance TEXT NOT NULL,
+        createdAt TEXT NOT NULL,
+        updatedAt TEXT NOT NULL
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE milestone_records (
+        id TEXT PRIMARY KEY,
+        childId TEXT NOT NULL,
+        milestoneId TEXT NOT NULL,
+        observedDate TEXT NOT NULL,
+        achieved INTEGER NOT NULL,
+        observerNotes TEXT NOT NULL,
+        concerns TEXT,
+        confidenceLevel INTEGER NOT NULL,
+        createdAt TEXT NOT NULL,
+        updatedAt TEXT NOT NULL,
+        FOREIGN KEY (childId) REFERENCES children (id),
+        FOREIGN KEY (milestoneId) REFERENCES development_milestones (id)
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE nutritional_alerts (
+        id TEXT PRIMARY KEY,
+        alertType TEXT NOT NULL,
+        severity TEXT NOT NULL,
+        title TEXT NOT NULL,
+        description TEXT NOT NULL,
+        recommendations TEXT NOT NULL,
+        symptoms TEXT NOT NULL,
+        actionRequired TEXT NOT NULL,
+        requiresImmediateAttention INTEGER NOT NULL,
+        createdAt TEXT NOT NULL
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE development_alerts (
+        id TEXT PRIMARY KEY,
+        childId TEXT NOT NULL,
+        alertType TEXT NOT NULL,
+        severity TEXT NOT NULL,
+        title TEXT NOT NULL,
+        description TEXT NOT NULL,
+        missedMilestones TEXT NOT NULL,
+        redFlags TEXT NOT NULL,
+        recommendations TEXT NOT NULL,
+        requiresEvaluation INTEGER NOT NULL,
+        createdAt TEXT NOT NULL,
+        resolvedAt TEXT,
+        FOREIGN KEY (childId) REFERENCES children (id)
+      )
+    ''');
+  }
+
+  Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      await _createStandardsTables(db);
     }
   }
 

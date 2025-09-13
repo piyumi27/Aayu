@@ -1,0 +1,574 @@
+{
+  "metadata": {
+    "source": "Sri Lanka Ministry of Health, Family Health Bureau, and National Surveys",
+    "compilation_date": "2025-09-13",
+    "age_range": "1-5 years",
+    "description": "Comprehensive Sri Lankan national child health standards with current malnutrition statistics, CHDR guidelines, and locally adapted growth monitoring protocols",
+    "reference_studies": [
+      "Sri Lanka Child Growth Cohort (SLCGC)",
+      "Southern Sri Lanka Growth Charts",
+      "National Nutrition Survey 2022"
+    ]
+  },
+  "current_nutrition_status": {
+    "national_statistics_2022": {
+      "data_source": "Family Health Bureau Nutrition Month 2022 & National Surveys",
+      "assessment_coverage": "1,363,747 out of 1,433,676 registered children (95.1%)",
+      "overall_malnutrition": "43.4% of children under 5 have some form of nutritional problem",
+      "prevalence_rates": {
+        "underweight": {
+          "national": "15.3% (2022)",
+          "trend": "Increased from 12.2% (2021) to 15.3% (2022)",
+          "highest_district": "Nuwara Eliya (23.9%)",
+          "lowest_district": "Colombo (9.8%)"
+        },
+        "stunting": {
+          "national": "9.2% (2022), was 17.3% (2016 DHS)",
+          "target_2030": "Reduce to 10%",
+          "highest_district": "Nuwara Eliya (22.8%)",
+          "lowest_district": "Colombo (5.1%)"
+        },
+        "wasting": {
+          "national": "10.1% (2022), was 15.1% (2016 DHS)",
+          "target_2030": "Reduce to <5%",
+          "global_comparison": "Higher than Asia region average (8.9%)",
+          "emergency_threshold": "15.1% reached emergency level"
+        },
+        "overweight": {
+          "national": "0.6% (2022)",
+          "target": "No increase from baseline"
+        }
+      },
+      "sector_disparities": {
+        "estate_sector": {
+          "stunting": "31.7% (highest vulnerability)",
+          "underweight": "Significantly higher than urban/rural",
+          "contributing_factors": [
+            "Low maternal education",
+            "Economic insecurity",
+            "Limited healthcare access"
+          ]
+        },
+        "urban_sector": {
+          "stunting": "14.7%",
+          "improvement_trend": "Better than estate and some rural areas"
+        },
+        "rural_sector": {
+          "variation": "Wide variation between districts",
+          "targeted_interventions": "Required in high-burden areas"
+        }
+      }
+    },
+    "growth_faltering_patterns": {
+      "early_onset": "Growth faltering noted as early as 4 months",
+      "statistics": {
+        "4_months": "50.4% of infants show weight faltering",
+        "12_months": "76.6% continue similar growth patterns",
+        "persistence": "High correlation between early and later malnutrition"
+      },
+      "contributing_factors": [
+        "Suboptimal complementary feeding practices",
+        "Prolonged exclusive breastfeeding beyond 6 months without adequate complementary foods",
+        "Maternal employment patterns affecting feeding",
+        "Limited dietary diversity"
+      ]
+    }
+  },
+  "growth_standards": {
+    "chdr_system": {
+      "full_name": "Child Health Development Record",
+      "introduction_year": "1994",
+      "purpose": "National Growth Monitoring and Promotion Programme",
+      "coverage": "All children under 5 years in Sri Lanka",
+      "completeness_issues": {
+        "birth_details": "Documented in almost all CHDR (>95%)",
+        "newborn_examination": "Only 64.7% properly documented",
+        "monthly_weighing": "Continued by 75.8% of caregivers",
+        "visual_assessment": "52.8% properly filled",
+        "hearing_assessment": "57% properly filled"
+      }
+    },
+    "monitoring_frequency": {
+      "national_guidelines": {
+        "weight_monitoring": {
+          "birth_to_24_months": "Monthly assessments",
+          "24_months_to_5_years": "Every 3 months",
+          "nutritional_problems": "Monthly regardless of age"
+        },
+        "length_height_monitoring": {
+          "recommended_ages": "4, 9, 18, and 24 months for length",
+          "height_from_2_years": "Every 6 months from 2-5 years",
+          "nutritional_problems": "Every 2 months up to 2 years, every 3 months from 2-5 years"
+        }
+      },
+      "actual_practice_gaps": {
+        "length_plotting": {
+          "4_months": "Only 56% measured despite 92.9% clinic attendance",
+          "9_months": "55.3% not measured despite 73.1% clinic attendance",
+          "6_12_months": "29.8% had no length measurements"
+        },
+        "weight_monitoring": {
+          "adequate_frequency": "75.9% had ≥9 weight measurements during infancy",
+          "declining_trend": "Significantly lower measurements between 7-12 months"
+        }
+      }
+    },
+    "anthropometric_measurements": {
+      "sri_lankan_specific_charts": {
+        "southern_sl_charts": {
+          "development": "Developed by University of Ruhuna Paediatric Department",
+          "sample_size": "3,500 individuals cross-sectional study",
+          "parameters": [
+            "Height",
+            "Weight",
+            "BMI",
+            "Head Circumference"
+          ],
+          "age_coverage": "Birth to 5 years and birth to 25 years",
+          "significance": "Locally adapted reference values for Sri Lankan children"
+        },
+        "who_standards_adaptation": {
+          "primary_use": "WHO Child Growth Standards adapted for local context",
+          "appropriateness_concerns": "MGRS data seems inappropriate for Sri Lankan children according to research",
+          "deviations": "Weight and length of Sri Lankan children deviate significantly at all ages from MGRS data"
+        }
+      },
+      "weight_for_age_monitoring": {
+        "normal_range": "≥ -2 to ≤ +2 z-scores",
+        "clinical_findings": {
+          "18_months_cohort": "18.4% had weight-for-age < -2SD",
+          "growth_faltering": "60.3% showed weight faltering at some point during infancy"
+        }
+      },
+      "length_height_for_age": {
+        "normal_range": "≥ -2 to ≤ +2 z-scores",
+        "clinical_findings": {
+          "18_months_cohort": "12.1% had length-for-age < -2SD"
+        }
+      },
+      "weight_for_length": {
+        "normal_range": "≥ -2 to ≤ +2 z-scores",
+        "clinical_findings": {
+          "18_months_cohort": "15.6% had weight-for-length < -2SD"
+        }
+      }
+    },
+    "malnutrition_classification": {
+      "severe_acute_malnutrition": {
+        "criteria": [
+          "Weight-for-height < -3 z-scores",
+          "MUAC < 115mm (6-59 months)",
+          "Bilateral pitting edema"
+        ],
+        "management_protocol": "Hospital-based management as per national SAM guidelines",
+        "treatment_centers": "Available at district and provincial hospitals"
+      },
+      "moderate_acute_malnutrition": {
+        "criteria": [
+          "Weight-for-height -3 to -2 z-scores",
+          "MUAC 115-125mm (6-59 months)"
+        ],
+        "management": "Community-based management with Thriposha supplementation",
+        "monitoring": "Monthly follow-up at Child Welfare Clinics"
+      },
+      "therapeutic_feeding": {
+        "thriposha_program": {
+          "target_group": "Moderate malnutrition cases",
+          "composition": "Fortified cereal-based supplement",
+          "distribution": "Through public health system"
+        },
+        "sam_management": {
+          "phase_1": "F75 therapeutic milk",
+          "phase_2": "F100 therapeutic milk",
+          "phase_3": "RUTF (Ready-to-use therapeutic food)"
+        }
+      }
+    }
+  },
+  "national_immunization_schedule": {
+    "achievements": {
+      "coverage_rates": "Over 95% routine vaccine coverage nationally",
+      "disease_eliminations": [
+        "Polio (last case 1993)",
+        "Maternal and neonatal tetanus (eliminated 2016)",
+        "Congenital rubella syndrome (eliminated 2020)",
+        "Hepatitis B control status (achieved 2024)"
+      ],
+      "global_recognition": "WHO recognized immunization program"
+    },
+    "current_schedule_2025": {
+      "birth": {
+        "BCG": {
+          "timing": "Before hospital discharge, preferably within 24 hours",
+          "doses": 1,
+          "coverage": ">98%",
+          "revaccination": "If no scar, 2nd dose after 6 months up to 5 years"
+        }
+      },
+      "2_months": {
+        "Pentavalent_1": {
+          "components": [
+            "DTP",
+            "Hepatitis B",
+            "Hib"
+          ],
+          "timing": "At completion of 2 months",
+          "coverage": ">95%"
+        },
+        "OPV_1": {
+          "timing": "At completion of 2 months",
+          "coverage": ">95%"
+        },
+        "fIPV_1": {
+          "name": "Fractional Inactivated Polio Vaccine",
+          "timing": "At completion of 2 months",
+          "dose": "0.1ml intradermal"
+        }
+      },
+      "4_months": {
+        "Pentavalent_2": {
+          "timing": "At completion of 4 months",
+          "minimum_interval": "4 weeks from previous dose"
+        },
+        "OPV_2": {
+          "timing": "At completion of 4 months"
+        },
+        "fIPV_2": {
+          "timing": "At completion of 4 months"
+        }
+      },
+      "6_months": {
+        "Pentavalent_3": {
+          "timing": "At completion of 6 months"
+        },
+        "OPV_3": {
+          "timing": "At completion of 6 months"
+        }
+      },
+      "9_months": {
+        "Live_JE": {
+          "name": "Japanese Encephalitis Live Vaccine",
+          "timing": "At completion of 9 months",
+          "route": "Subcutaneous injection",
+          "coverage": ">90%"
+        }
+      },
+      "12_months": {
+        "MMR_1": {
+          "components": [
+            "Measles",
+            "Mumps",
+            "Rubella"
+          ],
+          "timing": "At completion of 12 months",
+          "coverage": ">95%"
+        }
+      },
+      "18_months": {
+        "DTP_4": {
+          "timing": "At completion of 18 months",
+          "type": "Booster dose"
+        },
+        "OPV_4": {
+          "timing": "At completion of 18 months",
+          "type": "Booster dose"
+        }
+      },
+      "3_years": {
+        "MMR_2": {
+          "timing": "At 3 years of age",
+          "importance": "Ensures lifelong immunity"
+        }
+      }
+    },
+    "planned_expansions_2025_2030": {
+      "under_consideration": [
+        "Pneumococcal conjugate vaccine (PCV)",
+        "Rotavirus vaccine",
+        "Influenza vaccine for high-risk children",
+        "COVID-19 vaccine for pediatric population",
+        "RSV vaccine",
+        "Meningococcal vaccine",
+        "Dengue vaccine (conditional)"
+      ],
+      "implementation_timeline": "2025-2030 National Immunization Procurement Plan",
+      "budget_allocation": "Increased government allocation for vaccine procurement"
+    },
+    "cold_chain_system": {
+      "coverage": "Island-wide cold chain network",
+      "monitoring": "Temperature monitoring at all levels",
+      "quality_assurance": "Regular vaccine quality testing"
+    }
+  },
+  "essential_medications": {
+    "national_formulary_adaptations": {
+      "pediatric_challenges": {
+        "dosage_forms": "52% of oral dosage forms available as liquids for children",
+        "solid_dosage_manipulation": "25% require splitting, crushing, or dissolving adult formulations",
+        "availability_gaps": "Limited age-appropriate strengths for many medications"
+      },
+      "rational_prescribing": {
+        "guidelines": "National Standard Treatment Protocols for Pediatrics available",
+        "training": "Healthcare provider education on pediatric dosing",
+        "monitoring": "Prescription audits in healthcare facilities"
+      }
+    },
+    "age_specific_dosing": {
+      "weight_based_calculations": {
+        "sri_lankan_weight_references": {
+          "12_months_boys": "Average 9.2 kg (Sri Lankan data)",
+          "24_months_boys": "Average 11.5 kg",
+          "36_months_boys": "Average 13.8 kg",
+          "12_months_girls": "Average 8.7 kg",
+          "24_months_girls": "Average 11.0 kg",
+          "36_months_girls": "Average 13.2 kg"
+        }
+      },
+      "common_medications": {
+        "paracetamol": {
+          "dose": "10-15 mg/kg every 4-6 hours",
+          "maximum_daily": "60 mg/kg/day",
+          "local_formulations": "Available as drops, syrup, and tablets",
+          "cost": "Affordable generic formulations available"
+        },
+        "amoxicillin": {
+          "dose": "25-50 mg/kg/day in 2-3 divided doses",
+          "duration": "5-10 days",
+          "formulations": "Suspension 125mg/5ml, 250mg/5ml",
+          "indication": "First-line antibiotic for respiratory infections"
+        },
+        "ors_zinc": {
+          "ors_preparation": "WHO/UNICEF formula available locally",
+          "zinc_supplementation": "20mg daily for 10-14 days during diarrhea",
+          "availability": "Distributed through public health system"
+        }
+      }
+    },
+    "malnutrition_management": {
+      "sam_protocols": {
+        "f75_preparation": "Available at district hospitals",
+        "f100_preparation": "For rehabilitation phase",
+        "rutf": "Ready-to-use therapeutic food imported/locally produced",
+        "monitoring": "Daily weight monitoring during treatment"
+      },
+      "mam_management": {
+        "thriposha": "Nationally produced supplementary food",
+        "composition": "Cereal-legume-based fortified food",
+        "distribution": "Through Child Welfare Clinics"
+      }
+    }
+  },
+  "development_standards": {
+    "sri_lankan_ecd_standards": {
+      "development_background": "Context-specific Early Child Development Standards for Sri Lankan infants and toddlers",
+      "research_base": "Normative patterns established for Sri Lankan children",
+      "cultural_adaptation": "Incorporates local cultural practices and expectations"
+    },
+    "milestone_assessments": {
+      "12_months": {
+        "gross_motor": {
+          "expected": [
+            "Stands alone",
+            "Walks with support",
+            "Cruises furniture"
+          ],
+          "sri_lankan_context": "Cultural variations in walking patterns due to floor-sitting practices"
+        },
+        "language": {
+          "expected": [
+            "First words in Sinhala/Tamil/English",
+            "Responds to name",
+            "Follows simple commands"
+          ],
+          "multilingual_considerations": "Assessment adapted for tri-lingual environment"
+        }
+      },
+      "18_months": {
+        "gross_motor": [
+          "Independent walking",
+          "Running",
+          "Climbing stairs with help"
+        ],
+        "fine_motor": [
+          "Tower building",
+          "Scribbling",
+          "Self-feeding attempts"
+        ],
+        "language": [
+          "10-25 words vocabulary",
+          "Body part identification",
+          "Simple requests"
+        ]
+      },
+      "24_months": {
+        "gross_motor": [
+          "Running well",
+          "Kicking ball",
+          "Jumping"
+        ],
+        "language": [
+          "50+ words",
+          "Two-word combinations",
+          "Following 2-step commands"
+        ],
+        "social": [
+          "Parallel play",
+          "Helping with simple tasks",
+          "Showing affection"
+        ]
+      },
+      "36_months": {
+        "gross_motor": [
+          "Pedaling tricycle",
+          "Alternating feet on stairs",
+          "Standing on one foot"
+        ],
+        "language": [
+          "3-word sentences",
+          "Asking questions",
+          "75% speech intelligible"
+        ],
+        "cognitive": [
+          "Sorting by color/shape",
+          "Counting to 3",
+          "Simple problem solving"
+        ]
+      },
+      "48_months": {
+        "gross_motor": [
+          "Hopping",
+          "Catching ball",
+          "Balance beam walking"
+        ],
+        "cognitive": [
+          "Drawing recognizable shapes",
+          "Counting to 10",
+          "Color identification"
+        ],
+        "social": [
+          "Cooperative play",
+          "Rule understanding",
+          "Peer interaction"
+        ]
+      },
+      "60_months": {
+        "school_readiness": [
+          "Pre-writing skills",
+          "Number recognition",
+          "Letter identification"
+        ],
+        "gross_motor": [
+          "Skipping",
+          "Bicycle riding with training wheels",
+          "Sports skills"
+        ],
+        "language": [
+          "Complex sentences",
+          "Storytelling",
+          "Multiple language competency"
+        ]
+      }
+    }
+  },
+  "nutritional_guidelines": {
+    "national_feeding_recommendations": {
+      "exclusive_breastfeeding": {
+        "duration": "First 6 months of life",
+        "current_rate": "80.9% (meeting WHO target)",
+        "promotion": "National Breastfeeding Promotion Programme"
+      },
+      "complementary_feeding": {
+        "introduction_age": "Around 6 months of age",
+        "local_food_integration": "Use of traditional Sri Lankan foods",
+        "cultural_practices": "Adaptation to local feeding customs"
+      }
+    },
+    "food_based_dietary_guidelines": {
+      "key_messages": [
+        "Add colour to daily meals balancing correct amounts",
+        "Eat whole grains including less polished rice",
+        "Eat at least 2 vegetables daily, including 1 green leafy vegetable",
+        "Include 2 fruits daily for adequate vitamins",
+        "Include fish, egg, or lean meat with pulses daily",
+        "Fresh milk or fermented dairy products",
+        "Handful of nuts or oily seeds daily"
+      ],
+      "limitations": [
+        "Limit salty foods and added salt in cooking",
+        "Limit sugary drinks, biscuits, cakes, and sweets",
+        "Water is the healthiest drink - 8-10 glasses daily",
+        "Avoid processed and ultra-processed foods"
+      ],
+      "local_food_emphasis": {
+        "traditional_foods": "Rice, fish, vegetables, fruits, coconut",
+        "seasonal_availability": "Promote locally available seasonal foods",
+        "affordability": "Focus on cost-effective nutritious options"
+      }
+    },
+    "complementary_feeding_schedule": {
+      "6_8_months": {
+        "meals_per_day": "2-3 times plus frequent breastfeeding",
+        "consistency": "Smooth mashed foods",
+        "amount": "Start with 2-3 teaspoons, increase to 1/2 tea cup",
+        "local_foods": "Rice porridge, mashed banana, cooked vegetables"
+      },
+      "9_11_months": {
+        "meals_per_day": "3-4 times plus 1-2 nutritious snacks",
+        "consistency": "Coarsely chopped finger foods",
+        "amount": "3/4 tea cup per meal",
+        "local_foods": "Rice with dhal, fish, vegetables, fruits"
+      },
+      "12_24_months": {
+        "meals_per_day": "3-4 times plus nutritious snacks",
+        "consistency": "Family foods appropriately prepared",
+        "amount": "More than 1 tea cup per meal",
+        "local_foods": "Family meals with appropriate modifications"
+      }
+    }
+  },
+  "health_system_organization": {
+    "service_delivery_structure": {
+      "primary_level": {
+        "child_welfare_clinics": "Monthly growth monitoring and immunization",
+        "public_health_midwives": "Community-based child health services",
+        "medical_officers_health": "Supervision and clinical oversight"
+      },
+      "secondary_level": {
+        "district_hospitals": "Management of moderate to severe malnutrition",
+        "specialized_clinics": "Pediatric nutrition and development services"
+      },
+      "tertiary_level": {
+        "teaching_hospitals": "Severe malnutrition management and research",
+        "lady_ridgeway_hospital": "National pediatric referral center"
+      }
+    },
+    "quality_improvement": {
+      "training_programs": "Regular capacity building for healthcare providers",
+      "supervision": "Supportive supervision at all levels",
+      "monitoring": "Regular assessment of service quality and outcomes"
+    },
+    "information_systems": {
+      "chdr_utilization": "Primary documentation tool",
+      "digital_initiatives": "Electronic health records implementation",
+      "data_reporting": "Monthly nutrition surveillance reports"
+    }
+  },
+  "monitoring_evaluation": {
+    "national_surveillance": {
+      "nutrition_month": "Annual comprehensive assessment",
+      "routine_monitoring": "Monthly data collection through health system",
+      "surveys": "Periodic demographic and health surveys"
+    },
+    "research_initiatives": {
+      "slcgc_study": "Sri Lanka Child Growth Cohort - ongoing population study",
+      "university_collaborations": "Research partnerships with local universities",
+      "international_cooperation": "WHO, UNICEF technical support"
+    },
+    "targets_2030": {
+      "stunting_reduction": "From 17.3% to 10%",
+      "wasting_reduction": "From 15.1% to <5%",
+      "underweight_reduction": "Sustained improvement from current levels",
+      "coverage_improvement": "Maintain >95% immunization coverage"
+    }
+  }
+}

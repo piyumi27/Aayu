@@ -1,0 +1,665 @@
+{
+  "metadata": {
+    "source": "WHO (World Health Organization)",
+    "compilation_date": "2025-09-13",
+    "age_range": "1-5 years",
+    "description": "Comprehensive child health standards including detailed growth measurements, vaccination schedules, and malnutrition guidelines with specific values and ranges",
+    "reference_population": "WHO Multicentre Growth Reference Study (MGRS)"
+  },
+  "growth_standards": {
+    "monitoring_frequency": {
+      "birth_to_1_month": "Weekly measurements",
+      "1_month_to_24_months": "Monthly measurements",
+      "24_months_to_5_years": "Every 3 months",
+      "at_risk_children": "Monthly regardless of age",
+      "well_child_visits": "At 2, 4, 6, 9, 12, 15, 18, 24 months, then annually"
+    },
+    "anthropometric_measurements": {
+      "weight_for_age": {
+        "purpose": "Overall nutritional status indicator",
+        "age_range": "Birth to 5 years (0-60 months)",
+        "normal_range_z_scores": {
+          "normal": "≥ -2 to ≤ +2 z-scores",
+          "moderately_underweight": "-3 to < -2 z-scores",
+          "severely_underweight": "< -3 z-scores",
+          "overweight": "> +2 z-scores"
+        },
+        "sample_values_12_months_boys": {
+          "z_score_minus_3": "7.7 kg",
+          "z_score_minus_2": "8.4 kg",
+          "median": "10.0 kg",
+          "z_score_plus_2": "12.0 kg",
+          "z_score_plus_3": "13.3 kg"
+        }
+      },
+      "height_for_age": {
+        "purpose": "Chronic malnutrition (stunting) indicator",
+        "age_range": "Birth to 5 years",
+        "normal_range_z_scores": {
+          "normal": "≥ -2 to ≤ +2 z-scores",
+          "moderately_stunted": "-3 to < -2 z-scores",
+          "severely_stunted": "< -3 z-scores"
+        },
+        "sample_values_24_months_girls": {
+          "z_score_minus_3": "78.0 cm",
+          "z_score_minus_2": "82.0 cm",
+          "median": "86.4 cm",
+          "z_score_plus_2": "90.8 cm",
+          "z_score_plus_3": "93.9 cm"
+        }
+      },
+      "weight_for_height": {
+        "purpose": "Acute malnutrition (wasting) indicator",
+        "age_range": "45-110 cm (approximately 2-60 months)",
+        "normal_range_z_scores": {
+          "normal": "≥ -2 to ≤ +2 z-scores",
+          "moderately_wasted": "-3 to < -2 z-scores",
+          "severely_wasted": "< -3 z-scores",
+          "overweight": "> +2 z-scores",
+          "obese": "> +3 z-scores"
+        }
+      },
+      "head_circumference": {
+        "purpose": "Brain growth and development",
+        "age_range": "Birth to 5 years",
+        "normal_range_z_scores": {
+          "normal": "≥ -2 to ≤ +2 z-scores",
+          "microcephaly": "< -2 z-scores",
+          "macrocephaly": "> +2 z-scores"
+        },
+        "sample_values_boys": {
+          "birth": {
+            "z_score_minus_2": "32.9 cm",
+            "median": "34.5 cm",
+            "z_score_plus_2": "36.1 cm"
+          },
+          "12_months": {
+            "z_score_minus_2": "44.7 cm",
+            "median": "46.1 cm",
+            "z_score_plus_2": "47.5 cm"
+          },
+          "24_months": {
+            "z_score_minus_2": "46.9 cm",
+            "median": "48.3 cm",
+            "z_score_plus_2": "49.7 cm"
+          }
+        },
+        "sample_values_girls": {
+          "birth": {
+            "z_score_minus_2": "32.1 cm",
+            "median": "33.9 cm",
+            "z_score_plus_2": "35.7 cm"
+          },
+          "12_months": {
+            "z_score_minus_2": "43.5 cm",
+            "median": "44.9 cm",
+            "z_score_plus_2": "46.3 cm"
+          },
+          "24_months": {
+            "z_score_minus_2": "45.6 cm",
+            "median": "47.2 cm",
+            "z_score_plus_2": "48.8 cm"
+          }
+        }
+      },
+      "bmi_for_age": {
+        "purpose": "Body mass index assessment",
+        "age_range": "2 to 5 years",
+        "calculation": "Weight (kg) / Height (m)²",
+        "normal_range_z_scores": {
+          "normal": "≥ -2 to ≤ +1 z-scores",
+          "wasted": "< -2 z-scores",
+          "overweight": "> +1 to ≤ +2 z-scores",
+          "obese": "> +2 z-scores"
+        }
+      },
+      "muac": {
+        "purpose": "Mid-Upper Arm Circumference for acute malnutrition screening",
+        "age_range": "6-59 months",
+        "color_codes": {
+          "green": "≥ 125 mm (normal)",
+          "yellow": "115-124 mm (moderate acute malnutrition)",
+          "red": "< 115 mm (severe acute malnutrition)"
+        }
+      }
+    },
+    "malnutrition_classification": {
+      "severe_acute_malnutrition": {
+        "criteria": [
+          "Weight-for-height < -3 z-scores",
+          "MUAC < 115mm (6-59 months)",
+          "Presence of bilateral pitting edema"
+        ],
+        "prevalence_threshold": "> 2% indicates emergency",
+        "action_required": "Immediate medical intervention and therapeutic feeding"
+      },
+      "moderate_acute_malnutrition": {
+        "criteria": [
+          "Weight-for-height -3 to -2 z-scores",
+          "MUAC 115-125mm (6-59 months)"
+        ],
+        "prevalence_threshold": "> 10% indicates serious situation",
+        "action_required": "Nutritional support and close monitoring"
+      },
+      "stunting": {
+        "moderate": {
+          "definition": "Height-for-age -3 to -2 z-scores",
+          "prevalence_threshold": "> 20% indicates serious problem"
+        },
+        "severe": {
+          "definition": "Height-for-age < -3 z-scores",
+          "prevalence_threshold": "> 10% indicates emergency"
+        }
+      },
+      "underweight": {
+        "moderate": "Weight-for-age -3 to -2 z-scores",
+        "severe": "Weight-for-age < -3 z-scores"
+      }
+    }
+  },
+  "vaccination_schedule": {
+    "birth": {
+      "BCG": {
+        "timing": "At birth, preferably within 24 hours",
+        "doses": 1,
+        "protection": "Tuberculosis",
+        "method": "Intradermal injection, left upper arm"
+      },
+      "Hepatitis_B": {
+        "timing": "Within 24 hours of birth",
+        "doses": 1,
+        "protection": "Hepatitis B virus",
+        "method": "Intramuscular injection"
+      }
+    },
+    "6_weeks": {
+      "DPT1": {
+        "components": [
+          "Diphtheria",
+          "Pertussis",
+          "Tetanus"
+        ],
+        "timing": "6 weeks of age",
+        "dose_number": "1st dose"
+      },
+      "OPV1": {
+        "timing": "6 weeks of age",
+        "dose_number": "1st dose",
+        "protection": "Poliomyelitis"
+      },
+      "Hepatitis_B2": {
+        "timing": "6 weeks of age",
+        "dose_number": "2nd dose"
+      },
+      "Hib1": {
+        "timing": "6 weeks of age",
+        "dose_number": "1st dose",
+        "protection": "Haemophilus influenzae type b"
+      }
+    },
+    "10_weeks": {
+      "DPT2": {
+        "timing": "10 weeks of age",
+        "dose_number": "2nd dose"
+      },
+      "OPV2": {
+        "timing": "10 weeks of age",
+        "dose_number": "2nd dose"
+      },
+      "Hepatitis_B3": {
+        "timing": "10 weeks of age",
+        "dose_number": "3rd dose"
+      },
+      "Hib2": {
+        "timing": "10 weeks of age",
+        "dose_number": "2nd dose"
+      }
+    },
+    "14_weeks": {
+      "DPT3": {
+        "timing": "14 weeks of age",
+        "dose_number": "3rd dose"
+      },
+      "OPV3": {
+        "timing": "14 weeks of age",
+        "dose_number": "3rd dose"
+      },
+      "Hib3": {
+        "timing": "14 weeks of age",
+        "dose_number": "3rd dose"
+      }
+    },
+    "9_months": {
+      "Measles": {
+        "timing": "9 months of age",
+        "doses": 1,
+        "protection": "Measles virus"
+      },
+      "Yellow_Fever": {
+        "timing": "9 months (in endemic areas)",
+        "doses": 1,
+        "protection": "Yellow fever virus"
+      }
+    },
+    "12_months": {
+      "MMR": {
+        "components": [
+          "Measles",
+          "Mumps",
+          "Rubella"
+        ],
+        "timing": "12 months of age",
+        "dose_number": "1st dose"
+      }
+    },
+    "15_18_months": {
+      "DPT_booster": {
+        "timing": "15-18 months",
+        "dose_number": "4th dose (booster)"
+      },
+      "OPV_booster": {
+        "timing": "15-18 months",
+        "dose_number": "4th dose (booster)"
+      },
+      "MMR2": {
+        "timing": "15-18 months (some countries)",
+        "dose_number": "2nd dose"
+      }
+    },
+    "4_6_years": {
+      "DPT_booster2": {
+        "timing": "4-6 years",
+        "dose_number": "5th dose (school entry booster)"
+      },
+      "OPV_booster2": {
+        "timing": "4-6 years",
+        "dose_number": "5th dose (school entry booster)"
+      },
+      "MMR_school": {
+        "timing": "4-6 years (if not given earlier)",
+        "dose_number": "2nd dose"
+      }
+    },
+    "contraindications": [
+      "Severe acute illness with fever",
+      "Immunocompromised conditions",
+      "Severe allergic reactions to vaccine components",
+      "Pregnancy (for live vaccines)"
+    ],
+    "catch_up_guidelines": {
+      "minimum_intervals": {
+        "DPT": "4-8 weeks between doses",
+        "OPV": "4-8 weeks between doses",
+        "MMR": "4 weeks between doses if two doses needed"
+      },
+      "maximum_age_limits": {
+        "OPV": "No upper age limit",
+        "DPT": "Can be given up to 7 years",
+        "MMR": "Can be given at any age if not previously vaccinated"
+      }
+    }
+  },
+  "essential_medications": {
+    "age_weight_dosing_guidelines": {
+      "infants_1_12_months": {
+        "average_weights": {
+          "1_month": "3.5-4.5 kg",
+          "3_months": "5.0-6.5 kg",
+          "6_months": "6.5-8.5 kg",
+          "9_months": "8.0-10.0 kg",
+          "12_months": "9.0-11.5 kg"
+        },
+        "paracetamol": {
+          "dose": "10-15 mg/kg every 4-6 hours",
+          "maximum_daily": "60 mg/kg/day",
+          "formulations": "Drops 80mg/0.8ml, Syrup 120mg/5ml"
+        },
+        "ibuprofen": {
+          "dose": "5-10 mg/kg every 6-8 hours (not under 3 months)",
+          "maximum_daily": "40 mg/kg/day",
+          "formulations": "Suspension 100mg/5ml"
+        }
+      },
+      "toddlers_1_3_years": {
+        "average_weights": {
+          "18_months": "10-13 kg",
+          "24_months": "11-14 kg",
+          "36_months": "13-17 kg"
+        },
+        "paracetamol": {
+          "dose": "10-15 mg/kg every 4-6 hours",
+          "maximum_daily": "60 mg/kg/day",
+          "sample_doses": "120-250mg per dose for 12-17kg child"
+        },
+        "amoxicillin": {
+          "dose": "25-50 mg/kg/day divided into 2-3 doses",
+          "duration": "5-10 days depending on infection",
+          "formulations": "Suspension 125mg/5ml, 250mg/5ml"
+        }
+      },
+      "preschoolers_3_5_years": {
+        "average_weights": {
+          "4_years": "15-20 kg",
+          "5_years": "17-23 kg"
+        },
+        "oral_rehydration_solution": {
+          "preparation": "1 sachet (20.5g) in 200ml clean water",
+          "administration": "5ml/kg every 15 minutes for first 2 hours",
+          "maintenance": "10ml/kg after each loose stool"
+        },
+        "zinc_supplementation": {
+          "dose": "20mg daily for children >6 months",
+          "duration": "10-14 days during diarrheal episodes",
+          "formulations": "Dispersible tablets, syrup"
+        }
+      }
+    },
+    "emergency_medications": {
+      "severe_malnutrition": {
+        "f75_formula": "Initial feeding formula for SAM children",
+        "f100_formula": "Rehabilitation feeding formula",
+        "rutf": "Ready-to-use therapeutic food (150-200 kcal/kg/day)"
+      },
+      "dehydration": {
+        "mild_moderate": "ORS 75ml/kg over 4 hours",
+        "severe": "IV fluids - Ringer's lactate or normal saline"
+      }
+    }
+  },
+  "development_milestones": {
+    "12_months": {
+      "gross_motor": {
+        "skills": [
+          "Pulls to stand",
+          "Cruises along furniture",
+          "Walks with support"
+        ],
+        "red_flags": [
+          "Cannot sit without support",
+          "Cannot pull to stand"
+        ]
+      },
+      "fine_motor": {
+        "skills": [
+          "Pincer grasp",
+          "Picks up small objects",
+          "Bangs objects together"
+        ],
+        "red_flags": [
+          "No pincer grasp",
+          "Cannot pick up small objects"
+        ]
+      },
+      "language": {
+        "skills": [
+          "Says 1-3 words besides mama/dada",
+          "Follows simple commands",
+          "Understands 'no'"
+        ],
+        "red_flags": [
+          "No babbling",
+          "No response to name"
+        ]
+      },
+      "social_cognitive": {
+        "skills": [
+          "Waves bye-bye",
+          "Plays peek-a-boo",
+          "Shows objects to others"
+        ],
+        "red_flags": [
+          "No social interaction",
+          "No interest in people"
+        ]
+      }
+    },
+    "18_months": {
+      "gross_motor": {
+        "skills": [
+          "Walks independently",
+          "Runs stiffly",
+          "Climbs stairs with help"
+        ],
+        "red_flags": [
+          "Not walking independently",
+          "Cannot climb"
+        ]
+      },
+      "fine_motor": {
+        "skills": [
+          "Builds tower of 2-3 blocks",
+          "Scribbles",
+          "Uses spoon messily"
+        ],
+        "red_flags": [
+          "Cannot build tower",
+          "No attempt to use utensils"
+        ]
+      },
+      "language": {
+        "skills": [
+          "10-25 words",
+          "Points to body parts",
+          "Follows 2-step commands"
+        ],
+        "red_flags": [
+          "Fewer than 6 words",
+          "Cannot follow simple commands"
+        ]
+      }
+    },
+    "24_months": {
+      "gross_motor": {
+        "skills": [
+          "Runs well",
+          "Kicks ball",
+          "Jumps with both feet"
+        ],
+        "red_flags": [
+          "Cannot run",
+          "Frequent falls"
+        ]
+      },
+      "fine_motor": {
+        "skills": [
+          "Tower of 4-6 blocks",
+          "Copies vertical line",
+          "Turns pages"
+        ],
+        "red_flags": [
+          "Cannot stack blocks",
+          "No drawing attempts"
+        ]
+      },
+      "language": {
+        "skills": [
+          "50+ words",
+          "2-word phrases",
+          "Names pictures"
+        ],
+        "red_flags": [
+          "Fewer than 25 words",
+          "No word combinations"
+        ]
+      }
+    },
+    "36_months": {
+      "gross_motor": {
+        "skills": [
+          "Pedals tricycle",
+          "Alternates feet on stairs",
+          "Balances on one foot"
+        ],
+        "red_flags": [
+          "Cannot pedal",
+          "Cannot go up stairs"
+        ]
+      },
+      "language": {
+        "skills": [
+          "3-word sentences",
+          "Asks questions",
+          "75% speech intelligible"
+        ],
+        "red_flags": [
+          "Speech not understandable",
+          "No sentences"
+        ]
+      }
+    },
+    "48_months": {
+      "gross_motor": {
+        "skills": [
+          "Hops on one foot",
+          "Catches ball",
+          "Somersaults"
+        ],
+        "red_flags": [
+          "Cannot hop",
+          "Poor coordination"
+        ]
+      },
+      "cognitive": {
+        "skills": [
+          "Counts to 10",
+          "Knows colors",
+          "Draws person with 2-4 parts"
+        ],
+        "red_flags": [
+          "Cannot count to 3",
+          "No recognizable drawings"
+        ]
+      }
+    },
+    "60_months": {
+      "gross_motor": {
+        "skills": [
+          "Skips",
+          "Rides bicycle with training wheels",
+          "Balances 10 seconds"
+        ],
+        "red_flags": [
+          "Cannot skip",
+          "Poor balance"
+        ]
+      },
+      "cognitive": {
+        "skills": [
+          "Counts to 20",
+          "Knows alphabet",
+          "Draws detailed person"
+        ],
+        "red_flags": [
+          "Cannot count to 10",
+          "No letter recognition"
+        ]
+      }
+    }
+  },
+  "nutritional_guidelines": {
+    "breastfeeding_recommendations": {
+      "exclusive_breastfeeding": {
+        "duration": "First 6 months of life",
+        "frequency": "8-12 times per 24 hours",
+        "benefits": [
+          "Optimal nutrition",
+          "Immune protection",
+          "Bonding"
+        ]
+      },
+      "continued_breastfeeding": {
+        "duration": "Up to 2 years and beyond",
+        "combination": "With appropriate complementary foods"
+      }
+    },
+    "complementary_feeding": {
+      "introduction_timing": "Around 6 months (not before 4 months, not later than 7 months)",
+      "feeding_frequency": {
+        "6_8_months": {
+          "meals": "2-3 times per day",
+          "amount": "2-3 teaspoons increasing to 1/2 cup (125ml)",
+          "consistency": "Smooth, semi-solid foods"
+        },
+        "9_11_months": {
+          "meals": "3-4 times per day plus 1-2 snacks",
+          "amount": "1/2 to 3/4 cup (125-185ml)",
+          "consistency": "Finely chopped finger foods"
+        },
+        "12_24_months": {
+          "meals": "3-4 times per day plus 1-2 snacks",
+          "amount": "3/4 to 1 cup (185-250ml)",
+          "consistency": "Family foods, chopped or mashed"
+        }
+      },
+      "food_variety": {
+        "grains": "Rice, wheat, oats, millet",
+        "proteins": "Meat, fish, eggs, legumes, nuts",
+        "dairy": "Milk, cheese, yogurt (after 12 months)",
+        "fruits_vegetables": "All varieties, introducing new ones weekly"
+      }
+    },
+    "micronutrient_supplements": {
+      "iron": {
+        "target_group": "6-24 months in areas with anemia prevalence >40%",
+        "dose": "2 mg/kg/day",
+        "duration": "3 months with 3-month break"
+      },
+      "vitamin_A": {
+        "target_group": "6-59 months",
+        "dose": "100,000 IU (6-11 months), 200,000 IU (12-59 months)",
+        "frequency": "Every 4-6 months"
+      },
+      "zinc": {
+        "therapeutic_use": "During diarrheal episodes",
+        "dose": "10mg (<6 months), 20mg (6+ months)",
+        "duration": "10-14 days"
+      },
+      "vitamin_D": {
+        "target_group": "All children with limited sun exposure",
+        "dose": "400 IU daily",
+        "duration": "Continuous"
+      }
+    }
+  },
+  "health_monitoring_schedule": {
+    "routine_visits": {
+      "frequency_by_age": {
+        "0_6_months": "Monthly visits (6 visits)",
+        "6_12_months": "Every 2 months (3 visits)",
+        "12_24_months": "Every 3 months (4 visits)",
+        "24_60_months": "Every 6 months (6 visits)"
+      },
+      "measurements_at_each_visit": [
+        "Weight (to nearest 100g)",
+        "Length/height (to nearest 0.1 cm)",
+        "Head circumference (to nearest 0.1 cm, up to 24 months)",
+        "MUAC (6-59 months, to nearest 1mm)",
+        "Temperature assessment",
+        "General physical examination"
+      ],
+      "growth_chart_plotting": [
+        "Plot all measurements on appropriate WHO growth charts",
+        "Calculate and interpret z-scores",
+        "Identify growth trajectory trends",
+        "Flag any crossing of percentile lines"
+      ]
+    },
+    "warning_signs": {
+      "immediate_referral": [
+        "Weight loss for 2 consecutive months",
+        "No weight gain for 3 consecutive months",
+        "Sudden drop across 2 or more percentile lines",
+        "MUAC < 115mm",
+        "Bilateral pitting edema",
+        "Severe developmental delays"
+      ],
+      "close_monitoring": [
+        "Weight-for-height between -2 and -3 z-scores",
+        "Height-for-age between -2 and -3 z-scores",
+        "MUAC 115-125mm",
+        "Feeding difficulties",
+        "Recurrent infections"
+      ]
+    }
+  }
+}
