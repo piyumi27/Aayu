@@ -14,6 +14,7 @@ import '../repositories/standards_repository.dart';
 import '../services/growth_calculation_service.dart';
 import '../utils/responsive_utils.dart';
 import '../widgets/notifications/notification_badge.dart';
+import '../widgets/safe_gesture_detector.dart';
 import 'add_measurement_screen.dart';
 import 'nutritional_analysis_screen.dart';
 import 'pre_six_month_countdown_screen.dart';
@@ -646,7 +647,7 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
             final isSelected = _selectedTab == tab;
             return Padding(
               padding: const EdgeInsets.only(right: 8),
-              child: GestureDetector(
+              child: SafeGestureDetector(
                 onTap: () => setState(() => _selectedTab = tab),
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -685,7 +686,7 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
           final isSelected = _selectedRange == range;
           return Padding(
             padding: const EdgeInsets.only(right: 8),
-            child: GestureDetector(
+            child: SafeGestureDetector(
               onTap: () => setState(() => _selectedRange = range),
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
@@ -1041,7 +1042,7 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
     final percentile = _calculatePercentile(record);
     final provider = Provider.of<ChildProvider>(context, listen: false);
     
-    return GestureDetector(
+    return SafeGestureDetector(
       onTap: () {
         context.push(
           '/measurement-detail',
@@ -1332,7 +1333,7 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
               children: _standards.map((standard) {
                 final isSelected = _selectedStandard == standard;
                 return Expanded(
-                  child: GestureDetector(
+                  child: SafeGestureDetector(
                     onTap: () => setState(() {
                       _selectedStandard = standard;
                       _loadChartData();

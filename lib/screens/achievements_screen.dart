@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/child.dart';
 import '../providers/child_provider.dart';
 import '../utils/responsive_utils.dart';
+import '../widgets/safe_ink_well.dart';
 import '../l10n/l10n.dart';
 
 class AchievementsScreen extends StatefulWidget {
@@ -772,7 +773,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
             padding: EdgeInsets.only(
               right: ResponsiveUtils.getResponsiveSpacing(context, 12),
             ),
-            child: InkWell(
+            child: SafeInkWell(
               onTap: () => setState(() => _selectedCategory = category),
               borderRadius: BorderRadius.circular(20),
               child: AnimatedContainer(

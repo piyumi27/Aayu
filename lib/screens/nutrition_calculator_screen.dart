@@ -9,6 +9,7 @@ import '../providers/child_provider.dart';
 import '../repositories/standards_repository.dart';
 import '../utils/responsive_utils.dart';
 import '../widgets/notifications/notification_badge.dart';
+import '../widgets/safe_gesture_detector.dart';
 
 class NutritionCalculatorScreen extends StatefulWidget {
   const NutritionCalculatorScreen({super.key});
@@ -416,7 +417,7 @@ class _NutritionCalculatorScreenState extends State<NutritionCalculatorScreen> {
         children: tabs.map((tab) {
           final isSelected = _selectedTab == tab;
           return Expanded(
-            child: GestureDetector(
+            child: SafeGestureDetector(
               onTap: () => setState(() => _selectedTab = tab),
               child: Container(
                 padding: EdgeInsets.symmetric(
@@ -504,7 +505,7 @@ class _NutritionCalculatorScreenState extends State<NutritionCalculatorScreen> {
             children: ['low', 'moderate', 'high'].map((level) {
               final isSelected = _activityLevel == level;
               return Expanded(
-                child: GestureDetector(
+                child: SafeGestureDetector(
                   onTap: () {
                     setState(() => _activityLevel = level);
                     _calculateDailyRequirements();

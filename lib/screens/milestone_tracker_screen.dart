@@ -8,6 +8,7 @@ import '../models/child.dart';
 import '../models/development_milestone.dart';
 import '../providers/child_provider.dart';
 import '../utils/responsive_utils.dart';
+import '../widgets/safe_gesture_detector.dart';
 
 class MilestoneTrackerScreen extends StatefulWidget {
   const MilestoneTrackerScreen({super.key});
@@ -294,7 +295,7 @@ class _MilestoneTrackerScreenState extends State<MilestoneTrackerScreen>
 
   Widget _buildTabButton(int index, String label, IconData icon) {
     final isSelected = _selectedTab == index;
-    return GestureDetector(
+    return SafeGestureDetector(
       onTap: () => setState(() => _selectedTab = index),
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
@@ -659,7 +660,7 @@ class _MilestoneTrackerScreenState extends State<MilestoneTrackerScreen>
     final progress = _getMockDomainProgress(domain, child);
     final color = _getDomainColor(domain);
     
-    return GestureDetector(
+    return SafeGestureDetector(
       onTap: () {
         setState(() {
           _selectedDomain = domain;
@@ -926,7 +927,7 @@ class _MilestoneTrackerScreenState extends State<MilestoneTrackerScreen>
             final isSelected = domain == _selectedDomain;
             final color = _getDomainColor(domain);
             
-            return GestureDetector(
+            return SafeGestureDetector(
               onTap: () => setState(() => _selectedDomain = domain),
               child: Container(
                 padding: ResponsiveUtils.getResponsivePadding(context, scale: 0.5),

@@ -9,6 +9,7 @@ import '../providers/child_provider.dart';
 import '../utils/responsive_utils.dart';
 import '../utils/sri_lankan_vaccination_schedule.dart';
 import '../widgets/notifications/notification_badge.dart';
+import '../widgets/safe_gesture_detector.dart';
 
 class VaccinationTimelineScreen extends StatefulWidget {
   const VaccinationTimelineScreen({super.key});
@@ -204,7 +205,7 @@ class _VaccinationTimelineScreenState extends State<VaccinationTimelineScreen> {
           children: ['timeline', 'calendar'].map((view) {
             final isSelected = _selectedView == view;
             return Expanded(
-              child: GestureDetector(
+              child: SafeGestureDetector(
                 onTap: () => setState(() => _selectedView = view),
                 child: Container(
                   padding: EdgeInsets.symmetric(
