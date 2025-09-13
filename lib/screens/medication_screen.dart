@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../models/medication.dart';
 import '../providers/child_provider.dart';
 import '../services/medication_service.dart';
 import '../utils/responsive_utils.dart';
+import '../widgets/notifications/notification_badge.dart';
 
 class MedicationScreen extends StatefulWidget {
   const MedicationScreen({super.key});
@@ -43,6 +45,19 @@ class _MedicationScreenState extends State<MedicationScreen> with SingleTickerPr
           fontSize: ResponsiveUtils.getResponsiveFontSize(context, 20),
           fontWeight: FontWeight.w600,
         ),
+        actions: [
+          SmartNotificationBadge(
+            child: IconButton(
+              onPressed: () => context.push('/notifications'),
+              icon: Icon(
+                Icons.notifications_outlined,
+                color: Colors.black54,
+                size: ResponsiveUtils.getResponsiveIconSize(context, 24),
+              ),
+              tooltip: 'Notifications',
+            ),
+          ),
+        ],
         bottom: TabBar(
           controller: _tabController,
           tabs: const [

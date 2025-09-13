@@ -2,24 +2,29 @@ import 'package:flutter/foundation.dart';
 import '../models/child.dart';
 import '../models/growth_record.dart';
 import '../models/vaccine.dart';
+import '../models/medication.dart';
 import '../services/database_service.dart';
+import '../services/medication_service.dart';
 import '../services/notifications/scheduling_engine.dart';
 
 class ChildProvider extends ChangeNotifier {
   final DatabaseService _databaseService = DatabaseService();
   final NotificationSchedulingEngine _schedulingEngine = NotificationSchedulingEngine();
+  final MedicationService _medicationService = MedicationService();
   
   List<Child> _children = [];
   Child? _selectedChild;
   List<GrowthRecord> _growthRecords = [];
   List<VaccineRecord> _vaccineRecords = [];
   List<Vaccine> _vaccines = [];
+  List<Medication> _medications = [];
   
   List<Child> get children => _children;
   Child? get selectedChild => _selectedChild;
   List<GrowthRecord> get growthRecords => _growthRecords;
   List<VaccineRecord> get vaccineRecords => _vaccineRecords;
   List<Vaccine> get vaccines => _vaccines;
+  List<Medication> get medications => _medications;
 
   Future<void> loadChildren() async {
     _children = await _databaseService.getChildren();
@@ -38,6 +43,12 @@ class ChildProvider extends ChangeNotifier {
 
   Future<void> loadVaccines() async {
     _vaccines = await _databaseService.getVaccines();
+    notifyListeners();
+  }
+
+  Future<void> loadMedications() async {
+    await _medicationService.initialize();
+    _medications = _medicationService.getMedications();
     notifyListeners();
   }
 
@@ -141,5 +152,21 @@ class ChildProvider extends ChangeNotifier {
       return !givenVaccineIds.contains(vaccine.id) &&
              vaccine.recommendedAgeMonths < ageInMonths;
     }).toList();
+  }
+
+  List<Medication> getMedicationsByType(MedicationType type) {
+    return _medications.where((med) => med.type == type).toList();
+  }
+
+  List<Medication> getMedicationsByCategory(String category) {
+    return _medications.where((med) => med.category == category).toList();
+  }
+
+  List<Medication> searchMedications(String query) {
+    final lowerQuery = query.toLowerCase();
+    return _medications.where((med) =>
+        med.name.toLowerCase().contains(lowerQuery) ||
+        med.category.toLowerCase().contains(lowerQuery) ||
+        med.description.toLowerCase().contains(lowerQuery)).toList();
   }
 }

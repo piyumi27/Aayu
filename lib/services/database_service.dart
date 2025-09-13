@@ -3,6 +3,7 @@ import 'package:sqflite/sqflite.dart';
 import '../models/child.dart';
 import '../models/growth_record.dart';
 import '../models/vaccine.dart';
+import '../utils/sri_lankan_vaccination_schedule.dart';
 
 class DatabaseService {
   static final DatabaseService _instance = DatabaseService._internal();
@@ -364,6 +365,9 @@ class DatabaseService {
     
     // Insert default notification templates
     await _insertDefaultNotificationTemplates(db);
+    
+    // Populate Sri Lankan vaccination schedule
+    await _populateVaccines(db);
   }
 
   Future<void> _insertDefaultNotificationPreferences(Database db) async {
@@ -576,5 +580,16 @@ class DatabaseService {
       orderBy: 'givenDate DESC',
     );
     return maps.map((map) => VaccineRecord.fromMap(map)).toList();
+  }
+
+  Future<void> _populateVaccines(Database db) async {
+    final vaccines = SriLankanVaccinationSchedule.vaccines;
+    for (final vaccine in vaccines) {
+      await db.insert(
+        'vaccines',
+        vaccine.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+    }
   }
 }

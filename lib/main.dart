@@ -24,6 +24,7 @@ import 'screens/language_selection_screen.dart';
 import 'screens/learn_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/measurement_detail_screen.dart';
+import 'screens/medication_screen.dart';
 import 'widgets/notifications/notification_center.dart';
 import 'screens/notifications/notification_preferences_screen.dart';
 import 'screens/onboarding_screen.dart';
@@ -237,6 +238,13 @@ final _router = GoRouter(
           pageBuilder: (context, state) => SlideRightTransitionPage(
             key: state.pageKey,
             child: const AddHealthRecordScreen(),
+          ),
+        ),
+        GoRoute(
+          path: '/medications',
+          pageBuilder: (context, state) => SlideRightTransitionPage(
+            key: state.pageKey,
+            child: const MedicationScreen(),
           ),
         ),
         GoRoute(
