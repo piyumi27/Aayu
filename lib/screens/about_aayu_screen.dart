@@ -307,10 +307,10 @@ class _AboutAayuScreenState extends State<AboutAayuScreen> {
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              gradient: LinearGradient(
+              gradient: const LinearGradient(
                 colors: [
-                  const Color(0xFF0086FF),
-                  const Color(0xFF00B894),
+                  Color(0xFF0086FF),
+                  Color(0xFF00B894),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -324,7 +324,7 @@ class _AboutAayuScreenState extends State<AboutAayuScreen> {
                 ),
               ],
             ),
-            child: Center(
+            child: const Center(
               child: Text(
                 'ආයු',
                 style: TextStyle(
@@ -735,9 +735,9 @@ class _AboutAayuScreenState extends State<AboutAayuScreen> {
                     color: const Color(0xFF0086FF).withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Icon(
+                  child: const Icon(
                     Icons.email_outlined,
-                    color: const Color(0xFF0086FF),
+                    color: Color(0xFF0086FF),
                     size: 20,
                   ),
                 ),
@@ -768,9 +768,9 @@ class _AboutAayuScreenState extends State<AboutAayuScreen> {
                     color: const Color(0xFF10B981).withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Icon(
+                  child: const Icon(
                     Icons.language_outlined,
-                    color: const Color(0xFF10B981),
+                    color: Color(0xFF10B981),
                     size: 20,
                   ),
                 ),
@@ -849,9 +849,9 @@ class _AboutAayuScreenState extends State<AboutAayuScreen> {
                 ),
               ),
             ),
-            Icon(
+            const Icon(
               Icons.chevron_right,
-              color: const Color(0xFF9CA3AF),
+              color: Color(0xFF9CA3AF),
               size: 20,
             ),
           ],
@@ -894,14 +894,14 @@ class _AboutAayuScreenState extends State<AboutAayuScreen> {
                   color: Colors.grey.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(14),
                 ),
-                child: Center(
+                child: const Center(
                   child: SizedBox(
                     width: 20,
                     height: 20,
                     child: CircularProgressIndicator(
                       strokeWidth: 2,
                       valueColor: AlwaysStoppedAnimation<Color>(
-                        const Color(0xFF0086FF),
+                        Color(0xFF0086FF),
                       ),
                     ),
                   ),
@@ -917,7 +917,7 @@ class _AboutAayuScreenState extends State<AboutAayuScreen> {
                 height: 80,
                 fit: BoxFit.cover,
                 alignment: imagePath.contains('founder') 
-                    ? Alignment(0, -0.7) // Position face slightly up from center for founder
+                    ? const Alignment(0, -0.7) // Position face slightly up from center for founder
                     : Alignment.center, // Keep developer image centered
                 errorBuilder: (context, error, stackTrace) {
                   print('Image loading error for $imagePath: $error');
@@ -950,7 +950,7 @@ class _AboutAayuScreenState extends State<AboutAayuScreen> {
       child: Center(
         child: Text(
           initials,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
             color: Colors.white,

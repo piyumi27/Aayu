@@ -22,338 +22,201 @@ class LocalNotificationService {
   factory LocalNotificationService() => _instance;
   LocalNotificationService._internal();
 
-  final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin = 
+  final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
   final DatabaseService _databaseService = DatabaseService();
-  
-  bool _isInitialized = false;
-  
-  // Notification action handlers
-  Function(NotificationResponse)? _onNotificationTap;
-  Function(NotificationResponse)? _onSelectNotification;
 
-  /// Initialize local notifications with comprehensive setup
-  Future<void> initialize() async {
+  bool _isInitialized = false;
+  Function(String?)? _onNotificationTapped;
+
+  /// Check if service is initialized
+  bool get isInitialized => _isInitialized;
+
+  static const String _channelIdGeneral = 'general';
+  static const String _channelIdHealth = 'health_alerts';
+  static const String _channelIdVaccination = 'vaccination_reminders';
+  static const String _channelIdGrowth = 'growth_reminders';
+  static const String _channelIdMilestone = 'milestone_reminders';
+  static const String _channelIdFeeding = 'feeding_reminders';
+  static const String _channelIdMedication = 'medication_reminders';
+
+  /// Initialize the notification service
+  Future<void> initialize({Function(String?)? onNotificationTapped}) async {
     if (_isInitialized) return;
 
-    try {
-      // Initialize timezone data
-      tz.initializeTimeZones();
-      
-      // Setup platform-specific initialization
-      await _initializePlatformSpecific();
-      
-      // Create notification channels
-      await createNotificationChannels();
-      
-      // Setup notification handlers
-      await _setupNotificationHandlers();
-      
-      _isInitialized = true;
-      
-      if (kDebugMode) {
-        print('✅ Local Notification Service initialized successfully');
-      }
-    } catch (e) {
-      if (kDebugMode) {
-        print('❌ Local Notification Service initialization failed: $e');
-      }
-      rethrow;
-    }
-  }
+    _onNotificationTapped = onNotificationTapped;
 
-  /// Platform-specific initialization
-  Future<void> _initializePlatformSpecific() async {
-    // Android initialization
-    const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+    // Initialize timezone
+    tz.initializeTimeZones();
 
-    // iOS initialization
-    const DarwinInitializationSettings initializationSettingsIOS =
-        DarwinInitializationSettings(
-      requestSoundPermission: true,
-      requestBadgePermission: true,
+    // Android settings
+    const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
+
+    // iOS settings
+    final iosSettings = DarwinInitializationSettings(
       requestAlertPermission: true,
-      defaultPresentAlert: true,
-      defaultPresentSound: true,
-      defaultPresentBadge: true,
+      requestBadgePermission: true,
+      requestSoundPermission: true,
+      onDidReceiveLocalNotification: _onDidReceiveLocalNotification,
     );
 
-    // Combined initialization settings
-    const InitializationSettings initializationSettings = InitializationSettings(
-      android: initializationSettingsAndroid,
-      iOS: initializationSettingsIOS,
+    // Initialize plugin
+    final initSettings = InitializationSettings(
+      android: androidSettings,
+      iOS: iosSettings,
     );
 
     await _flutterLocalNotificationsPlugin.initialize(
-      initializationSettings,
+      initSettings,
       onDidReceiveNotificationResponse: _onDidReceiveNotificationResponse,
-      onDidReceiveBackgroundNotificationResponse: _onDidReceiveBackgroundNotificationResponse,
     );
 
-    // Request permissions for iOS
-    if (Platform.isIOS) {
-      await _flutterLocalNotificationsPlugin
-          .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>()
-          ?.requestPermissions(
-            alert: true,
-            badge: true,
-            sound: true,
-            critical: true,
-          );
+    // Create notification channels
+    await _createNotificationChannels();
+
+    _isInitialized = true;
+
+    if (kDebugMode) {
+      print('✅ Local Notification Service initialized');
     }
   }
 
-  /// Create notification channels for Android
-  Future<void> createNotificationChannels() async {
+  /// Create Android notification channels
+  Future<void> _createNotificationChannels() async {
     if (!Platform.isAndroid) return;
 
-    final List<AndroidNotificationChannel> channels = [
-      // Critical Health Alerts
-      const AndroidNotificationChannel(
-        'critical_health_alerts',
-        'Critical Health Alerts',
-        description: 'Urgent health notifications requiring immediate attention',
-        importance: Importance.max,
-        enableVibration: true,
-        enableLights: true,
-        ledColor: Colors.red,
-        showBadge: true,
-        playSound: true,
-        sound: RawResourceAndroidNotificationSound('critical_alert'),
-      ),
-
-      // Health Alerts
-      const AndroidNotificationChannel(
-        'health_alerts',
-        'Health Alerts',
-        description: 'Important health notifications and warnings',
-        importance: Importance.high,
-        enableVibration: true,
-        enableLights: true,
-        ledColor: Colors.orange,
-        showBadge: true,
-        playSound: true,
-        sound: RawResourceAndroidNotificationSound('health_alert'),
-      ),
-
-      // Vaccination Reminders
-      const AndroidNotificationChannel(
-        'vaccination_reminders',
-        'Vaccination Reminders',
-        description: 'Vaccination schedule reminders and overdue alerts',
-        importance: Importance.high,
-        enableVibration: true,
-        enableLights: true,
-        ledColor: Colors.blue,
-        showBadge: true,
-        playSound: true,
-        sound: RawResourceAndroidNotificationSound('vaccination_reminder'),
-      ),
-
-      // Growth Check Reminders
-      const AndroidNotificationChannel(
-        'growth_reminders',
-        'Growth Check Reminders',
-        description: 'Monthly growth measurement reminders',
-        importance: Importance.defaultImportance,
-        enableVibration: true,
-        showBadge: true,
-        playSound: true,
-      ),
-
-      // Milestone Reminders
-      const AndroidNotificationChannel(
-        'milestone_reminders',
-        'Milestone Reminders',
-        description: 'Development milestone check reminders',
-        importance: Importance.defaultImportance,
-        enableVibration: true,
-        showBadge: true,
-        playSound: true,
-      ),
-
-      // Feeding Reminders
-      const AndroidNotificationChannel(
-        'feeding_reminders',
-        'Feeding Reminders',
-        description: 'Feeding schedule and nutrition reminders',
-        importance: Importance.defaultImportance,
-        enableVibration: false,
-        showBadge: false,
-        playSound: true,
-      ),
-
-      // Medication Reminders
-      const AndroidNotificationChannel(
-        'medication_reminders',
-        'Medication Reminders',
-        description: 'Medication and supplement reminders',
-        importance: Importance.high,
-        enableVibration: true,
-        enableLights: true,
-        ledColor: Colors.green,
-        showBadge: true,
-        playSound: true,
-      ),
-
-      // Tips and Guidance
-      const AndroidNotificationChannel(
-        'tips_guidance',
-        'Tips & Guidance',
-        description: 'Helpful tips and guidance for child care',
-        importance: Importance.low,
-        enableVibration: false,
-        showBadge: false,
-        playSound: false,
-      ),
-
-      // General Notifications
-      const AndroidNotificationChannel(
+    const channels = [
+      AndroidNotificationChannel(
         'general',
         'General Notifications',
-        description: 'General app notifications and updates',
+        description: 'General app notifications',
+        importance: Importance.defaultImportance,
+      ),
+      AndroidNotificationChannel(
+        'health_alerts',
+        'Health Alerts',
+        description: 'Critical health alerts and warnings',
+        importance: Importance.high,
+        enableVibration: true,
+        playSound: true,
+      ),
+      AndroidNotificationChannel(
+        'vaccination_reminders',
+        'Vaccination Reminders',
+        description: 'Vaccination schedule reminders',
+        importance: Importance.high,
+      ),
+      AndroidNotificationChannel(
+        'growth_reminders',
+        'Growth Monitoring',
+        description: 'Growth measurement reminders',
+        importance: Importance.defaultImportance,
+      ),
+      AndroidNotificationChannel(
+        'milestone_reminders',
+        'Milestone Tracking',
+        description: 'Development milestone reminders',
+        importance: Importance.defaultImportance,
+      ),
+      AndroidNotificationChannel(
+        'feeding_reminders',
+        'Feeding Schedule',
+        description: 'Feeding time reminders',
         importance: Importance.low,
-        enableVibration: false,
-        showBadge: false,
-        playSound: false,
+      ),
+      AndroidNotificationChannel(
+        'medication_reminders',
+        'Medication Reminders',
+        description: 'Medication schedule reminders',
+        importance: Importance.high,
+        enableVibration: true,
       ),
     ];
 
-    // Create all channels
     for (final channel in channels) {
       await _flutterLocalNotificationsPlugin
           .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
           ?.createNotificationChannel(channel);
     }
+  }
 
+  /// iOS specific notification callback
+  void _onDidReceiveLocalNotification(
+    int id,
+    String? title,
+    String? body,
+    String? payload,
+  ) {
     if (kDebugMode) {
-      print('✅ Created ${channels.length} notification channels');
+      print('iOS notification received: $title');
     }
   }
 
-  /// Setup notification tap handlers
-  Future<void> _setupNotificationHandlers() async {
-    // Handle notification taps when app is running
-    // This is handled in the initialization above
+  /// Handle notification tap
+  void _onDidReceiveNotificationResponse(NotificationResponse response) {
+    final payload = response.payload;
+    if (payload != null && _onNotificationTapped != null) {
+      _onNotificationTapped!(payload);
+    }
   }
 
-  /// Handle notification response (when user taps notification)
-  Future<void> _onDidReceiveNotificationResponse(NotificationResponse response) async {
-    if (kDebugMode) {
-      print('📱 Notification tapped: ${response.id}');
-      print('🔗 Payload: ${response.payload}');
-    }
+  /// Request notification permissions
+  Future<bool> requestPermissions() async {
+    if (Platform.isIOS) {
+      final plugin = _flutterLocalNotificationsPlugin
+          .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>();
+      final granted = await plugin?.requestPermissions(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
+      return granted ?? false;
+    } else if (Platform.isAndroid) {
+      final plugin = _flutterLocalNotificationsPlugin
+          .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
 
-    await _handleNotificationTap(response);
-    _onNotificationTap?.call(response);
-  }
-
-  /// Handle background notification response
-  @pragma('vm:entry-point')
-  static Future<void> _onDidReceiveBackgroundNotificationResponse(NotificationResponse response) async {
-    if (kDebugMode) {
-      print('🔄 Background notification tapped: ${response.id}');
-    }
-    
-    // Store for later processing when app opens
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('last_notification_tap', jsonEncode({
-        'id': response.id,
-        'payload': response.payload,
-        'timestamp': DateTime.now().toIso8601String(),
-      }));
-    } catch (e) {
-      if (kDebugMode) {
-        print('❌ Failed to store background notification tap: $e');
+      if (Platform.version.contains('13') || Platform.version.contains('14')) {
+        final granted = await plugin?.requestNotificationsPermission();
+        return granted ?? false;
       }
+      return true; // Permissions granted by default on older Android versions
     }
+    return false;
   }
 
-  /// Handle notification tap actions
-  Future<void> _handleNotificationTap(NotificationResponse response) async {
-    try {
-      if (response.payload != null) {
-        final payload = jsonDecode(response.payload!);
-        final type = payload['type'];
-        final data = payload['data'] ?? {};
-
-        switch (type) {
-          case 'health_alert':
-            await _handleHealthAlertTap(data);
-            break;
-          case 'vaccination_reminder':
-            await _handleVaccinationReminderTap(data);
-            break;
-          case 'growth_reminder':
-            await _handleGrowthReminderTap(data);
-            break;
-          case 'milestone_reminder':
-            await _handleMilestoneReminderTap(data);
-            break;
-          case 'feeding_reminder':
-            await _handleFeedingReminderTap(data);
-            break;
-          case 'medication_reminder':
-            await _handleMedicationReminderTap(data);
-            break;
-          default:
-            await _handleGeneralNotificationTap(data);
-        }
-
-        // Mark as tapped in database
-        await _markNotificationAsTapped(response.id!.toString());
-      }
-    } catch (e) {
-      if (kDebugMode) {
-        print('❌ Error handling notification tap: $e');
-      }
-    }
-  }
-
-  /// Show immediate notification
+  /// Show a simple notification
   Future<void> showNotification({
     required int id,
     required String title,
     required String body,
     String? channelId,
-    NotificationPriority priority = NotificationPriority.medium,
     Map<String, dynamic>? payload,
+    NotificationPriority priority = NotificationPriority.medium,
     String? imageUrl,
-    List<AndroidNotificationAction>? actions,
   }) async {
-    if (!_isInitialized) await initialize();
+    final effectiveChannelId = channelId ?? _channelIdGeneral;
 
-    final effectiveChannelId = channelId ?? _getChannelIdFromPriority(priority);
-    
+    // Android notification details
     final androidDetails = AndroidNotificationDetails(
       effectiveChannelId,
-      _getChannelNameFromId(effectiveChannelId),
-      channelDescription: _getChannelDescriptionFromId(effectiveChannelId),
-      importance: _getImportanceFromPriority(priority),
-      priority: _getPriorityFromPriority(priority),
-      showWhen: true,
-      when: DateTime.now().millisecondsSinceEpoch,
-      enableVibration: priority.index >= NotificationPriority.medium.index,
-      enableLights: priority.index >= NotificationPriority.high.index,
-      ledColor: _getLedColorFromPriority(priority),
-      ledOnMs: 1000, // LED on duration in milliseconds
-      ledOffMs: 500, // LED off duration in milliseconds
-      actions: actions,
-      largeIcon: imageUrl != null ? FilePathAndroidBitmap(imageUrl) : null,
-      styleInformation: body.length > 50
-          ? BigTextStyleInformation(body, htmlFormatBigText: true)
+      _getChannelName(effectiveChannelId),
+      channelDescription: _getChannelDescription(effectiveChannelId),
+      importance: _getImportance(priority),
+      priority: _getPriority(priority),
+      ticker: title,
+      styleInformation: body.length > 40
+          ? BigTextStyleInformation(body)
           : null,
     );
 
+    // iOS notification details
     const iosDetails = DarwinNotificationDetails(
       presentAlert: true,
       presentBadge: true,
       presentSound: true,
-      badgeNumber: 1,
     );
 
+    // Platform notification details
     final details = NotificationDetails(
       android: androidDetails,
       iOS: iosDetails,
@@ -404,89 +267,81 @@ class LocalNotificationService {
     required String body,
     required DateTime scheduledDate,
     String? channelId,
-    NotificationPriority priority = NotificationPriority.medium,
     Map<String, dynamic>? payload,
+    NotificationPriority priority = NotificationPriority.medium,
     bool repeat = false,
     String? repeatInterval,
   }) async {
-    if (!_isInitialized) await initialize();
+    final effectiveChannelId = channelId ?? _channelIdGeneral;
 
-    final effectiveChannelId = channelId ?? _getChannelIdFromPriority(priority);
-    final scheduledTz = tz.TZDateTime.from(scheduledDate, tz.local);
-
+    // Android notification details
     final androidDetails = AndroidNotificationDetails(
       effectiveChannelId,
-      _getChannelNameFromId(effectiveChannelId),
-      channelDescription: _getChannelDescriptionFromId(effectiveChannelId),
-      importance: _getImportanceFromPriority(priority),
-      priority: _getPriorityFromPriority(priority),
-      showWhen: true,
-      enableVibration: priority.index >= NotificationPriority.medium.index,
-      enableLights: priority.index >= NotificationPriority.high.index,
-      ledColor: _getLedColorFromPriority(priority),
-      ledOnMs: 1000, // LED on duration in milliseconds
-      ledOffMs: 500, // LED off duration in milliseconds
+      _getChannelName(effectiveChannelId),
+      channelDescription: _getChannelDescription(effectiveChannelId),
+      importance: _getImportance(priority),
+      priority: _getPriority(priority),
     );
 
+    // iOS notification details
     const iosDetails = DarwinNotificationDetails(
       presentAlert: true,
       presentBadge: true,
       presentSound: true,
     );
 
+    // Platform notification details
     final details = NotificationDetails(
       android: androidDetails,
       iOS: iosDetails,
     );
 
-    if (repeat && repeatInterval != null) {
-      await _scheduleRepeatingNotification(
-        id, title, body, scheduledTz, _getRepeatInterval(repeatInterval), details, payload,
-      );
-    } else {
-      await _flutterLocalNotificationsPlugin.zonedSchedule(
-        id,
-        title,
-        body,
-        scheduledTz,
-        details,
-        uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
-        payload: payload != null ? jsonEncode(payload) : null,
-        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      );
-    }
-
-    // Store scheduled notification
-    await _storeScheduledNotification(id, title, body, scheduledDate, effectiveChannelId, payload, repeat);
-
-    if (kDebugMode) {
-      print('⏰ Notification scheduled: $title at $scheduledDate');
-    }
-  }
-
-  /// Schedule repeating notification
-  Future<void> _scheduleRepeatingNotification(
-    int id, String title, String body, tz.TZDateTime scheduledDate,
-    RepeatInterval repeatInterval, NotificationDetails details, Map<String, dynamic>? payload,
-  ) async {
-    await _flutterLocalNotificationsPlugin.periodicallyShow(
+    // Schedule the notification
+    await _flutterLocalNotificationsPlugin.zonedSchedule(
       id,
       title,
       body,
-      repeatInterval,
+      tz.TZDateTime.from(scheduledDate, tz.local),
       details,
-      payload: payload != null ? jsonEncode(payload) : null,
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
+      payload: payload != null ? jsonEncode(payload) : null,
     );
+
+    // Store scheduled notification in database
+    await _storeScheduledNotification(
+      id: id,
+      title: title,
+      body: body,
+      channelId: effectiveChannelId,
+      scheduledDate: scheduledDate,
+      payload: payload,
+      isRepeating: repeat,
+      repeatInterval: repeatInterval,
+    );
+
+    if (kDebugMode) {
+      print('⏰ Notification scheduled for: ${scheduledDate.toIso8601String()}');
+    }
   }
 
-  /// Cancel specific notification
+  /// Cancel a scheduled notification
   Future<void> cancelNotification(int id) async {
     await _flutterLocalNotificationsPlugin.cancel(id);
-    
+
     // Update database
-    await _cancelScheduledNotification(id);
-    
+    final db = await _databaseService.database;
+    await db.update(
+      'scheduled_notifications',
+      {
+        'isActive': 0,
+        'cancelledAt': DateTime.now().toIso8601String(),
+      },
+      where: 'id = ?',
+      whereArgs: [id.toString()],
+    );
+
     if (kDebugMode) {
       print('❌ Notification cancelled: $id');
     }
@@ -495,10 +350,17 @@ class LocalNotificationService {
   /// Cancel all notifications
   Future<void> cancelAllNotifications() async {
     await _flutterLocalNotificationsPlugin.cancelAll();
-    
+
     // Update database
-    await _cancelAllScheduledNotifications();
-    
+    final db = await _databaseService.database;
+    await db.update(
+      'scheduled_notifications',
+      {
+        'isActive': 0,
+        'cancelledAt': DateTime.now().toIso8601String(),
+      },
+    );
+
     if (kDebugMode) {
       print('❌ All notifications cancelled');
     }
@@ -509,87 +371,148 @@ class LocalNotificationService {
     return await _flutterLocalNotificationsPlugin.pendingNotificationRequests();
   }
 
-  /// Get active notifications
-  Future<List<ActiveNotification>> getActiveNotifications() async {
-    if (Platform.isAndroid) {
-      return await _flutterLocalNotificationsPlugin
-          .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
-          ?.getActiveNotifications() ?? [];
+  /// Show a test notification for testing purposes
+  Future<void> showTestNotification() async {
+    final id = DateTime.now().millisecondsSinceEpoch % 2147483647;
+
+    await showNotification(
+      id: id,
+      title: 'Test Notification',
+      body: 'This is a test notification to verify your notification settings are working correctly.',
+      channelId: _channelIdGeneral,
+      priority: NotificationPriority.medium,
+      payload: {
+        'type': 'test',
+        'timestamp': DateTime.now().toIso8601String(),
+      },
+    );
+
+    if (kDebugMode) {
+      print('🔔 Test notification sent with ID: $id');
     }
-    return [];
   }
 
-  /// Set notification tap handler
-  void setNotificationTapHandler(Function(NotificationResponse) handler) {
-    _onNotificationTap = handler;
+  /// Store local notification in database
+  Future<void> _storeLocalNotification(
+    int id,
+    String title,
+    String body,
+    String channelId,
+    Map<String, dynamic>? payload,
+  ) async {
+    try {
+      final db = await _databaseService.database;
+      await db.insert('notification_history', {
+        'id': id.toString(),
+        'type': payload?['type'] ?? 'local',
+        'title': title,
+        'body': body,
+        'payload': payload != null ? jsonEncode(payload) : null,
+        'isShown': 1,
+        'shownAt': DateTime.now().toIso8601String(),
+        'source': 'local',
+        'channelId': channelId,
+        'createdAt': DateTime.now().toIso8601String(),
+      });
+    } catch (e) {
+      if (kDebugMode) {
+        print('Failed to store notification history: $e');
+      }
+    }
   }
 
-  /// Helper methods for channel management
-  String _getChannelIdFromPriority(NotificationPriority priority) {
-    switch (priority) {
-      case NotificationPriority.critical:
-        return 'critical_health_alerts';
-      case NotificationPriority.high:
-        return 'health_alerts';
-      case NotificationPriority.medium:
-        return 'growth_reminders';
-      case NotificationPriority.low:
-        return 'tips_guidance';
+  /// Store scheduled notification in database
+  Future<void> _storeScheduledNotification({
+    required int id,
+    required String title,
+    required String body,
+    required String channelId,
+    required DateTime scheduledDate,
+    Map<String, dynamic>? payload,
+    bool isRepeating = false,
+    String? repeatInterval,
+  }) async {
+    try {
+      final db = await _databaseService.database;
+      await db.insert('scheduled_notifications', {
+        'id': id.toString(),
+        'type': payload?['type'] ?? 'scheduled',
+        'childId': payload?['childId'],
+        'title': title,
+        'body': body,
+        'channelId': channelId,
+        'payload': payload != null ? jsonEncode(payload) : null,
+        'scheduledDate': scheduledDate.toIso8601String(),
+        'isRepeating': isRepeating ? 1 : 0,
+        'repeatInterval': repeatInterval,
+        'isActive': 1,
+        'isSent': 0,
+        'createdAt': DateTime.now().toIso8601String(),
+      });
+    } catch (e) {
+      if (kDebugMode) {
+        print('Failed to store scheduled notification: $e');
+      }
+    }
+  }
+
+  /// Helper methods
+  String _getChannelName(String channelId) {
+    switch (channelId) {
+      case _channelIdHealth:
+        return 'Health Alerts';
+      case _channelIdVaccination:
+        return 'Vaccination Reminders';
+      case _channelIdGrowth:
+        return 'Growth Monitoring';
+      case _channelIdMilestone:
+        return 'Milestone Tracking';
+      case _channelIdFeeding:
+        return 'Feeding Schedule';
+      case _channelIdMedication:
+        return 'Medication Reminders';
+      default:
+        return 'General Notifications';
+    }
+  }
+
+  String _getChannelDescription(String channelId) {
+    switch (channelId) {
+      case _channelIdHealth:
+        return 'Critical health alerts and warnings';
+      case _channelIdVaccination:
+        return 'Vaccination schedule reminders';
+      case _channelIdGrowth:
+        return 'Growth measurement reminders';
+      case _channelIdMilestone:
+        return 'Development milestone reminders';
+      case _channelIdFeeding:
+        return 'Feeding time reminders';
+      case _channelIdMedication:
+        return 'Medication schedule reminders';
+      default:
+        return 'General app notifications';
     }
   }
 
   String _getChannelIdFromNotificationType(String type) {
-    switch (type) {
-      case 'health_alert':
-        return 'health_alerts';
-      case 'critical_health_alert':
-        return 'critical_health_alerts';
-      case 'vaccination_reminder':
-        return 'vaccination_reminders';
-      case 'growth_reminder':
-        return 'growth_reminders';
-      case 'milestone_reminder':
-        return 'milestone_reminders';
-      case 'feeding_reminder':
-        return 'feeding_reminders';
-      case 'medication_reminder':
-        return 'medication_reminders';
-      default:
-        return 'general';
+    if (type.contains('health') || type.contains('alert')) {
+      return _channelIdHealth;
+    } else if (type.contains('vaccination') || type.contains('vaccine')) {
+      return _channelIdVaccination;
+    } else if (type.contains('growth')) {
+      return _channelIdGrowth;
+    } else if (type.contains('milestone')) {
+      return _channelIdMilestone;
+    } else if (type.contains('feeding')) {
+      return _channelIdFeeding;
+    } else if (type.contains('medication')) {
+      return _channelIdMedication;
     }
+    return _channelIdGeneral;
   }
 
-  String _getChannelNameFromId(String channelId) {
-    final channelMap = {
-      'critical_health_alerts': 'Critical Health Alerts',
-      'health_alerts': 'Health Alerts',
-      'vaccination_reminders': 'Vaccination Reminders',
-      'growth_reminders': 'Growth Reminders',
-      'milestone_reminders': 'Milestone Reminders',
-      'feeding_reminders': 'Feeding Reminders',
-      'medication_reminders': 'Medication Reminders',
-      'tips_guidance': 'Tips & Guidance',
-      'general': 'General Notifications',
-    };
-    return channelMap[channelId] ?? 'General Notifications';
-  }
-
-  String _getChannelDescriptionFromId(String channelId) {
-    final descriptionMap = {
-      'critical_health_alerts': 'Urgent health notifications requiring immediate attention',
-      'health_alerts': 'Important health notifications and warnings',
-      'vaccination_reminders': 'Vaccination schedule reminders and overdue alerts',
-      'growth_reminders': 'Monthly growth measurement reminders',
-      'milestone_reminders': 'Development milestone check reminders',
-      'feeding_reminders': 'Feeding schedule and nutrition reminders',
-      'medication_reminders': 'Medication and supplement reminders',
-      'tips_guidance': 'Helpful tips and guidance for child care',
-      'general': 'General app notifications and updates',
-    };
-    return descriptionMap[channelId] ?? 'General app notifications';
-  }
-
-  Importance _getImportanceFromPriority(NotificationPriority priority) {
+  Importance _getImportance(NotificationPriority priority) {
     switch (priority) {
       case NotificationPriority.critical:
         return Importance.max;
@@ -602,7 +525,7 @@ class LocalNotificationService {
     }
   }
 
-  Priority _getPriorityFromPriority(NotificationPriority priority) {
+  Priority _getPriority(NotificationPriority priority) {
     switch (priority) {
       case NotificationPriority.critical:
         return Priority.max;
@@ -613,195 +536,5 @@ class LocalNotificationService {
       case NotificationPriority.low:
         return Priority.low;
     }
-  }
-
-  Color _getLedColorFromPriority(NotificationPriority priority) {
-    switch (priority) {
-      case NotificationPriority.critical:
-        return Colors.red;
-      case NotificationPriority.high:
-        return Colors.orange;
-      case NotificationPriority.medium:
-        return Colors.blue;
-      case NotificationPriority.low:
-        return Colors.green;
-    }
-  }
-
-  RepeatInterval _getRepeatInterval(String interval) {
-    switch (interval.toLowerCase()) {
-      case 'daily':
-        return RepeatInterval.daily;
-      case 'weekly':
-        return RepeatInterval.weekly;
-      case 'hourly':
-        return RepeatInterval.hourly;
-      default:
-        return RepeatInterval.daily;
-    }
-  }
-
-  // Database operations (implementation stubs)
-  Future<void> _storeLocalNotification(int id, String title, String body, String channelId, Map<String, dynamic>? payload) async {
-    try {
-      final db = await _databaseService.database;
-      final now = DateTime.now().toIso8601String();
-      await db.insert('notification_history', {
-        'id': id.toString(),
-        'title': title,
-        'body': body,
-        'channelId': channelId,
-        'payload': payload != null ? jsonEncode(payload) : null,
-        'type': 'local',
-        'createdAt': now,
-        'receivedAt': now, // Local notifications are received immediately
-        'isShown': 1,
-      });
-    } catch (e) {
-      if (kDebugMode) {
-        print('❌ Failed to store local notification: $e');
-      }
-    }
-  }
-
-  Future<void> _storeScheduledNotification(int id, String title, String body, DateTime scheduledDate, String channelId, Map<String, dynamic>? payload, bool repeat) async {
-    try {
-      final db = await _databaseService.database;
-
-      // Extract notification type from payload or use default
-      String notificationType = 'general';
-      if (payload != null && payload.containsKey('type')) {
-        notificationType = payload['type'].toString();
-      }
-
-      await db.insert('scheduled_notifications', {
-        'id': id.toString(),
-        'type': notificationType, // Add the missing type field
-        'title': title,
-        'body': body,
-        'channelId': channelId,
-        'payload': payload != null ? jsonEncode(payload) : null,
-        'scheduledDate': scheduledDate.toIso8601String(),
-        'isRepeating': repeat ? 1 : 0,
-        'isActive': 1,
-        'createdAt': DateTime.now().toIso8601String(),
-      });
-    } catch (e) {
-      if (kDebugMode) {
-        print('❌ Failed to store scheduled notification: $e');
-      }
-    }
-  }
-
-  Future<void> _markNotificationAsTapped(String id) async {
-    try {
-      final db = await _databaseService.database;
-      await db.update(
-        'notification_history',
-        {'tappedAt': DateTime.now().toIso8601String()},
-        where: 'id = ?',
-        whereArgs: [id],
-      );
-    } catch (e) {
-      if (kDebugMode) {
-        print('❌ Failed to mark notification as tapped: $e');
-      }
-    }
-  }
-
-  Future<void> _cancelScheduledNotification(int id) async {
-    try {
-      final db = await _databaseService.database;
-      await db.update(
-        'scheduled_notifications',
-        {'isActive': 0, 'cancelledAt': DateTime.now().toIso8601String()},
-        where: 'id = ?',
-        whereArgs: [id.toString()],
-      );
-    } catch (e) {
-      if (kDebugMode) {
-        print('❌ Failed to cancel scheduled notification: $e');
-      }
-    }
-  }
-
-  Future<void> _cancelAllScheduledNotifications() async {
-    try {
-      final db = await _databaseService.database;
-      await db.update(
-        'scheduled_notifications',
-        {'isActive': 0, 'cancelledAt': DateTime.now().toIso8601String()},
-        where: 'isActive = ?',
-        whereArgs: [1],
-      );
-    } catch (e) {
-      if (kDebugMode) {
-        print('❌ Failed to cancel all scheduled notifications: $e');
-      }
-    }
-  }
-
-  // Notification tap handlers (implementation stubs)
-  Future<void> _handleHealthAlertTap(Map<String, dynamic> data) async {
-    // Navigate to health alert details
-  }
-
-  Future<void> _handleVaccinationReminderTap(Map<String, dynamic> data) async {
-    // Navigate to vaccination screen
-  }
-
-  Future<void> _handleGrowthReminderTap(Map<String, dynamic> data) async {
-    // Navigate to growth tracking screen
-  }
-
-  Future<void> _handleMilestoneReminderTap(Map<String, dynamic> data) async {
-    // Navigate to milestone tracking screen
-  }
-
-  Future<void> _handleFeedingReminderTap(Map<String, dynamic> data) async {
-    // Navigate to feeding log screen
-  }
-
-  Future<void> _handleMedicationReminderTap(Map<String, dynamic> data) async {
-    // Navigate to medication tracking screen
-  }
-
-  Future<void> _handleGeneralNotificationTap(Map<String, dynamic> data) async {
-    // Handle general notification tap
-  }
-
-  /// Show test notification for debugging and user testing
-  Future<void> showTestNotification() async {
-    // Generate a safe 32-bit integer ID
-    final safeId = _generateSafeNotificationId();
-    await showNotification(
-      id: safeId,
-      title: 'Test Notification',
-      body: 'This is a test notification to verify the system is working correctly.',
-      channelId: 'general',
-      priority: NotificationPriority.medium,
-    );
-  }
-
-  /// Generate a safe 32-bit integer notification ID
-  int _generateSafeNotificationId() {
-    // Use current time in seconds and modulo to keep within 32-bit range
-    final now = DateTime.now();
-    final timeComponent = now.millisecondsSinceEpoch % 1000000000; // Keep last 9 digits
-    final randomComponent = math.Random().nextInt(1000); // Add small random component
-
-    // Ensure the ID is within 32-bit signed integer range: -2^31 to 2^31 - 1
-    // Using positive range: 1 to 2^30 (1073741824) to be safe
-    final safeId = (timeComponent + randomComponent) % 1073741824;
-
-    return safeId == 0 ? 1 : safeId; // Ensure ID is never 0
-  }
-
-  /// Check if service is initialized
-  bool get isInitialized => _isInitialized;
-
-  /// Cleanup resources
-  Future<void> dispose() async {
-    _isInitialized = false;
   }
 }

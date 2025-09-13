@@ -232,16 +232,16 @@ class NotificationSchedulingEngine {
     try {
       // Schedule vaccination reminders
       await _scheduleVaccinationReminders(child);
-      
+
       // Schedule growth check reminders
       await _scheduleGrowthCheckReminders(child);
-      
+
       // Schedule milestone check reminders
       await _scheduleMilestoneCheckReminders(child);
-      
+
       // Schedule feeding reminders (for young children)
       await _scheduleFeedingReminders(child);
-      
+
       // Schedule health monitoring notifications
       await _scheduleHealthMonitoringReminders(child);
 
@@ -321,7 +321,7 @@ class NotificationSchedulingEngine {
     try {
       final childAgeMonths = _calculateAgeInMonths(child.birthDate);
       final growthRecords = await _databaseService.getGrowthRecords(child.id);
-      
+
       // Determine reminder frequency based on age and last measurement
       int reminderFrequencyDays;
       if (childAgeMonths < 6) {
@@ -333,7 +333,7 @@ class NotificationSchedulingEngine {
       }
 
       DateTime nextReminderDate;
-      
+
       if (growthRecords.isNotEmpty) {
         final lastMeasurement = growthRecords.first.date;
         nextReminderDate = lastMeasurement.add(Duration(days: reminderFrequencyDays));
@@ -344,7 +344,7 @@ class NotificationSchedulingEngine {
 
       // Schedule up to 6 months of growth reminders
       final endDate = DateTime.now().add(const Duration(days: 180));
-      
+
       while (nextReminderDate.isBefore(endDate)) {
         final notificationId = await NotificationIdGenerator.generateUniqueId();
 
@@ -389,7 +389,7 @@ class NotificationSchedulingEngine {
         }
         return; // Skip milestone scheduling if standards loading fails
       }
-      
+
       final milestoneRecords = await _standardsRepository.getMilestoneRecords(child.id);
       final achievedMilestoneIds = milestoneRecords
           .where((record) => record.achieved)
@@ -403,7 +403,7 @@ class NotificationSchedulingEngine {
         // Calculate reminder date based on milestone age range
         final reminderAge = milestone.ageMonthsMax;
         final reminderDate = child.birthDate.add(Duration(days: reminderAge * 30));
-        
+
         // Only schedule future reminders
         if (reminderDate.isAfter(DateTime.now())) {
           final notificationId = await NotificationIdGenerator.generateUniqueId();
@@ -436,17 +436,17 @@ class NotificationSchedulingEngine {
   Future<void> _scheduleFeedingReminders(Child child) async {
     try {
       final childAgeMonths = _calculateAgeInMonths(child.birthDate);
-      
+
       // Only schedule feeding reminders for children under 12 months
       if (childAgeMonths >= 12) return;
 
       final feedingSchedule = _getFeedingScheduleForAge(childAgeMonths);
       final today = DateTime.now();
-      
+
       // Schedule for next 7 days
       for (int day = 0; day < 7; day++) {
         final feedingDate = today.add(Duration(days: day));
-        
+
         for (final feedingTime in feedingSchedule) {
           final scheduledTime = DateTime(
             feedingDate.year,
@@ -455,7 +455,7 @@ class NotificationSchedulingEngine {
             feedingTime.hour,
             feedingTime.minute,
           );
-          
+
           // Only schedule future feeding times
           if (scheduledTime.isAfter(DateTime.now())) {
             final notificationId = await NotificationIdGenerator.generateUniqueId();
@@ -487,10 +487,10 @@ class NotificationSchedulingEngine {
   Future<void> _scheduleHealthMonitoringReminders(Child child) async {
     try {
       final today = DateTime.now();
-      
+
       // Schedule weekly health check reminder
       final weeklyCheckDate = today.add(const Duration(days: 7));
-      
+
       await _localNotificationService.scheduleNotification(
         id: await NotificationIdGenerator.generateUniqueId(),
         title: 'Weekly Health Check',
@@ -509,7 +509,7 @@ class NotificationSchedulingEngine {
 
       // Schedule monthly comprehensive review
       final monthlyReviewDate = today.add(const Duration(days: 30));
-      
+
       await _localNotificationService.scheduleNotification(
         id: await NotificationIdGenerator.generateUniqueId(),
         title: 'Monthly Health Review',
@@ -538,7 +538,7 @@ class NotificationSchedulingEngine {
     if (baseDate.hour == 0 && baseDate.minute == 0) {
       return DateTime(baseDate.year, baseDate.month, baseDate.day, 9, 0);
     }
-    
+
     // Apply smart scheduling adjustments
     final adjustedTime = _applySmartSchedulingAdjustments(baseDate);
     return adjustedTime;
@@ -548,16 +548,16 @@ class NotificationSchedulingEngine {
   DateTime _applySmartSchedulingAdjustments(DateTime baseTime) {
     // This would typically use user behavior data and preferences
     // For now, we apply basic optimizations
-    
+
     final hour = baseTime.hour;
-    
+
     // Avoid very early morning (before 7 AM) and late night (after 10 PM)
     if (hour < 7) {
       return DateTime(baseTime.year, baseTime.month, baseTime.day, 9, 0);
     } else if (hour > 22) {
       return DateTime(baseTime.year, baseTime.month, baseTime.day + 1, 9, 0);
     }
-    
+
     // Prefer morning times for important reminders
     return baseTime;
   }
@@ -572,7 +572,7 @@ class NotificationSchedulingEngine {
   /// Get feeding schedule based on child's age
   List<DateTime> _getFeedingScheduleForAge(int ageMonths) {
     final today = DateTime.now();
-    
+
     if (ageMonths < 2) {
       // Newborns: every 2-3 hours
       return [
@@ -611,7 +611,7 @@ class NotificationSchedulingEngine {
 
   String _getVaccinationReminderBody(Vaccine vaccine, Child child, DateTime reminderDate, DateTime dueDate) {
     final daysUntilDue = dueDate.difference(reminderDate).inDays;
-    
+
     if (daysUntilDue > 0) {
       return '${child.name} has ${vaccine.name} (${vaccine.nameLocal}) vaccination due in $daysUntilDue days';
     } else if (daysUntilDue == 0) {
@@ -650,7 +650,7 @@ class NotificationSchedulingEngine {
   Future<void> cancelNotificationsForChild(String childId) async {
     try {
       final db = await _databaseService.database;
-      
+
       // Get all scheduled notifications for this child
       final notifications = await db.query(
         'scheduled_notifications',
@@ -691,7 +691,7 @@ class NotificationSchedulingEngine {
   Future<void> updateNotificationPreferences(Map<String, dynamic> preferences) async {
     try {
       final db = await _databaseService.database;
-      
+
       for (final entry in preferences.entries) {
         await db.update(
           'notification_preferences',
@@ -723,7 +723,7 @@ class NotificationSchedulingEngine {
   Future<void> _rescheduleNotificationsForPreferences() async {
     // This would analyze current preferences and reschedule notifications accordingly
     // Implementation would be complex and involve analyzing all scheduled notifications
-    
+
     if (kDebugMode) {
       print('📅 Rescheduling notifications for updated preferences');
     }
@@ -770,15 +770,15 @@ class NotificationSchedulingEngine {
   Future<Map<String, dynamic>> getNotificationStatistics() async {
     try {
       final db = await _databaseService.database;
-      
+
       final totalScheduled = await db.rawQuery(
         'SELECT COUNT(*) as count FROM scheduled_notifications WHERE isActive = 1'
       );
-      
+
       final totalSent = await db.rawQuery(
         'SELECT COUNT(*) as count FROM notification_history WHERE isShown = 1'
       );
-      
+
       final totalTapped = await db.rawQuery(
         'SELECT COUNT(*) as count FROM notification_history WHERE tappedAt IS NOT NULL'
       );
@@ -787,7 +787,7 @@ class NotificationSchedulingEngine {
         'totalScheduled': totalScheduled.first['count'],
         'totalSent': totalSent.first['count'],
         'totalTapped': totalTapped.first['count'],
-        'engagementRate': totalSent.first['count'] as int > 0 
+        'engagementRate': totalSent.first['count'] as int > 0
             ? (totalTapped.first['count'] as int) / (totalSent.first['count'] as int)
             : 0.0,
       };
@@ -816,7 +816,7 @@ void _callbackDispatcher() {
 
     try {
       final taskType = inputData?['taskType'] ?? 'unknown';
-      
+
       switch (taskType) {
         case 'daily_planning':
           await _performDailyNotificationPlanning();
@@ -874,4 +874,3 @@ Future<void> _performHealthMonitoring() async {
     print('🏥 Performing health monitoring check');
   }
 }
-
