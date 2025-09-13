@@ -23,18 +23,17 @@ class MeasurementDetailScreen extends StatefulWidget {
   });
 
   @override
-  State<MeasurementDetailScreen> createState() =>
-      _MeasurementDetailScreenState();
+  State<MeasurementDetailScreen> createState() => _MeasurementDetailScreenState();
 }
 
 class _MeasurementDetailScreenState extends State<MeasurementDetailScreen> {
   final DatabaseService _databaseService = DatabaseService();
-
+  
   GrowthRecord? _measurement;
   String _selectedLanguage = 'en';
   bool _isLoading = true;
   bool _isDeleting = false;
-
+  
   // For undo functionality
   GrowthRecord? _deletedMeasurement;
 
@@ -58,15 +57,14 @@ class _MeasurementDetailScreenState extends State<MeasurementDetailScreen> {
   /// Load measurement details
   Future<void> _loadMeasurement() async {
     setState(() => _isLoading = true);
-
+    
     try {
-      final measurements =
-          await _databaseService.getGrowthRecords(widget.childId);
+      final measurements = await _databaseService.getGrowthRecords(widget.childId);
       final measurement = measurements.firstWhere(
         (m) => m.id == widget.measurementId,
         orElse: () => throw Exception('Measurement not found'),
       );
-
+      
       if (mounted) {
         setState(() {
           _measurement = measurement;
@@ -103,9 +101,9 @@ class _MeasurementDetailScreenState extends State<MeasurementDetailScreen> {
   /// Get status text based on Z-score
   String _getStatusText(double? zScore, String metric) {
     if (zScore == null) return 'No data';
-
+    
     final texts = _getLocalizedTexts();
-
+    
     if (metric == 'weight') {
       if (zScore < -2) return texts['severelyUnderweight']!;
       if (zScore < -1) return texts['underweight']!;
@@ -118,19 +116,17 @@ class _MeasurementDetailScreenState extends State<MeasurementDetailScreen> {
       if (zScore <= 1) return texts['normal']!;
       return texts['tall']!;
     }
-
+    
     return texts['normal']!;
   }
 
   /// Navigate to edit screen
   void _navigateToEdit() {
-    Navigator.of(context)
-        .push(
-          MaterialPageRoute(
-            builder: (context) => const AddMeasurementScreen(),
-          ),
-        )
-        .then((_) => _loadMeasurement());
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const AddMeasurementScreen(),
+      ),
+    ).then((_) => _loadMeasurement());
   }
 
   /// Delete measurement with confirmation
@@ -143,19 +139,19 @@ class _MeasurementDetailScreenState extends State<MeasurementDetailScreen> {
     try {
       // Store for undo
       _deletedMeasurement = _measurement;
-
+      
       // Delete from database - TODO: Add deleteGrowthRecord method to DatabaseService
       // For now, we'll just simulate deletion
       // await _databaseService.deleteGrowthRecord(widget.measurementId);
-
+      
       // Update provider
       if (mounted) {
         final provider = Provider.of<ChildProvider>(context, listen: false);
         await provider.loadChildren();
-
+        
         // Show undo snackbar
         _showDeleteUndoSnackbar();
-
+        
         // Navigate back after short delay
         Future.delayed(const Duration(milliseconds: 500), () {
           if (mounted) Navigator.of(context).pop();
@@ -170,57 +166,52 @@ class _MeasurementDetailScreenState extends State<MeasurementDetailScreen> {
   /// Show delete confirmation dialog
   Future<bool> _showDeleteConfirmation() async {
     final texts = _getLocalizedTexts();
-
+    
     return await showDialog<bool>(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: Text(
-              texts['deleteTitle']!,
-              style: TextStyle(
-                fontFamily:
-                    _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-              ),
-            ),
-            content: Text(
-              texts['deleteMessage']!,
-              style: TextStyle(
-                fontFamily:
-                    _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: Text(
-                  texts['cancel']!,
-                  style: TextStyle(
-                    color: const Color(0xFF6B7280),
-                    fontFamily:
-                        _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-                  ),
-                ),
-              ),
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(true),
-                child: Text(
-                  texts['delete']!,
-                  style: TextStyle(
-                    color: const Color(0xFFEF4444),
-                    fontFamily:
-                        _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-                  ),
-                ),
-              ),
-            ],
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(
+          texts['deleteTitle']!,
+          style: TextStyle(
+            fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
           ),
-        ) ??
-        false;
+        ),
+        content: Text(
+          texts['deleteMessage']!,
+          style: TextStyle(
+            fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(
+              texts['cancel']!,
+              style: TextStyle(
+                color: const Color(0xFF6B7280),
+                fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: Text(
+              texts['delete']!,
+              style: TextStyle(
+                color: const Color(0xFFEF4444),
+                fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+              ),
+            ),
+          ),
+        ],
+      ),
+    ) ?? false;
   }
 
   /// Show undo snackbar for delete action
   void _showDeleteUndoSnackbar() {
     final texts = _getLocalizedTexts();
-
+    
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
@@ -321,8 +312,7 @@ class _MeasurementDetailScreenState extends State<MeasurementDetailScreen> {
                     texts['noData']!,
                     style: TextStyle(
                       color: const Color(0xFF6B7280),
-                      fontFamily:
-                          _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                      fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                     ),
                   ),
                 )
@@ -339,8 +329,7 @@ class _MeasurementDetailScreenState extends State<MeasurementDetailScreen> {
                             _buildMetricsCard(texts),
                             const SizedBox(height: 16),
                             _buildZScoreTable(texts),
-                            if (_measurement!.notes != null &&
-                                _measurement!.notes!.isNotEmpty) ...[
+                            if (_measurement!.notes != null && _measurement!.notes!.isNotEmpty) ...[
                               const SizedBox(height: 16),
                               _buildNotesCard(texts),
                             ],
@@ -348,8 +337,7 @@ class _MeasurementDetailScreenState extends State<MeasurementDetailScreen> {
                               const SizedBox(height: 16),
                               _buildPhotoCard(texts),
                             ],
-                            const SizedBox(
-                                height: 100), // Space for bottom toolbar
+                            const SizedBox(height: 100), // Space for bottom toolbar
                           ],
                         ),
                       ),
@@ -364,7 +352,7 @@ class _MeasurementDetailScreenState extends State<MeasurementDetailScreen> {
   Widget _buildDateTimeCard(Map<String, String> texts) {
     final dateFormat = DateFormat('MMMM d, yyyy');
     final timeFormat = DateFormat('h:mm a');
-
+    
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -396,8 +384,7 @@ class _MeasurementDetailScreenState extends State<MeasurementDetailScreen> {
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                   color: const Color(0xFF1A1A1A),
-                  fontFamily:
-                      _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                  fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                 ),
               ),
               const SizedBox(height: 4),
@@ -406,8 +393,7 @@ class _MeasurementDetailScreenState extends State<MeasurementDetailScreen> {
                 style: TextStyle(
                   fontSize: 14,
                   color: const Color(0xFF6B7280),
-                  fontFamily:
-                      _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                  fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                 ),
               ),
             ],
@@ -420,7 +406,7 @@ class _MeasurementDetailScreenState extends State<MeasurementDetailScreen> {
   /// Build metrics card with chips
   Widget _buildMetricsCard(Map<String, String> texts) {
     final bmi = _calculateBMI();
-
+    
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -448,15 +434,15 @@ class _MeasurementDetailScreenState extends State<MeasurementDetailScreen> {
               _buildMetricChip(
                 label: texts['weight']!,
                 value: '${_measurement!.weight.toStringAsFixed(1)} kg',
-                color: _getStatusColor(-0.5), // Mock Z-score
-                icon: Icons.monitor_weight_outlined,
-              ),
+                  color: _getStatusColor(-0.5), // Mock Z-score
+                  icon: Icons.monitor_weight_outlined,
+                ),
               _buildMetricChip(
                 label: texts['height']!,
                 value: '${_measurement!.height.toStringAsFixed(1)} cm',
-                color: _getStatusColor(0.2), // Mock Z-score
-                icon: Icons.height,
-              ),
+                  color: _getStatusColor(0.2), // Mock Z-score
+                  icon: Icons.height,
+                ),
               if (bmi != null)
                 _buildMetricChip(
                   label: texts['bmi']!,
@@ -467,8 +453,7 @@ class _MeasurementDetailScreenState extends State<MeasurementDetailScreen> {
               if (_measurement!.headCircumference != null)
                 _buildMetricChip(
                   label: texts['muac']!,
-                  value:
-                      '${_measurement!.headCircumference!.toStringAsFixed(1)} cm',
+                  value: '${_measurement!.headCircumference!.toStringAsFixed(1)} cm',
                   color: _getStatusColor(-0.3), // Mock Z-score
                   icon: Icons.radio_button_unchecked,
                 ),
@@ -506,8 +491,7 @@ class _MeasurementDetailScreenState extends State<MeasurementDetailScreen> {
                 style: TextStyle(
                   fontSize: 12,
                   color: const Color(0xFF6B7280),
-                  fontFamily:
-                      _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                  fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                 ),
               ),
               Text(
@@ -516,8 +500,7 @@ class _MeasurementDetailScreenState extends State<MeasurementDetailScreen> {
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
                   color: const Color(0xFF1A1A1A),
-                  fontFamily:
-                      _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                  fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                 ),
               ),
             ],
@@ -591,18 +574,18 @@ class _MeasurementDetailScreenState extends State<MeasurementDetailScreen> {
                 ],
               ),
               ...zScores.entries.map((entry) => TableRow(
-                    children: [
-                      _buildTableCell(texts[entry.key]!),
-                      _buildTableCell(
-                        entry.value.toStringAsFixed(1),
-                        color: _getStatusColor(entry.value),
-                      ),
-                      _buildTableCell(
-                        _getStatusText(entry.value, entry.key),
-                        color: _getStatusColor(entry.value),
-                      ),
-                    ],
-                  )),
+                children: [
+                  _buildTableCell(texts[entry.key]!),
+                  _buildTableCell(
+                    entry.value.toStringAsFixed(1),
+                    color: _getStatusColor(entry.value),
+                  ),
+                  _buildTableCell(
+                    _getStatusText(entry.value, entry.key),
+                    color: _getStatusColor(entry.value),
+                  ),
+                ],
+              )),
             ],
           ),
         ],
@@ -664,8 +647,7 @@ class _MeasurementDetailScreenState extends State<MeasurementDetailScreen> {
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                   color: const Color(0xFF1A1A1A),
-                  fontFamily:
-                      _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                  fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                 ),
               ),
             ],
@@ -699,8 +681,7 @@ class _MeasurementDetailScreenState extends State<MeasurementDetailScreen> {
         children: [
           Row(
             children: [
-              const Icon(Icons.photo_camera,
-                  color: Color(0xFF6B7280), size: 20),
+              const Icon(Icons.photo_camera, color: Color(0xFF6B7280), size: 20),
               const SizedBox(width: 8),
               Text(
                 texts['photo']!,
@@ -708,8 +689,7 @@ class _MeasurementDetailScreenState extends State<MeasurementDetailScreen> {
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                   color: const Color(0xFF1A1A1A),
-                  fontFamily:
-                      _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                  fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                 ),
               ),
             ],
@@ -794,8 +774,7 @@ class _MeasurementDetailScreenState extends State<MeasurementDetailScreen> {
                       height: 16,
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
-                        valueColor:
-                            AlwaysStoppedAnimation<Color>(Color(0xFFEF4444)),
+                        valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFEF4444)),
                       ),
                     )
                   : const Icon(Icons.delete),
@@ -847,8 +826,7 @@ class _MeasurementDetailScreenState extends State<MeasurementDetailScreen> {
         'edit': 'Edit',
         'delete': 'Delete',
         'deleteTitle': 'Delete Measurement',
-        'deleteMessage':
-            'Are you sure you want to delete this measurement? This action cannot be undone.',
+        'deleteMessage': 'Are you sure you want to delete this measurement? This action cannot be undone.',
         'cancel': 'Cancel',
         'measurementDeleted': 'Measurement deleted',
         'undo': 'Undo',
@@ -884,8 +862,7 @@ class _MeasurementDetailScreenState extends State<MeasurementDetailScreen> {
         'edit': 'සංස්කරණය',
         'delete': 'මකන්න',
         'deleteTitle': 'මිනුම මකන්න',
-        'deleteMessage':
-            'ඔබට මෙම මිනුම මැකීමට අවශ්‍ය බව විශ්වාසද? මෙම ක්‍රියාව ආපසු හැරවිය නොහැක.',
+        'deleteMessage': 'ඔබට මෙම මිනුම මැකීමට අවශ්‍ය බව විශ්වාසද? මෙම ක්‍රියාව ආපසු හැරවිය නොහැක.',
         'cancel': 'අවලංගු',
         'measurementDeleted': 'මිනුම මකා දමන ලදී',
         'undo': 'අහෝසි කරන්න',
@@ -921,8 +898,7 @@ class _MeasurementDetailScreenState extends State<MeasurementDetailScreen> {
         'edit': 'திருத்து',
         'delete': 'நீக்கு',
         'deleteTitle': 'அளவீட்டை நீக்கு',
-        'deleteMessage':
-            'இந்த அளவீட்டை நீக்க விரும்புகிறீர்களா? இந்த செயலை மீட்டெடுக்க முடியாது.',
+        'deleteMessage': 'இந்த அளவீட்டை நீக்க விரும்புகிறீர்களா? இந்த செயலை மீட்டெடுக்க முடியாது.',
         'cancel': 'ரத்து',
         'measurementDeleted': 'அளவீடு நீக்கப்பட்டது',
         'undo': 'செயல்தவிர்',

@@ -17,7 +17,7 @@ class NotificationsScreen extends StatefulWidget {
   State<NotificationsScreen> createState() => _NotificationsScreenState();
 }
 
-class _NotificationsScreenState extends State<NotificationsScreen>
+class _NotificationsScreenState extends State<NotificationsScreen> 
     with TickerProviderStateMixin {
   String _selectedLanguage = 'en';
   NotificationCategory _selectedCategory = NotificationCategory.all;
@@ -58,9 +58,9 @@ class _NotificationsScreenState extends State<NotificationsScreen>
   Future<void> _initializeNotifications() async {
     // Get context-dependent data before async operations
     final childProvider = Provider.of<ChildProvider>(context, listen: false);
-
+    
     await _notificationService.loadNotifications();
-
+    
     // Generate health notifications for current child
     if (childProvider.selectedChild != null) {
       await _notificationService.generateHealthNotifications(
@@ -68,14 +68,14 @@ class _NotificationsScreenState extends State<NotificationsScreen>
         childProvider.growthRecords,
       );
     }
-
+    
     // Set default tab based on priorities
     final defaultCategory = _notificationService.getDefaultTab();
     setState(() {
       _selectedCategory = defaultCategory;
       _tabController.index = defaultCategory.index;
     });
-
+    
     _filterNotifications();
   }
 
@@ -91,7 +91,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
   /// Handle tab change
   void _onTabChanged() {
     if (_tabController.indexIsChanging) return;
-
+    
     setState(() {
       _selectedCategory = NotificationCategory.values[_tabController.index];
       _filterNotifications();
@@ -101,8 +101,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
   /// Filter notifications based on selected category
   void _filterNotifications() {
     setState(() {
-      _filteredNotifications =
-          _notificationService.getNotificationsByCategory(_selectedCategory);
+      _filteredNotifications = _notificationService.getNotificationsByCategory(_selectedCategory);
     });
   }
 
@@ -234,7 +233,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
             tabs: NotificationCategory.values.map((category) {
               final badge = _notificationService.getBadgeForCategory(category);
               final label = _getCategoryLabel(category, texts);
-
+              
               return Tab(
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -242,16 +241,13 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                     Text(
                       label,
                       style: TextStyle(
-                        fontFamily: _selectedLanguage == 'si'
-                            ? 'NotoSerifSinhala'
-                            : null,
+                        fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                       ),
                     ),
                     if (badge.count > 0) ...[
                       const SizedBox(width: 6),
                       Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 6, vertical: 2),
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                         decoration: BoxDecoration(
                           color: badge.color,
                           borderRadius: BorderRadius.circular(10),
@@ -301,8 +297,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
   }
 
   /// Build notification card with swipe actions
-  Widget _buildNotificationCard(
-      AppNotification notification, Map<String, String> texts) {
+  Widget _buildNotificationCard(AppNotification notification, Map<String, String> texts) {
     final isExpanded = _expandedNotifications[notification.id] ?? false;
     final isSelected = _selectedForDeletion.contains(notification.id);
 
@@ -310,8 +305,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
       key: Key(notification.id),
       background: _buildSwipeBackground(true),
       secondaryBackground: _buildSwipeBackground(false),
-      confirmDismiss: (direction) =>
-          _handleSwipe(direction, notification, texts),
+      confirmDismiss: (direction) => _handleSwipe(direction, notification, texts),
       child: GestureDetector(
         onTap: () => _handleNotificationTap(notification),
         onLongPress: () => _toggleSelection(notification),
@@ -344,8 +338,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
             children: [
               _buildNotificationContent(notification, texts, isExpanded),
               if (isExpanded) _buildExpandedContent(notification, texts),
-              if (notification.actions.isNotEmpty)
-                _buildQuickActions(notification, texts),
+              if (notification.actions.isNotEmpty) _buildQuickActions(notification, texts),
             ],
           ),
         ),
@@ -355,7 +348,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
 
   /// Build notification content
   Widget _buildNotificationContent(
-    AppNotification notification,
+    AppNotification notification, 
     Map<String, String> texts,
     bool isExpanded,
   ) {
@@ -379,7 +372,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
             ),
           ),
           const SizedBox(width: 12),
-
+          
           // Content
           Expanded(
             child: Column(
@@ -391,15 +384,10 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                       child: Text(
                         notification.getLocalizedTitle(texts),
                         style: TextStyle(
-                          fontSize: ResponsiveUtils.getResponsiveFontSize(
-                              context, 14),
-                          fontWeight: notification.isRead
-                              ? FontWeight.normal
-                              : FontWeight.bold,
+                          fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
+                          fontWeight: notification.isRead ? FontWeight.normal : FontWeight.bold,
                           color: const Color(0xFF1A1A1A),
-                          fontFamily: _selectedLanguage == 'si'
-                              ? 'NotoSerifSinhala'
-                              : null,
+                          fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                         ),
                       ),
                     ),
@@ -414,8 +402,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                     Text(
                       notification.formatTimestamp(),
                       style: TextStyle(
-                        fontSize:
-                            ResponsiveUtils.getResponsiveFontSize(context, 11),
+                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 11),
                         color: const Color(0xFF718096),
                       ),
                     ),
@@ -425,15 +412,12 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                 Text(
                   notification.getLocalizedContent(texts),
                   style: TextStyle(
-                    fontSize:
-                        ResponsiveUtils.getResponsiveFontSize(context, 12),
+                    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 12),
                     color: const Color(0xFF4B5563),
-                    fontFamily:
-                        _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                   ),
                   maxLines: isExpanded ? null : 2,
-                  overflow:
-                      isExpanded ? TextOverflow.visible : TextOverflow.ellipsis,
+                  overflow: isExpanded ? TextOverflow.visible : TextOverflow.ellipsis,
                 ),
                 if (!isExpanded && _hasExpandableContent(notification)) ...[
                   const SizedBox(height: 4),
@@ -452,22 +436,19 @@ class _NotificationsScreenState extends State<NotificationsScreen>
   }
 
   /// Build expanded content for detailed notifications
-  Widget _buildExpandedContent(
-      AppNotification notification, Map<String, String> texts) {
+  Widget _buildExpandedContent(AppNotification notification, Map<String, String> texts) {
     return Container(
       padding: const EdgeInsets.fromLTRB(68, 0, 16, 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (notification.actionData != null &&
-              notification.actionData!['details'] != null) ...[
+          if (notification.actionData != null && notification.actionData!['details'] != null) ...[
             Text(
               notification.actionData!['details'].toString(),
               style: TextStyle(
                 fontSize: ResponsiveUtils.getResponsiveFontSize(context, 12),
                 color: const Color(0xFF4B5563),
-                fontFamily:
-                    _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
               ),
             ),
           ],
@@ -483,8 +464,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                 errorBuilder: (context, error, stackTrace) => Container(
                   height: 150,
                   color: Colors.grey[200],
-                  child:
-                      const Icon(Icons.image_not_supported, color: Colors.grey),
+                  child: const Icon(Icons.image_not_supported, color: Colors.grey),
                 ),
               ),
             ),
@@ -495,8 +475,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
   }
 
   /// Build quick actions
-  Widget _buildQuickActions(
-      AppNotification notification, Map<String, String> texts) {
+  Widget _buildQuickActions(AppNotification notification, Map<String, String> texts) {
     return Container(
       padding: const EdgeInsets.fromLTRB(68, 0, 16, 12),
       child: Row(
@@ -513,15 +492,13 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                 texts[action.labelKey] ?? action.labelKey,
                 style: TextStyle(
                   fontSize: 12,
-                  fontFamily:
-                      _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                  fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                 ),
               ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: action.color,
                 foregroundColor: Colors.white,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 minimumSize: const Size(0, 32),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
@@ -555,7 +532,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
   /// Build empty state for categories
   Widget _buildEmptyState(Map<String, String> texts) {
     final emptyState = NotificationEmptyState.forCategory(_selectedCategory);
-
+    
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
@@ -582,8 +559,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                 fontSize: ResponsiveUtils.getResponsiveFontSize(context, 18),
                 fontWeight: FontWeight.bold,
                 color: const Color(0xFF1A1A1A),
-                fontFamily:
-                    _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
               ),
               textAlign: TextAlign.center,
             ),
@@ -593,8 +569,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
               style: TextStyle(
                 fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
                 color: const Color(0xFF4B5563),
-                fontFamily:
-                    _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
               ),
               textAlign: TextAlign.center,
             ),
@@ -604,8 +579,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                 onPressed: () => _handleEmptyStateCTA(),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF0086FF),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -613,8 +587,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
                 child: Text(
                   texts[emptyState.ctaTextKey!] ?? 'Get Started',
                   style: TextStyle(
-                    fontFamily:
-                        _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                   ),
                 ),
               ),
@@ -646,7 +619,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
     if (!notification.isRead) {
       _notificationService.markAsRead(notification.id);
     }
-
+    
     setState(() {
       final isExpanded = _expandedNotifications[notification.id] ?? false;
       _expandedNotifications[notification.id] = !isExpanded;
@@ -655,7 +628,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
 
   /// Handle swipe actions
   Future<bool> _handleSwipe(
-    DismissDirection direction,
+    DismissDirection direction, 
     AppNotification notification,
     Map<String, String> texts,
   ) async {
@@ -672,21 +645,11 @@ class _NotificationsScreenState extends State<NotificationsScreen>
   }
 
   /// Show snooze dialog
-  Future<void> _showSnoozeDialog(
-      AppNotification notification, Map<String, String> texts) async {
+  Future<void> _showSnoozeDialog(AppNotification notification, Map<String, String> texts) async {
     final snoozeOptions = [
-      {
-        'label': texts['snooze1Hour'] ?? '1 hour',
-        'duration': const Duration(hours: 1)
-      },
-      {
-        'label': texts['snooze3Hours'] ?? '3 hours',
-        'duration': const Duration(hours: 3)
-      },
-      {
-        'label': texts['snoozeTomorrow'] ?? 'Tomorrow',
-        'duration': const Duration(days: 1)
-      },
+      {'label': texts['snooze1Hour'] ?? '1 hour', 'duration': const Duration(hours: 1)},
+      {'label': texts['snooze3Hours'] ?? '3 hours', 'duration': const Duration(hours: 3)},
+      {'label': texts['snoozeTomorrow'] ?? 'Tomorrow', 'duration': const Duration(days: 1)},
     ];
 
     await showDialog(
@@ -705,14 +668,12 @@ class _NotificationsScreenState extends State<NotificationsScreen>
               title: Text(
                 option['label'] as String,
                 style: TextStyle(
-                  fontFamily:
-                      _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                  fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                 ),
               ),
               onTap: () {
                 Navigator.pop(context);
-                _snoozeNotification(
-                    notification, option['duration'] as Duration);
+                _snoozeNotification(notification, option['duration'] as Duration);
               },
             );
           }).toList(),
@@ -768,8 +729,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
       context: context,
       builder: (context) => AlertDialog(
         title: Text(texts['clearCategory'] ?? 'Clear category'),
-        content: Text(texts['clearCategoryConfirm'] ??
-            'Are you sure you want to clear all notifications in this category?'),
+        content: Text(texts['clearCategoryConfirm'] ?? 'Are you sure you want to clear all notifications in this category?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -826,14 +786,12 @@ class _NotificationsScreenState extends State<NotificationsScreen>
 
   /// Check if notification has expandable content
   bool _hasExpandableContent(AppNotification notification) {
-    return notification.imageUrl != null ||
-        (notification.actionData != null &&
-            notification.actionData!['details'] != null);
+    return notification.imageUrl != null || 
+           (notification.actionData != null && notification.actionData!['details'] != null);
   }
 
   /// Get category label
-  String _getCategoryLabel(
-      NotificationCategory category, Map<String, String> texts) {
+  String _getCategoryLabel(NotificationCategory category, Map<String, String> texts) {
     switch (category) {
       case NotificationCategory.all:
         return texts['categoryAll'] ?? 'All';
@@ -869,7 +827,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
         'categoryReminders': 'Reminders',
         'categoryTips': 'Tips & Guidance',
         'categorySystem': 'System',
-
+        
         // Actions
         'markAllRead': 'Mark all as read',
         'clearCategory': 'Clear category',
@@ -883,11 +841,10 @@ class _NotificationsScreenState extends State<NotificationsScreen>
         'clear': 'Clear',
         'clearCategoryConfirm': 'Clear all notifications in this category?',
         'categoryCleared': 'Category cleared',
-
+        
         // Empty states
         'healthAlertsEmptyTitle': 'All Good!',
-        'healthAlertsEmptyMessage':
-            'No health concerns detected. Keep up the good work!',
+        'healthAlertsEmptyMessage': 'No health concerns detected. Keep up the good work!',
         'remindersEmptyTitle': 'You\'re Up to Date',
         'remindersEmptyMessage': 'All reminders have been completed.',
         'tipsEmptyTitle': 'You\'re All Caught Up',
@@ -895,25 +852,21 @@ class _NotificationsScreenState extends State<NotificationsScreen>
         'systemEmptyTitle': 'System is Synced',
         'systemEmptyMessage': 'All systems are running smoothly.',
         'allNotificationsEmptyTitle': 'No Notifications',
-        'allNotificationsEmptyMessage':
-            'You\'re all caught up! Check back later.',
-
+        'allNotificationsEmptyMessage': 'You\'re all caught up! Check back later.',
+        
         // CTAs
         'scheduleNextMeasurement': 'Schedule Measurement',
         'viewMeasurementHistory': 'View History',
         'exploreNutritionArticles': 'Explore Articles',
-
+        
         // Notification content
         'bmiConcernTitle': 'BMI Below Normal Range',
-        'bmiConcernContent':
-            'Consider scheduling a consultation with your PHM for nutritional guidance.',
+        'bmiConcernContent': 'Consider scheduling a consultation with your PHM for nutritional guidance.',
         'measurementReminderTitle': 'Time for Monthly Measurement',
-        'measurementReminderContent':
-            'Regular tracking helps monitor healthy growth.',
+        'measurementReminderContent': 'Regular tracking helps monitor healthy growth.',
         'weeklyNutritionTipTitle': 'This Week\'s Nutrition Tip',
-        'weeklyNutritionTipContent':
-            'Include iron-rich foods like red rice and green leafy vegetables.',
-
+        'weeklyNutritionTipContent': 'Include iron-rich foods like red rice and green leafy vegetables.',
+        
         // Quick actions
         'scheduleMeasurement': 'Schedule',
         'addMeasurement': 'Add Now',
@@ -928,7 +881,7 @@ class _NotificationsScreenState extends State<NotificationsScreen>
         'categoryReminders': 'මතක් කිරීම්',
         'categoryTips': 'උපදෙස්',
         'categorySystem': 'පද්ධතිය',
-
+        
         // Actions
         'markAllRead': 'සියල්ල කියවූ බව සලකුණු කරන්න',
         'clearCategory': 'කාණ්ඩය හිස් කරන්න',
@@ -942,11 +895,10 @@ class _NotificationsScreenState extends State<NotificationsScreen>
         'clear': 'හිස් කරන්න',
         'clearCategoryConfirm': 'මෙම කාණ්ඩයේ සියලු දැනුම්දීම් හිස් කරන්නද?',
         'categoryCleared': 'කාණ්ඩය හිස් කරන ලදී',
-
+        
         // Empty states
         'healthAlertsEmptyTitle': 'සියල්ල හොඳයි!',
-        'healthAlertsEmptyMessage':
-            'සෞඛ්‍ය ගැටලු කිසිවක් හඳුනාගෙන නැත. හොඳ වැඩක්!',
+        'healthAlertsEmptyMessage': 'සෞඛ්‍ය ගැටලු කිසිවක් හඳුනාගෙන නැත. හොඳ වැඩක්!',
         'remindersEmptyTitle': 'ඔබ යාවත්කාලීනයි',
         'remindersEmptyMessage': 'සියලු මතක් කිරීම් සම්පූර්ණ කර ඇත.',
         'tipsEmptyTitle': 'ඔබ සියල්ල දැක ඇත',
@@ -954,25 +906,21 @@ class _NotificationsScreenState extends State<NotificationsScreen>
         'systemEmptyTitle': 'පද්ධතිය සමමුහුර්ත කර ඇත',
         'systemEmptyMessage': 'සියලු පද්ධති සුමටව ක්‍රියාත්මක වේ.',
         'allNotificationsEmptyTitle': 'දැනුම්දීම් නැත',
-        'allNotificationsEmptyMessage':
-            'ඔබ සියල්ල දැක ඇත! පසුව නැවත පරීක්ෂා කරන්න.',
-
+        'allNotificationsEmptyMessage': 'ඔබ සියල්ල දැක ඇත! පසුව නැවත පරීක්ෂා කරන්න.',
+        
         // CTAs
         'scheduleNextMeasurement': 'මිනුම් කාලසටහන',
         'viewMeasurementHistory': 'ඉතිහාසය බලන්න',
         'exploreNutritionArticles': 'ලිපි කියවන්න',
-
+        
         // Notification content
         'bmiConcernTitle': 'BMI සාමාන්‍ය පරාසයට වඩා අඩුයි',
-        'bmiConcernContent':
-            'පෝෂණ මඟ පෙන්වීම සඳහා ඔබේ PHM සමඟ උපදේශනයක් කාලසටහන් කරන්න.',
+        'bmiConcernContent': 'පෝෂණ මඟ පෙන්වීම සඳහා ඔබේ PHM සමඟ උපදේශනයක් කාලසටහන් කරන්න.',
         'measurementReminderTitle': 'මාසික මිනුම් සඳහා කාලයයි',
-        'measurementReminderContent':
-            'නිතිපතා සටහන් තැබීම සෞඛ්‍ය සම්පන්න වර්ධනය නිරීක්ෂණයට උපකාරී වේ.',
+        'measurementReminderContent': 'නිතිපතා සටහන් තැබීම සෞඛ්‍ය සම්පන්න වර්ධනය නිරීක්ෂණයට උපකාරී වේ.',
         'weeklyNutritionTipTitle': 'මෙම සතියේ පෝෂණ උපදෙස',
-        'weeklyNutritionTipContent':
-            'රතු සහල් සහ කොළ පැහැති එළවළු වැනි යකඩ බහුල ආහාර ඇතුළත් කරන්න.',
-
+        'weeklyNutritionTipContent': 'රතු සහල් සහ කොළ පැහැති එළවළු වැනි යකඩ බහුල ආහාර ඇතුළත් කරන්න.',
+        
         // Quick actions
         'scheduleMeasurement': 'කාලසටහන',
         'addMeasurement': 'දැන් එක් කරන්න',
@@ -987,11 +935,11 @@ class _NotificationsScreenState extends State<NotificationsScreen>
         'categoryReminders': 'நினைவூட்டல்கள்',
         'categoryTips': 'குறிப்புகள் & வழிகாட்டி',
         'categorySystem': 'அமைப்பு',
-
+        
         // Empty states and other Tamil translations...
       },
     };
-
+    
     return texts[_selectedLanguage] ?? texts['en']!;
   }
 }

@@ -7,8 +7,7 @@ import '../firebase_options.dart';
 
 /// Service to handle Firebase initialization with proper error handling and fallbacks
 class FirebaseInitializationService {
-  static final FirebaseInitializationService _instance =
-      FirebaseInitializationService._internal();
+  static final FirebaseInitializationService _instance = FirebaseInitializationService._internal();
   factory FirebaseInitializationService() => _instance;
   FirebaseInitializationService._internal();
 
@@ -26,9 +25,7 @@ class FirebaseInitializationService {
   String? get initializationError => _initializationError;
 
   /// Initialize Firebase with comprehensive error handling
-  Future<bool> initializeFirebase(
-      {int maxRetries = 3,
-      Duration retryDelay = const Duration(seconds: 2)}) async {
+  Future<bool> initializeFirebase({int maxRetries = 3, Duration retryDelay = const Duration(seconds: 2)}) async {
     if (_isInitialized) {
       debugPrint('✅ Firebase already initialized');
       return true;
@@ -43,16 +40,14 @@ class FirebaseInitializationService {
     debugPrint('📡 Network connectivity: ${connectivityResult.first}');
 
     if (connectivityResult.first == ConnectivityResult.none) {
-      debugPrint(
-          '⚠️ No internet connection detected - skipping Firebase initialization');
+      debugPrint('⚠️ No internet connection detected - skipping Firebase initialization');
       _handleFirebaseInitializationFailure('No internet connection');
       return false;
     }
 
     for (int attempt = 1; attempt <= maxRetries; attempt++) {
       try {
-        debugPrint(
-            '🔥 Attempting Firebase initialization (attempt $attempt/$maxRetries)');
+        debugPrint('🔥 Attempting Firebase initialization (attempt $attempt/$maxRetries)');
 
         // Try to initialize Firebase with platform-specific options
         await Firebase.initializeApp(
@@ -75,9 +70,9 @@ class FirebaseInitializationService {
         await _testFirebaseConnectivity();
 
         return true;
+
       } on FirebaseException catch (e) {
-        debugPrint(
-            '🚨 Firebase initialization failed (attempt $attempt): ${e.code} - ${e.message}');
+        debugPrint('🚨 Firebase initialization failed (attempt $attempt): ${e.code} - ${e.message}');
         debugPrint('🔍 Firebase error details: ${e.toString()}');
         _initializationError = 'Firebase Error: ${e.code} - ${e.message}';
 
@@ -89,9 +84,9 @@ class FirebaseInitializationService {
         // Wait before retrying
         debugPrint('⏳ Waiting ${retryDelay.inSeconds} seconds before retry...');
         await Future.delayed(retryDelay);
+
       } catch (e) {
-        debugPrint(
-            '🚨 Unexpected error during Firebase initialization (attempt $attempt): $e');
+        debugPrint('🚨 Unexpected error during Firebase initialization (attempt $attempt): $e');
         debugPrint('🔍 Error type: ${e.runtimeType}');
         debugPrint('🔍 Error details: ${e.toString()}');
         _initializationError = 'Unexpected error: $e';
@@ -165,8 +160,7 @@ class FirebaseInitializationService {
   /// Initialize Firebase Auth with error handling
   Future<bool> initializeFirebaseAuth() async {
     if (!_isInitialized) {
-      debugPrint(
-          '⚠️ Cannot initialize Firebase Auth - Firebase not initialized');
+      debugPrint('⚠️ Cannot initialize Firebase Auth - Firebase not initialized');
       return false;
     }
 
@@ -200,8 +194,7 @@ class FirebaseInitializationService {
   /// Initialize Firebase Storage with error handling
   Future<bool> initializeFirebaseStorage() async {
     if (!_isInitialized) {
-      debugPrint(
-          '⚠️ Cannot initialize Firebase Storage - Firebase not initialized');
+      debugPrint('⚠️ Cannot initialize Firebase Storage - Firebase not initialized');
       return false;
     }
 
@@ -218,8 +211,7 @@ class FirebaseInitializationService {
   /// Initialize Firebase Messaging with error handling
   Future<bool> initializeFirebaseMessaging() async {
     if (!_isInitialized) {
-      debugPrint(
-          '⚠️ Cannot initialize Firebase Messaging - Firebase not initialized');
+      debugPrint('⚠️ Cannot initialize Firebase Messaging - Firebase not initialized');
       return false;
     }
 

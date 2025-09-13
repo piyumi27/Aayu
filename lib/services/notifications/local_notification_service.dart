@@ -18,8 +18,7 @@ import '../database_service.dart';
 /// Expert-level Local Notification Service with comprehensive scheduling
 /// Handles all local notifications, scheduling, and custom sounds
 class LocalNotificationService {
-  static final LocalNotificationService _instance =
-      LocalNotificationService._internal();
+  static final LocalNotificationService _instance = LocalNotificationService._internal();
   factory LocalNotificationService() => _instance;
   LocalNotificationService._internal();
 
@@ -51,8 +50,7 @@ class LocalNotificationService {
     tz.initializeTimeZones();
 
     // Android settings
-    const androidSettings =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+    const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
 
     // iOS settings
     final iosSettings = DarwinInitializationSettings(
@@ -137,8 +135,7 @@ class LocalNotificationService {
 
     for (final channel in channels) {
       await _flutterLocalNotificationsPlugin
-          .resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin>()
+          .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
           ?.createNotificationChannel(channel);
     }
   }
@@ -167,8 +164,7 @@ class LocalNotificationService {
   Future<bool> requestPermissions() async {
     if (Platform.isIOS) {
       final plugin = _flutterLocalNotificationsPlugin
-          .resolvePlatformSpecificImplementation<
-              IOSFlutterLocalNotificationsPlugin>();
+          .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>();
       final granted = await plugin?.requestPermissions(
         alert: true,
         badge: true,
@@ -177,8 +173,7 @@ class LocalNotificationService {
       return granted ?? false;
     } else if (Platform.isAndroid) {
       final plugin = _flutterLocalNotificationsPlugin
-          .resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin>();
+          .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
 
       if (Platform.version.contains('13') || Platform.version.contains('14')) {
         final granted = await plugin?.requestNotificationsPermission();
@@ -209,7 +204,9 @@ class LocalNotificationService {
       importance: _getImportance(priority),
       priority: _getPriority(priority),
       ticker: title,
-      styleInformation: body.length > 40 ? BigTextStyleInformation(body) : null,
+      styleInformation: body.length > 40
+          ? BigTextStyleInformation(body)
+          : null,
     );
 
     // iOS notification details
@@ -381,8 +378,7 @@ class LocalNotificationService {
     await showNotification(
       id: id,
       title: 'Test Notification',
-      body:
-          'This is a test notification to verify your notification settings are working correctly.',
+      body: 'This is a test notification to verify your notification settings are working correctly.',
       channelId: _channelIdGeneral,
       priority: NotificationPriority.medium,
       payload: {

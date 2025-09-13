@@ -21,7 +21,7 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isLoading = false;
   String _selectedLanguage = 'en';
   String? _errorMessage;
-
+  
   final LocalAuthService _authService = LocalAuthService();
 
   @override
@@ -39,7 +39,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _login() async {
     if (!_formKey.currentState!.validate()) return;
-
+    
     setState(() {
       _isLoading = true;
       _errorMessage = null;
@@ -50,7 +50,7 @@ class _LoginScreenState extends State<LoginScreen> {
         phoneNumber: _phoneNumber,
         password: _password,
       );
-
+      
       if (result.success && mounted) {
         // Login successful - navigate to verification center if not verified
         final user = result.user!;
@@ -96,8 +96,7 @@ class _LoginScreenState extends State<LoginScreen> {
       },
       'si': {
         'title': 'නැවත සාදරයෙන් පිළිගන්නවා',
-        'subtitle':
-            'ඔබේ දරුවාගේ වර්ධනය නිරීක්ෂණ කිරීම දිගටම කරගෙන යාමට ප්‍රවේශ වන්න',
+        'subtitle': 'ඔබේ දරුවාගේ වර්ධනය නිරීක්ෂණ කිරීම දිගටම කරගෙන යාමට ප්‍රවේශ වන්න',
         'phoneLabel': 'දුරකථන අංකය',
         'passwordLabel': 'මුරපදය',
         'loginButton': 'ප්‍රවේශ වන්න',
@@ -108,8 +107,7 @@ class _LoginScreenState extends State<LoginScreen> {
       },
       'ta': {
         'title': 'மீண்டும் வரவேற்கிறோம்',
-        'subtitle':
-            'உங்கள் குழந்தையின் வளர்ச்சியைத் தொடர்ந்து கண்காணிக்க உள்நுழையுங்கள்',
+        'subtitle': 'உங்கள் குழந்தையின் வளர்ச்சியைத் தொடர்ந்து கண்காணிக்க உள்நுழையுங்கள்',
         'phoneLabel': 'தொலைபேசி எண்',
         'passwordLabel': 'கடவுச்சொல்',
         'loginButton': 'உள்நுழையுங்கள்',
@@ -125,7 +123,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final texts = _getLocalizedText();
-
+    
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -136,16 +134,14 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                SizedBox(
-                    height: ResponsiveUtils.getResponsiveSpacing(context, 40)),
-
+                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 40)),
+                
                 // Header with icon
                 Column(
                   children: [
                     Container(
                       width: ResponsiveUtils.getResponsiveIconSize(context, 80),
-                      height:
-                          ResponsiveUtils.getResponsiveIconSize(context, 80),
+                      height: ResponsiveUtils.getResponsiveIconSize(context, 80),
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         gradient: LinearGradient(
@@ -158,90 +154,68 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: Icon(
                         Icons.person,
                         color: Colors.white,
-                        size:
-                            ResponsiveUtils.getResponsiveIconSize(context, 40),
+                        size: ResponsiveUtils.getResponsiveIconSize(context, 40),
                       ),
                     ),
-                    SizedBox(
-                        height:
-                            ResponsiveUtils.getResponsiveSpacing(context, 24)),
+                    SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 24)),
                     Text(
                       texts['title']!,
                       style: TextStyle(
-                        fontSize:
-                            ResponsiveUtils.getResponsiveFontSize(context, 28),
+                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 28),
                         fontWeight: FontWeight.bold,
                         color: const Color(0xFF1A1A1A),
-                        fontFamily: _selectedLanguage == 'si'
-                            ? 'NotoSerifSinhala'
-                            : null,
+                        fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    SizedBox(
-                        height:
-                            ResponsiveUtils.getResponsiveSpacing(context, 8)),
+                    SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 8)),
                     Text(
                       texts['subtitle']!,
                       style: TextStyle(
-                        fontSize:
-                            ResponsiveUtils.getResponsiveFontSize(context, 16),
+                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
                         color: const Color(0xFF6B7280),
-                        fontFamily: _selectedLanguage == 'si'
-                            ? 'NotoSerifSinhala'
-                            : null,
+                        fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                       ),
                       textAlign: TextAlign.center,
                     ),
                   ],
                 ),
-
-                SizedBox(
-                    height: ResponsiveUtils.getResponsiveSpacing(context, 40)),
-
+                
+                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 40)),
+                
                 // Error message
                 if (_errorMessage != null) ...[
                   Container(
-                    padding: ResponsiveUtils.getResponsivePadding(context,
-                        scale: 0.75),
+                    padding: ResponsiveUtils.getResponsivePadding(context, scale: 0.75),
                     decoration: BoxDecoration(
                       color: Colors.red.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
-                      border:
-                          Border.all(color: Colors.red.withValues(alpha: 0.3)),
+                      border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
                     ),
                     child: Row(
                       children: [
                         Icon(
                           Icons.error_outline,
                           color: Colors.red,
-                          size: ResponsiveUtils.getResponsiveIconSize(
-                              context, 20),
+                          size: ResponsiveUtils.getResponsiveIconSize(context, 20),
                         ),
-                        SizedBox(
-                            width: ResponsiveUtils.getResponsiveSpacing(
-                                context, 8)),
+                        SizedBox(width: ResponsiveUtils.getResponsiveSpacing(context, 8)),
                         Expanded(
                           child: Text(
                             _errorMessage!,
                             style: TextStyle(
                               color: Colors.red,
-                              fontSize: ResponsiveUtils.getResponsiveFontSize(
-                                  context, 14),
-                              fontFamily: _selectedLanguage == 'si'
-                                  ? 'NotoSerifSinhala'
-                                  : null,
+                              fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
+                              fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                             ),
                           ),
                         ),
                       ],
                     ),
                   ),
-                  SizedBox(
-                      height:
-                          ResponsiveUtils.getResponsiveSpacing(context, 16)),
+                  SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 16)),
                 ],
-
+                
                 // Phone number field
                 SriLankaPhoneField(
                   onChanged: (phone) {
@@ -251,10 +225,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   },
                   enabled: !_isLoading,
                 ),
-
-                SizedBox(
-                    height: ResponsiveUtils.getResponsiveSpacing(context, 16)),
-
+                
+                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 16)),
+                
                 // Password field
                 PasswordStrengthField(
                   onChanged: (password) {
@@ -264,43 +237,34 @@ class _LoginScreenState extends State<LoginScreen> {
                   },
                   enabled: !_isLoading,
                 ),
-
-                SizedBox(
-                    height: ResponsiveUtils.getResponsiveSpacing(context, 8)),
-
+                
+                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 8)),
+                
                 // Forgot password link
                 Align(
                   alignment: Alignment.centerRight,
                   child: TextButton(
-                    onPressed: _isLoading
-                        ? null
-                        : () => context.push('/forgot-password'),
+                    onPressed: _isLoading ? null : () => context.push('/forgot-password'),
                     child: Text(
                       texts['forgotPassword']!,
                       style: TextStyle(
-                        fontSize:
-                            ResponsiveUtils.getResponsiveFontSize(context, 14),
+                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
                         color: const Color(0xFF0086FF),
-                        fontFamily: _selectedLanguage == 'si'
-                            ? 'NotoSerifSinhala'
-                            : null,
+                        fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                       ),
                     ),
                   ),
                 ),
-
-                SizedBox(
-                    height: ResponsiveUtils.getResponsiveSpacing(context, 24)),
-
+                
+                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 24)),
+                
                 // Login button
                 SizedBox(
                   height: ResponsiveUtils.getResponsiveSpacing(context, 48),
                   child: ElevatedButton(
                     onPressed: _isLoading ? null : _login,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: _isLoading
-                          ? const Color(0xFFE5E7EB)
-                          : const Color(0xFF0086FF),
+                      backgroundColor: _isLoading ? const Color(0xFFE5E7EB) : const Color(0xFF0086FF),
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
@@ -312,29 +276,21 @@ class _LoginScreenState extends State<LoginScreen> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               SizedBox(
-                                width: ResponsiveUtils.getResponsiveIconSize(
-                                    context, 20),
-                                height: ResponsiveUtils.getResponsiveIconSize(
-                                    context, 20),
+                                width: ResponsiveUtils.getResponsiveIconSize(context, 20),
+                                height: ResponsiveUtils.getResponsiveIconSize(context, 20),
                                 child: const CircularProgressIndicator(
                                   color: Color(0xFF6B7280),
                                   strokeWidth: 2,
                                 ),
                               ),
-                              SizedBox(
-                                  width: ResponsiveUtils.getResponsiveSpacing(
-                                      context, 8)),
+                              SizedBox(width: ResponsiveUtils.getResponsiveSpacing(context, 8)),
                               Text(
                                 texts['loading']!,
                                 style: TextStyle(
-                                  fontSize:
-                                      ResponsiveUtils.getResponsiveFontSize(
-                                          context, 16),
+                                  fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
                                   fontWeight: FontWeight.w600,
                                   color: const Color(0xFF6B7280),
-                                  fontFamily: _selectedLanguage == 'si'
-                                      ? 'NotoSerifSinhala'
-                                      : null,
+                                  fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                                 ),
                               ),
                             ],
@@ -342,20 +298,16 @@ class _LoginScreenState extends State<LoginScreen> {
                         : Text(
                             texts['loginButton']!,
                             style: TextStyle(
-                              fontSize: ResponsiveUtils.getResponsiveFontSize(
-                                  context, 16),
+                              fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
                               fontWeight: FontWeight.w600,
-                              fontFamily: _selectedLanguage == 'si'
-                                  ? 'NotoSerifSinhala'
-                                  : null,
+                              fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                             ),
                           ),
                   ),
                 ),
-
-                SizedBox(
-                    height: ResponsiveUtils.getResponsiveSpacing(context, 24)),
-
+                
+                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 24)),
+                
                 // Sign up link
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -363,20 +315,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     Text(
                       texts['noAccount']!,
                       style: TextStyle(
-                        fontSize:
-                            ResponsiveUtils.getResponsiveFontSize(context, 14),
+                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
                         color: const Color(0xFF6B7280),
-                        fontFamily: _selectedLanguage == 'si'
-                            ? 'NotoSerifSinhala'
-                            : null,
+                        fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                       ),
                     ),
-                    SizedBox(
-                        width:
-                            ResponsiveUtils.getResponsiveSpacing(context, 4)),
+                    SizedBox(width: ResponsiveUtils.getResponsiveSpacing(context, 4)),
                     TextButton(
-                      onPressed:
-                          _isLoading ? null : () => context.push('/register'),
+                      onPressed: _isLoading ? null : () => context.push('/register'),
                       style: TextButton.styleFrom(
                         padding: EdgeInsets.zero,
                         minimumSize: Size.zero,
@@ -385,13 +331,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: Text(
                         texts['signUp']!,
                         style: TextStyle(
-                          fontSize: ResponsiveUtils.getResponsiveFontSize(
-                              context, 14),
+                          fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
                           color: const Color(0xFF0086FF),
                           fontWeight: FontWeight.w600,
-                          fontFamily: _selectedLanguage == 'si'
-                              ? 'NotoSerifSinhala'
-                              : null,
+                          fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                         ),
                       ),
                     ),

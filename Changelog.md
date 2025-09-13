@@ -2,6 +2,22 @@
 
 All notable changes to the Aayu project will be documented in this file.
 
+## [2025-09-14] - Firebase Initialization & Notification Service Architecture Fix
+
+### **Critical Firebase Integration Fix**
+- **Firebase Initialization Order**: Fixed "No Firebase App '[DEFAULT]' has been created" error
+- **Lazy Service Loading**: Made PushNotificationService initialization Firebase-aware and lazy
+- **Provider Architecture**: Modified ChildProvider to prevent premature notification service creation
+- **Null Safety**: Added proper null checks for FirebaseMessaging instance
+
+### **Service Architecture Improvements**
+- **Lazy Initialization**: NotificationSchedulingEngine now creates only when needed via getter
+- **Firebase Dependency**: PushNotificationService waits for Firebase to be properly initialized
+- **Error Prevention**: Services gracefully handle Firebase unavailability in offline mode
+- **State Management**: Proper service lifecycle management in ChildProvider
+
+---
+
 ## [2025-09-14] - Critical Missing Files Fix & Notification Services Implementation
 
 ### **Critical Bug Fixes**

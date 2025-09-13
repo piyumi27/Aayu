@@ -2,26 +2,20 @@
 enum AuthMethod {
   email,
   phone;
-
+  
   String getDisplayText(String language) {
     switch (this) {
       case AuthMethod.email:
         switch (language) {
-          case 'si':
-            return 'ඊමේල්';
-          case 'ta':
-            return 'மின்னஞ்சல்';
-          default:
-            return 'Email';
+          case 'si': return 'ඊමේල්';
+          case 'ta': return 'மின்னஞ்சல்';
+          default: return 'Email';
         }
       case AuthMethod.phone:
         switch (language) {
-          case 'si':
-            return 'දුරකථන';
-          case 'ta':
-            return 'தொலைபேசி';
-          default:
-            return 'Phone';
+          case 'si': return 'දුරකථන';
+          case 'ta': return 'தொலைபேசி';
+          default: return 'Phone';
         }
     }
   }
@@ -41,7 +35,7 @@ class UserAccount {
   final DateTime? verifiedAt;
   final DateTime? syncedAt;
   final String? photoUrl; // User profile picture path
-
+  
   // Enhanced verification tracking
   final AuthMethod authMethod;
   final bool isEmailVerified;
@@ -146,14 +140,15 @@ class UserAccount {
       needsSync: json['needsSync'] ?? true,
       createdAt: DateTime.parse(json['createdAt']),
       updatedAt: DateTime.parse(json['updatedAt']),
-      lastLoginAt: json['lastLoginAt'] != null
-          ? DateTime.parse(json['lastLoginAt'])
+      lastLoginAt: json['lastLoginAt'] != null 
+          ? DateTime.parse(json['lastLoginAt']) 
           : null,
-      verifiedAt: json['verifiedAt'] != null
-          ? DateTime.parse(json['verifiedAt'])
+      verifiedAt: json['verifiedAt'] != null 
+          ? DateTime.parse(json['verifiedAt']) 
           : null,
-      syncedAt:
-          json['syncedAt'] != null ? DateTime.parse(json['syncedAt']) : null,
+      syncedAt: json['syncedAt'] != null 
+          ? DateTime.parse(json['syncedAt']) 
+          : null,
       photoUrl: json['photoUrl'],
       authMethod: AuthMethod.values.firstWhere(
         (method) => method.name == json['authMethod'],
@@ -162,8 +157,8 @@ class UserAccount {
       isEmailVerified: json['isEmailVerified'] ?? false,
       isPhoneVerified: json['isPhoneVerified'] ?? false,
       verificationId: json['verificationId'],
-      lastOtpSentAt: json['lastOtpSentAt'] != null
-          ? DateTime.parse(json['lastOtpSentAt'])
+      lastOtpSentAt: json['lastOtpSentAt'] != null 
+          ? DateTime.parse(json['lastOtpSentAt']) 
           : null,
     );
   }
@@ -188,9 +183,9 @@ class UserAccount {
 
   /// Check if account is complete
   bool get isComplete {
-    return fullName.isNotEmpty &&
-        phoneNumber.isNotEmpty &&
-        passwordHash.isNotEmpty;
+    return fullName.isNotEmpty && 
+           phoneNumber.isNotEmpty && 
+           passwordHash.isNotEmpty;
   }
 
   /// Check if sync gate is open (verified through any method)
@@ -250,9 +245,9 @@ class UserAccount {
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
-    return other is UserAccount &&
-        other.id == id &&
-        other.phoneNumber == phoneNumber;
+    return other is UserAccount && 
+           other.id == id && 
+           other.phoneNumber == phoneNumber;
   }
 
   @override

@@ -43,15 +43,14 @@ class _CategoryArticlesScreenState extends State<CategoryArticlesScreen> {
         error = null;
       });
 
-      final loadedArticles =
-          await ArticleService.getArticlesByCategory(widget.category.id);
-
+      final loadedArticles = await ArticleService.getArticlesByCategory(widget.category.id);
+      
       setState(() {
         articles = loadedArticles;
         filteredArticles = loadedArticles;
         isLoading = false;
       });
-
+      
       _applySortAndFilter();
     } catch (e) {
       setState(() {
@@ -65,15 +64,15 @@ class _CategoryArticlesScreenState extends State<CategoryArticlesScreen> {
     setState(() {
       filteredArticles = articles.where((article) {
         if (searchQuery.isEmpty) return true;
-
+        
         final query = searchQuery.toLowerCase();
-        final title = widget.locale != null
+        final title = widget.locale != null 
             ? article.getLocalizedTitle(widget.locale!)
             : article.title;
         final summary = widget.locale != null
             ? article.getLocalizedSummary(widget.locale!)
             : article.summary;
-
+            
         return title.toLowerCase().contains(query) ||
             summary.toLowerCase().contains(query) ||
             article.tags.any((tag) => tag.toLowerCase().contains(query)) ||
@@ -83,24 +82,20 @@ class _CategoryArticlesScreenState extends State<CategoryArticlesScreen> {
       // Apply sorting
       switch (selectedSort) {
         case ArticleSortOption.newest:
-          filteredArticles
-              .sort((a, b) => b.publishDate.compareTo(a.publishDate));
+          filteredArticles.sort((a, b) => b.publishDate.compareTo(a.publishDate));
           break;
         case ArticleSortOption.oldest:
-          filteredArticles
-              .sort((a, b) => a.publishDate.compareTo(b.publishDate));
+          filteredArticles.sort((a, b) => a.publishDate.compareTo(b.publishDate));
           break;
         case ArticleSortOption.readTime:
-          filteredArticles
-              .sort((a, b) => a.readTimeMinutes.compareTo(b.readTimeMinutes));
+          filteredArticles.sort((a, b) => a.readTimeMinutes.compareTo(b.readTimeMinutes));
           break;
         case ArticleSortOption.priority:
-          filteredArticles
-              .sort((a, b) => b.priorityValue.compareTo(a.priorityValue));
+          filteredArticles.sort((a, b) => b.priorityValue.compareTo(a.priorityValue));
           break;
         case ArticleSortOption.alphabetical:
           filteredArticles.sort((a, b) {
-            final titleA = widget.locale != null
+            final titleA = widget.locale != null 
                 ? a.getLocalizedTitle(widget.locale!)
                 : a.title;
             final titleB = widget.locale != null
@@ -117,8 +112,8 @@ class _CategoryArticlesScreenState extends State<CategoryArticlesScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final categoryColor = widget.category.color;
-
-    final displayName = widget.locale != null
+    
+    final displayName = widget.locale != null 
         ? widget.category.getLocalizedName(widget.locale!)
         : widget.category.name;
     final displayDescription = widget.locale != null
@@ -169,15 +164,12 @@ class _CategoryArticlesScreenState extends State<CategoryArticlesScreen> {
                       size: ResponsiveUtils.getResponsiveIconSize(context, 20),
                       color: selectedSort == option ? categoryColor : null,
                     ),
-                    SizedBox(
-                        width:
-                            ResponsiveUtils.getResponsiveSpacing(context, 8)),
+                    SizedBox(width: ResponsiveUtils.getResponsiveSpacing(context, 8)),
                     Text(
                       _getSortLabel(option),
                       style: TextStyle(
                         color: selectedSort == option ? categoryColor : null,
-                        fontWeight:
-                            selectedSort == option ? FontWeight.w600 : null,
+                        fontWeight: selectedSort == option ? FontWeight.w600 : null,
                       ),
                     ),
                   ],
@@ -210,15 +202,12 @@ class _CategoryArticlesScreenState extends State<CategoryArticlesScreen> {
                     displayDescription,
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: theme.colorScheme.onSurface.withOpacity(0.8),
-                      fontSize:
-                          ResponsiveUtils.getResponsiveFontSize(context, 16),
+                      fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
                     ),
                   ),
-
-                  SizedBox(
-                      height:
-                          ResponsiveUtils.getResponsiveSpacing(context, 16)),
-
+                  
+                  SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 16)),
+                  
                   // Search bar
                   TextField(
                     onChanged: (value) {
@@ -248,8 +237,7 @@ class _CategoryArticlesScreenState extends State<CategoryArticlesScreen> {
                         borderRadius: BorderRadius.circular(
                           ResponsiveUtils.getResponsiveBorderRadius(context),
                         ),
-                        borderSide:
-                            BorderSide(color: categoryColor.withOpacity(0.3)),
+                        borderSide: BorderSide(color: categoryColor.withOpacity(0.3)),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(
@@ -279,17 +267,17 @@ class _CategoryArticlesScreenState extends State<CategoryArticlesScreen> {
                       '${filteredArticles.length} article${filteredArticles.length == 1 ? '' : 's'}',
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: theme.colorScheme.onSurface.withOpacity(0.6),
-                        fontSize:
-                            ResponsiveUtils.getResponsiveFontSize(context, 12),
+                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 12),
                       ),
                     ),
+                    
                     const Spacer(),
+                    
                     Text(
                       'Sorted by ${_getSortLabel(selectedSort).toLowerCase()}',
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: theme.colorScheme.onSurface.withOpacity(0.6),
-                        fontSize:
-                            ResponsiveUtils.getResponsiveFontSize(context, 12),
+                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 12),
                       ),
                     ),
                   ],
@@ -350,7 +338,7 @@ class _CategoryArticlesScreenState extends State<CategoryArticlesScreen> {
   Widget _buildEmptyState() {
     final theme = Theme.of(context);
     final isSearching = searchQuery.isNotEmpty;
-
+    
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -370,7 +358,7 @@ class _CategoryArticlesScreenState extends State<CategoryArticlesScreen> {
           ),
           SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 8)),
           Text(
-            isSearching
+            isSearching 
                 ? 'Try adjusting your search terms'
                 : 'Articles for this category are coming soon',
             style: theme.textTheme.bodyMedium?.copyWith(

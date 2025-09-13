@@ -8,7 +8,7 @@ import '../utils/navigation_manager.dart';
 
 // Screen imports for reference (these screens are navigated to via GoRouter)
 // Home (/) -> HomeScreen
-// Growth (/growth) -> GrowthChartsScreen
+// Growth (/growth) -> GrowthChartsScreen  
 // Medicine (/vaccines) -> AddHealthRecordScreen
 // Learn (/learn) -> LearnScreen
 // Profile (/profile) -> ProfileScreen
@@ -87,11 +87,11 @@ class _BottomNavigationState extends State<BottomNavigation> {
   Widget build(BuildContext context) {
     final labels = _getLocalizedLabels();
     final selectedIndex = _calculateSelectedIndex(context);
-
+    
     // Responsive sizing
     final iconSize = ResponsiveUtils.getResponsiveIconSize(context, 24);
     final fontSize = ResponsiveUtils.getResponsiveFontSize(context, 12);
-
+    
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,

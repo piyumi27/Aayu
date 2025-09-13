@@ -13,8 +13,7 @@ class HealthAlertService {
   HealthAlertService._internal();
 
   final StandardsRepository _standardsRepository = StandardsRepository();
-  final GrowthCalculationService _growthCalculationService =
-      GrowthCalculationService();
+  final GrowthCalculationService _growthCalculationService = GrowthCalculationService();
   final NotificationService _notificationService = NotificationService();
 
   Future<List<HealthAlert>> assessChildHealth({
@@ -64,12 +63,11 @@ class HealthAlertService {
     String? standardSource,
   }) async {
     final alerts = <HealthAlert>[];
-
+    
     if (growthRecords.isEmpty) return alerts;
 
     final latestRecord = growthRecords.last;
-    final assessment =
-        await _growthCalculationService.calculateGrowthAssessment(
+    final assessment = await _growthCalculationService.calculateGrowthAssessment(
       child: child,
       growthRecord: latestRecord,
       standardSource: standardSource,
@@ -82,8 +80,7 @@ class HealthAlertService {
         type: AlertType.severeUnderweight,
         severity: AlertSeverity.critical,
         title: 'Severe Underweight Detected',
-        message:
-            'Child\'s weight is severely below normal (Z-score: ${assessment.weightForAgeZScore.toStringAsFixed(1)})',
+        message: 'Child\'s weight is severely below normal (Z-score: ${assessment.weightForAgeZScore.toStringAsFixed(1)})',
         recommendations: [
           'Seek immediate medical attention',
           'Consider therapeutic feeding program',
@@ -102,8 +99,7 @@ class HealthAlertService {
         type: AlertType.moderateUnderweight,
         severity: AlertSeverity.high,
         title: 'Moderate Underweight',
-        message:
-            'Child\'s weight is below normal range (Z-score: ${assessment.weightForAgeZScore.toStringAsFixed(1)})',
+        message: 'Child\'s weight is below normal range (Z-score: ${assessment.weightForAgeZScore.toStringAsFixed(1)})',
         recommendations: [
           'Increase feeding frequency',
           'Focus on energy-dense foods',
@@ -124,8 +120,7 @@ class HealthAlertService {
         type: AlertType.severeStunting,
         severity: AlertSeverity.critical,
         title: 'Severe Stunting Detected',
-        message:
-            'Child\'s height is severely below normal (Z-score: ${assessment.heightForAgeZScore.toStringAsFixed(1)})',
+        message: 'Child\'s height is severely below normal (Z-score: ${assessment.heightForAgeZScore.toStringAsFixed(1)})',
         recommendations: [
           'Immediate nutrition intervention required',
           'Long-term feeding support needed',
@@ -144,8 +139,7 @@ class HealthAlertService {
         type: AlertType.moderateStunting,
         severity: AlertSeverity.high,
         title: 'Stunting Detected',
-        message:
-            'Child shows signs of chronic malnutrition (Z-score: ${assessment.heightForAgeZScore.toStringAsFixed(1)})',
+        message: 'Child shows signs of chronic malnutrition (Z-score: ${assessment.heightForAgeZScore.toStringAsFixed(1)})',
         recommendations: [
           'Enhanced nutrition program needed',
           'Regular monitoring required',
@@ -166,8 +160,7 @@ class HealthAlertService {
         type: AlertType.severeWasting,
         severity: AlertSeverity.critical,
         title: 'Severe Acute Malnutrition',
-        message:
-            'Child has severe wasting (Z-score: ${assessment.weightForHeightZScore.toStringAsFixed(1)})',
+        message: 'Child has severe wasting (Z-score: ${assessment.weightForHeightZScore.toStringAsFixed(1)})',
         recommendations: [
           'Emergency medical intervention',
           'Therapeutic feeding required',
@@ -186,8 +179,7 @@ class HealthAlertService {
         type: AlertType.moderateWasting,
         severity: AlertSeverity.high,
         title: 'Moderate Acute Malnutrition',
-        message:
-            'Child has moderate wasting (Z-score: ${assessment.weightForHeightZScore.toStringAsFixed(1)})',
+        message: 'Child has moderate wasting (Z-score: ${assessment.weightForHeightZScore.toStringAsFixed(1)})',
         recommendations: [
           'Increased feeding frequency',
           'High-energy foods',
@@ -201,8 +193,7 @@ class HealthAlertService {
       ));
     }
 
-    if (assessment.weightForHeightZScore > 2 ||
-        assessment.bmiForAgeZScore > 2) {
+    if (assessment.weightForHeightZScore > 2 || assessment.bmiForAgeZScore > 2) {
       alerts.add(HealthAlert(
         id: 'overweight_${child.id}',
         childId: child.id,
@@ -227,8 +218,7 @@ class HealthAlertService {
     }
 
     if (growthRecords.length >= 2) {
-      final growthVelocity =
-          await _growthCalculationService.calculateGrowthVelocity(
+      final growthVelocity = await _growthCalculationService.calculateGrowthVelocity(
         growthRecords: growthRecords.take(2).toList(),
         child: child,
         standardSource: standardSource,
@@ -269,7 +259,7 @@ class HealthAlertService {
   }) async {
     final alerts = <HealthAlert>[];
     final childAgeMonths = _calculateCurrentAge(child.birthDate);
-
+    
     final guidelines = await _standardsRepository.getNutritionGuidelinesForAge(
       ageMonths: childAgeMonths,
       source: standardSource,
@@ -329,7 +319,7 @@ class HealthAlertService {
   }) async {
     final alerts = <HealthAlert>[];
     final childAgeMonths = _calculateCurrentAge(child.birthDate);
-
+    
     final expectedMilestones = await _standardsRepository.getMilestonesForAge(
       ageMonths: childAgeMonths,
       source: standardSource,
@@ -344,8 +334,7 @@ class HealthAlertService {
         .where((milestone) => !achievedMilestoneIds.contains(milestone.id))
         .toList();
 
-    final criticalMissed =
-        missedMilestones.where((m) => m.priority <= 2).toList();
+    final criticalMissed = missedMilestones.where((m) => m.priority <= 2).toList();
     final redFlags = missedMilestones.where((m) => m.isRedFlag).toList();
 
     if (redFlags.isNotEmpty || criticalMissed.length >= 3) {
@@ -399,7 +388,7 @@ class HealthAlertService {
   Future<List<HealthAlert>> _assessVaccinationAlerts(Child child) async {
     final alerts = <HealthAlert>[];
     final childAgeMonths = _calculateCurrentAge(child.birthDate);
-
+    
     final dueVaccines = await _getDueVaccines(child.id, childAgeMonths);
     final overdueVaccines = await _getOverdueVaccines(child.id, childAgeMonths);
 
@@ -496,8 +485,7 @@ class HealthAlertService {
     return [];
   }
 
-  Future<List<String>> _getOverdueVaccines(
-      String childId, int ageMonths) async {
+  Future<List<String>> _getOverdueVaccines(String childId, int ageMonths) async {
     return [];
   }
 
@@ -512,24 +500,21 @@ class HealthAlertService {
   }
 
   Future<List<HealthAlert>> getActiveAlertsForChild(String childId) async {
-    final developmentAlerts =
-        await _standardsRepository.getDevelopmentAlerts(childId);
-
-    return developmentAlerts
-        .map((alert) => HealthAlert(
-              id: alert.id,
-              childId: alert.childId,
-              type: AlertType.fromString(alert.alertType),
-              severity: AlertSeverity.fromString(alert.severity),
-              title: alert.title,
-              message: alert.description,
-              recommendations: alert.recommendations.split('|'),
-              createdAt: alert.createdAt,
-              isActive: !alert.isResolved,
-              shouldNotify: alert.requiresEvaluation,
-              data: {},
-            ))
-        .toList();
+    final developmentAlerts = await _standardsRepository.getDevelopmentAlerts(childId);
+    
+    return developmentAlerts.map((alert) => HealthAlert(
+      id: alert.id,
+      childId: alert.childId,
+      type: AlertType.fromString(alert.alertType),
+      severity: AlertSeverity.fromString(alert.severity),
+      title: alert.title,
+      message: alert.description,
+      recommendations: alert.recommendations.split('|'),
+      createdAt: alert.createdAt,
+      isActive: !alert.isResolved,
+      shouldNotify: alert.requiresEvaluation,
+      data: {},
+    )).toList();
   }
 }
 

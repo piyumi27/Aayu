@@ -12,7 +12,7 @@ class MigrationQueueEntry {
   final int retryCount;
   final String? errorMessage;
   final MigrationStatus status;
-
+  
   MigrationQueueEntry({
     required this.id,
     required this.entityType,
@@ -92,8 +92,8 @@ class MigrationQueueEntry {
       operation: json['operation'],
       data: Map<String, dynamic>.from(json['data']),
       createdAt: DateTime.parse(json['createdAt']),
-      processedAt: json['processedAt'] != null
-          ? DateTime.parse(json['processedAt'])
+      processedAt: json['processedAt'] != null 
+          ? DateTime.parse(json['processedAt']) 
           : null,
       retryCount: json['retryCount'] ?? 0,
       errorMessage: json['errorMessage'],
@@ -111,16 +111,11 @@ class MigrationQueueEntry {
   int get priority {
     // Higher numbers = higher priority
     switch (entityType) {
-      case 'user':
-        return 100; // Process users first
-      case 'child':
-        return 90; // Then children
-      case 'measurement':
-        return 80; // Then measurements
-      case 'vaccination':
-        return 70; // Then vaccinations
-      default:
-        return 50;
+      case 'user': return 100; // Process users first
+      case 'child': return 90;  // Then children
+      case 'measurement': return 80;  // Then measurements
+      case 'vaccination': return 70;  // Then vaccinations
+      default: return 50;
     }
   }
 
@@ -132,9 +127,9 @@ class MigrationQueueEntry {
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
-    return other is MigrationQueueEntry &&
-        other.id == id &&
-        other.entityId == entityId;
+    return other is MigrationQueueEntry && 
+           other.id == id && 
+           other.entityId == entityId;
   }
 
   @override
@@ -147,44 +142,32 @@ enum MigrationStatus {
   processing,
   completed,
   failed;
-
+  
   String getDisplayText(String language) {
     switch (this) {
       case MigrationStatus.pending:
         switch (language) {
-          case 'si':
-            return 'බලාපොරොත්තුවෙන්';
-          case 'ta':
-            return 'நிலுவையில்';
-          default:
-            return 'Pending';
+          case 'si': return 'බලාපොරොත්තුවෙන්';
+          case 'ta': return 'நிலுவையில்';
+          default: return 'Pending';
         }
       case MigrationStatus.processing:
         switch (language) {
-          case 'si':
-            return 'සැකසෙමින්';
-          case 'ta':
-            return 'செயலாக்கப்படுகிறது';
-          default:
-            return 'Processing';
+          case 'si': return 'සැකසෙමින්';
+          case 'ta': return 'செயலாக்கப்படுகிறது';
+          default: return 'Processing';
         }
       case MigrationStatus.completed:
         switch (language) {
-          case 'si':
-            return 'සම්පූර්ණයි';
-          case 'ta':
-            return 'முடிந்தது';
-          default:
-            return 'Completed';
+          case 'si': return 'සම්පූර්ණයි';
+          case 'ta': return 'முடிந்தது';
+          default: return 'Completed';
         }
       case MigrationStatus.failed:
         switch (language) {
-          case 'si':
-            return 'අසාර්ථකයි';
-          case 'ta':
-            return 'தோல்வி';
-          default:
-            return 'Failed';
+          case 'si': return 'අසාර්ථකයි';
+          case 'ta': return 'தோல்வி';
+          default: return 'Failed';
         }
     }
   }
@@ -198,7 +181,7 @@ class MigrationQueueSummary {
   final int completedEntries;
   final int failedEntries;
   final DateTime? lastProcessedAt;
-
+  
   MigrationQueueSummary({
     required this.totalEntries,
     required this.pendingEntries,
@@ -210,14 +193,9 @@ class MigrationQueueSummary {
 
   bool get hasWork => pendingEntries > 0 || failedRetriableEntries > 0;
   bool get isProcessing => processingEntries > 0;
-  bool get isComplete =>
-      totalEntries > 0 &&
-      pendingEntries == 0 &&
-      processingEntries == 0 &&
-      failedEntries == 0;
-
-  int get failedRetriableEntries =>
-      failedEntries; // Simplified - in real implementation would check retry count
+  bool get isComplete => totalEntries > 0 && pendingEntries == 0 && processingEntries == 0 && failedEntries == 0;
+  
+  int get failedRetriableEntries => failedEntries; // Simplified - in real implementation would check retry count
 
   double get progress {
     if (totalEntries == 0) return 1.0;
@@ -227,39 +205,27 @@ class MigrationQueueSummary {
   String getStatusText(String language) {
     if (isComplete) {
       switch (language) {
-        case 'si':
-          return 'සමමුහුර්ත කිරීම සම්පූර්ණයි';
-        case 'ta':
-          return 'ஒத்திசைவு முடிந்தது';
-        default:
-          return 'Sync Complete';
+        case 'si': return 'සමමුහුර්ත කිරීම සම්පූර්ණයි';
+        case 'ta': return 'ஒத்திசைவு முடிந்தது';
+        default: return 'Sync Complete';
       }
     } else if (isProcessing) {
       switch (language) {
-        case 'si':
-          return 'සමමුහුර්ත කරමින්';
-        case 'ta':
-          return 'ஒத்திசைக்கிறது';
-        default:
-          return 'Syncing';
+        case 'si': return 'සමමුහුර්ත කරමින්';
+        case 'ta': return 'ஒத்திசைக்கிறது';
+        default: return 'Syncing';
       }
     } else if (hasWork) {
       switch (language) {
-        case 'si':
-          return 'සමමුහුර්ත කිරීම අවශ්‍යයි';
-        case 'ta':
-          return 'ஒத்திசைவு தேவை';
-        default:
-          return 'Sync Needed';
+        case 'si': return 'සමමුහුර්ත කිරීම අවශ්‍යයි';
+        case 'ta': return 'ஒத்திசைவு தேவை';
+        default: return 'Sync Needed';
       }
     } else {
       switch (language) {
-        case 'si':
-          return 'යාවත්කාලීනයි';
-        case 'ta':
-          return 'புதுப்பித்த நிலையில்';
-        default:
-          return 'Up to Date';
+        case 'si': return 'යාවත්කාලීනයි';
+        case 'ta': return 'புதுப்பித்த நிலையில்';
+        default: return 'Up to Date';
       }
     }
   }

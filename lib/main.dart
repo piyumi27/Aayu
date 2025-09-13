@@ -221,8 +221,7 @@ final _router = GoRouter(
       builder: (context, state) {
         final extra = state.extra;
         if (extra == null || extra is! Map<String, dynamic>) {
-          throw Exception(
-              'OTP Verification requires phoneNumber, verificationId, and fullName parameters');
+          throw Exception('OTP Verification requires phoneNumber, verificationId, and fullName parameters');
         }
         return OTPVerificationScreen(
           phoneNumber: extra['phoneNumber'],
@@ -252,8 +251,7 @@ final _router = GoRouter(
       builder: (context, state) {
         final extra = state.extra;
         if (extra == null || extra is! Map<String, dynamic>) {
-          throw Exception(
-              'Measurement Detail requires measurementId and childId parameters');
+          throw Exception('Measurement Detail requires measurementId and childId parameters');
         }
         return MeasurementDetailScreen(
           measurementId: extra['measurementId'],
@@ -276,16 +274,16 @@ final _router = GoRouter(
             // Use LocalAuthService to check authentication status
             final authService = LocalAuthService();
             final isLoggedIn = await authService.isLoggedIn();
-
+            
             if (!isLoggedIn) {
               return '/login';
             }
-
+            
             // If logged in, check if user needs verification
             // Note: Allow unverified users to access the app offline
             // They can access verification center through profile screen
             // Removed automatic redirect to verification center for unverified users
-
+            
             return null;
           },
         ),
@@ -423,19 +421,18 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
 
           // List of routes that should show bottom navigation
           final showNavRoutes = [
-            '/', // Home Dashboard
-            '/growth', // Growth Charts
-            '/vaccines', // Vaccination Calendar (Medicine)
-            '/learn', // Learning Center
-            '/profile', // Profile/Settings
+            '/',  // Home Dashboard
+            '/growth',  // Growth Charts
+            '/vaccines',  // Vaccination Calendar (Medicine)
+            '/learn',  // Learning Center
+            '/profile',  // Profile/Settings
           ];
 
           final shouldShowNav = showNavRoutes.contains(location);
 
           return Scaffold(
             body: widget.child,
-            bottomNavigationBar:
-                shouldShowNav ? const BottomNavigation() : null,
+            bottomNavigationBar: shouldShowNav ? const BottomNavigation() : null,
           );
         },
       ),

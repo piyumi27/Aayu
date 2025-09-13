@@ -37,31 +37,27 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final isSmallScreen = screenHeight < 600;
-
+    
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Container(
             constraints: BoxConstraints(
-              minHeight: MediaQuery.of(context).size.height -
-                  MediaQuery.of(context).padding.top -
-                  MediaQuery.of(context).padding.bottom,
+              minHeight: MediaQuery.of(context).size.height - 
+                         MediaQuery.of(context).padding.top - 
+                         MediaQuery.of(context).padding.bottom,
             ),
             padding: ResponsiveUtils.getResponsivePadding(context),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                SizedBox(
-                    height: ResponsiveUtils.getResponsiveSpacing(
-                        context, isSmallScreen ? 20 : 40)),
-
+                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, isSmallScreen ? 20 : 40)),
+                
                 // App logo/icon
                 Container(
-                  width: ResponsiveUtils.getResponsiveIconSize(
-                      context, isSmallScreen ? 100 : 150),
-                  height: ResponsiveUtils.getResponsiveIconSize(
-                      context, isSmallScreen ? 100 : 150),
+                  width: ResponsiveUtils.getResponsiveIconSize(context, isSmallScreen ? 100 : 150),
+                  height: ResponsiveUtils.getResponsiveIconSize(context, isSmallScreen ? 100 : 150),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(25),
@@ -80,8 +76,7 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
                       child: Text(
                         'ආයු',
                         style: TextStyle(
-                          fontSize: ResponsiveUtils.getResponsiveFontSize(
-                              context, isSmallScreen ? 48 : 60),
+                          fontSize: ResponsiveUtils.getResponsiveFontSize(context, isSmallScreen ? 48 : 60),
                           fontWeight: FontWeight.bold,
                           color: const Color(0xFF0086FF),
                           fontFamily: 'NotoSerifSinhala',
@@ -90,26 +85,21 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
                     ),
                   ),
                 ),
-
-                SizedBox(
-                    height: ResponsiveUtils.getResponsiveSpacing(
-                        context, isSmallScreen ? 30 : 60)),
-
+                
+                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, isSmallScreen ? 30 : 60)),
+                
                 Text(
                   'Select Language / භාෂාව තෝරන්න',
                   style: TextStyle(
-                    fontSize:
-                        ResponsiveUtils.getResponsiveFontSize(context, 18),
+                    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 18),
                     fontWeight: FontWeight.w600,
                     color: Colors.black87,
                   ),
                   textAlign: TextAlign.center,
                 ),
-
-                SizedBox(
-                    height: ResponsiveUtils.getResponsiveSpacing(
-                        context, isSmallScreen ? 20 : 30)),
-
+                
+                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, isSmallScreen ? 20 : 30)),
+                
                 // Language cards
                 _buildLanguageCard(
                   context,
@@ -118,10 +108,9 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
                   languageCode: 'si',
                   isSelected: _selectedLanguage == 'si',
                 ),
-
-                SizedBox(
-                    height: ResponsiveUtils.getResponsiveSpacing(context, 12)),
-
+                
+                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 12)),
+                
                 _buildLanguageCard(
                   context,
                   title: 'English',
@@ -129,10 +118,9 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
                   languageCode: 'en',
                   isSelected: _selectedLanguage == 'en',
                 ),
-
-                SizedBox(
-                    height: ResponsiveUtils.getResponsiveSpacing(context, 12)),
-
+                
+                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 12)),
+                
                 _buildLanguageCard(
                   context,
                   title: 'தமிழ்',
@@ -140,11 +128,9 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
                   languageCode: 'ta',
                   isSelected: _selectedLanguage == 'ta',
                 ),
-
-                SizedBox(
-                    height: ResponsiveUtils.getResponsiveSpacing(
-                        context, isSmallScreen ? 20 : 40)),
-
+                
+                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, isSmallScreen ? 20 : 40)),
+                
                 // Continue button
                 SizedBox(
                   width: double.infinity,
@@ -163,10 +149,8 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
                     ),
                     child: _isLoading
                         ? SizedBox(
-                            width: ResponsiveUtils.getResponsiveIconSize(
-                                context, 24),
-                            height: ResponsiveUtils.getResponsiveIconSize(
-                                context, 24),
+                            width: ResponsiveUtils.getResponsiveIconSize(context, 24),
+                            height: ResponsiveUtils.getResponsiveIconSize(context, 24),
                             child: const CircularProgressIndicator(
                               color: Colors.white,
                               strokeWidth: 2,
@@ -175,16 +159,14 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
                         : Text(
                             _getButtonText(),
                             style: TextStyle(
-                              fontSize: ResponsiveUtils.getResponsiveFontSize(
-                                  context, 18),
+                              fontSize: ResponsiveUtils.getResponsiveFontSize(context, 18),
                               fontWeight: FontWeight.w600,
                             ),
                           ),
                   ),
                 ),
-
-                SizedBox(
-                    height: ResponsiveUtils.getResponsiveSpacing(context, 20)),
+                
+                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 20)),
               ],
             ),
           ),
@@ -210,9 +192,7 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
       child: Container(
         padding: ResponsiveUtils.getResponsivePadding(context, scale: 1.25),
         decoration: BoxDecoration(
-          color: isSelected
-              ? const Color(0xFF0086FF).withValues(alpha: 0.1)
-              : Colors.grey[50],
+          color: isSelected ? const Color(0xFF0086FF).withValues(alpha: 0.1) : Colors.grey[50],
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isSelected ? const Color(0xFF0086FF) : Colors.grey[300]!,
@@ -227,12 +207,10 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color:
-                      isSelected ? const Color(0xFF0086FF) : Colors.grey[400]!,
+                  color: isSelected ? const Color(0xFF0086FF) : Colors.grey[400]!,
                   width: 2,
                 ),
-                color:
-                    isSelected ? const Color(0xFF0086FF) : Colors.transparent,
+                color: isSelected ? const Color(0xFF0086FF) : Colors.transparent,
               ),
               child: isSelected
                   ? Icon(
@@ -250,21 +228,17 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
                   Text(
                     title,
                     style: TextStyle(
-                      fontSize:
-                          ResponsiveUtils.getResponsiveFontSize(context, 18),
+                      fontSize: ResponsiveUtils.getResponsiveFontSize(context, 18),
                       fontWeight: FontWeight.w600,
-                      color:
-                          isSelected ? const Color(0xFF0086FF) : Colors.black87,
+                      color: isSelected ? const Color(0xFF0086FF) : Colors.black87,
                       fontFamily: _getFontFamily(languageCode),
                     ),
                   ),
-                  SizedBox(
-                      height: ResponsiveUtils.getResponsiveSpacing(context, 2)),
+                  SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 2)),
                   Text(
                     subtitle,
                     style: TextStyle(
-                      fontSize:
-                          ResponsiveUtils.getResponsiveFontSize(context, 14),
+                      fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
                       color: Colors.grey[600],
                     ),
                   ),

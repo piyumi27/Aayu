@@ -13,7 +13,7 @@ class PasswordStrengthField extends StatefulWidget {
   final String? helperText;
   final bool isConfirmField;
   final String? passwordToMatch;
-
+  
   const PasswordStrengthField({
     super.key,
     this.initialValue,
@@ -35,20 +35,20 @@ class _PasswordStrengthFieldState extends State<PasswordStrengthField> {
   String _selectedLanguage = 'en';
   bool _obscureText = true;
   bool _hasFocus = false;
-
+  
   @override
   void initState() {
     super.initState();
     _controller = TextEditingController(text: widget.initialValue ?? '');
     _loadPreferences();
   }
-
+  
   @override
   void dispose() {
     _controller.dispose();
     super.dispose();
   }
-
+  
   Future<void> _loadPreferences() async {
     final prefs = await SharedPreferences.getInstance();
     if (mounted) {
@@ -61,46 +61,34 @@ class _PasswordStrengthFieldState extends State<PasswordStrengthField> {
   String get _labelText {
     if (widget.isConfirmField) {
       switch (_selectedLanguage) {
-        case 'si':
-          return 'මුරපදය තහවුරු කරන්න';
-        case 'ta':
-          return 'கடவுச்சொல்லை உறுதிப்படுத்தவும்';
-        default:
-          return 'Confirm Password';
+        case 'si': return 'මුරපදය තහවුරු කරන්න';
+        case 'ta': return 'கடவுச்சொல்லை உறுதிப்படுத்தவும்';
+        default: return 'Confirm Password';
       }
     }
-
+    
     switch (_selectedLanguage) {
-      case 'si':
-        return 'මුරපදය';
-      case 'ta':
-        return 'கடவுச்சொல்';
-      default:
-        return 'Password';
+      case 'si': return 'මුරපදය';
+      case 'ta': return 'கடவுச்சொல்';
+      default: return 'Password';
     }
   }
 
   String get _helperText {
     if (widget.helperText != null) return widget.helperText!;
-
+    
     if (widget.isConfirmField) {
       switch (_selectedLanguage) {
-        case 'si':
-          return 'ඉහත මුරපදය නැවත ඇතුළත් කරන්න';
-        case 'ta':
-          return 'மேலே உள்ள கடவுச்சொல்லை மீண்டும் உள்ளிடவும்';
-        default:
-          return 'Re-enter the password above';
+        case 'si': return 'ඉහත මුරපදය නැවත ඇතුළත් කරන්න';
+        case 'ta': return 'மேலே உள்ள கடவுச்சொல்லை மீண்டும் உள்ளிடவும்';
+        default: return 'Re-enter the password above';
       }
     }
-
+    
     switch (_selectedLanguage) {
-      case 'si':
-        return 'අවම වශයෙන් 8 අකුරක් භාවිතා කරන්න';
-      case 'ta':
-        return 'குறைந்தது 8 எழுத்துக்களைப் பயன்படுத்தவும்';
-      default:
-        return 'Use at least 8 characters';
+      case 'si': return 'අවම වශයෙන් 8 අකුරක් භාවිතා කරන්න';
+      case 'ta': return 'குறைந்தது 8 எழுத்துக்களைப் பயன்படுத்தவும்';
+      default: return 'Use at least 8 characters';
     }
   }
 
@@ -112,18 +100,15 @@ class _PasswordStrengthFieldState extends State<PasswordStrengthField> {
   String? get _matchingError {
     if (!widget.isConfirmField || widget.passwordToMatch == null) return null;
     if (_controller.text.isEmpty) return null;
-
+    
     if (!_isMatching) {
       switch (_selectedLanguage) {
-        case 'si':
-          return 'මුරපද නොගැලපේ';
-        case 'ta':
-          return 'கடவுச்சொல் பொருந்தவில்லை';
-        default:
-          return 'Passwords do not match';
+        case 'si': return 'මුරපද නොගැලපේ';
+        case 'ta': return 'கடவுச்சொல் பொருந்தவில்லை';
+        default: return 'Passwords do not match';
       }
     }
-
+    
     return null;
   }
 
@@ -137,9 +122,9 @@ class _PasswordStrengthFieldState extends State<PasswordStrengthField> {
     if (widget.isConfirmField || _controller.text.isEmpty) {
       return const SizedBox.shrink();
     }
-
+    
     final strength = ValidationUtils.getPasswordStrength(_controller.text);
-
+    
     return Padding(
       padding: EdgeInsets.only(
         top: ResponsiveUtils.getResponsiveSpacing(context, 8),
@@ -158,9 +143,9 @@ class _PasswordStrengthFieldState extends State<PasswordStrengthField> {
               fontWeight: FontWeight.w500,
             ),
           ),
-
+          
           SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 4)),
-
+          
           // Strength progress bar
           Row(
             children: [
@@ -173,10 +158,8 @@ class _PasswordStrengthFieldState extends State<PasswordStrengthField> {
                       PasswordStrength.medium => 0.66,
                       PasswordStrength.strong => 1.0,
                     },
-                    backgroundColor:
-                        Theme.of(context).colorScheme.surfaceContainerHighest,
-                    valueColor:
-                        AlwaysStoppedAnimation<Color>(strength.getColor()),
+                    backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+                    valueColor: AlwaysStoppedAnimation<Color>(strength.getColor()),
                     minHeight: 4,
                   ),
                 ),
@@ -191,7 +174,7 @@ class _PasswordStrengthFieldState extends State<PasswordStrengthField> {
   @override
   Widget build(BuildContext context) {
     final displayError = widget.errorText ?? _matchingError;
-
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -240,17 +223,15 @@ class _PasswordStrengthFieldState extends State<PasswordStrengthField> {
                   if (widget.isConfirmField && _controller.text.isNotEmpty)
                     Icon(
                       _isMatching ? Icons.check_circle : Icons.error,
-                      color: _isMatching
-                          ? const Color(0xFF10B981)
-                          : Theme.of(context).colorScheme.error,
+                      color: _isMatching 
+                        ? const Color(0xFF10B981)
+                        : Theme.of(context).colorScheme.error,
                       size: ResponsiveUtils.getResponsiveIconSize(context, 20),
                     ),
-
+                  
                   if (widget.isConfirmField && _controller.text.isNotEmpty)
-                    SizedBox(
-                        width:
-                            ResponsiveUtils.getResponsiveSpacing(context, 8)),
-
+                    SizedBox(width: ResponsiveUtils.getResponsiveSpacing(context, 8)),
+                  
                   // Show/hide password toggle
                   IconButton(
                     icon: Icon(
@@ -267,10 +248,10 @@ class _PasswordStrengthFieldState extends State<PasswordStrengthField> {
             ),
           ),
         ),
-
+        
         // Password strength meter
         _buildStrengthMeter(),
-
+        
         // Helper text
         if (displayError == null && _helperText.isNotEmpty)
           Padding(

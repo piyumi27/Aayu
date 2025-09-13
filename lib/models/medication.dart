@@ -135,28 +135,28 @@ class Medication {
   /// Check if medication is currently active
   bool get isActive {
     if (status != MedicationStatus.active) return false;
-
+    
     final now = DateTime.now();
     if (now.isBefore(startDate)) return false;
     if (endDate != null && now.isAfter(endDate!)) return false;
-
+    
     return true;
   }
 
   /// Get next dose time based on frequency
   DateTime? getNextDoseTime(DateTime lastDoseTime) {
     if (frequency == MedicationFrequency.asNeeded) return null;
-
+    
     return lastDoseTime.add(Duration(hours: frequencyInHours));
   }
 
   /// Check if medication is overdue
   bool isOverdue(DateTime lastDoseTime) {
     if (!isActive || frequency == MedicationFrequency.asNeeded) return false;
-
+    
     final nextDose = getNextDoseTime(lastDoseTime);
     if (nextDose == null) return false;
-
+    
     return DateTime.now().isAfter(nextDose.add(const Duration(minutes: 30)));
   }
 
@@ -302,8 +302,7 @@ class MedicationDoseRecord {
   /// Check if dose is overdue
   bool get isOverdue {
     if (isTaken || isSkipped) return false;
-    return DateTime.now()
-        .isAfter(scheduledTime.add(const Duration(minutes: 30)));
+    return DateTime.now().isAfter(scheduledTime.add(const Duration(minutes: 30)));
   }
 
   /// Get status color
@@ -345,8 +344,7 @@ class MedicationDoseRecord {
       childId: map['childId'],
       medicationId: map['medicationId'],
       scheduledTime: DateTime.parse(map['scheduledTime']),
-      actualTime:
-          map['actualTime'] != null ? DateTime.parse(map['actualTime']) : null,
+      actualTime: map['actualTime'] != null ? DateTime.parse(map['actualTime']) : null,
       actualDosage: map['actualDosage']?.toDouble(),
       isTaken: map['isTaken'] ?? false,
       isSkipped: map['isSkipped'] ?? false,

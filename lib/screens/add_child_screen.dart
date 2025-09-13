@@ -20,7 +20,7 @@ class _AddChildScreenState extends State<AddChildScreen> {
   final _nameController = TextEditingController();
   final _birthWeightController = TextEditingController();
   final _birthHeightController = TextEditingController();
-
+  
   DateTime? _birthDate;
   String? _gender;
   File? _profileImage;
@@ -108,8 +108,7 @@ class _AddChildScreenState extends State<AddChildScreen> {
         'birthHeight': 'பிறப்பு உயரம் (செமீ)',
         'helperText': 'தெரியாவிட்டால் காலியாக விடுங்கள்',
         'saveProfile': 'சுயவிவரத்தை சேமிக்கவும்',
-        'profileSaved':
-            'சுயவிவரம் உள்ளே சேமிக்கப்பட்டது – பின்னர் ஒத்திசைக்கவும்',
+        'profileSaved': 'சுயவிவரம் உள்ளே சேமிக்கப்பட்டது – பின்னர் ஒத்திசைக்கவும்',
         'selectBirthDate': 'பிறந்த தேதியை தேர்ந்தெடுக்கவும்',
       },
     };
@@ -119,24 +118,20 @@ class _AddChildScreenState extends State<AddChildScreen> {
 
   void _validateForm() {
     setState(() {
-      _nameError = _nameController.text.isEmpty
-          ? _getLocalizedText()['nameRequired']
-          : null;
-      _dobError =
-          _birthDate == null ? _getLocalizedText()['dobRequired'] : null;
-      _genderError =
-          _gender == null ? _getLocalizedText()['genderRequired'] : null;
-
-      _isValid = _nameController.text.isNotEmpty &&
-          _birthDate != null &&
-          _gender != null;
+      _nameError = _nameController.text.isEmpty ? _getLocalizedText()['nameRequired'] : null;
+      _dobError = _birthDate == null ? _getLocalizedText()['dobRequired'] : null;
+      _genderError = _gender == null ? _getLocalizedText()['genderRequired'] : null;
+      
+      _isValid = _nameController.text.isNotEmpty && 
+                 _birthDate != null && 
+                 _gender != null;
     });
   }
 
   @override
   Widget build(BuildContext context) {
     final texts = _getLocalizedText();
-
+    
     return Scaffold(
       backgroundColor: const Color(0xFFFAFAFA),
       appBar: AppBar(
@@ -166,19 +161,19 @@ class _AddChildScreenState extends State<AddChildScreen> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   const SizedBox(height: 20),
-
+                  
                   // Avatar section
                   _buildCleanAvatarSection(texts),
-
+                  
                   const SizedBox(height: 40),
-
+                  
                   // Form fields
                   _buildCleanFormFields(texts),
                 ],
               ),
             ),
           ),
-
+          
           // Bottom action button
           _buildCleanBottomButton(texts),
         ],
@@ -240,6 +235,7 @@ class _AddChildScreenState extends State<AddChildScreen> {
     );
   }
 
+
   Widget _buildCleanFormFields(Map<String, String> texts) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -250,19 +246,19 @@ class _AddChildScreenState extends State<AddChildScreen> {
           label: texts['childName']!,
           errorText: _nameError,
         ),
-
+        
         const SizedBox(height: 24),
-
+        
         // Date of Birth
         _buildCleanDateField(texts),
-
+        
         const SizedBox(height: 24),
-
+        
         // Gender Selection
         _buildCleanGenderSelection(texts),
-
+        
         const SizedBox(height: 32),
-
+        
         // Optional measurements
         _buildCleanOptionalMeasurements(texts),
       ],
@@ -319,13 +315,11 @@ class _AddChildScreenState extends State<AddChildScreen> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide:
-                    const BorderSide(color: Color(0xFF0086FF), width: 2),
+                borderSide: const BorderSide(color: Color(0xFF0086FF), width: 2),
               ),
               errorBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide:
-                    const BorderSide(color: Color(0xFFFF5252), width: 1),
+                borderSide: const BorderSide(color: Color(0xFFFF5252), width: 1),
               ),
               contentPadding: const EdgeInsets.all(16),
               filled: true,
@@ -334,7 +328,7 @@ class _AddChildScreenState extends State<AddChildScreen> {
             onChanged: (_) => _validateForm(),
           ),
         ),
-        if (errorText != null) ...[
+        if (errorText != null) ...[ 
           const SizedBox(height: 6),
           Text(
             errorText,
@@ -388,21 +382,17 @@ class _AddChildScreenState extends State<AddChildScreen> {
                         : _birthDate!.toString().split(' ')[0],
                     style: TextStyle(
                       fontSize: 16,
-                      color: _birthDate == null
-                          ? const Color(0xFF9CA3AF)
-                          : const Color(0xFF1A1A1A),
-                      fontFamily:
-                          _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                      color: _birthDate == null ? const Color(0xFF9CA3AF) : const Color(0xFF1A1A1A),
+                      fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                     ),
                   ),
                 ),
-                const Icon(Icons.calendar_today_outlined,
-                    color: Color(0xFF0086FF), size: 20),
+                const Icon(Icons.calendar_today_outlined, color: Color(0xFF0086FF), size: 20),
               ],
             ),
           ),
         ),
-        if (_dobError != null) ...[
+        if (_dobError != null) ...[ 
           const SizedBox(height: 6),
           Text(
             _dobError!,
@@ -450,7 +440,7 @@ class _AddChildScreenState extends State<AddChildScreen> {
             ),
           ],
         ),
-        if (_genderError != null) ...[
+        if (_genderError != null) ...[ 
           const SizedBox(height: 6),
           Text(
             _genderError!,
@@ -484,8 +474,7 @@ class _AddChildScreenState extends State<AddChildScreen> {
           color: isSelected ? const Color(0xFF0086FF) : Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color:
-                isSelected ? const Color(0xFF0086FF) : const Color(0xFFE5E7EB),
+            color: isSelected ? const Color(0xFF0086FF) : const Color(0xFFE5E7EB),
             width: 1.5,
           ),
           boxShadow: [
@@ -511,8 +500,7 @@ class _AddChildScreenState extends State<AddChildScreen> {
                 fontSize: 15,
                 fontWeight: FontWeight.w600,
                 color: isSelected ? Colors.white : const Color(0xFF6B7280),
-                fontFamily:
-                    _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
               ),
             ),
           ],
@@ -531,8 +519,7 @@ class _AddChildScreenState extends State<AddChildScreen> {
               child: _buildCleanTextField(
                 controller: _birthWeightController,
                 label: texts['birthWeight']!,
-                keyboardType:
-                    const TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
               ),
             ),
             const SizedBox(width: 16),
@@ -540,8 +527,7 @@ class _AddChildScreenState extends State<AddChildScreen> {
               child: _buildCleanTextField(
                 controller: _birthHeightController,
                 label: texts['birthHeight']!,
-                keyboardType:
-                    const TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
               ),
             ),
           ],
@@ -596,6 +582,13 @@ class _AddChildScreenState extends State<AddChildScreen> {
     );
   }
 
+
+
+
+
+
+
+
   Future<void> _pickImage() async {
     try {
       final picker = ImagePicker();
@@ -605,7 +598,7 @@ class _AddChildScreenState extends State<AddChildScreen> {
         maxHeight: 800,
         imageQuality: 85,
       );
-
+      
       if (pickedFile != null) {
         setState(() {
           _profileImage = File(pickedFile.path);
@@ -630,14 +623,14 @@ class _AddChildScreenState extends State<AddChildScreen> {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: Theme.of(context).colorScheme.copyWith(
-                  primary: const Color(0xFF0086FF),
-                ),
+              primary: const Color(0xFF0086FF),
+            ),
           ),
           child: child!,
         );
       },
     );
-
+    
     if (date != null) {
       setState(() {
         _birthDate = date;
@@ -648,20 +641,19 @@ class _AddChildScreenState extends State<AddChildScreen> {
 
   Future<void> _saveChild() async {
     final texts = _getLocalizedText();
-
+    
     try {
       final now = DateTime.now();
-
+      
       // Save profile image to local storage if selected
       String? savedPhotoUrl;
       if (_profileImage != null) {
         final appDir = await getApplicationDocumentsDirectory();
         final fileName = 'child_${now.millisecondsSinceEpoch}.png';
-        final savedImage =
-            await _profileImage!.copy('${appDir.path}/$fileName');
+        final savedImage = await _profileImage!.copy('${appDir.path}/$fileName');
         savedPhotoUrl = savedImage.path;
       }
-
+      
       final child = Child(
         id: now.millisecondsSinceEpoch.toString(),
         name: _nameController.text.trim(),
@@ -681,7 +673,7 @@ class _AddChildScreenState extends State<AddChildScreen> {
 
       // Save to local database and sync with Firebase
       await context.read<ChildProvider>().addChild(child);
-
+      
       if (mounted) {
         // Show success toast
         ScaffoldMessenger.of(context).showSnackBar(
@@ -689,15 +681,14 @@ class _AddChildScreenState extends State<AddChildScreen> {
             content: Text(
               texts['profileSaved']!,
               style: TextStyle(
-                fontFamily:
-                    _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
               ),
             ),
             backgroundColor: Colors.green,
             duration: const Duration(seconds: 3),
           ),
         );
-
+        
         // Navigate based on child age
         _navigateBasedOnAge(child);
       }
@@ -716,9 +707,8 @@ class _AddChildScreenState extends State<AddChildScreen> {
   void _navigateBasedOnAge(Child child) {
     final now = DateTime.now();
     final ageInDays = now.difference(child.birthDate).inDays;
-
-    if (ageInDays < 181) {
-      // Less than 6 months (approximately 180 days)
+    
+    if (ageInDays < 181) { // Less than 6 months (approximately 180 days)
       // Navigate to Pre-6-Month Countdown screen
       context.go('/pre-six-month-countdown');
     } else {

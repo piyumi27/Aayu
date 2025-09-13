@@ -23,7 +23,7 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
   final _dueDateController = TextEditingController();
   final _notesController = TextEditingController();
   final _reminderTimeController = TextEditingController();
-
+  
   // Form state
   HealthRecordType _selectedType = HealthRecordType.vaccine;
   DateTime? _selectedDueDate;
@@ -31,11 +31,11 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
   bool _setReminder = false;
   ReminderRepeat _reminderRepeat = ReminderRepeat.once;
   File? _selectedImage;
-
+  
   // App state
   String _selectedLanguage = 'en';
   bool _isLoading = false;
-
+  
   // Autocomplete options
   final List<String> _vaccineOptions = [
     'MMR (Measles, Mumps, Rubella)',
@@ -50,7 +50,7 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
     'Influenza (Flu)',
     'COVID-19',
   ];
-
+  
   final List<String> _supplementOptions = [
     'Vitamin D',
     'Iron',
@@ -61,7 +61,7 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
     'Vitamin C',
     'Zinc',
   ];
-
+  
   final List<String> _medicineOptions = [
     'Paracetamol/Acetaminophen',
     'Ibuprofen',
@@ -132,12 +132,11 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
         );
       },
     );
-
+    
     if (picked != null && picked != _selectedDueDate) {
       setState(() {
         _selectedDueDate = picked;
-        _dueDateController.text =
-            '${picked.month.toString().padLeft(2, '0')}/${picked.day.toString().padLeft(2, '0')}/${picked.year}';
+        _dueDateController.text = '${picked.month.toString().padLeft(2, '0')}/${picked.day.toString().padLeft(2, '0')}/${picked.year}';
       });
     }
   }
@@ -161,14 +160,13 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
         );
       },
     );
-
+    
     if (picked != null) {
       setState(() {
         _reminderTime = picked;
         final hour = picked.hourOfPeriod == 0 ? 12 : picked.hourOfPeriod;
         final period = picked.period == DayPeriod.am ? 'AM' : 'PM';
-        _reminderTimeController.text =
-            '${hour.toString().padLeft(2, '0')}:${picked.minute.toString().padLeft(2, '0')} $period';
+        _reminderTimeController.text = '${hour.toString().padLeft(2, '0')}:${picked.minute.toString().padLeft(2, '0')} $period';
       });
     }
   }
@@ -182,7 +180,7 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
       maxHeight: 1024,
       imageQuality: 80,
     );
-
+    
     if (image != null) {
       setState(() {
         _selectedImage = File(image.path);
@@ -196,18 +194,18 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
       _showSnackBar('Please fill in all required fields', isError: true);
       return;
     }
-
+    
     setState(() {
       _isLoading = true;
     });
-
+    
     try {
       // Here you would save to your database/provider
       // For now, we'll just simulate saving
       await Future.delayed(const Duration(milliseconds: 1500));
-
+      
       _showSnackBar('Health record saved successfully!');
-
+      
       // Navigate back after a short delay
       await Future.delayed(const Duration(milliseconds: 500));
       if (mounted) {
@@ -288,10 +286,9 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
   }
 
   /// Build child selector
-  Widget _buildChildSelector(
-      ChildProvider provider, Map<String, String> texts) {
+  Widget _buildChildSelector(ChildProvider provider, Map<String, String> texts) {
     final selectedChild = provider.selectedChild;
-
+    
     return GestureDetector(
       onTap: () => _showChildSelectionDialog(provider, texts),
       child: Container(
@@ -306,14 +303,12 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
             CircleAvatar(
               radius: 24,
               backgroundColor: const Color(0xFF0086FF).withValues(alpha: 0.1),
-              backgroundImage: selectedChild?.photoUrl != null &&
-                      selectedChild!.photoUrl!.isNotEmpty
+              backgroundImage: selectedChild?.photoUrl != null && selectedChild!.photoUrl!.isNotEmpty
                   ? (selectedChild!.photoUrl!.startsWith('http')
                       ? NetworkImage(selectedChild.photoUrl!) as ImageProvider
                       : FileImage(File(selectedChild.photoUrl!)))
                   : null,
-              child: selectedChild?.photoUrl == null ||
-                      selectedChild!.photoUrl!.isEmpty
+              child: selectedChild?.photoUrl == null || selectedChild!.photoUrl!.isEmpty
                   ? (selectedChild != null
                       ? Text(
                           selectedChild.name[0].toUpperCase(),
@@ -348,14 +343,11 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                           color: const Color(0xFF1A1A1A),
-                          fontFamily: _selectedLanguage == 'si'
-                              ? 'NotoSerifSinhala'
-                              : null,
+                          fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                         ),
                       ),
                       const SizedBox(width: 8),
-                      const Icon(Icons.expand_more,
-                          color: Color(0xFF6B7280), size: 20),
+                      const Icon(Icons.expand_more, color: Color(0xFF6B7280), size: 20),
                     ],
                   ),
                 ],
@@ -366,10 +358,9 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
       ),
     );
   }
-
+  
   /// Show child selection dialog
-  void _showChildSelectionDialog(
-      ChildProvider provider, Map<String, String> texts) {
+  void _showChildSelectionDialog(ChildProvider provider, Map<String, String> texts) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -389,25 +380,22 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
             itemBuilder: (context, index) {
               final child = provider.children[index];
               final isSelected = child.id == provider.selectedChild?.id;
-
+              
               return ListTile(
                 leading: CircleAvatar(
-                  backgroundColor: isSelected
-                      ? const Color(0xFF0086FF)
+                  backgroundColor: isSelected 
+                      ? const Color(0xFF0086FF) 
                       : const Color(0xFF0086FF).withValues(alpha: 0.1),
-                  backgroundImage:
-                      child.photoUrl != null && child.photoUrl!.isNotEmpty
-                          ? (child.photoUrl!.startsWith('http')
-                              ? NetworkImage(child.photoUrl!) as ImageProvider
-                              : FileImage(File(child.photoUrl!)))
-                          : null,
+                  backgroundImage: child.photoUrl != null && child.photoUrl!.isNotEmpty
+                      ? (child.photoUrl!.startsWith('http')
+                          ? NetworkImage(child.photoUrl!) as ImageProvider
+                          : FileImage(File(child.photoUrl!)))
+                      : null,
                   child: child.photoUrl == null || child.photoUrl!.isEmpty
                       ? Text(
                           child.name[0].toUpperCase(),
                           style: TextStyle(
-                            color: isSelected
-                                ? Colors.white
-                                : const Color(0xFF0086FF),
+                            color: isSelected ? Colors.white : const Color(0xFF0086FF),
                             fontWeight: FontWeight.bold,
                           ),
                         )
@@ -416,10 +404,8 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
                 title: Text(
                   child.name,
                   style: TextStyle(
-                    fontWeight:
-                        isSelected ? FontWeight.bold : FontWeight.normal,
-                    fontFamily:
-                        _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                   ),
                 ),
                 subtitle: Text(
@@ -427,11 +413,10 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
                   style: TextStyle(
                     fontSize: 12,
                     color: const Color(0xFF6B7280),
-                    fontFamily:
-                        _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                   ),
                 ),
-                trailing: isSelected
+                trailing: isSelected 
                     ? const Icon(Icons.check_circle, color: Color(0xFF0086FF))
                     : null,
                 onTap: () {
@@ -449,8 +434,7 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
               texts['cancel'] ?? 'Cancel',
               style: TextStyle(
                 color: const Color(0xFF6B7280),
-                fontFamily:
-                    _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
               ),
             ),
           ),
@@ -486,14 +470,10 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
                       onTap: () => setState(() => _selectedType = type),
                       child: Container(
                         decoration: BoxDecoration(
-                          color: isSelected
-                              ? const Color(0xFF0086FF).withValues(alpha: 0.1)
-                              : Colors.white,
+                          color: isSelected ? const Color(0xFF0086FF).withValues(alpha: 0.1) : Colors.white,
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
-                            color: isSelected
-                                ? const Color(0xFF0086FF)
-                                : const Color(0xFFE5E7EB),
+                            color: isSelected ? const Color(0xFF0086FF) : const Color(0xFFE5E7EB),
                             width: isSelected ? 2 : 1,
                           ),
                         ),
@@ -502,9 +482,7 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
                           children: [
                             Icon(
                               type.icon,
-                              color: isSelected
-                                  ? const Color(0xFF0086FF)
-                                  : const Color(0xFF6B7280),
+                              color: isSelected ? const Color(0xFF0086FF) : const Color(0xFF6B7280),
                               size: 20,
                             ),
                             const SizedBox(width: 12),
@@ -513,12 +491,8 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w500,
-                                color: isSelected
-                                    ? const Color(0xFF0086FF)
-                                    : const Color(0xFF6B7280),
-                                fontFamily: _selectedLanguage == 'si'
-                                    ? 'NotoSerifSinhala'
-                                    : null,
+                                color: isSelected ? const Color(0xFF0086FF) : const Color(0xFF6B7280),
+                                fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                               ),
                             ),
                           ],
@@ -534,24 +508,19 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
                   return Expanded(
                     child: Padding(
                       padding: EdgeInsets.only(
-                        right: type != HealthRecordType.values.last
-                            ? (ResponsiveUtils.isMobile(context) ? 8 : 12)
+                        right: type != HealthRecordType.values.last 
+                            ? (ResponsiveUtils.isMobile(context) ? 8 : 12) 
                             : 0,
                       ),
                       child: GestureDetector(
                         onTap: () => setState(() => _selectedType = type),
                         child: Container(
-                          height:
-                              ResponsiveUtils.isSmallHeight(context) ? 70 : 80,
+                          height: ResponsiveUtils.isSmallHeight(context) ? 70 : 80,
                           decoration: BoxDecoration(
-                            color: isSelected
-                                ? const Color(0xFF0086FF).withValues(alpha: 0.1)
-                                : Colors.white,
+                            color: isSelected ? const Color(0xFF0086FF).withValues(alpha: 0.1) : Colors.white,
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
-                              color: isSelected
-                                  ? const Color(0xFF0086FF)
-                                  : const Color(0xFFE5E7EB),
+                              color: isSelected ? const Color(0xFF0086FF) : const Color(0xFFE5E7EB),
                               width: isSelected ? 2 : 1,
                             ),
                           ),
@@ -560,31 +529,17 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
                             children: [
                               Icon(
                                 type.icon,
-                                color: isSelected
-                                    ? const Color(0xFF0086FF)
-                                    : const Color(0xFF6B7280),
-                                size: ResponsiveUtils.isSmallHeight(context)
-                                    ? 20
-                                    : 24,
+                                color: isSelected ? const Color(0xFF0086FF) : const Color(0xFF6B7280),
+                                size: ResponsiveUtils.isSmallHeight(context) ? 20 : 24,
                               ),
-                              SizedBox(
-                                  height: ResponsiveUtils.isSmallHeight(context)
-                                      ? 4
-                                      : 8),
+                              SizedBox(height: ResponsiveUtils.isSmallHeight(context) ? 4 : 8),
                               Text(
                                 texts[type.name]!,
                                 style: TextStyle(
-                                  fontSize:
-                                      ResponsiveUtils.isSmallHeight(context)
-                                          ? 12
-                                          : 14,
+                                  fontSize: ResponsiveUtils.isSmallHeight(context) ? 12 : 14,
                                   fontWeight: FontWeight.w500,
-                                  color: isSelected
-                                      ? const Color(0xFF0086FF)
-                                      : const Color(0xFF6B7280),
-                                  fontFamily: _selectedLanguage == 'si'
-                                      ? 'NotoSerifSinhala'
-                                      : null,
+                                  color: isSelected ? const Color(0xFF0086FF) : const Color(0xFF6B7280),
+                                  fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                                 ),
                               ),
                             ],
@@ -620,9 +575,7 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
               return const Iterable<String>.empty();
             }
             return _getAutocompleteOptions().where((String option) {
-              return option
-                  .toLowerCase()
-                  .contains(textEditingValue.text.toLowerCase());
+              return option.toLowerCase().contains(textEditingValue.text.toLowerCase());
             });
           },
           onSelected: (String selection) {
@@ -637,8 +590,7 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
                 hintText: texts['nameHint']!,
                 hintStyle: TextStyle(
                   color: const Color(0xFF9CA3AF),
-                  fontFamily:
-                      _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                  fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                 ),
                 suffixIcon: const Icon(Icons.search, color: Color(0xFF6B7280)),
                 border: OutlineInputBorder(
@@ -651,13 +603,11 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide:
-                      const BorderSide(color: Color(0xFF0086FF), width: 2),
+                  borderSide: const BorderSide(color: Color(0xFF0086FF), width: 2),
                 ),
                 filled: true,
                 fillColor: Colors.white,
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
               ),
             );
           },
@@ -686,9 +636,7 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
                           option,
                           style: TextStyle(
                             fontSize: 14,
-                            fontFamily: _selectedLanguage == 'si'
-                                ? 'NotoSerifSinhala'
-                                : null,
+                            fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                           ),
                         ),
                         onTap: () => onSelected(option),
@@ -730,8 +678,7 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
             suffixIcon: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.calendar_today,
-                    color: const Color(0xFF6B7280), size: 20),
+                Icon(Icons.calendar_today, color: const Color(0xFF6B7280), size: 20),
                 const SizedBox(width: 12),
                 Icon(Icons.schedule, color: const Color(0xFF6B7280), size: 20),
                 const SizedBox(width: 12),
@@ -751,8 +698,7 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
             ),
             filled: true,
             fillColor: Colors.white,
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           ),
         ),
       ],
@@ -817,8 +763,7 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
                 color: const Color(0xFF1A1A1A),
-                fontFamily:
-                    _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
               ),
             ),
             Switch.adaptive(
@@ -848,16 +793,13 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
                         color: const Color(0xFF1A1A1A),
-                        fontFamily: _selectedLanguage == 'si'
-                            ? 'NotoSerifSinhala'
-                            : null,
+                        fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                       ),
                     ),
                     GestureDetector(
                       onTap: _selectReminderTime,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 8),
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(8),
@@ -875,8 +817,7 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
                               ),
                             ),
                             const SizedBox(width: 8),
-                            const Icon(Icons.access_time,
-                                size: 18, color: Color(0xFF6B7280)),
+                            const Icon(Icons.access_time, size: 18, color: Color(0xFF6B7280)),
                           ],
                         ),
                       ),
@@ -893,42 +834,33 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
                         color: const Color(0xFF1A1A1A),
-                        fontFamily: _selectedLanguage == 'si'
-                            ? 'NotoSerifSinhala'
-                            : null,
+                        fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                       ),
                     ),
                     DropdownButton<ReminderRepeat>(
                       value: _reminderRepeat,
                       underline: const SizedBox(),
-                      icon: const Icon(Icons.expand_more,
-                          color: Color(0xFF6B7280)),
-                      items: ReminderRepeat.values
-                          .map((repeat) => DropdownMenuItem(
-                                value: repeat,
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 12, vertical: 8),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(8),
-                                    border: Border.all(
-                                        color: const Color(0xFFE5E7EB)),
-                                  ),
-                                  child: Text(
-                                    texts[repeat.name]!,
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500,
-                                      color: const Color(0xFF1A1A1A),
-                                      fontFamily: _selectedLanguage == 'si'
-                                          ? 'NotoSerifSinhala'
-                                          : null,
-                                    ),
-                                  ),
-                                ),
-                              ))
-                          .toList(),
+                      icon: const Icon(Icons.expand_more, color: Color(0xFF6B7280)),
+                      items: ReminderRepeat.values.map((repeat) => DropdownMenuItem(
+                        value: repeat,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: const Color(0xFFE5E7EB)),
+                          ),
+                          child: Text(
+                            texts[repeat.name]!,
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                              color: const Color(0xFF1A1A1A),
+                              fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                            ),
+                          ),
+                        ),
+                      )).toList(),
                       onChanged: (value) {
                         if (value != null) {
                           setState(() => _reminderRepeat = value);
@@ -995,9 +927,7 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
                         style: TextStyle(
                           fontSize: 14,
                           color: const Color(0xFF9CA3AF),
-                          fontFamily: _selectedLanguage == 'si'
-                              ? 'NotoSerifSinhala'
-                              : null,
+                          fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                         ),
                         textAlign: TextAlign.center,
                       ),
@@ -1029,8 +959,7 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
                 color: const Color(0xFF6B7280),
-                fontFamily:
-                    _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
               ),
             ),
           ),
@@ -1062,8 +991,7 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
-                      fontFamily:
-                          _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                      fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                     ),
                   ),
           ),
@@ -1087,8 +1015,7 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
         'nameHint': 'Start typing to search...',
         'dueDate': 'Due Date',
         'notes': 'Notes',
-        'notesHint':
-            'Add any additional information about the medication or vaccine...',
+        'notesHint': 'Add any additional information about the medication or vaccine...',
         'setReminder': 'Set Reminder',
         'reminderTime': 'Reminder Time',
         'repeat': 'Repeat',
@@ -1138,8 +1065,7 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
         'nameHint': 'தேட தட்டச்சு செய்யத் தொடங்குங்கள்...',
         'dueDate': 'நிலுவை தேதி',
         'notes': 'குறிப்புகள்',
-        'notesHint':
-            'மருந்து அல்லது தடுப்பூசி பற்றிய கூடுதல் தகவல்களை சேர்க்கவும்...',
+        'notesHint': 'மருந்து அல்லது தடுப்பூசி பற்றிய கூடுதல் தகவல்களை சேர்க்கவும்...',
         'setReminder': 'நினைவூட்டல் அமைக்க',
         'reminderTime': 'நினைவூட்டல் நேரம்',
         'repeat': 'மீண்டும்',
@@ -1148,8 +1074,7 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
         'weekly': 'வாராந்தर',
         'monthly': 'மாதாந்தர',
         'addPhoto': 'புகைப்படம் சேர்க்க (விருப்பமானது)',
-        'photoHint':
-            'மருந்து அல்லது மருத்துவர் பரிந்துரையின் புகைப்படத்தை பதிவேற்ற தட்டவும்',
+        'photoHint': 'மருந்து அல்லது மருத்துவர் பரிந்துரையின் புகைப்படத்தை பதிவேற்ற தட்டவும்',
         'cancel': 'ரத்து செய்',
         'saveRecord': 'பதிவு சேமி',
       },

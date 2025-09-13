@@ -101,11 +101,11 @@ class AppDateUtils {
     final now = DateTime.now();
     int months = (now.year - birthDate.year) * 12;
     months += now.month - birthDate.month;
-
+    
     if (now.day < birthDate.day) {
       months--;
     }
-
+    
     return months;
   }
 

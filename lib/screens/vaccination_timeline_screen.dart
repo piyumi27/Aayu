@@ -15,8 +15,7 @@ class VaccinationTimelineScreen extends StatefulWidget {
   const VaccinationTimelineScreen({super.key});
 
   @override
-  State<VaccinationTimelineScreen> createState() =>
-      _VaccinationTimelineScreenState();
+  State<VaccinationTimelineScreen> createState() => _VaccinationTimelineScreenState();
 }
 
 class _VaccinationTimelineScreenState extends State<VaccinationTimelineScreen> {
@@ -43,7 +42,7 @@ class _VaccinationTimelineScreenState extends State<VaccinationTimelineScreen> {
     setState(() {
       _allVaccines = SriLankanVaccinationSchedule.vaccines;
     });
-
+    
     final provider = Provider.of<ChildProvider>(context, listen: false);
     setState(() {
       _givenVaccines = provider.vaccineRecords;
@@ -178,15 +177,15 @@ class _VaccinationTimelineScreenState extends State<VaccinationTimelineScreen> {
         children: [
           // View Toggle
           _buildViewToggle(texts),
-
+          
           // Summary Cards
           _buildSummaryCards(child, texts),
-
+          
           // Vaccination Timeline
           Expanded(
-            child: _selectedView == 'timeline'
-                ? _buildTimelineView(child, texts)
-                : _buildCalendarView(child, texts),
+            child: _selectedView == 'timeline' 
+              ? _buildTimelineView(child, texts)
+              : _buildCalendarView(child, texts),
           ),
         ],
       ),
@@ -213,22 +212,17 @@ class _VaccinationTimelineScreenState extends State<VaccinationTimelineScreen> {
                     vertical: ResponsiveUtils.getResponsiveSpacing(context, 12),
                   ),
                   decoration: BoxDecoration(
-                    color: isSelected
-                        ? const Color(0xFF0086FF)
-                        : Colors.transparent,
+                    color: isSelected ? const Color(0xFF0086FF) : Colors.transparent,
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
                     texts[view]!,
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontSize:
-                          ResponsiveUtils.getResponsiveFontSize(context, 14),
+                      fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
                       fontWeight: FontWeight.w500,
-                      color:
-                          isSelected ? Colors.white : const Color(0xFF6B7280),
-                      fontFamily:
-                          _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                      color: isSelected ? Colors.white : const Color(0xFF6B7280),
+                      fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                     ),
                   ),
                 ),
@@ -241,8 +235,7 @@ class _VaccinationTimelineScreenState extends State<VaccinationTimelineScreen> {
   }
 
   Widget _buildSummaryCards(Child child, Map<String, String> texts) {
-    final ageInMonths = Provider.of<ChildProvider>(context)
-        .calculateAgeInMonths(child.birthDate);
+    final ageInMonths = Provider.of<ChildProvider>(context).calculateAgeInMonths(child.birthDate);
     final upcomingVaccines = _getUpcomingVaccines(ageInMonths);
     final overdueVaccines = _getOverdueVaccines(ageInMonths);
     final completedCount = _givenVaccines.length;
@@ -283,8 +276,7 @@ class _VaccinationTimelineScreenState extends State<VaccinationTimelineScreen> {
     );
   }
 
-  Widget _buildSummaryCard(
-      String title, String value, Color color, IconData icon) {
+  Widget _buildSummaryCard(String title, String value, Color color, IconData icon) {
     return Container(
       padding: ResponsiveUtils.getResponsivePadding(context),
       decoration: BoxDecoration(
@@ -323,11 +315,9 @@ class _VaccinationTimelineScreenState extends State<VaccinationTimelineScreen> {
   }
 
   Widget _buildTimelineView(Child child, Map<String, String> texts) {
-    final ageInMonths = Provider.of<ChildProvider>(context)
-        .calculateAgeInMonths(child.birthDate);
+    final ageInMonths = Provider.of<ChildProvider>(context).calculateAgeInMonths(child.birthDate);
     final sortedVaccines = List<Vaccine>.from(_allVaccines)
-      ..sort(
-          (a, b) => a.recommendedAgeMonths.compareTo(b.recommendedAgeMonths));
+      ..sort((a, b) => a.recommendedAgeMonths.compareTo(b.recommendedAgeMonths));
 
     return ListView.builder(
       padding: ResponsiveUtils.getResponsivePadding(context),
@@ -335,10 +325,8 @@ class _VaccinationTimelineScreenState extends State<VaccinationTimelineScreen> {
       itemBuilder: (context, index) {
         final vaccine = sortedVaccines[index];
         final isGiven = _isVaccineGiven(vaccine.id);
-        final isOverdue =
-            vaccine.recommendedAgeMonths < ageInMonths && !isGiven;
-        final isUpcoming =
-            vaccine.recommendedAgeMonths <= ageInMonths + 3 && !isGiven;
+        final isOverdue = vaccine.recommendedAgeMonths < ageInMonths && !isGiven;
+        final isUpcoming = vaccine.recommendedAgeMonths <= ageInMonths + 3 && !isGiven;
 
         return _buildTimelineItem(
           vaccine,
@@ -409,9 +397,9 @@ class _VaccinationTimelineScreenState extends State<VaccinationTimelineScreen> {
               ),
           ],
         ),
-
+        
         SizedBox(width: ResponsiveUtils.getResponsiveSpacing(context, 16)),
-
+        
         // Vaccine card
         Expanded(
           child: Container(
@@ -437,26 +425,19 @@ class _VaccinationTimelineScreenState extends State<VaccinationTimelineScreen> {
                   children: [
                     Expanded(
                       child: Text(
-                        _selectedLanguage == 'si'
-                            ? vaccine.nameLocal
-                            : vaccine.name,
+                        _selectedLanguage == 'si' ? vaccine.nameLocal : vaccine.name,
                         style: TextStyle(
-                          fontSize: ResponsiveUtils.getResponsiveFontSize(
-                              context, 16),
+                          fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
                           fontWeight: FontWeight.w600,
                           color: const Color(0xFF1A1A1A),
-                          fontFamily: _selectedLanguage == 'si'
-                              ? 'NotoSerifSinhala'
-                              : null,
+                          fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                         ),
                       ),
                     ),
                     Container(
                       padding: EdgeInsets.symmetric(
-                        horizontal:
-                            ResponsiveUtils.getResponsiveSpacing(context, 8),
-                        vertical:
-                            ResponsiveUtils.getResponsiveSpacing(context, 4),
+                        horizontal: ResponsiveUtils.getResponsiveSpacing(context, 8),
+                        vertical: ResponsiveUtils.getResponsiveSpacing(context, 4),
                       ),
                       decoration: BoxDecoration(
                         color: statusColor.withOpacity(0.1),
@@ -465,32 +446,29 @@ class _VaccinationTimelineScreenState extends State<VaccinationTimelineScreen> {
                       child: Text(
                         statusText,
                         style: TextStyle(
-                          fontSize: ResponsiveUtils.getResponsiveFontSize(
-                              context, 12),
+                          fontSize: ResponsiveUtils.getResponsiveFontSize(context, 12),
                           fontWeight: FontWeight.w500,
                           color: statusColor,
-                          fontFamily: _selectedLanguage == 'si'
-                              ? 'NotoSerifSinhala'
-                              : null,
+                          fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                         ),
                       ),
                     ),
                   ],
                 ),
-                SizedBox(
-                    height: ResponsiveUtils.getResponsiveSpacing(context, 8)),
+                
+                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 8)),
+                
                 Text(
                   vaccine.description,
                   style: TextStyle(
-                    fontSize:
-                        ResponsiveUtils.getResponsiveFontSize(context, 14),
+                    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
                     color: const Color(0xFF6B7280),
-                    fontFamily:
-                        _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                   ),
                 ),
-                SizedBox(
-                    height: ResponsiveUtils.getResponsiveSpacing(context, 12)),
+                
+                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 12)),
+                
                 Row(
                   children: [
                     Icon(
@@ -498,28 +476,21 @@ class _VaccinationTimelineScreenState extends State<VaccinationTimelineScreen> {
                       size: ResponsiveUtils.getResponsiveIconSize(context, 16),
                       color: const Color(0xFF6B7280),
                     ),
-                    SizedBox(
-                        width:
-                            ResponsiveUtils.getResponsiveSpacing(context, 4)),
+                    SizedBox(width: ResponsiveUtils.getResponsiveSpacing(context, 4)),
                     Text(
                       '${texts['dueAt']!} ${_formatAge(vaccine.recommendedAgeMonths, texts)}',
                       style: TextStyle(
-                        fontSize:
-                            ResponsiveUtils.getResponsiveFontSize(context, 14),
+                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
                         color: const Color(0xFF6B7280),
-                        fontFamily: _selectedLanguage == 'si'
-                            ? 'NotoSerifSinhala'
-                            : null,
+                        fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                       ),
                     ),
                     const Spacer(),
                     if (vaccine.isMandatory)
                       Container(
                         padding: EdgeInsets.symmetric(
-                          horizontal:
-                              ResponsiveUtils.getResponsiveSpacing(context, 8),
-                          vertical:
-                              ResponsiveUtils.getResponsiveSpacing(context, 2),
+                          horizontal: ResponsiveUtils.getResponsiveSpacing(context, 8),
+                          vertical: ResponsiveUtils.getResponsiveSpacing(context, 2),
                         ),
                         decoration: BoxDecoration(
                           color: const Color(0xFFDC2626).withOpacity(0.1),
@@ -528,13 +499,10 @@ class _VaccinationTimelineScreenState extends State<VaccinationTimelineScreen> {
                         child: Text(
                           texts['mandatory']!,
                           style: TextStyle(
-                            fontSize: ResponsiveUtils.getResponsiveFontSize(
-                                context, 11),
+                            fontSize: ResponsiveUtils.getResponsiveFontSize(context, 11),
                             fontWeight: FontWeight.w500,
                             color: const Color(0xFFDC2626),
-                            fontFamily: _selectedLanguage == 'si'
-                                ? 'NotoSerifSinhala'
-                                : null,
+                            fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                           ),
                         ),
                       ),
@@ -579,8 +547,8 @@ class _VaccinationTimelineScreenState extends State<VaccinationTimelineScreen> {
     final givenVaccineIds = _givenVaccines.map((r) => r.vaccineId).toSet();
     return _allVaccines.where((vaccine) {
       return !givenVaccineIds.contains(vaccine.id) &&
-          vaccine.recommendedAgeMonths <= currentAgeInMonths + 3 &&
-          vaccine.recommendedAgeMonths >= currentAgeInMonths;
+             vaccine.recommendedAgeMonths <= currentAgeInMonths + 3 &&
+             vaccine.recommendedAgeMonths >= currentAgeInMonths;
     }).toList();
   }
 
@@ -588,7 +556,7 @@ class _VaccinationTimelineScreenState extends State<VaccinationTimelineScreen> {
     final givenVaccineIds = _givenVaccines.map((r) => r.vaccineId).toSet();
     return _allVaccines.where((vaccine) {
       return !givenVaccineIds.contains(vaccine.id) &&
-          vaccine.recommendedAgeMonths < currentAgeInMonths;
+             vaccine.recommendedAgeMonths < currentAgeInMonths;
     }).toList();
   }
 }

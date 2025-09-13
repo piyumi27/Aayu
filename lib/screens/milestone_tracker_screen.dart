@@ -154,8 +154,7 @@ class _MilestoneTrackerScreenState extends State<MilestoneTrackerScreen>
       },
       'ta': {
         'title': 'மைல்கல் கண்காணிப்பாளர்',
-        'subtitle':
-            'அனைத்து களங்களிலும் வளர்ச்சி முன்னேற்றத்தைக் கண்காணிக்கவும்',
+        'subtitle': 'அனைத்து களங்களிலும் வளர்ச்சி முன்னேற்றத்தைக் கண்காணிக்கவும்',
         'overview': 'கண்ணோட்டம்',
         'domains': 'களங்கள்',
         'details': 'விவரங்கள்',
@@ -241,8 +240,7 @@ class _MilestoneTrackerScreenState extends State<MilestoneTrackerScreen>
     );
   }
 
-  PreferredSizeWidget _buildAppBar(
-      BuildContext context, Map<String, String> texts) {
+  PreferredSizeWidget _buildAppBar(BuildContext context, Map<String, String> texts) {
     return AppBar(
       title: Text(
         texts['title'] ?? 'Milestone Tracker',
@@ -280,18 +278,15 @@ class _MilestoneTrackerScreenState extends State<MilestoneTrackerScreen>
       child: Row(
         children: [
           Expanded(
-            child: _buildTabButton(
-                0, texts['overview'] ?? 'Overview', Icons.dashboard_rounded),
+            child: _buildTabButton(0, texts['overview'] ?? 'Overview', Icons.dashboard_rounded),
           ),
           const SizedBox(width: 8),
           Expanded(
-            child: _buildTabButton(
-                1, texts['domains'] ?? 'Domains', Icons.category_rounded),
+            child: _buildTabButton(1, texts['domains'] ?? 'Domains', Icons.category_rounded),
           ),
           const SizedBox(width: 8),
           Expanded(
-            child: _buildTabButton(
-                2, texts['details'] ?? 'Details', Icons.analytics_rounded),
+            child: _buildTabButton(2, texts['details'] ?? 'Details', Icons.analytics_rounded),
           ),
         ],
       ),
@@ -410,8 +405,7 @@ class _MilestoneTrackerScreenState extends State<MilestoneTrackerScreen>
     );
   }
 
-  Widget _buildOverviewSummaryCard(
-      Child child, Map<String, dynamic> stats, Map<String, String> texts) {
+  Widget _buildOverviewSummaryCard(Child child, Map<String, dynamic> stats, Map<String, String> texts) {
     final ageInMonths = _getChildAgeInMonths(child);
     final progressColor = _getProgressColor(stats['percentage'] ?? 0.0);
 
@@ -426,8 +420,7 @@ class _MilestoneTrackerScreenState extends State<MilestoneTrackerScreen>
             progressColor.withValues(alpha: 0.03),
           ],
         ),
-        borderRadius: BorderRadius.circular(
-            ResponsiveUtils.getResponsiveBorderRadius(context) + 8),
+        borderRadius: BorderRadius.circular(ResponsiveUtils.getResponsiveBorderRadius(context) + 8),
         border: Border.all(color: const Color(0xFFE5E7EB)),
       ),
       child: Padding(
@@ -438,17 +431,12 @@ class _MilestoneTrackerScreenState extends State<MilestoneTrackerScreen>
             Row(
               children: [
                 Container(
-                  padding:
-                      ResponsiveUtils.getResponsivePadding(context, scale: 0.5),
+                  padding: ResponsiveUtils.getResponsivePadding(context, scale: 0.5),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      colors: [
-                        progressColor,
-                        progressColor.withValues(alpha: 0.8)
-                      ],
+                      colors: [progressColor, progressColor.withValues(alpha: 0.8)],
                     ),
-                    borderRadius: BorderRadius.circular(
-                        ResponsiveUtils.getResponsiveBorderRadius(context)),
+                    borderRadius: BorderRadius.circular(ResponsiveUtils.getResponsiveBorderRadius(context)),
                   ),
                   child: Icon(
                     Icons.emoji_events_rounded,
@@ -456,8 +444,7 @@ class _MilestoneTrackerScreenState extends State<MilestoneTrackerScreen>
                     size: ResponsiveUtils.getResponsiveIconSize(context, 24),
                   ),
                 ),
-                SizedBox(
-                    width: ResponsiveUtils.getResponsiveSpacing(context, 16)),
+                SizedBox(width: ResponsiveUtils.getResponsiveSpacing(context, 16)),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -465,8 +452,7 @@ class _MilestoneTrackerScreenState extends State<MilestoneTrackerScreen>
                       Text(
                         '${child.name}\'s Development',
                         style: TextStyle(
-                          fontSize: ResponsiveUtils.getResponsiveFontSize(
-                              context, 20),
+                          fontSize: ResponsiveUtils.getResponsiveFontSize(context, 20),
                           fontWeight: FontWeight.w700,
                           color: const Color(0xFF111827),
                         ),
@@ -474,8 +460,7 @@ class _MilestoneTrackerScreenState extends State<MilestoneTrackerScreen>
                       Text(
                         '$ageInMonths ${texts['months'] ?? 'months'} old',
                         style: TextStyle(
-                          fontSize: ResponsiveUtils.getResponsiveFontSize(
-                              context, 14),
+                          fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
                           color: const Color(0xFF6B7280),
                           fontWeight: FontWeight.w500,
                         ),
@@ -494,15 +479,12 @@ class _MilestoneTrackerScreenState extends State<MilestoneTrackerScreen>
                     alignment: Alignment.center,
                     children: [
                       SizedBox(
-                        width:
-                            ResponsiveUtils.getResponsiveSpacing(context, 120),
-                        height:
-                            ResponsiveUtils.getResponsiveSpacing(context, 120),
+                        width: ResponsiveUtils.getResponsiveSpacing(context, 120),
+                        height: ResponsiveUtils.getResponsiveSpacing(context, 120),
                         child: CircularProgressIndicator(
                           value: stats['percentage'] / 100,
                           backgroundColor: const Color(0xFFF3F4F6),
-                          valueColor:
-                              AlwaysStoppedAnimation<Color>(progressColor),
+                          valueColor: AlwaysStoppedAnimation<Color>(progressColor),
                           strokeWidth: 8,
                           strokeCap: StrokeCap.round,
                         ),
@@ -513,8 +495,7 @@ class _MilestoneTrackerScreenState extends State<MilestoneTrackerScreen>
                           Text(
                             '${stats['percentage'].round()}%',
                             style: TextStyle(
-                              fontSize: ResponsiveUtils.getResponsiveFontSize(
-                                  context, 24),
+                              fontSize: ResponsiveUtils.getResponsiveFontSize(context, 24),
                               fontWeight: FontWeight.w800,
                               color: progressColor,
                             ),
@@ -522,8 +503,7 @@ class _MilestoneTrackerScreenState extends State<MilestoneTrackerScreen>
                           Text(
                             texts['percentageComplete'] ?? 'Complete',
                             style: TextStyle(
-                              fontSize: ResponsiveUtils.getResponsiveFontSize(
-                                  context, 12),
+                              fontSize: ResponsiveUtils.getResponsiveFontSize(context, 12),
                               color: const Color(0xFF6B7280),
                               fontWeight: FontWeight.w500,
                             ),
@@ -533,8 +513,7 @@ class _MilestoneTrackerScreenState extends State<MilestoneTrackerScreen>
                     ],
                   ),
                 ),
-                SizedBox(
-                    width: ResponsiveUtils.getResponsiveSpacing(context, 24)),
+                SizedBox(width: ResponsiveUtils.getResponsiveSpacing(context, 24)),
                 Expanded(
                   flex: 3,
                   child: Column(
@@ -545,18 +524,14 @@ class _MilestoneTrackerScreenState extends State<MilestoneTrackerScreen>
                         Icons.flag_rounded,
                         const Color(0xFF0086FF),
                       ),
-                      SizedBox(
-                          height: ResponsiveUtils.getResponsiveSpacing(
-                              context, 12)),
+                      SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 12)),
                       _buildStatRow(
                         texts['achievedMilestones'] ?? 'Achieved',
                         '${stats['achieved']}',
                         Icons.check_circle_rounded,
                         const Color(0xFF10B981),
                       ),
-                      SizedBox(
-                          height: ResponsiveUtils.getResponsiveSpacing(
-                              context, 12)),
+                      SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 12)),
                       _buildStatRow(
                         texts['redFlagCount'] ?? 'Red Flags',
                         '${stats['redFlags']}',
@@ -569,17 +544,13 @@ class _MilestoneTrackerScreenState extends State<MilestoneTrackerScreen>
               ],
             ),
             if (stats['redFlags'] > 0) ...[
-              SizedBox(
-                  height: ResponsiveUtils.getResponsiveSpacing(context, 20)),
+              SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 20)),
               Container(
-                padding:
-                    ResponsiveUtils.getResponsivePadding(context, scale: 0.75),
+                padding: ResponsiveUtils.getResponsivePadding(context, scale: 0.75),
                 decoration: BoxDecoration(
                   color: const Color(0xFFFEF2F2),
-                  borderRadius: BorderRadius.circular(
-                      ResponsiveUtils.getResponsiveBorderRadius(context)),
-                  border: Border.all(
-                      color: const Color(0xFFEF4444).withValues(alpha: 0.3)),
+                  borderRadius: BorderRadius.circular(ResponsiveUtils.getResponsiveBorderRadius(context)),
+                  border: Border.all(color: const Color(0xFFEF4444).withValues(alpha: 0.3)),
                 ),
                 child: Row(
                   children: [
@@ -588,16 +559,12 @@ class _MilestoneTrackerScreenState extends State<MilestoneTrackerScreen>
                       color: const Color(0xFFEF4444),
                       size: ResponsiveUtils.getResponsiveIconSize(context, 20),
                     ),
-                    SizedBox(
-                        width:
-                            ResponsiveUtils.getResponsiveSpacing(context, 12)),
+                    SizedBox(width: ResponsiveUtils.getResponsiveSpacing(context, 12)),
                     Expanded(
                       child: Text(
-                        texts['consultSpecialist'] ??
-                            'Consider consulting a pediatrician for assessment',
+                        texts['consultSpecialist'] ?? 'Consider consulting a pediatrician for assessment',
                         style: TextStyle(
-                          fontSize: ResponsiveUtils.getResponsiveFontSize(
-                              context, 14),
+                          fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
                           color: const Color(0xFFDC2626),
                           fontWeight: FontWeight.w500,
                         ),
@@ -658,7 +625,7 @@ class _MilestoneTrackerScreenState extends State<MilestoneTrackerScreen>
 
   Widget _buildDomainProgressGrid(Child child, Map<String, String> texts) {
     final domains = DevelopmentDomain.values;
-
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -689,11 +656,10 @@ class _MilestoneTrackerScreenState extends State<MilestoneTrackerScreen>
     );
   }
 
-  Widget _buildDomainCard(
-      DevelopmentDomain domain, Child child, Map<String, String> texts) {
+  Widget _buildDomainCard(DevelopmentDomain domain, Child child, Map<String, String> texts) {
     final progress = _getMockDomainProgress(domain, child);
     final color = _getDomainColor(domain);
-
+    
     return SafeGestureDetector(
       onTap: () {
         setState(() {
@@ -704,8 +670,7 @@ class _MilestoneTrackerScreenState extends State<MilestoneTrackerScreen>
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(
-              ResponsiveUtils.getResponsiveBorderRadius(context)),
+          borderRadius: BorderRadius.circular(ResponsiveUtils.getResponsiveBorderRadius(context)),
           border: Border.all(color: const Color(0xFFE5E7EB)),
           boxShadow: [
             BoxShadow(
@@ -732,8 +697,7 @@ class _MilestoneTrackerScreenState extends State<MilestoneTrackerScreen>
                   size: ResponsiveUtils.getResponsiveIconSize(context, 20),
                 ),
               ),
-              SizedBox(
-                  height: ResponsiveUtils.getResponsiveSpacing(context, 8)),
+              SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 8)),
               Text(
                 texts[domain.name] ?? domain.displayName,
                 style: TextStyle(
@@ -745,8 +709,7 @@ class _MilestoneTrackerScreenState extends State<MilestoneTrackerScreen>
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
-              SizedBox(
-                  height: ResponsiveUtils.getResponsiveSpacing(context, 8)),
+              SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 8)),
               LinearProgressIndicator(
                 value: progress / 100,
                 backgroundColor: const Color(0xFFF3F4F6),
@@ -754,8 +717,7 @@ class _MilestoneTrackerScreenState extends State<MilestoneTrackerScreen>
                 minHeight: 3,
                 borderRadius: BorderRadius.circular(2),
               ),
-              SizedBox(
-                  height: ResponsiveUtils.getResponsiveSpacing(context, 4)),
+              SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 4)),
               Text(
                 '${progress.round()}%',
                 style: TextStyle(
@@ -771,11 +733,9 @@ class _MilestoneTrackerScreenState extends State<MilestoneTrackerScreen>
     );
   }
 
-  Widget _buildRecentAchievements(
-      List<DevelopmentMilestone> milestones, Map<String, String> texts) {
-    final recentAchievements =
-        milestones.where((m) => _isMilestoneAchieved(m)).take(3).toList();
-
+  Widget _buildRecentAchievements(List<DevelopmentMilestone> milestones, Map<String, String> texts) {
+    final recentAchievements = milestones.where((m) => _isMilestoneAchieved(m)).take(3).toList();
+    
     if (recentAchievements.isEmpty) {
       return const SizedBox.shrink();
     }
@@ -792,24 +752,19 @@ class _MilestoneTrackerScreenState extends State<MilestoneTrackerScreen>
           ),
         ),
         SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 16)),
-        ...recentAchievements
-            .map((milestone) => _buildAchievementCard(milestone, texts)),
+        ...recentAchievements.map((milestone) => _buildAchievementCard(milestone, texts)),
       ],
     );
   }
 
-  Widget _buildAchievementCard(
-      DevelopmentMilestone milestone, Map<String, String> texts) {
+  Widget _buildAchievementCard(DevelopmentMilestone milestone, Map<String, String> texts) {
     return Container(
-      margin: EdgeInsets.only(
-          bottom: ResponsiveUtils.getResponsiveSpacing(context, 12)),
+      margin: EdgeInsets.only(bottom: ResponsiveUtils.getResponsiveSpacing(context, 12)),
       padding: ResponsiveUtils.getResponsivePadding(context, scale: 0.75),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(
-            ResponsiveUtils.getResponsiveBorderRadius(context)),
-        border:
-            Border.all(color: const Color(0xFF10B981).withValues(alpha: 0.2)),
+        borderRadius: BorderRadius.circular(ResponsiveUtils.getResponsiveBorderRadius(context)),
+        border: Border.all(color: const Color(0xFF10B981).withValues(alpha: 0.2)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.03),
@@ -840,8 +795,7 @@ class _MilestoneTrackerScreenState extends State<MilestoneTrackerScreen>
                 Text(
                   milestone.milestone,
                   style: TextStyle(
-                    fontSize:
-                        ResponsiveUtils.getResponsiveFontSize(context, 14),
+                    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
                     fontWeight: FontWeight.w600,
                     color: const Color(0xFF111827),
                   ),
@@ -849,8 +803,7 @@ class _MilestoneTrackerScreenState extends State<MilestoneTrackerScreen>
                 Text(
                   milestone.getAgeRangeDescription(),
                   style: TextStyle(
-                    fontSize:
-                        ResponsiveUtils.getResponsiveFontSize(context, 12),
+                    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 12),
                     color: const Color(0xFF6B7280),
                   ),
                 ),
@@ -879,7 +832,7 @@ class _MilestoneTrackerScreenState extends State<MilestoneTrackerScreen>
 
   Widget _buildAlerts(Child child, Map<String, String> texts) {
     final alerts = _getMockAlerts(child);
-
+    
     if (alerts.isEmpty) {
       return const SizedBox.shrink();
     }
@@ -903,15 +856,13 @@ class _MilestoneTrackerScreenState extends State<MilestoneTrackerScreen>
 
   Widget _buildAlertCard(DevelopmentAlert alert, Map<String, String> texts) {
     final color = _getAlertColor(alert.severity);
-
+    
     return Container(
-      margin: EdgeInsets.only(
-          bottom: ResponsiveUtils.getResponsiveSpacing(context, 12)),
+      margin: EdgeInsets.only(bottom: ResponsiveUtils.getResponsiveSpacing(context, 12)),
       padding: ResponsiveUtils.getResponsivePadding(context, scale: 0.75),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.05),
-        borderRadius: BorderRadius.circular(
-            ResponsiveUtils.getResponsiveBorderRadius(context)),
+        borderRadius: BorderRadius.circular(ResponsiveUtils.getResponsiveBorderRadius(context)),
         border: Border.all(color: color.withValues(alpha: 0.2)),
       ),
       child: Row(
@@ -936,8 +887,7 @@ class _MilestoneTrackerScreenState extends State<MilestoneTrackerScreen>
                 Text(
                   alert.title,
                   style: TextStyle(
-                    fontSize:
-                        ResponsiveUtils.getResponsiveFontSize(context, 14),
+                    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
                     fontWeight: FontWeight.w600,
                     color: const Color(0xFF111827),
                   ),
@@ -945,8 +895,7 @@ class _MilestoneTrackerScreenState extends State<MilestoneTrackerScreen>
                 Text(
                   alert.description,
                   style: TextStyle(
-                    fontSize:
-                        ResponsiveUtils.getResponsiveFontSize(context, 12),
+                    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 12),
                     color: const Color(0xFF6B7280),
                   ),
                 ),
@@ -977,16 +926,14 @@ class _MilestoneTrackerScreenState extends State<MilestoneTrackerScreen>
           children: DevelopmentDomain.values.map((domain) {
             final isSelected = domain == _selectedDomain;
             final color = _getDomainColor(domain);
-
+            
             return SafeGestureDetector(
               onTap: () => setState(() => _selectedDomain = domain),
               child: Container(
-                padding:
-                    ResponsiveUtils.getResponsivePadding(context, scale: 0.5),
+                padding: ResponsiveUtils.getResponsivePadding(context, scale: 0.5),
                 decoration: BoxDecoration(
                   color: isSelected ? color : Colors.white,
-                  borderRadius: BorderRadius.circular(
-                      ResponsiveUtils.getResponsiveBorderRadius(context)),
+                  borderRadius: BorderRadius.circular(ResponsiveUtils.getResponsiveBorderRadius(context)),
                   border: Border.all(color: color),
                 ),
                 child: Row(
@@ -997,14 +944,11 @@ class _MilestoneTrackerScreenState extends State<MilestoneTrackerScreen>
                       color: isSelected ? Colors.white : color,
                       size: ResponsiveUtils.getResponsiveIconSize(context, 16),
                     ),
-                    SizedBox(
-                        width:
-                            ResponsiveUtils.getResponsiveSpacing(context, 8)),
+                    SizedBox(width: ResponsiveUtils.getResponsiveSpacing(context, 8)),
                     Text(
                       texts[domain.name] ?? domain.displayName,
                       style: TextStyle(
-                        fontSize:
-                            ResponsiveUtils.getResponsiveFontSize(context, 12),
+                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 12),
                         fontWeight: FontWeight.w600,
                         color: isSelected ? Colors.white : color,
                       ),
@@ -1019,18 +963,16 @@ class _MilestoneTrackerScreenState extends State<MilestoneTrackerScreen>
     );
   }
 
-  Widget _buildDomainDetailCard(
-      Child child, DevelopmentDomain domain, Map<String, String> texts) {
+  Widget _buildDomainDetailCard(Child child, DevelopmentDomain domain, Map<String, String> texts) {
     final progress = _getMockDomainProgress(domain, child);
     final color = _getDomainColor(domain);
     final milestones = _getMockMilestonesForDomain(domain, child);
-
+    
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(
-            ResponsiveUtils.getResponsiveBorderRadius(context) + 8),
+        borderRadius: BorderRadius.circular(ResponsiveUtils.getResponsiveBorderRadius(context) + 8),
         border: Border.all(color: const Color(0xFFE5E7EB)),
         boxShadow: [
           BoxShadow(
@@ -1048,14 +990,12 @@ class _MilestoneTrackerScreenState extends State<MilestoneTrackerScreen>
             Row(
               children: [
                 Container(
-                  padding:
-                      ResponsiveUtils.getResponsivePadding(context, scale: 0.5),
+                  padding: ResponsiveUtils.getResponsivePadding(context, scale: 0.5),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [color, color.withValues(alpha: 0.8)],
                     ),
-                    borderRadius: BorderRadius.circular(
-                        ResponsiveUtils.getResponsiveBorderRadius(context)),
+                    borderRadius: BorderRadius.circular(ResponsiveUtils.getResponsiveBorderRadius(context)),
                   ),
                   child: Icon(
                     _getDomainIcon(domain),
@@ -1063,8 +1003,7 @@ class _MilestoneTrackerScreenState extends State<MilestoneTrackerScreen>
                     size: ResponsiveUtils.getResponsiveIconSize(context, 24),
                   ),
                 ),
-                SizedBox(
-                    width: ResponsiveUtils.getResponsiveSpacing(context, 16)),
+                SizedBox(width: ResponsiveUtils.getResponsiveSpacing(context, 16)),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -1072,8 +1011,7 @@ class _MilestoneTrackerScreenState extends State<MilestoneTrackerScreen>
                       Text(
                         texts[domain.name] ?? domain.displayName,
                         style: TextStyle(
-                          fontSize: ResponsiveUtils.getResponsiveFontSize(
-                              context, 20),
+                          fontSize: ResponsiveUtils.getResponsiveFontSize(context, 20),
                           fontWeight: FontWeight.w700,
                           color: const Color(0xFF111827),
                         ),
@@ -1081,8 +1019,7 @@ class _MilestoneTrackerScreenState extends State<MilestoneTrackerScreen>
                       Text(
                         domain.description,
                         style: TextStyle(
-                          fontSize: ResponsiveUtils.getResponsiveFontSize(
-                              context, 14),
+                          fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
                           color: const Color(0xFF6B7280),
                         ),
                       ),
@@ -1102,8 +1039,7 @@ class _MilestoneTrackerScreenState extends State<MilestoneTrackerScreen>
                     color,
                   ),
                 ),
-                SizedBox(
-                    width: ResponsiveUtils.getResponsiveSpacing(context, 12)),
+                SizedBox(width: ResponsiveUtils.getResponsiveSpacing(context, 12)),
                 Expanded(
                   child: _buildDomainStatCard(
                     'Achieved',
@@ -1112,8 +1048,7 @@ class _MilestoneTrackerScreenState extends State<MilestoneTrackerScreen>
                     const Color(0xFF10B981),
                   ),
                 ),
-                SizedBox(
-                    width: ResponsiveUtils.getResponsiveSpacing(context, 12)),
+                SizedBox(width: ResponsiveUtils.getResponsiveSpacing(context, 12)),
                 Expanded(
                   child: _buildDomainStatCard(
                     'Progress',
@@ -1130,14 +1065,12 @@ class _MilestoneTrackerScreenState extends State<MilestoneTrackerScreen>
     );
   }
 
-  Widget _buildDomainStatCard(
-      String label, String value, IconData icon, Color color) {
+  Widget _buildDomainStatCard(String label, String value, IconData icon, Color color) {
     return Container(
       padding: ResponsiveUtils.getResponsivePadding(context, scale: 0.75),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.05),
-        borderRadius: BorderRadius.circular(
-            ResponsiveUtils.getResponsiveBorderRadius(context)),
+        borderRadius: BorderRadius.circular(ResponsiveUtils.getResponsiveBorderRadius(context)),
         border: Border.all(color: color.withValues(alpha: 0.2)),
       ),
       child: Column(
@@ -1170,10 +1103,9 @@ class _MilestoneTrackerScreenState extends State<MilestoneTrackerScreen>
     );
   }
 
-  Widget _buildDomainMilestones(
-      Child child, DevelopmentDomain domain, Map<String, String> texts) {
+  Widget _buildDomainMilestones(Child child, DevelopmentDomain domain, Map<String, String> texts) {
     final milestones = _getMockMilestonesForDomain(domain, child);
-
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1191,25 +1123,22 @@ class _MilestoneTrackerScreenState extends State<MilestoneTrackerScreen>
     );
   }
 
-  Widget _buildMilestoneCard(
-      DevelopmentMilestone milestone, Map<String, String> texts) {
+  Widget _buildMilestoneCard(DevelopmentMilestone milestone, Map<String, String> texts) {
     final isAchieved = _isMilestoneAchieved(milestone);
     final isRedFlag = milestone.isRedFlag;
-    final color = isRedFlag
+    final color = isRedFlag 
         ? const Color(0xFFEF4444)
-        : isAchieved
+        : isAchieved 
             ? const Color(0xFF10B981)
             : const Color(0xFF6B7280);
 
     return Container(
-      margin: EdgeInsets.only(
-          bottom: ResponsiveUtils.getResponsiveSpacing(context, 12)),
+      margin: EdgeInsets.only(bottom: ResponsiveUtils.getResponsiveSpacing(context, 12)),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(
-            ResponsiveUtils.getResponsiveBorderRadius(context)),
+        borderRadius: BorderRadius.circular(ResponsiveUtils.getResponsiveBorderRadius(context)),
         border: Border.all(
-          color: isRedFlag
+          color: isRedFlag 
               ? const Color(0xFFEF4444).withValues(alpha: 0.3)
               : const Color(0xFFE5E7EB),
         ),
@@ -1229,9 +1158,9 @@ class _MilestoneTrackerScreenState extends State<MilestoneTrackerScreen>
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(
-            isAchieved
+            isAchieved 
                 ? Icons.check_circle_rounded
-                : isRedFlag
+                : isRedFlag 
                     ? Icons.warning_rounded
                     : Icons.radio_button_unchecked_rounded,
             color: color,
@@ -1288,100 +1217,78 @@ class _MilestoneTrackerScreenState extends State<MilestoneTrackerScreen>
                 Text(
                   milestone.description,
                   style: TextStyle(
-                    fontSize:
-                        ResponsiveUtils.getResponsiveFontSize(context, 14),
+                    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
                     color: const Color(0xFF374151),
                   ),
                 ),
                 if (milestone.observationTips.isNotEmpty) ...[
-                  SizedBox(
-                      height:
-                          ResponsiveUtils.getResponsiveSpacing(context, 16)),
+                  SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 16)),
                   Text(
                     texts['observations'] ?? 'Observation Tips',
                     style: TextStyle(
-                      fontSize:
-                          ResponsiveUtils.getResponsiveFontSize(context, 12),
+                      fontSize: ResponsiveUtils.getResponsiveFontSize(context, 12),
                       fontWeight: FontWeight.w600,
                       color: const Color(0xFF111827),
                     ),
                   ),
-                  SizedBox(
-                      height: ResponsiveUtils.getResponsiveSpacing(context, 8)),
+                  SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 8)),
                   Text(
                     milestone.observationTips,
                     style: TextStyle(
-                      fontSize:
-                          ResponsiveUtils.getResponsiveFontSize(context, 12),
+                      fontSize: ResponsiveUtils.getResponsiveFontSize(context, 12),
                       color: const Color(0xFF6B7280),
                     ),
                   ),
                 ],
                 if (milestone.activities.isNotEmpty) ...[
-                  SizedBox(
-                      height:
-                          ResponsiveUtils.getResponsiveSpacing(context, 16)),
+                  SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 16)),
                   Text(
                     texts['activities'] ?? 'Suggested Activities',
                     style: TextStyle(
-                      fontSize:
-                          ResponsiveUtils.getResponsiveFontSize(context, 12),
+                      fontSize: ResponsiveUtils.getResponsiveFontSize(context, 12),
                       fontWeight: FontWeight.w600,
                       color: const Color(0xFF111827),
                     ),
                   ),
-                  SizedBox(
-                      height: ResponsiveUtils.getResponsiveSpacing(context, 8)),
+                  SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 8)),
                   ...milestone.activities.map((activity) => Padding(
-                        padding: EdgeInsets.only(
-                            bottom: ResponsiveUtils.getResponsiveSpacing(
-                                context, 4)),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              width: 4,
-                              height: 4,
-                              margin: EdgeInsets.only(
-                                top: ResponsiveUtils.getResponsiveSpacing(
-                                    context, 8),
-                                right: ResponsiveUtils.getResponsiveSpacing(
-                                    context, 8),
-                              ),
-                              decoration: const BoxDecoration(
-                                color: Color(0xFF6B7280),
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                            Expanded(
-                              child: Text(
-                                activity,
-                                style: TextStyle(
-                                  fontSize:
-                                      ResponsiveUtils.getResponsiveFontSize(
-                                          context, 12),
-                                  color: const Color(0xFF6B7280),
-                                ),
-                              ),
-                            ),
-                          ],
+                    padding: EdgeInsets.only(bottom: ResponsiveUtils.getResponsiveSpacing(context, 4)),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: 4,
+                          height: 4,
+                          margin: EdgeInsets.only(
+                            top: ResponsiveUtils.getResponsiveSpacing(context, 8),
+                            right: ResponsiveUtils.getResponsiveSpacing(context, 8),
+                          ),
+                          decoration: const BoxDecoration(
+                            color: Color(0xFF6B7280),
+                            shape: BoxShape.circle,
+                          ),
                         ),
-                      )),
+                        Expanded(
+                          child: Text(
+                            activity,
+                            style: TextStyle(
+                              fontSize: ResponsiveUtils.getResponsiveFontSize(context, 12),
+                              color: const Color(0xFF6B7280),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  )),
                 ],
                 if (isRedFlag && milestone.redFlagSigns.isNotEmpty) ...[
-                  SizedBox(
-                      height:
-                          ResponsiveUtils.getResponsiveSpacing(context, 16)),
+                  SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 16)),
                   Container(
-                    padding: ResponsiveUtils.getResponsivePadding(context,
-                        scale: 0.75),
+                    padding: ResponsiveUtils.getResponsivePadding(context, scale: 0.75),
                     decoration: BoxDecoration(
                       color: const Color(0xFFFEF2F2),
-                      borderRadius: BorderRadius.circular(
-                          ResponsiveUtils.getResponsiveBorderRadius(context)),
-                      border: Border.all(
-                          color:
-                              const Color(0xFFEF4444).withValues(alpha: 0.3)),
+                      borderRadius: BorderRadius.circular(ResponsiveUtils.getResponsiveBorderRadius(context)),
+                      border: Border.all(color: const Color(0xFFEF4444).withValues(alpha: 0.3)),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1391,40 +1298,32 @@ class _MilestoneTrackerScreenState extends State<MilestoneTrackerScreen>
                             Icon(
                               Icons.warning_rounded,
                               color: const Color(0xFFEF4444),
-                              size: ResponsiveUtils.getResponsiveIconSize(
-                                  context, 16),
+                              size: ResponsiveUtils.getResponsiveIconSize(context, 16),
                             ),
-                            SizedBox(
-                                width: ResponsiveUtils.getResponsiveSpacing(
-                                    context, 8)),
+                            SizedBox(width: ResponsiveUtils.getResponsiveSpacing(context, 8)),
                             Text(
                               texts['redFlagSigns'] ?? 'Red Flag Signs',
                               style: TextStyle(
-                                fontSize: ResponsiveUtils.getResponsiveFontSize(
-                                    context, 12),
+                                fontSize: ResponsiveUtils.getResponsiveFontSize(context, 12),
                                 fontWeight: FontWeight.w600,
                                 color: const Color(0xFFDC2626),
                               ),
                             ),
                           ],
                         ),
-                        SizedBox(
-                            height: ResponsiveUtils.getResponsiveSpacing(
-                                context, 8)),
+                        SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 8)),
                         ...milestone.redFlagSigns.map((sign) => Text(
-                              '• $sign',
-                              style: TextStyle(
-                                fontSize: ResponsiveUtils.getResponsiveFontSize(
-                                    context, 12),
-                                color: const Color(0xFFDC2626),
-                              ),
-                            )),
+                          '• $sign',
+                          style: TextStyle(
+                            fontSize: ResponsiveUtils.getResponsiveFontSize(context, 12),
+                            color: const Color(0xFFDC2626),
+                          ),
+                        )),
                       ],
                     ),
                   ),
                 ],
-                SizedBox(
-                    height: ResponsiveUtils.getResponsiveSpacing(context, 16)),
+                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 16)),
                 Row(
                   children: [
                     if (!isAchieved)
@@ -1434,49 +1333,37 @@ class _MilestoneTrackerScreenState extends State<MilestoneTrackerScreen>
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF10B981),
                             foregroundColor: Colors.white,
-                            padding: ResponsiveUtils.getResponsivePadding(
-                                context,
-                                scale: 0.5),
+                            padding: ResponsiveUtils.getResponsivePadding(context, scale: 0.5),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(
-                                  ResponsiveUtils.getResponsiveBorderRadius(
-                                      context)),
+                              borderRadius: BorderRadius.circular(ResponsiveUtils.getResponsiveBorderRadius(context)),
                             ),
                           ),
                           child: Text(
                             texts['markAchieved'] ?? 'Mark Achieved',
                             style: TextStyle(
-                              fontSize: ResponsiveUtils.getResponsiveFontSize(
-                                  context, 12),
+                              fontSize: ResponsiveUtils.getResponsiveFontSize(context, 12),
                               fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
                       ),
                     if (!isAchieved && isRedFlag) ...[
-                      SizedBox(
-                          width: ResponsiveUtils.getResponsiveSpacing(
-                              context, 12)),
+                      SizedBox(width: ResponsiveUtils.getResponsiveSpacing(context, 12)),
                       Expanded(
                         child: OutlinedButton(
                           onPressed: () => _consultSpecialist(milestone),
                           style: OutlinedButton.styleFrom(
                             foregroundColor: const Color(0xFFEF4444),
                             side: const BorderSide(color: Color(0xFFEF4444)),
-                            padding: ResponsiveUtils.getResponsivePadding(
-                                context,
-                                scale: 0.5),
+                            padding: ResponsiveUtils.getResponsivePadding(context, scale: 0.5),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(
-                                  ResponsiveUtils.getResponsiveBorderRadius(
-                                      context)),
+                              borderRadius: BorderRadius.circular(ResponsiveUtils.getResponsiveBorderRadius(context)),
                             ),
                           ),
                           child: Text(
                             texts['consultSpecialist'] ?? 'Consult',
                             style: TextStyle(
-                              fontSize: ResponsiveUtils.getResponsiveFontSize(
-                                  context, 12),
+                              fontSize: ResponsiveUtils.getResponsiveFontSize(context, 12),
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -1498,8 +1385,7 @@ class _MilestoneTrackerScreenState extends State<MilestoneTrackerScreen>
       width: double.infinity,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(
-            ResponsiveUtils.getResponsiveBorderRadius(context) + 8),
+        borderRadius: BorderRadius.circular(ResponsiveUtils.getResponsiveBorderRadius(context) + 8),
         border: Border.all(color: const Color(0xFFE5E7EB)),
         boxShadow: [
           BoxShadow(
@@ -1536,8 +1422,7 @@ class _MilestoneTrackerScreenState extends State<MilestoneTrackerScreen>
     );
   }
 
-  Widget _buildMilestoneTimeline(
-      List<DevelopmentMilestone> milestones, Map<String, String> texts) {
+  Widget _buildMilestoneTimeline(List<DevelopmentMilestone> milestones, Map<String, String> texts) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1555,15 +1440,12 @@ class _MilestoneTrackerScreenState extends State<MilestoneTrackerScreen>
     );
   }
 
-  Widget _buildTimelineItem(
-      DevelopmentMilestone milestone, Map<String, String> texts) {
+  Widget _buildTimelineItem(DevelopmentMilestone milestone, Map<String, String> texts) {
     final isAchieved = _isMilestoneAchieved(milestone);
-    final color =
-        isAchieved ? const Color(0xFF10B981) : const Color(0xFF6B7280);
-
+    final color = isAchieved ? const Color(0xFF10B981) : const Color(0xFF6B7280);
+    
     return Padding(
-      padding: EdgeInsets.only(
-          bottom: ResponsiveUtils.getResponsiveSpacing(context, 16)),
+      padding: EdgeInsets.only(bottom: ResponsiveUtils.getResponsiveSpacing(context, 16)),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -1592,12 +1474,10 @@ class _MilestoneTrackerScreenState extends State<MilestoneTrackerScreen>
           SizedBox(width: ResponsiveUtils.getResponsiveSpacing(context, 16)),
           Expanded(
             child: Container(
-              padding:
-                  ResponsiveUtils.getResponsivePadding(context, scale: 0.75),
+              padding: ResponsiveUtils.getResponsivePadding(context, scale: 0.75),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(
-                    ResponsiveUtils.getResponsiveBorderRadius(context)),
+                borderRadius: BorderRadius.circular(ResponsiveUtils.getResponsiveBorderRadius(context)),
                 border: Border.all(color: const Color(0xFFE5E7EB)),
               ),
               child: Column(
@@ -1606,8 +1486,7 @@ class _MilestoneTrackerScreenState extends State<MilestoneTrackerScreen>
                   Text(
                     milestone.milestone,
                     style: TextStyle(
-                      fontSize:
-                          ResponsiveUtils.getResponsiveFontSize(context, 14),
+                      fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
                       fontWeight: FontWeight.w600,
                       color: const Color(0xFF111827),
                     ),
@@ -1615,8 +1494,7 @@ class _MilestoneTrackerScreenState extends State<MilestoneTrackerScreen>
                   Text(
                     milestone.getAgeRangeDescription(),
                     style: TextStyle(
-                      fontSize:
-                          ResponsiveUtils.getResponsiveFontSize(context, 12),
+                      fontSize: ResponsiveUtils.getResponsiveFontSize(context, 12),
                       color: const Color(0xFF6B7280),
                     ),
                   ),
@@ -1634,8 +1512,7 @@ class _MilestoneTrackerScreenState extends State<MilestoneTrackerScreen>
       context: context,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
-          top: Radius.circular(
-              ResponsiveUtils.getResponsiveBorderRadius(context) + 8),
+          top: Radius.circular(ResponsiveUtils.getResponsiveBorderRadius(context) + 8),
         ),
       ),
       builder: (context) => Container(
@@ -1678,8 +1555,7 @@ class _MilestoneTrackerScreenState extends State<MilestoneTrackerScreen>
       context: context,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
-          top: Radius.circular(
-              ResponsiveUtils.getResponsiveBorderRadius(context) + 8),
+          top: Radius.circular(ResponsiveUtils.getResponsiveBorderRadius(context) + 8),
         ),
       ),
       builder: (context) => Container(
@@ -1720,8 +1596,7 @@ class _MilestoneTrackerScreenState extends State<MilestoneTrackerScreen>
   void _consultSpecialist(DevelopmentMilestone milestone) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content:
-            const Text('Specialist consultation information will be provided'),
+        content: const Text('Specialist consultation information will be provided'),
         backgroundColor: const Color(0xFF0086FF),
       ),
     );
@@ -1736,7 +1611,7 @@ class _MilestoneTrackerScreenState extends State<MilestoneTrackerScreen>
   List<DevelopmentMilestone> _getMockMilestones(Child child) {
     final ageInMonths = _getChildAgeInMonths(child);
     final random = math.Random(child.name.hashCode);
-
+    
     return [
       DevelopmentMilestone(
         id: 'milestone_1',
@@ -1780,8 +1655,7 @@ class _MilestoneTrackerScreenState extends State<MilestoneTrackerScreen>
         domain: 'fine_motor',
         milestone: 'Reaches for objects',
         description: 'Baby reaches out to grab objects within reach',
-        observationTips:
-            'Hold colorful toys within reach and observe reaching behavior',
+        observationTips: 'Hold colorful toys within reach and observe reaching behavior',
         isRedFlag: false,
         priority: 2,
         activities: ['Object play', 'Reaching exercises'],
@@ -1802,27 +1676,21 @@ class _MilestoneTrackerScreenState extends State<MilestoneTrackerScreen>
         isRedFlag: ageInMonths > 8 && random.nextBool(),
         priority: 1,
         activities: ['Talk to baby', 'Sing songs', 'Read aloud'],
-        redFlagSigns: [
-          'No vocalization by 8 months',
-          'Loss of previously acquired sounds'
-        ],
-        interventionGuidance:
-            'Consider hearing evaluation if no babbling by 8 months',
+        redFlagSigns: ['No vocalization by 8 months', 'Loss of previously acquired sounds'],
+        interventionGuidance: 'Consider hearing evaluation if no babbling by 8 months',
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
       ),
     ];
   }
 
-  List<DevelopmentMilestone> _getMockMilestonesForDomain(
-      DevelopmentDomain domain, Child child) {
-    return _getMockMilestones(child)
-        .where((m) => DevelopmentDomain.fromString(m.domain) == domain)
-        .toList();
+  List<DevelopmentMilestone> _getMockMilestonesForDomain(DevelopmentDomain domain, Child child) {
+    return _getMockMilestones(child).where((m) => 
+      DevelopmentDomain.fromString(m.domain) == domain
+    ).toList();
   }
 
-  Map<String, dynamic> _calculateMilestoneStats(
-      List<DevelopmentMilestone> milestones) {
+  Map<String, dynamic> _calculateMilestoneStats(List<DevelopmentMilestone> milestones) {
     final total = milestones.length;
     final achieved = milestones.where((m) => _isMilestoneAchieved(m)).length;
     final redFlags = milestones.where((m) => m.isRedFlag).length;
@@ -1850,7 +1718,7 @@ class _MilestoneTrackerScreenState extends State<MilestoneTrackerScreen>
   List<DevelopmentAlert> _getMockAlerts(Child child) {
     final ageInMonths = _getChildAgeInMonths(child);
     final alerts = <DevelopmentAlert>[];
-
+    
     if (ageInMonths > 6) {
       alerts.add(DevelopmentAlert(
         id: 'alert_1',
@@ -1866,7 +1734,7 @@ class _MilestoneTrackerScreenState extends State<MilestoneTrackerScreen>
         createdAt: DateTime.now(),
       ));
     }
-
+    
     return alerts;
   }
 
@@ -1946,10 +1814,8 @@ class ProgressChartPainter extends CustomPainter {
       canvas.drawCircle(Offset(x, y), 4, paint);
 
       if (i < domains.length - 1) {
-        final nextAngle =
-            (2 * math.pi * (i + 1)) / domains.length - math.pi / 2;
-        final nextProgress =
-            60 + math.Random(domains[i + 1].index).nextDouble() * 35;
+        final nextAngle = (2 * math.pi * (i + 1)) / domains.length - math.pi / 2;
+        final nextProgress = 60 + math.Random(domains[i + 1].index).nextDouble() * 35;
         final nextProgressRadius = radius * (nextProgress / 100);
         final nextX = centerX + nextProgressRadius * math.cos(nextAngle);
         final nextY = centerY + nextProgressRadius * math.sin(nextAngle);
@@ -1961,17 +1827,14 @@ class ProgressChartPainter extends CustomPainter {
     // Connect last to first
     if (domains.isNotEmpty) {
       final firstAngle = -math.pi / 2;
-      final lastAngle =
-          (2 * math.pi * (domains.length - 1)) / domains.length - math.pi / 2;
-
-      final firstProgress =
-          60 + math.Random(domains[0].index).nextDouble() * 35;
-      final lastProgress =
-          60 + math.Random(domains[domains.length - 1].index).nextDouble() * 35;
-
+      final lastAngle = (2 * math.pi * (domains.length - 1)) / domains.length - math.pi / 2;
+      
+      final firstProgress = 60 + math.Random(domains[0].index).nextDouble() * 35;
+      final lastProgress = 60 + math.Random(domains[domains.length - 1].index).nextDouble() * 35;
+      
       final firstRadius = radius * (firstProgress / 100);
       final lastRadius = radius * (lastProgress / 100);
-
+      
       final firstX = centerX + firstRadius * math.cos(firstAngle);
       final firstY = centerY + firstRadius * math.sin(firstAngle);
       final lastX = centerX + lastRadius * math.cos(lastAngle);

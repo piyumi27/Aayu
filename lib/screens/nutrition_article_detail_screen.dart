@@ -28,12 +28,10 @@ class NutritionArticleDetailScreen extends StatefulWidget {
   });
 
   @override
-  State<NutritionArticleDetailScreen> createState() =>
-      _NutritionArticleDetailScreenState();
+  State<NutritionArticleDetailScreen> createState() => _NutritionArticleDetailScreenState();
 }
 
-class _NutritionArticleDetailScreenState
-    extends State<NutritionArticleDetailScreen> {
+class _NutritionArticleDetailScreenState extends State<NutritionArticleDetailScreen> {
   String _selectedLanguage = 'en';
   bool _isBookmarked = false;
   final ScrollController _scrollController = ScrollController();
@@ -76,15 +74,15 @@ class _NutritionArticleDetailScreenState
   Future<void> _toggleBookmark() async {
     final prefs = await SharedPreferences.getInstance();
     final bookmarks = prefs.getStringList('bookmarked_articles') ?? [];
-
+    
     if (_isBookmarked) {
       bookmarks.remove(widget.articleId);
     } else {
       bookmarks.add(widget.articleId);
     }
-
+    
     await prefs.setStringList('bookmarked_articles', bookmarks);
-
+    
     setState(() {
       _isBookmarked = !_isBookmarked;
     });
@@ -183,8 +181,7 @@ class _NutritionArticleDetailScreenState
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const SizedBox(
-                    height: 60), // Account for status bar and app bar
+                const SizedBox(height: 60), // Account for status bar and app bar
                 Icon(
                   widget.icon,
                   size: ResponsiveUtils.getResponsiveIconSize(context, 64),
@@ -192,8 +189,7 @@ class _NutritionArticleDetailScreenState
                 ),
                 const SizedBox(height: 16),
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(12),
@@ -231,22 +227,17 @@ class _NutritionArticleDetailScreenState
                 Text(
                   widget.title,
                   style: TextStyle(
-                    fontSize:
-                        ResponsiveUtils.getResponsiveFontSize(context, 24),
+                    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 24),
                     fontWeight: FontWeight.bold,
                     color: const Color(0xFF1A1A1A),
                     height: 1.3,
-                    fontFamily:
-                        _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                   ),
                 ),
                 const SizedBox(height: 16),
                 _buildTagsRow(),
                 const SizedBox(height: 24),
-                if (widget.nutritionContent != null)
-                  ..._buildRichContent()
-                else
-                  _buildArticleBody(),
+                if (widget.nutritionContent != null) ..._buildRichContent() else _buildArticleBody(),
                 const SizedBox(height: 32),
                 if (widget.nutritionContent == null) _buildRelatedTips(texts),
                 const SizedBox(height: 100), // Space for bottom bar
@@ -345,7 +336,7 @@ class _NutritionArticleDetailScreenState
   /// Build warning/important info box
   Widget _buildWarningBox() {
     final texts = _getLocalizedTexts();
-
+    
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -369,8 +360,7 @@ class _NutritionArticleDetailScreenState
                 fontSize: 14,
                 color: const Color(0xFF92400E),
                 fontWeight: FontWeight.w500,
-                fontFamily:
-                    _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
               ),
             ),
           ),
@@ -444,8 +434,7 @@ class _NutritionArticleDetailScreenState
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
                     color: const Color(0xFF1A1A1A),
-                    fontFamily:
-                        _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -454,8 +443,7 @@ class _NutritionArticleDetailScreenState
                   style: TextStyle(
                     fontSize: 12,
                     color: const Color(0xFF6B7280),
-                    fontFamily:
-                        _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                   ),
                 ),
               ],
@@ -530,15 +518,12 @@ class _NutritionArticleDetailScreenState
         'bookmarkAdded': 'Article bookmarked',
         'bookmarkRemoved': 'Bookmark removed',
         'shareFeatureComingSoon': 'Sharing feature coming soon',
-        'importantNote':
-            'Important: Always consult with your pediatrician before making significant changes to your child\'s diet, especially if they have any health conditions or allergies.',
+        'importantNote': 'Important: Always consult with your pediatrician before making significant changes to your child\'s diet, especially if they have any health conditions or allergies.',
         'relatedTips': 'Related Tips',
         'timingTip': 'Timing Matters',
-        'timingTipContent':
-            'Introduce new foods when your child is alert and hungry, but not overly tired.',
+        'timingTipContent': 'Introduce new foods when your child is alert and hungry, but not overly tired.',
         'safetyTip': 'Food Safety',
-        'safetyTipContent':
-            'Always ensure proper food hygiene and age-appropriate textures to prevent choking.',
+        'safetyTipContent': 'Always ensure proper food hygiene and age-appropriate textures to prevent choking.',
         'moreArticles': 'More Articles',
         'trackProgress': 'Track Progress',
       },
@@ -547,15 +532,12 @@ class _NutritionArticleDetailScreenState
         'bookmarkAdded': 'ලිපිය සටහන් කරන ලදී',
         'bookmarkRemoved': 'සටහන ඉවත් කරන ලදී',
         'shareFeatureComingSoon': 'බෙදාගැනීමේ විශේෂාංගය ළඟදීම',
-        'importantNote':
-            'වැදගත්: ඔබේ දරුවාගේ ආහාර වේලට සැලකිය යුතු වෙනස්කම් කිරීමට පෙර, විශේෂයෙන්ම ඔවුන්ට සෞඛ්‍ය තත්වයන් හෝ අසාත්මිකතා තිබේ නම්, සැමවිටම ඔබේ ළමා වෛද්‍යවරයා සමඟ සාකච්ඡා කරන්න.',
+        'importantNote': 'වැදගත්: ඔබේ දරුවාගේ ආහාර වේලට සැලකිය යුතු වෙනස්කම් කිරීමට පෙර, විශේෂයෙන්ම ඔවුන්ට සෞඛ්‍ය තත්වයන් හෝ අසාත්මිකතා තිබේ නම්, සැමවිටම ඔබේ ළමා වෛද්‍යවරයා සමඟ සාකච්ඡා කරන්න.',
         'relatedTips': 'අදාළ උපදෙස්',
         'timingTip': 'වේලාව වැදගත්',
-        'timingTipContent':
-            'ඔබේ දරුවා අවදියෙන් හා බඩගිනියෙන් සිටින විට නව ආහාර හඳුන්වා දෙන්න, නමුත් අධික ලෙස වෙහෙසට පත් නොවන විට.',
+        'timingTipContent': 'ඔබේ දරුවා අවදියෙන් හා බඩගිනියෙන් සිටින විට නව ආහාර හඳුන්වා දෙන්න, නමුත් අධික ලෙස වෙහෙසට පත් නොවන විට.',
         'safetyTip': 'ආහාර ආරක්ෂාව',
-        'safetyTipContent':
-            'හුස්ම හිරවීම වැළැක්වීම සඳහා සැමවිටම නිසි ආහාර සනීපාරක්ෂාව සහ වයසට සුදුසු වයනය සහතික කරන්න.',
+        'safetyTipContent': 'හුස්ම හිරවීම වැළැක්වීම සඳහා සැමවිටම නිසි ආහාර සනීපාරක්ෂාව සහ වයසට සුදුසු වයනය සහතික කරන්න.',
         'moreArticles': 'තවත් ලිපි',
         'trackProgress': 'ප්‍රගතිය නිරීක්ෂණය',
       },
@@ -564,15 +546,12 @@ class _NutritionArticleDetailScreenState
         'bookmarkAdded': 'கட்டுரை புத்தகக்குறியிடப்பட்டது',
         'bookmarkRemoved': 'புத்தகக்குறி அகற்றப்பட்டது',
         'shareFeatureComingSoon': 'பகிர்வு அம்சம் விரைவில் வருகிறது',
-        'importantNote':
-            'முக்கியம்: உங்கள் குழந்தையின் உணவில் குறிப்பிடத்தக்க மாற்றங்களைச் செய்வதற்கு முன், குறிப்பாக அவர்களுக்கு ஏதேனும் சுகாதார நிலைமைகள் அல்லது ஒவ்வாமைகள் இருந்தால், எப்போதும் உங்கள் குழந்தை மருத்துவரிடம் ஆலோசித்துக் கொள்ளுங்கள்.',
+        'importantNote': 'முக்கியம்: உங்கள் குழந்தையின் உணவில் குறிப்பிடத்தக்க மாற்றங்களைச் செய்வதற்கு முன், குறிப்பாக அவர்களுக்கு ஏதேனும் சுகாதார நிலைமைகள் அல்லது ஒவ்வாமைகள் இருந்தால், எப்போதும் உங்கள் குழந்தை மருத்துவரிடம் ஆலோசித்துக் கொள்ளுங்கள்.',
         'relatedTips': 'தொடர்புடைய குறிப்புகள்',
         'timingTip': 'நேரம் முக்கியம்',
-        'timingTipContent':
-            'உங்கள் குழந்தை எச்சரிக்கையாகவும் பசியாகவும் இருக்கும்போது புதிய உணவுகளை அறிமுகப்படுத்துங்கள், ஆனால் அதிகமாக சோர்வடையாத போது.',
+        'timingTipContent': 'உங்கள் குழந்தை எச்சரிக்கையாகவும் பசியாகவும் இருக்கும்போது புதிய உணவுகளை அறிமுகப்படுத்துங்கள், ஆனால் அதிகமாக சோர்வடையாத போது.',
         'safetyTip': 'உணவு பாதுகாப்பு',
-        'safetyTipContent':
-            'மூச்சு திணறலைத் தடுக்க எப்போதும் சரியான உணவு சுகாதாரம் மற்றும் வயதுக்கு ஏற்ற அமைப்புகளை உறுதிப்படுத்துங்கள்.',
+        'safetyTipContent': 'மூச்சு திணறலைத் தடுக்க எப்போதும் சரியான உணவு சுகாதாரம் மற்றும் வயதுக்கு ஏற்ற அமைப்புகளை உறுதிப்படுத்துங்கள்.',
         'moreArticles': 'மேலும் கட்டுரைகள்',
         'trackProgress': 'முன்னேற்றத்தைக் கண்காணிக்கவும்',
       },
@@ -583,15 +562,15 @@ class _NutritionArticleDetailScreenState
   /// Build rich content sections from NutritionContent model
   List<Widget> _buildRichContent() {
     if (widget.nutritionContent == null) return [];
-
+    
     List<Widget> widgets = [];
-
+    
     // Add content sections
     for (var section in widget.nutritionContent!.sections) {
       widgets.add(_buildRichContentSection(section));
       widgets.add(const SizedBox(height: 24));
     }
-
+    
     // Add dietitian tips
     if (widget.nutritionContent!.dietitianTips.isNotEmpty) {
       for (var tip in widget.nutritionContent!.dietitianTips) {
@@ -599,23 +578,23 @@ class _NutritionArticleDetailScreenState
         widgets.add(const SizedBox(height: 16));
       }
     }
-
+    
     // Add related articles
     if (widget.nutritionContent!.relatedArticles.isNotEmpty) {
       widgets.add(_buildRelatedArticles());
     }
-
+    
     return widgets;
   }
 
   /// Build rich content section with different types
   Widget _buildRichContentSection(ContentSection section) {
     final theme = Theme.of(context);
-
+    
     String sectionTitle = '';
     IconData sectionIcon = Icons.restaurant;
     Color sectionColor = widget.primaryColor;
-
+    
     switch (section.type) {
       case ContentSectionType.animalProteins:
         sectionTitle = 'Animal Proteins';
@@ -648,7 +627,7 @@ class _NutritionArticleDetailScreenState
         sectionColor = Colors.red;
         break;
     }
-
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -657,10 +636,7 @@ class _NutritionArticleDetailScreenState
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [
-                sectionColor.withValues(alpha: 0.1),
-                sectionColor.withValues(alpha: 0.05)
-              ],
+              colors: [sectionColor.withValues(alpha: 0.1), sectionColor.withValues(alpha: 0.05)],
               begin: Alignment.centerLeft,
               end: Alignment.centerRight,
             ),
@@ -681,15 +657,14 @@ class _NutritionArticleDetailScreenState
                   color: sectionColor.withValues(alpha: 0.9),
                   fontWeight: FontWeight.bold,
                   fontSize: ResponsiveUtils.getResponsiveFontSize(context, 18),
-                  fontFamily:
-                      _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                  fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                 ),
               ),
             ],
           ),
         ),
         const SizedBox(height: 16),
-
+        
         // Section Content
         if (section.servingGuidelines != null)
           _buildServingGuidelinesList(section.servingGuidelines!)
@@ -698,130 +673,114 @@ class _NutritionArticleDetailScreenState
       ],
     );
   }
-
+  
   /// Build food items list
   Widget _buildFoodItemsList(List<FoodItem> foodItems, Color sectionColor) {
     final theme = Theme.of(context);
-
+    
     return Column(
-      children: foodItems
-          .map((food) => Container(
-                margin: const EdgeInsets.only(bottom: 12),
-                padding: const EdgeInsets.all(16),
+      children: foodItems.map((food) => Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surface,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: sectionColor.withValues(alpha: 0.2)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: sectionColor.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    food.nameKey, // Using nameKey for now, should be localized
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
+                      fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                    ),
+                  ),
+                ),
+                if (food.sinhalaName != null) ...[
+                  const SizedBox(width: 8),
+                  Text(
+                    '(${food.sinhalaName})',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontStyle: FontStyle.italic,
+                      color: theme.colorScheme.onSurfaceVariant,
+                      fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
+                      fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              food.descriptionKey, // Using descriptionKey for now, should be localized
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
+                height: 1.5,
+                fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+              ),
+            ),
+            if (food.benefits.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              Container(
+                padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.surface,
-                  borderRadius: BorderRadius.circular(12),
-                  border:
-                      Border.all(color: sectionColor.withValues(alpha: 0.2)),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.05),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
+                  color: Colors.blue.withValues(alpha: 0.05),
+                  borderRadius: BorderRadius.circular(6),
+                  border: Border.all(color: Colors.blue.withValues(alpha: 0.2)),
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                child: Row(
                   children: [
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: sectionColor.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            food.nameKey, // Using nameKey for now, should be localized
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              fontSize: ResponsiveUtils.getResponsiveFontSize(
-                                  context, 16),
-                              fontFamily: _selectedLanguage == 'si'
-                                  ? 'NotoSerifSinhala'
-                                  : null,
-                            ),
-                          ),
-                        ),
-                        if (food.sinhalaName != null) ...[
-                          const SizedBox(width: 8),
-                          Text(
-                            '(${food.sinhalaName})',
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              fontStyle: FontStyle.italic,
-                              color: theme.colorScheme.onSurfaceVariant,
-                              fontSize: ResponsiveUtils.getResponsiveFontSize(
-                                  context, 14),
-                              fontFamily: _selectedLanguage == 'si'
-                                  ? 'NotoSerifSinhala'
-                                  : null,
-                            ),
-                          ),
-                        ],
-                      ],
+                    Icon(
+                      Icons.info_outline,
+                      size: 16,
+                      color: Colors.blue.shade700,
                     ),
-                    const SizedBox(height: 8),
-                    Text(
-                      food.descriptionKey, // Using descriptionKey for now, should be localized
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        fontSize:
-                            ResponsiveUtils.getResponsiveFontSize(context, 14),
-                        height: 1.5,
-                        fontFamily: _selectedLanguage == 'si'
-                            ? 'NotoSerifSinhala'
-                            : null,
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Text(
+                        food.benefits.join(', '), // Join benefits list
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: Colors.blue.shade700,
+                          fontSize: ResponsiveUtils.getResponsiveFontSize(context, 12),
+                          fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                        ),
                       ),
                     ),
-                    if (food.benefits.isNotEmpty) ...[
-                      const SizedBox(height: 8),
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: Colors.blue.withValues(alpha: 0.05),
-                          borderRadius: BorderRadius.circular(6),
-                          border: Border.all(
-                              color: Colors.blue.withValues(alpha: 0.2)),
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.info_outline,
-                              size: 16,
-                              color: Colors.blue.shade700,
-                            ),
-                            const SizedBox(width: 6),
-                            Expanded(
-                              child: Text(
-                                food.benefits.join(', '), // Join benefits list
-                                style: theme.textTheme.bodySmall?.copyWith(
-                                  color: Colors.blue.shade700,
-                                  fontSize:
-                                      ResponsiveUtils.getResponsiveFontSize(
-                                          context, 12),
-                                  fontFamily: _selectedLanguage == 'si'
-                                      ? 'NotoSerifSinhala'
-                                      : null,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
                   ],
                 ),
-              ))
-          .toList(),
+              ),
+            ],
+          ],
+        ),
+      )).toList(),
     );
   }
-
+  
   /// Build serving guidelines list
   Widget _buildServingGuidelinesList(List<ServingGuideline> guidelines) {
     final theme = Theme.of(context);
-
+    
     return Column(
       children: guidelines.map((guideline) {
+        
         return Container(
           margin: const EdgeInsets.only(bottom: 8),
           padding: const EdgeInsets.all(12),
@@ -843,28 +802,20 @@ class _NutritionArticleDetailScreenState
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      guideline
-                          .titleKey, // Using titleKey for now, should be localized
+                      guideline.titleKey, // Using titleKey for now, should be localized
                       style: theme.textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.bold,
-                        fontSize:
-                            ResponsiveUtils.getResponsiveFontSize(context, 14),
-                        fontFamily: _selectedLanguage == 'si'
-                            ? 'NotoSerifSinhala'
-                            : null,
+                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
+                        fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      guideline
-                          .descriptionKey, // Using descriptionKey for now, should be localized
+                      guideline.descriptionKey, // Using descriptionKey for now, should be localized
                       style: theme.textTheme.bodyMedium?.copyWith(
-                        fontSize:
-                            ResponsiveUtils.getResponsiveFontSize(context, 13),
+                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 13),
                         height: 1.4,
-                        fontFamily: _selectedLanguage == 'si'
-                            ? 'NotoSerifSinhala'
-                            : null,
+                        fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                       ),
                     ),
                   ],
@@ -876,11 +827,11 @@ class _NutritionArticleDetailScreenState
       }).toList(),
     );
   }
-
+  
   /// Build dietitian tip box
   Widget _buildDietitianTip(DietitianTip tip) {
     final theme = Theme.of(context);
-
+    
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -905,8 +856,7 @@ class _NutritionArticleDetailScreenState
                   color: Colors.amber.shade800,
                   fontWeight: FontWeight.bold,
                   fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
-                  fontFamily:
-                      _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                  fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                 ),
               ),
             ],
@@ -935,11 +885,11 @@ class _NutritionArticleDetailScreenState
       ),
     );
   }
-
+  
   /// Build related articles carousel
   Widget _buildRelatedArticles() {
     final theme = Theme.of(context);
-
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -959,7 +909,7 @@ class _NutritionArticleDetailScreenState
             itemCount: widget.nutritionContent!.relatedArticles.length,
             itemBuilder: (context, index) {
               final article = widget.nutritionContent!.relatedArticles[index];
-
+              
               return Container(
                 width: 200,
                 margin: const EdgeInsets.only(right: 12),
@@ -967,8 +917,7 @@ class _NutritionArticleDetailScreenState
                 decoration: BoxDecoration(
                   color: theme.colorScheme.surface,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                      color: theme.colorScheme.outline.withValues(alpha: 0.2)),
+                  border: Border.all(color: theme.colorScheme.outline.withValues(alpha: 0.2)),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withValues(alpha: 0.05),
@@ -981,15 +930,11 @@ class _NutritionArticleDetailScreenState
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      article
-                          .titleKey, // Using titleKey for now, should be localized
+                      article.titleKey, // Using titleKey for now, should be localized
                       style: theme.textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.bold,
-                        fontSize:
-                            ResponsiveUtils.getResponsiveFontSize(context, 14),
-                        fontFamily: _selectedLanguage == 'si'
-                            ? 'NotoSerifSinhala'
-                            : null,
+                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
+                        fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
@@ -999,11 +944,8 @@ class _NutritionArticleDetailScreenState
                       '${article.readTime} min read',
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: theme.colorScheme.primary,
-                        fontSize:
-                            ResponsiveUtils.getResponsiveFontSize(context, 12),
-                        fontFamily: _selectedLanguage == 'si'
-                            ? 'NotoSerifSinhala'
-                            : null,
+                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 12),
+                        fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                       ),
                     ),
                     const Spacer(),
@@ -1015,8 +957,7 @@ class _NutritionArticleDetailScreenState
                         },
                         style: TextButton.styleFrom(
                           minimumSize: Size.zero,
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 4),
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         ),
                         child: const Text('Read →'),

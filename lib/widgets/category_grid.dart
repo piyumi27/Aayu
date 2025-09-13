@@ -22,7 +22,7 @@ class CategoryGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final columnCount = ResponsiveUtils.getResponsiveColumnCount(context);
-
+    
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -65,14 +65,15 @@ class CategoryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final textScale = ResponsiveUtils.getResponsiveTextScale(context);
-
+    
     // Get localized name and description
-    final displayName =
-        locale != null ? category.getLocalizedName(locale!) : category.name;
+    final displayName = locale != null 
+        ? category.getLocalizedName(locale!)
+        : category.name;
     final displayDescription = locale != null
         ? category.getLocalizedDescription(locale!)
         : category.description;
-
+        
     // Use the category color directly
     final categoryColor = category.color;
 
@@ -123,17 +124,14 @@ class CategoryCard extends StatelessWidget {
                 ),
               ),
 
-              SizedBox(
-                  height: ResponsiveUtils.getResponsiveSpacing(context, 8)),
+              SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 8)),
 
               // Category name
               Flexible(
                 child: Text(
                   displayName,
                   style: GoogleFonts.notoSerifSinhala(
-                    fontSize:
-                        ResponsiveUtils.getResponsiveFontSize(context, 14) *
-                            textScale,
+                    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14) * textScale,
                     fontWeight: FontWeight.bold,
                     color: theme.colorScheme.onSurface,
                   ),
@@ -143,8 +141,7 @@ class CategoryCard extends StatelessWidget {
                 ),
               ),
 
-              SizedBox(
-                  height: ResponsiveUtils.getResponsiveSpacing(context, 2)),
+              SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 2)),
 
               // Description
               Flexible(
@@ -152,9 +149,7 @@ class CategoryCard extends StatelessWidget {
                   displayDescription,
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: theme.colorScheme.onSurface.withOpacity(0.7),
-                    fontSize:
-                        ResponsiveUtils.getResponsiveFontSize(context, 10) *
-                            textScale,
+                    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 10) * textScale,
                     height: 1.2,
                   ),
                   textAlign: TextAlign.center,
@@ -165,12 +160,10 @@ class CategoryCard extends StatelessWidget {
 
               // Article count
               if (articleCount > 0) ...[
-                SizedBox(
-                    height: ResponsiveUtils.getResponsiveSpacing(context, 4)),
+                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 4)),
                 Container(
                   padding: EdgeInsets.symmetric(
-                    horizontal:
-                        ResponsiveUtils.getResponsiveSpacing(context, 6),
+                    horizontal: ResponsiveUtils.getResponsiveSpacing(context, 6),
                     vertical: ResponsiveUtils.getResponsiveSpacing(context, 2),
                   ),
                   decoration: BoxDecoration(
@@ -184,9 +177,7 @@ class CategoryCard extends StatelessWidget {
                     style: theme.textTheme.labelSmall?.copyWith(
                       color: categoryColor,
                       fontWeight: FontWeight.w600,
-                      fontSize:
-                          ResponsiveUtils.getResponsiveFontSize(context, 9) *
-                              textScale,
+                      fontSize: ResponsiveUtils.getResponsiveFontSize(context, 9) * textScale,
                     ),
                   ),
                 ),
@@ -219,10 +210,11 @@ class CategoryChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textScale = ResponsiveUtils.getResponsiveTextScale(context);
-
-    final displayName =
-        locale != null ? category.getLocalizedName(locale!) : category.name;
-
+    
+    final displayName = locale != null 
+        ? category.getLocalizedName(locale!)
+        : category.name;
+        
     final categoryColor = category.color;
 
     return FilterChip(
@@ -236,8 +228,7 @@ class CategoryChip extends StatelessWidget {
       label: Text(
         displayName,
         style: GoogleFonts.notoSerifSinhala(
-          fontSize:
-              ResponsiveUtils.getResponsiveFontSize(context, 14) * textScale,
+          fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14) * textScale,
           fontWeight: FontWeight.w600,
           color: isSelected ? Colors.white : categoryColor,
         ),

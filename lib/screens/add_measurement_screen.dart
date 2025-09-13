@@ -22,7 +22,7 @@ class _AddMeasurementScreenState extends State<AddMeasurementScreen> {
   final _heightController = TextEditingController();
   final _muacController = TextEditingController();
   final _notesController = TextEditingController();
-
+  
   DateTime _selectedDate = DateTime.now();
   File? _selectedImage;
   final ImagePicker _imagePicker = ImagePicker();
@@ -172,7 +172,7 @@ class _AddMeasurementScreenState extends State<AddMeasurementScreen> {
 
   Future<void> _saveMeasurement() async {
     final texts = _getLocalizedText();
-
+    
     if (!_formKey.currentState!.validate()) return;
 
     setState(() {
@@ -194,8 +194,8 @@ class _AddMeasurementScreenState extends State<AddMeasurementScreen> {
         date: _selectedDate,
         weight: double.parse(_weightController.text),
         height: double.parse(_heightController.text),
-        headCircumference: _muacController.text.isNotEmpty
-            ? double.parse(_muacController.text)
+        headCircumference: _muacController.text.isNotEmpty 
+            ? double.parse(_muacController.text) 
             : null,
         notes: _notesController.text.isNotEmpty ? _notesController.text : null,
         createdAt: now,
@@ -320,8 +320,7 @@ class _AddMeasurementScreenState extends State<AddMeasurementScreen> {
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                       color: const Color(0xFF333333),
-                      fontFamily:
-                          _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                      fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -331,9 +330,7 @@ class _AddMeasurementScreenState extends State<AddMeasurementScreen> {
                       style: TextStyle(
                         fontSize: 12,
                         color: const Color(0xFF6B7280),
-                        fontFamily: _selectedLanguage == 'si'
-                            ? 'NotoSerifSinhala'
-                            : null,
+                        fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                       ),
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -366,8 +363,7 @@ class _AddMeasurementScreenState extends State<AddMeasurementScreen> {
                   // Cancel Button
                   Expanded(
                     child: OutlinedButton(
-                      onPressed:
-                          _isLoading ? null : () => Navigator.of(context).pop(),
+                      onPressed: _isLoading ? null : () => Navigator.of(context).pop(),
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         side: const BorderSide(color: Color(0xFFE0E0E0)),
@@ -381,9 +377,7 @@ class _AddMeasurementScreenState extends State<AddMeasurementScreen> {
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
                           color: const Color(0xFF6B7280),
-                          fontFamily: _selectedLanguage == 'si'
-                              ? 'NotoSerifSinhala'
-                              : null,
+                          fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                         ),
                       ),
                     ),
@@ -423,9 +417,7 @@ class _AddMeasurementScreenState extends State<AddMeasurementScreen> {
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600,
-                                      fontFamily: _selectedLanguage == 'si'
-                                          ? 'NotoSerifSinhala'
-                                          : null,
+                                      fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                                     ),
                                     overflow: TextOverflow.ellipsis,
                                   ),
@@ -510,8 +502,7 @@ class _AddMeasurementScreenState extends State<AddMeasurementScreen> {
         ),
         filled: true,
         fillColor: Colors.white,
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
           borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
@@ -603,8 +594,7 @@ class _AddMeasurementScreenState extends State<AddMeasurementScreen> {
                   style: TextStyle(
                     color: const Color(0xFF0086FF),
                     fontWeight: FontWeight.w600,
-                    fontFamily:
-                        _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                   ),
                 ),
                 style: TextButton.styleFrom(
@@ -617,8 +607,7 @@ class _AddMeasurementScreenState extends State<AddMeasurementScreen> {
                 style: TextStyle(
                   fontSize: 12,
                   color: const Color(0xFF6B7280),
-                  fontFamily:
-                      _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                  fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                 ),
               ),
             ],

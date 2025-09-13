@@ -30,7 +30,7 @@ class MedicationService extends ChangeNotifier {
   /// Create medication tables
   Future<void> _createTables() async {
     final db = await _databaseService.database;
-
+    
     await db.execute('''
       CREATE TABLE IF NOT EXISTS medications (
         id TEXT PRIMARY KEY,
@@ -80,14 +80,10 @@ class MedicationService extends ChangeNotifier {
     ''');
 
     // Create indexes for better performance
-    await db.execute(
-        'CREATE INDEX IF NOT EXISTS idx_medications_child ON medications(childId)');
-    await db.execute(
-        'CREATE INDEX IF NOT EXISTS idx_medications_status ON medications(status)');
-    await db.execute(
-        'CREATE INDEX IF NOT EXISTS idx_dose_records_medication ON medication_dose_records(medicationId)');
-    await db.execute(
-        'CREATE INDEX IF NOT EXISTS idx_dose_records_scheduled ON medication_dose_records(scheduledTime)');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_medications_child ON medications(childId)');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_medications_status ON medications(status)');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_dose_records_medication ON medication_dose_records(medicationId)');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_dose_records_scheduled ON medication_dose_records(scheduledTime)');
   }
 
   /// Load all medications from database
@@ -115,8 +111,7 @@ class MedicationService extends ChangeNotifier {
         orderBy: 'scheduledTime DESC',
       );
 
-      _doseRecords =
-          maps.map((map) => MedicationDoseRecord.fromMap(map)).toList();
+      _doseRecords = maps.map((map) => MedicationDoseRecord.fromMap(map)).toList();
       notifyListeners();
     } catch (e) {
       if (kDebugMode) print('Error loading dose records: $e');
@@ -136,8 +131,7 @@ class MedicationService extends ChangeNotifier {
   }
 
   /// Get medications by status
-  List<Medication> getMedicationsByStatus(
-      String childId, MedicationStatus status) {
+  List<Medication> getMedicationsByStatus(String childId, MedicationStatus status) {
     return _medications
         .where((med) => med.childId == childId && med.status == status)
         .toList();
@@ -160,7 +154,7 @@ class MedicationService extends ChangeNotifier {
 
       final lastDose = getLastDoseRecord(med.id);
       final lastDoseTime = lastDose?.actualTime ?? med.startDate;
-
+      
       if (med.isOverdue(lastDoseTime)) {
         overdue.add(med);
       }
@@ -183,8 +177,8 @@ class MedicationService extends ChangeNotifier {
       final lastDoseTime = lastDose?.actualTime ?? med.startDate;
       final nextDoseTime = med.getNextDoseTime(lastDoseTime);
 
-      if (nextDoseTime != null &&
-          nextDoseTime.isAfter(now) &&
+      if (nextDoseTime != null && 
+          nextDoseTime.isAfter(now) && 
           nextDoseTime.isBefore(twoHoursFromNow)) {
         upcoming.add(med);
       }
@@ -204,9 +198,8 @@ class MedicationService extends ChangeNotifier {
   MedicationDoseRecord? getLastDoseRecord(String medicationId) {
     final records = getDoseRecordsForMedication(medicationId);
     if (records.isEmpty) return null;
-
-    records.sort((a, b) =>
-        b.actualTime?.compareTo(a.actualTime ?? DateTime(1970)) ?? -1);
+    
+    records.sort((a, b) => b.actualTime?.compareTo(a.actualTime ?? DateTime(1970)) ?? -1);
     return records.first;
   }
 
@@ -217,7 +210,7 @@ class MedicationService extends ChangeNotifier {
     final endOfDay = startOfDay.add(const Duration(days: 1));
 
     return _doseRecords
-        .where((record) =>
+        .where((record) => 
             record.childId == childId &&
             record.scheduledTime.isAfter(startOfDay) &&
             record.scheduledTime.isBefore(endOfDay))
@@ -230,13 +223,13 @@ class MedicationService extends ChangeNotifier {
     try {
       final db = await _databaseService.database;
       await db.insert('medications', medication.toMap());
-
+      
       _medications.add(medication);
       notifyListeners();
-
+      
       // Generate dose schedule for the medication
       await _generateDoseSchedule(medication);
-
+      
       return true;
     } catch (e) {
       if (kDebugMode) print('Error adding medication: $e');
@@ -254,16 +247,16 @@ class MedicationService extends ChangeNotifier {
         where: 'id = ?',
         whereArgs: [medication.id],
       );
-
+      
       final index = _medications.indexWhere((med) => med.id == medication.id);
       if (index != -1) {
         _medications[index] = medication;
         notifyListeners();
-
+        
         // Update dose schedule if medication changed
         await _updateDoseSchedule(medication);
       }
-
+      
       return true;
     } catch (e) {
       if (kDebugMode) print('Error updating medication: $e');
@@ -275,13 +268,12 @@ class MedicationService extends ChangeNotifier {
   Future<bool> deleteMedication(String medicationId) async {
     try {
       final db = await _databaseService.database;
-      await db
-          .delete('medications', where: 'id = ?', whereArgs: [medicationId]);
-
+      await db.delete('medications', where: 'id = ?', whereArgs: [medicationId]);
+      
       _medications.removeWhere((med) => med.id == medicationId);
       _doseRecords.removeWhere((record) => record.medicationId == medicationId);
       notifyListeners();
-
+      
       return true;
     } catch (e) {
       if (kDebugMode) print('Error deleting medication: $e');
@@ -290,18 +282,16 @@ class MedicationService extends ChangeNotifier {
   }
 
   /// Record a dose as taken
-  Future<bool> recordDoseTaken(
-    String medicationId, {
+  Future<bool> recordDoseTaken(String medicationId, {
     DateTime? actualTime,
     double? actualDosage,
     String? notes,
     String? sideEffectsNoted,
   }) async {
     try {
-      final medication =
-          _medications.firstWhere((med) => med.id == medicationId);
+      final medication = _medications.firstWhere((med) => med.id == medicationId);
       final now = DateTime.now();
-
+      
       final doseRecord = MedicationDoseRecord(
         id: '${medicationId}_${now.millisecondsSinceEpoch}',
         childId: medication.childId,
@@ -318,10 +308,10 @@ class MedicationService extends ChangeNotifier {
 
       final db = await _databaseService.database;
       await db.insert('medication_dose_records', doseRecord.toMap());
-
+      
       _doseRecords.add(doseRecord);
       notifyListeners();
-
+      
       return true;
     } catch (e) {
       if (kDebugMode) print('Error recording dose: $e');
@@ -332,10 +322,9 @@ class MedicationService extends ChangeNotifier {
   /// Record a dose as skipped
   Future<bool> recordDoseSkipped(String medicationId, String reason) async {
     try {
-      final medication =
-          _medications.firstWhere((med) => med.id == medicationId);
+      final medication = _medications.firstWhere((med) => med.id == medicationId);
       final now = DateTime.now();
-
+      
       final doseRecord = MedicationDoseRecord(
         id: '${medicationId}_${now.millisecondsSinceEpoch}',
         childId: medication.childId,
@@ -350,10 +339,10 @@ class MedicationService extends ChangeNotifier {
 
       final db = await _databaseService.database;
       await db.insert('medication_dose_records', doseRecord.toMap());
-
+      
       _doseRecords.add(doseRecord);
       notifyListeners();
-
+      
       return true;
     } catch (e) {
       if (kDebugMode) print('Error recording skipped dose: $e');
@@ -364,25 +353,23 @@ class MedicationService extends ChangeNotifier {
   /// Generate dose schedule for a medication
   Future<void> _generateDoseSchedule(Medication medication) async {
     if (medication.frequency == MedicationFrequency.asNeeded) return;
-
+    
     final now = DateTime.now();
     final endDate = medication.endDate ?? now.add(const Duration(days: 30));
-
+    
     // Generate scheduled doses for the next 7 days
-    var scheduleDate =
-        medication.startDate.isAfter(now) ? medication.startDate : now;
+    var scheduleDate = medication.startDate.isAfter(now) ? medication.startDate : now;
     final scheduleEndDate = now.add(const Duration(days: 7));
-
-    while (scheduleDate.isBefore(scheduleEndDate) &&
-        scheduleDate.isBefore(endDate)) {
+    
+    while (scheduleDate.isBefore(scheduleEndDate) && scheduleDate.isBefore(endDate)) {
       final doseTimes = _getDoseTimesForDay(medication, scheduleDate);
-
+      
       for (final doseTime in doseTimes) {
         // Check if dose record already exists
         final existingRecord = _doseRecords.any((record) =>
             record.medicationId == medication.id &&
             record.scheduledTime.isAtSameMomentAs(doseTime));
-
+        
         if (!existingRecord) {
           final doseRecord = MedicationDoseRecord(
             id: '${medication.id}_${doseTime.millisecondsSinceEpoch}',
@@ -393,16 +380,16 @@ class MedicationService extends ChangeNotifier {
             createdAt: now,
             updatedAt: now,
           );
-
+          
           final db = await _databaseService.database;
           await db.insert('medication_dose_records', doseRecord.toMap());
           _doseRecords.add(doseRecord);
         }
       }
-
+      
       scheduleDate = scheduleDate.add(const Duration(days: 1));
     }
-
+    
     notifyListeners();
   }
 
@@ -411,20 +398,19 @@ class MedicationService extends ChangeNotifier {
     // Remove future scheduled doses
     final now = DateTime.now();
     final db = await _databaseService.database;
-
+    
     await db.delete(
       'medication_dose_records',
-      where:
-          'medicationId = ? AND scheduledTime > ? AND isTaken = 0 AND isSkipped = 0',
+      where: 'medicationId = ? AND scheduledTime > ? AND isTaken = 0 AND isSkipped = 0',
       whereArgs: [medication.id, now.toIso8601String()],
     );
-
+    
     _doseRecords.removeWhere((record) =>
         record.medicationId == medication.id &&
         record.scheduledTime.isAfter(now) &&
         !record.isTaken &&
         !record.isSkipped);
-
+    
     // Generate new schedule
     await _generateDoseSchedule(medication);
   }
@@ -432,7 +418,7 @@ class MedicationService extends ChangeNotifier {
   /// Get dose times for a specific day
   List<DateTime> _getDoseTimesForDay(Medication medication, DateTime day) {
     final doseTimes = <DateTime>[];
-
+    
     switch (medication.frequency) {
       case MedicationFrequency.once:
         doseTimes.add(DateTime(day.year, day.month, day.day, 8, 0)); // 8 AM
@@ -456,7 +442,7 @@ class MedicationService extends ChangeNotifier {
         final hours = medication.customFrequencyHours ?? 24;
         var currentTime = DateTime(day.year, day.month, day.day, 8, 0);
         final endOfDay = DateTime(day.year, day.month, day.day, 23, 59);
-
+        
         while (currentTime.isBefore(endOfDay)) {
           doseTimes.add(currentTime);
           currentTime = currentTime.add(Duration(hours: hours));
@@ -466,7 +452,7 @@ class MedicationService extends ChangeNotifier {
         // No scheduled doses for as-needed medications
         break;
     }
-
+    
     return doseTimes;
   }
 
@@ -474,11 +460,11 @@ class MedicationService extends ChangeNotifier {
   DateTime _getScheduledTimeForNow(Medication medication) {
     final now = DateTime.now();
     final todayDoses = _getDoseTimesForDay(medication, now);
-
+    
     // Find the closest scheduled time
     DateTime? closestTime;
     Duration? closestDuration;
-
+    
     for (final doseTime in todayDoses) {
       final duration = (now.difference(doseTime)).abs();
       if (closestDuration == null || duration < closestDuration) {
@@ -486,28 +472,27 @@ class MedicationService extends ChangeNotifier {
         closestDuration = duration;
       }
     }
-
+    
     return closestTime ?? now;
   }
 
   /// Get medication adherence statistics
-  Map<String, double> getMedicationAdherence(String medicationId,
-      {int days = 7}) {
+  Map<String, double> getMedicationAdherence(String medicationId, {int days = 7}) {
     final endDate = DateTime.now();
     final startDate = endDate.subtract(Duration(days: days));
-
+    
     final records = _doseRecords
-        .where((record) =>
+        .where((record) => 
             record.medicationId == medicationId &&
             record.scheduledTime.isAfter(startDate) &&
             record.scheduledTime.isBefore(endDate))
         .toList();
-
+    
     final totalScheduled = records.length;
     final taken = records.where((r) => r.isTaken).length;
     final skipped = records.where((r) => r.isSkipped).length;
     final missed = totalScheduled - taken - skipped;
-
+    
     if (totalScheduled == 0) {
       return {
         'adherence': 0.0,
@@ -516,7 +501,7 @@ class MedicationService extends ChangeNotifier {
         'missed': 0.0,
       };
     }
-
+    
     return {
       'adherence': (taken / totalScheduled) * 100,
       'taken': (taken / totalScheduled) * 100,
@@ -528,29 +513,26 @@ class MedicationService extends ChangeNotifier {
   /// Search medications
   List<Medication> searchMedications(String query, {String? childId}) {
     final lowerQuery = query.toLowerCase();
-
+    
     return _medications.where((med) {
       if (childId != null && med.childId != childId) return false;
-
+      
       return med.name.toLowerCase().contains(lowerQuery) ||
-          med.nameLocal.toLowerCase().contains(lowerQuery) ||
-          (med.genericName?.toLowerCase().contains(lowerQuery) ?? false) ||
-          (med.indication?.toLowerCase().contains(lowerQuery) ?? false);
+             med.nameLocal.toLowerCase().contains(lowerQuery) ||
+             (med.genericName?.toLowerCase().contains(lowerQuery) ?? false) ||
+             (med.indication?.toLowerCase().contains(lowerQuery) ?? false);
     }).toList();
   }
 
   /// Get medication statistics for a child
   Map<String, int> getMedicationStats(String childId) {
     final childMeds = getMedicationsForChild(childId);
-
+    
     return {
       'total': childMeds.length,
-      'active':
-          childMeds.where((m) => m.status == MedicationStatus.active).length,
-      'supplements':
-          childMeds.where((m) => m.type == MedicationType.supplement).length,
-      'medications':
-          childMeds.where((m) => m.type == MedicationType.medicine).length,
+      'active': childMeds.where((m) => m.status == MedicationStatus.active).length,
+      'supplements': childMeds.where((m) => m.type == MedicationType.supplement).length,
+      'medications': childMeds.where((m) => m.type == MedicationType.medicine).length,
       'overdue': getOverdueMedications(childId).length,
       'upcoming': getUpcomingMedications(childId).length,
     };

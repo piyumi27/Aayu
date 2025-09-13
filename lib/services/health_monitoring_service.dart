@@ -8,14 +8,12 @@ import '../services/firebase_sync_service.dart';
 
 /// Integrated health monitoring service that orchestrates all Phase 2 services
 class HealthMonitoringService {
-  static final HealthMonitoringService _instance =
-      HealthMonitoringService._internal();
+  static final HealthMonitoringService _instance = HealthMonitoringService._internal();
   factory HealthMonitoringService() => _instance;
   HealthMonitoringService._internal();
 
   final StandardsRepository _standardsRepository = StandardsRepository();
-  final GrowthCalculationService _growthCalculationService =
-      GrowthCalculationService();
+  final GrowthCalculationService _growthCalculationService = GrowthCalculationService();
   final HealthAlertService _healthAlertService = HealthAlertService();
   final FirebaseSyncService _syncService = FirebaseSyncService();
 
@@ -29,15 +27,14 @@ class HealthMonitoringService {
   }) async {
     // Ensure standards repository is initialized
     await _standardsRepository.initialize();
-
+    
     // Set preferred standard if provided
     if (preferredStandard != null) {
       _standardsRepository.setStandardSource(preferredStandard);
     }
 
     // Calculate growth assessments for all records
-    final growthAssessments =
-        await _growthCalculationService.calculateHistoricalAssessments(
+    final growthAssessments = await _growthCalculationService.calculateHistoricalAssessments(
       child: child,
       growthRecords: growthRecords,
       standardSource: preferredStandard,
@@ -86,8 +83,7 @@ class HealthMonitoringService {
       nutritionGuidelines: nutritionGuidelines,
       developmentRecommendations: developmentRecommendations,
       overallRiskLevel: _determineOverallRisk(healthAlerts),
-      keyRecommendations:
-          _generateKeyRecommendations(healthAlerts, growthAssessments),
+      keyRecommendations: _generateKeyRecommendations(healthAlerts, growthAssessments),
     );
 
     // Sync to cloud if requested and connectivity allows
@@ -117,10 +113,8 @@ class HealthMonitoringService {
         ageGroup: guideline.getAgeRangeDescription(),
         dailyMeals: guideline.dailyMealsCount,
         dailySnacks: guideline.dailySnacksCount,
-        calorieRange:
-            '${guideline.dailyCaloriesMin.toInt()}-${guideline.dailyCaloriesMax.toInt()} kcal',
-        proteinRange:
-            '${guideline.proteinGramsMin.toInt()}-${guideline.proteinGramsMax.toInt()}g',
+        calorieRange: '${guideline.dailyCaloriesMin.toInt()}-${guideline.dailyCaloriesMax.toInt()} kcal',
+        proteinRange: '${guideline.proteinGramsMin.toInt()}-${guideline.proteinGramsMax.toInt()}g',
         recommendedFoods: guideline.recommendedFoods,
         avoidedFoods: guideline.avoidedFoods,
         specialInstructions: guideline.specialInstructions,
@@ -158,14 +152,15 @@ class HealthMonitoringService {
     for (final entry in milestonesByDomain.entries) {
       final domain = entry.key;
       final milestones = entry.value;
-
-      final achieved =
-          milestones.where((m) => achievedIds.contains(m.id)).length;
+      
+      final achieved = milestones.where((m) => achievedIds.contains(m.id)).length;
       final total = milestones.length;
       final progress = total > 0 ? achieved / total : 0.0;
 
-      final upcomingMilestones =
-          milestones.where((m) => !achievedIds.contains(m.id)).take(3).toList();
+      final upcomingMilestones = milestones
+          .where((m) => !achievedIds.contains(m.id))
+          .take(3)
+          .toList();
 
       recommendations.add(DevelopmentRecommendation(
         domain: domain,
@@ -174,12 +169,8 @@ class HealthMonitoringService {
         achievedCount: achieved,
         totalCount: total,
         upcomingMilestones: upcomingMilestones.map((m) => m.milestone).toList(),
-        activities:
-            upcomingMilestones.expand((m) => m.activities).toSet().toList(),
-        concerns: milestones
-            .where((m) => m.isRedFlag && !achievedIds.contains(m.id))
-            .map((m) => m.milestone)
-            .toList(),
+        activities: upcomingMilestones.expand((m) => m.activities).toSet().toList(),
+        concerns: milestones.where((m) => m.isRedFlag && !achievedIds.contains(m.id)).map((m) => m.milestone).toList(),
       ));
     }
 
@@ -193,16 +184,14 @@ class HealthMonitoringService {
       await _syncService.syncStandardsData();
 
       // Sync health alerts (anonymized for community insights)
-      final alertData = report.healthAlerts
-          .map((alert) => {
-                'id': alert.id,
-                'type': alert.type.name,
-                'severity': alert.severity.name,
-                'title': alert.title,
-                'message': alert.message,
-                'createdAt': alert.createdAt.toIso8601String(),
-              })
-          .toList();
+      final alertData = report.healthAlerts.map((alert) => {
+        'id': alert.id,
+        'type': alert.type.name,
+        'severity': alert.severity.name,
+        'title': alert.title,
+        'message': alert.message,
+        'createdAt': alert.createdAt.toIso8601String(),
+      }).toList();
 
       await _syncService.syncHealthAlerts(alertData);
 
@@ -231,8 +220,7 @@ class HealthMonitoringService {
       return RiskLevel.critical;
     } else if (alerts.any((alert) => alert.severity == AlertSeverity.high)) {
       return RiskLevel.high;
-    } else if (alerts
-        .any((alert) => alert.severity == AlertSeverity.moderate)) {
+    } else if (alerts.any((alert) => alert.severity == AlertSeverity.moderate)) {
       return RiskLevel.moderate;
     } else {
       return RiskLevel.low;
@@ -246,15 +234,13 @@ class HealthMonitoringService {
     final recommendations = <String>[];
 
     // Add critical alert recommendations first
-    final criticalAlerts =
-        alerts.where((a) => a.severity == AlertSeverity.critical).toList();
+    final criticalAlerts = alerts.where((a) => a.severity == AlertSeverity.critical).toList();
     for (final alert in criticalAlerts.take(2)) {
       recommendations.addAll(alert.recommendations.take(2));
     }
 
     // Add high priority alert recommendations
-    final highAlerts =
-        alerts.where((a) => a.severity == AlertSeverity.high).toList();
+    final highAlerts = alerts.where((a) => a.severity == AlertSeverity.high).toList();
     for (final alert in highAlerts.take(2)) {
       recommendations.addAll(alert.recommendations.take(1));
     }
@@ -263,8 +249,7 @@ class HealthMonitoringService {
     if (growthAssessments.isNotEmpty) {
       final latestAssessment = growthAssessments.last;
       if (latestAssessment.nutritionalStatus == NutritionalStatus.normal) {
-        recommendations
-            .add('Continue current feeding practices - child is growing well');
+        recommendations.add('Continue current feeding practices - child is growing well');
       }
     }
 
@@ -281,7 +266,7 @@ class HealthMonitoringService {
   /// Switch between WHO and Sri Lankan standards
   Future<void> switchStandards(String newSource) async {
     _standardsRepository.setStandardSource(newSource);
-
+    
     // Sync the preference change
     await _syncService.syncAssessmentPreferences(
       preferredStandard: newSource,
@@ -304,15 +289,13 @@ class HealthMonitoringService {
     required Child child,
     required GrowthRecord growthRecord,
   }) async {
-    final whoAssessment =
-        await _growthCalculationService.calculateGrowthAssessment(
+    final whoAssessment = await _growthCalculationService.calculateGrowthAssessment(
       child: child,
       growthRecord: growthRecord,
       standardSource: 'WHO',
     );
 
-    final sriLankaAssessment =
-        await _growthCalculationService.calculateGrowthAssessment(
+    final sriLankaAssessment = await _growthCalculationService.calculateGrowthAssessment(
       child: child,
       growthRecord: growthRecord,
       standardSource: 'SriLanka',
@@ -321,14 +304,9 @@ class HealthMonitoringService {
     return StandardsComparison(
       whoAssessment: whoAssessment,
       sriLankaAssessment: sriLankaAssessment,
-      differenceInWeightZScore: (whoAssessment.weightForAgeZScore -
-              sriLankaAssessment.weightForAgeZScore)
-          .abs(),
-      differenceInHeightZScore: (whoAssessment.heightForAgeZScore -
-              sriLankaAssessment.heightForAgeZScore)
-          .abs(),
-      recommendedStandard: _recommendStandardBasedOnComparison(
-          whoAssessment, sriLankaAssessment),
+      differenceInWeightZScore: (whoAssessment.weightForAgeZScore - sriLankaAssessment.weightForAgeZScore).abs(),
+      differenceInHeightZScore: (whoAssessment.heightForAgeZScore - sriLankaAssessment.heightForAgeZScore).abs(),
+      recommendedStandard: _recommendStandardBasedOnComparison(whoAssessment, sriLankaAssessment),
     );
   }
 
@@ -338,8 +316,7 @@ class HealthMonitoringService {
   ) {
     // Recommend Sri Lankan standards if both show similar results
     // or if Sri Lankan standards are more appropriate for local context
-    if ((whoAssessment.nutritionalStatus ==
-            sriLankaAssessment.nutritionalStatus) ||
+    if ((whoAssessment.nutritionalStatus == sriLankaAssessment.nutritionalStatus) ||
         (sriLankaAssessment.riskLevel.index <= whoAssessment.riskLevel.index)) {
       return 'SriLanka';
     }
@@ -352,13 +329,11 @@ class HealthMonitoringService {
     required List<GrowthRecord> growthRecords,
     required List<MilestoneRecord> milestoneRecords,
   }) async {
-    final activeAlerts =
-        await _healthAlertService.getActiveAlertsForChild(child.id);
-
+    final activeAlerts = await _healthAlertService.getActiveAlertsForChild(child.id);
+    
     GrowthAssessment? latestAssessment;
     if (growthRecords.isNotEmpty) {
-      latestAssessment =
-          await _growthCalculationService.calculateGrowthAssessment(
+      latestAssessment = await _growthCalculationService.calculateGrowthAssessment(
         child: child,
         growthRecord: growthRecords.last,
       );
@@ -368,26 +343,23 @@ class HealthMonitoringService {
     final expectedMilestones = await _standardsRepository.getMilestonesForAge(
       ageMonths: childAgeMonths,
     );
-
+    
     final achievedIds = milestoneRecords
         .where((record) => record.achieved)
         .map((record) => record.milestoneId)
         .toSet();
-
-    final developmentProgress = expectedMilestones.isNotEmpty
-        ? achievedIds.length / expectedMilestones.length
+    
+    final developmentProgress = expectedMilestones.isNotEmpty 
+        ? achievedIds.length / expectedMilestones.length 
         : 0.0;
 
     return HealthSummary(
-      overallStatus:
-          latestAssessment?.nutritionalStatus.displayName ?? 'No data',
+      overallStatus: latestAssessment?.nutritionalStatus.displayName ?? 'No data',
       riskLevel: latestAssessment?.riskLevel ?? RiskLevel.low,
       activeAlertsCount: activeAlerts.length,
       developmentProgress: developmentProgress,
-      lastAssessmentDate:
-          growthRecords.isNotEmpty ? growthRecords.last.date : null,
-      nextRecommendedAction:
-          _getNextRecommendedAction(activeAlerts, latestAssessment),
+      lastAssessmentDate: growthRecords.isNotEmpty ? growthRecords.last.date : null,
+      nextRecommendedAction: _getNextRecommendedAction(activeAlerts, latestAssessment),
     );
   }
 

@@ -9,23 +9,28 @@ import '../services/notifications/scheduling_engine.dart';
 
 class ChildProvider extends ChangeNotifier {
   final DatabaseService _databaseService = DatabaseService();
-  final NotificationSchedulingEngine _schedulingEngine =
-      NotificationSchedulingEngine();
+  NotificationSchedulingEngine? _schedulingEngine;
   final MedicationService _medicationService = MedicationService();
-
+  
   List<Child> _children = [];
   Child? _selectedChild;
   List<GrowthRecord> _growthRecords = [];
   List<VaccineRecord> _vaccineRecords = [];
   List<Vaccine> _vaccines = [];
   List<Medication> _medications = [];
-
+  
   List<Child> get children => _children;
   Child? get selectedChild => _selectedChild;
   List<GrowthRecord> get growthRecords => _growthRecords;
   List<VaccineRecord> get vaccineRecords => _vaccineRecords;
   List<Vaccine> get vaccines => _vaccines;
   List<Medication> get medications => _medications;
+
+  /// Get the scheduling engine, initializing it if needed
+  NotificationSchedulingEngine get schedulingEngine {
+    _schedulingEngine ??= NotificationSchedulingEngine();
+    return _schedulingEngine!;
+  }
 
   Future<void> loadChildren() async {
     _children = await _databaseService.getChildren();
@@ -56,10 +61,10 @@ class ChildProvider extends ChangeNotifier {
   Future<void> addChild(Child child) async {
     await _databaseService.insertChild(child);
     await loadChildren();
-
+    
     // Schedule notifications for the new child
     try {
-      await _schedulingEngine.scheduleNotificationsForChild(child);
+      await schedulingEngine.scheduleNotificationsForChild(child);
       if (kDebugMode) {
         print('✅ Notifications scheduled for child: ${child.name}');
       }
@@ -73,10 +78,10 @@ class ChildProvider extends ChangeNotifier {
   Future<void> updateChild(Child child) async {
     await _databaseService.updateChild(child);
     await loadChildren();
-
+    
     // Reschedule notifications for the updated child
     try {
-      await _schedulingEngine.scheduleNotificationsForChild(child);
+      await schedulingEngine.scheduleNotificationsForChild(child);
       if (kDebugMode) {
         print('✅ Notifications rescheduled for child: ${child.name}');
       }
@@ -133,25 +138,25 @@ class ChildProvider extends ChangeNotifier {
 
   List<Vaccine> getUpcomingVaccines() {
     if (_selectedChild == null) return [];
-
+    
     final ageInMonths = calculateAgeInMonths(_selectedChild!.birthDate);
     final givenVaccineIds = _vaccineRecords.map((r) => r.vaccineId).toSet();
-
+    
     return _vaccines.where((vaccine) {
       return !givenVaccineIds.contains(vaccine.id) &&
-          vaccine.recommendedAgeMonths <= ageInMonths + 3;
+             vaccine.recommendedAgeMonths <= ageInMonths + 3;
     }).toList();
   }
 
   List<Vaccine> getOverdueVaccines() {
     if (_selectedChild == null) return [];
-
+    
     final ageInMonths = calculateAgeInMonths(_selectedChild!.birthDate);
     final givenVaccineIds = _vaccineRecords.map((r) => r.vaccineId).toSet();
-
+    
     return _vaccines.where((vaccine) {
       return !givenVaccineIds.contains(vaccine.id) &&
-          vaccine.recommendedAgeMonths < ageInMonths;
+             vaccine.recommendedAgeMonths < ageInMonths;
     }).toList();
   }
 
@@ -162,25 +167,21 @@ class ChildProvider extends ChangeNotifier {
   List<Medication> getMedicationsByCategory(String category) {
     // Since Medication doesn't have a category field, filter by type name
     // or by indication/description containing the category
-    return _medications
-        .where((med) =>
-            med.type.name.contains(category.toLowerCase()) ||
-            (med.indication?.toLowerCase().contains(category.toLowerCase()) ??
-                false) ||
-            med.description.toLowerCase().contains(category.toLowerCase()))
-        .toList();
+    return _medications.where((med) => 
+        med.type.name.contains(category.toLowerCase()) ||
+        (med.indication?.toLowerCase().contains(category.toLowerCase()) ?? false) ||
+        med.description.toLowerCase().contains(category.toLowerCase())
+    ).toList();
   }
 
   List<Medication> searchMedications(String query) {
     final lowerQuery = query.toLowerCase();
-    return _medications
-        .where((med) =>
-            med.name.toLowerCase().contains(lowerQuery) ||
-            med.nameLocal.toLowerCase().contains(lowerQuery) ||
-            med.type.name.toLowerCase().contains(lowerQuery) ||
-            (med.genericName?.toLowerCase().contains(lowerQuery) ?? false) ||
-            (med.indication?.toLowerCase().contains(lowerQuery) ?? false) ||
-            med.description.toLowerCase().contains(lowerQuery))
-        .toList();
+    return _medications.where((med) =>
+        med.name.toLowerCase().contains(lowerQuery) ||
+        med.nameLocal.toLowerCase().contains(lowerQuery) ||
+        med.type.name.toLowerCase().contains(lowerQuery) ||
+        (med.genericName?.toLowerCase().contains(lowerQuery) ?? false) ||
+        (med.indication?.toLowerCase().contains(lowerQuery) ?? false) ||
+        med.description.toLowerCase().contains(lowerQuery)).toList();
   }
 }

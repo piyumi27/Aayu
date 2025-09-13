@@ -49,7 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
       _selectedLanguage = prefs.getString('language') ?? 'en';
     });
   }
-
+  
   Future<void> _loadCurrentUser() async {
     try {
       final user = await _authService.getCurrentUser();
@@ -160,7 +160,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final texts = _getLocalizedText();
-
+    
     return Consumer<ChildProvider>(
       builder: (context, provider, child) {
         return Scaffold(
@@ -172,43 +172,41 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       // App Header
                       _buildAppHeader(texts),
-
+                      
                       // Child Selector (always show to include Add Child button)
                       _buildCleanChildSelector(provider, texts),
-
+                      
                       // Verification Banner
                       if (_currentUser != null && !_currentUser!.isSyncGateOpen)
                         VerificationBanner(
                           user: _currentUser,
                           onVerifyNow: () => context.go('/verification-center'),
-                          isDismissible:
-                              true, // Allow users to dismiss (reappears on next login)
+                          isDismissible: true, // Allow users to dismiss (reappears on next login)
                         ),
-
+                      
                       // Main Content Area
                       Expanded(
                         child: SingleChildScrollView(
                           child: Column(
                             children: [
                               const SizedBox(height: 16),
-
+                              
                               // Hero Card
                               if (provider.selectedChild != null)
                                 _buildCleanHeroCard(provider, texts),
-
+                              
                               // Nutritional Status Banner
                               if (provider.selectedChild != null)
                                 _buildNutritionStatusBanner(provider, texts),
-
+                              
                               // Action Grid
                               _buildCleanActionGrid(texts),
-
+                              
                               // Recent Activity
                               if (provider.selectedChild != null)
                                 _buildCleanRecentActivity(provider, texts),
-
-                              const SizedBox(
-                                  height: 100), // Space for bottom navigation
+                              
+                              const SizedBox(height: 100), // Space for bottom navigation
                             ],
                           ),
                         ),
@@ -256,8 +254,7 @@ class _HomeScreenState extends State<HomeScreen> {
             label: Text(
               texts['addChild']!,
               style: TextStyle(
-                fontFamily:
-                    _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
               ),
             ),
           ),
@@ -287,7 +284,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String _formatDate(DateTime date) {
     final now = DateTime.now();
     final difference = now.difference(date);
-
+    
     if (difference.inDays == 0) {
       return 'Today';
     } else if (difference.inDays == 1) {
@@ -333,8 +330,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
                 color: const Color(0xFF111827),
-                fontFamily:
-                    _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
               ),
             ),
           ),
@@ -376,8 +372,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildCleanChildSelector(
-      ChildProvider provider, Map<String, String> texts) {
+  Widget _buildCleanChildSelector(ChildProvider provider, Map<String, String> texts) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 12),
       color: Colors.white,
@@ -393,24 +388,18 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: GestureDetector(
                   onTap: () => provider.selectChild(child),
                   child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     decoration: BoxDecoration(
-                      color:
-                          isSelected ? Colors.white : const Color(0xFFE5E7EB),
-                      borderRadius: isSelected
-                          ? BorderRadius.circular(8)
-                          : BorderRadius.circular(20),
-                      border: isSelected
-                          ? Border.all(color: const Color(0xFF0086FF), width: 2)
-                          : null,
+                      color: isSelected ? Colors.white : const Color(0xFFE5E7EB),
+                      borderRadius: isSelected ? BorderRadius.circular(8) : BorderRadius.circular(20),
+                      border: isSelected ? Border.all(color: const Color(0xFF0086FF), width: 2) : null,
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         CircleAvatar(
                           radius: 12,
-                          backgroundColor: isSelected
+                          backgroundColor: isSelected 
                               ? const Color(0xFF0086FF)
                               : const Color(0xFF6B7280),
                           backgroundImage: _getChildProfileImage(child),
@@ -431,12 +420,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
-                            color: isSelected
-                                ? const Color(0xFF0086FF)
-                                : const Color(0xFF374151),
-                            fontFamily: _selectedLanguage == 'si'
-                                ? 'NotoSerifSinhala'
-                                : null,
+                            color: isSelected ? const Color(0xFF0086FF) : const Color(0xFF374151),
+                            fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                           ),
                         ),
                       ],
@@ -445,13 +430,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               );
             }).toList(),
-
+            
             // Add Child button
             GestureDetector(
               onTap: () => _addChild(context),
               child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
                   color: const Color(0xFFE5E7EB),
                   borderRadius: BorderRadius.circular(20),
@@ -471,9 +455,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
                         color: const Color(0xFF374151),
-                        fontFamily: _selectedLanguage == 'si'
-                            ? 'NotoSerifSinhala'
-                            : null,
+                        fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                       ),
                     ),
                   ],
@@ -486,14 +468,14 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildCleanHeroCard(
-      ChildProvider provider, Map<String, String> texts) {
+  Widget _buildCleanHeroCard(ChildProvider provider, Map<String, String> texts) {
     final child = provider.selectedChild;
     if (child == null) return const SizedBox();
-
-    final latestGrowth =
-        provider.growthRecords.isNotEmpty ? provider.growthRecords.first : null;
-
+    
+    final latestGrowth = provider.growthRecords.isNotEmpty 
+        ? provider.growthRecords.first 
+        : null;
+    
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
       padding: const EdgeInsets.all(20),
@@ -554,9 +536,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
                         color: const Color(0xFF111827),
-                        fontFamily: _selectedLanguage == 'si'
-                            ? 'NotoSerifSinhala'
-                            : null,
+                        fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                       ),
                     ),
                     Text(
@@ -564,9 +544,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       style: TextStyle(
                         fontSize: 14,
                         color: const Color(0xFF6B7280),
-                        fontFamily: _selectedLanguage == 'si'
-                            ? 'NotoSerifSinhala'
-                            : null,
+                        fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                       ),
                     ),
                   ],
@@ -580,38 +558,22 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               _buildMetricItem(
                 texts['weight'] ?? 'Weight',
-                latestGrowth?.weight.toString() ??
-                    child.birthWeight?.toString() ??
-                    texts['noData'] ??
-                    'No data',
-                (latestGrowth?.weight != null || child.birthWeight != null)
-                    ? (texts['kg'] ?? 'kg')
-                    : '',
+                latestGrowth?.weight.toString() ?? child.birthWeight?.toString() ?? texts['noData'] ?? 'No data',
+                (latestGrowth?.weight != null || child.birthWeight != null) ? (texts['kg'] ?? 'kg') : '',
               ),
               const SizedBox(width: 16),
               _buildMetricItem(
                 texts['height'] ?? 'Height',
-                latestGrowth?.height.toString() ??
-                    child.birthHeight?.toString() ??
-                    texts['noData'] ??
-                    'No data',
-                (latestGrowth?.height != null || child.birthHeight != null)
-                    ? (texts['cm'] ?? 'cm')
-                    : '',
+                latestGrowth?.height.toString() ?? child.birthHeight?.toString() ?? texts['noData'] ?? 'No data',
+                (latestGrowth?.height != null || child.birthHeight != null) ? (texts['cm'] ?? 'cm') : '',
               ),
               const SizedBox(width: 16),
               _buildMetricItem(
                 texts['bmi'] ?? 'BMI',
-                latestGrowth != null
-                    ? (latestGrowth.weight /
-                            ((latestGrowth.height / 100) *
-                                (latestGrowth.height / 100)))
-                        .toStringAsFixed(1)
+                latestGrowth != null 
+                    ? (latestGrowth.weight / ((latestGrowth.height / 100) * (latestGrowth.height / 100))).toStringAsFixed(1)
                     : (child.birthWeight != null && child.birthHeight != null)
-                        ? (child.birthWeight! /
-                                ((child.birthHeight! / 100) *
-                                    (child.birthHeight! / 100)))
-                            .toStringAsFixed(1)
+                        ? (child.birthWeight! / ((child.birthHeight! / 100) * (child.birthHeight! / 100))).toStringAsFixed(1)
                         : texts['noData'] ?? 'No data',
                 '',
               ),
@@ -623,11 +585,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildMetricItem(String label, String value, String unit) {
-    final isNoData = value == 'No data' ||
-        value.contains('No data') ||
-        value.contains('නොමැත') ||
-        value.contains('இல்லை');
-
+    final isNoData = value == 'No data' || value.contains('No data') || value.contains('නොමැත') || value.contains('இல்லை');
+    
     return Expanded(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -649,12 +608,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 style: TextStyle(
                   fontSize: isNoData ? 14 : 20,
                   fontWeight: isNoData ? FontWeight.w400 : FontWeight.w600,
-                  color: isNoData
-                      ? const Color(0xFF9CA3AF)
-                      : const Color(0xFF111827),
+                  color: isNoData ? const Color(0xFF9CA3AF) : const Color(0xFF111827),
                   fontStyle: isNoData ? FontStyle.italic : FontStyle.normal,
-                  fontFamily:
-                      _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                  fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                 ),
               ),
               if (unit.isNotEmpty && !isNoData) ...[
@@ -674,13 +630,9 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildEnhancedMetricItem(
-      String label, String value, String unit, IconData icon, Color iconColor) {
-    final isNoData = value == 'No data' ||
-        value.contains('No data') ||
-        value.contains('නොමැත') ||
-        value.contains('இல்லை');
-
+  Widget _buildEnhancedMetricItem(String label, String value, String unit, IconData icon, Color iconColor) {
+    final isNoData = value == 'No data' || value.contains('No data') || value.contains('නොමැත') || value.contains('இல்லை');
+    
     return Expanded(
       child: Container(
         padding: const EdgeInsets.all(12),
@@ -709,8 +661,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     fontSize: 12,
                     fontWeight: FontWeight.w500,
                     color: const Color(0xFF6B7280),
-                    fontFamily:
-                        _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                   ),
                 ),
               ],
@@ -724,12 +675,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   style: TextStyle(
                     fontSize: isNoData ? 16 : 20,
                     fontWeight: FontWeight.w600,
-                    color: isNoData
-                        ? const Color(0xFF9CA3AF)
-                        : const Color(0xFF111827),
+                    color: isNoData ? const Color(0xFF9CA3AF) : const Color(0xFF111827),
                     fontStyle: isNoData ? FontStyle.italic : FontStyle.normal,
-                    fontFamily:
-                        _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                   ),
                 ),
                 if (unit.isNotEmpty && !isNoData) ...[
@@ -751,18 +699,17 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildNutritionStatusBanner(
-      ChildProvider provider, Map<String, String> texts) {
-    final latestGrowth =
-        provider.growthRecords.isNotEmpty ? provider.growthRecords.first : null;
-
+  Widget _buildNutritionStatusBanner(ChildProvider provider, Map<String, String> texts) {
+    final latestGrowth = provider.growthRecords.isNotEmpty 
+        ? provider.growthRecords.first 
+        : null;
+    
     String status = texts['normal'] ?? 'Normal';
     Color statusColor = const Color(0xFF10B981);
     IconData statusIcon = Icons.check_circle;
-
+    
     if (latestGrowth != null) {
-      final bmi = latestGrowth.weight /
-          ((latestGrowth.height / 100) * (latestGrowth.height / 100));
+      final bmi = latestGrowth.weight / ((latestGrowth.height / 100) * (latestGrowth.height / 100));
       if (bmi < 18.5) {
         status = texts['underweight'] ?? 'Underweight';
         statusColor = const Color(0xFFF59E0B);
@@ -773,7 +720,7 @@ class _HomeScreenState extends State<HomeScreen> {
         statusIcon = Icons.error;
       }
     }
-
+    
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       padding: const EdgeInsets.all(16),
@@ -796,8 +743,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
                 color: statusColor,
-                fontFamily:
-                    _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
               ),
             ),
           ),
@@ -827,20 +773,20 @@ class _HomeScreenState extends State<HomeScreen> {
             'icon': Icons.trending_up,
             'color': const Color(0xFF10B981),
             'onTap': () => Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => const GrowthChartsScreen(),
-                  ),
-                ),
+              MaterialPageRoute(
+                builder: (context) => const GrowthChartsScreen(),
+              ),
+            ),
           },
           {
             'title': texts['vaccines'] ?? 'Vaccines',
             'icon': Icons.vaccines_outlined,
             'color': const Color(0xFFF59E0B),
             'onTap': () => Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => const VaccinationCalendarScreen(),
-                  ),
-                ),
+              MaterialPageRoute(
+                builder: (context) => const VaccinationCalendarScreen(),
+              ),
+            ),
           },
           {
             'title': texts['learn'] ?? 'Learn',
@@ -856,25 +802,23 @@ class _HomeScreenState extends State<HomeScreen> {
           final now = DateTime.now();
           final age = now.difference(selectedChild.birthDate);
           final ageInMonths = age.inDays / 30.44; // Average days per month
-
+          
           // Debug: Check child age for countdown
-          print(
-              'DEBUG: Child ${selectedChild.name} age: ${ageInMonths.toStringAsFixed(1)} months');
+          print('DEBUG: Child ${selectedChild.name} age: ${ageInMonths.toStringAsFixed(1)} months');
           print('DEBUG: Birth date: ${selectedChild.birthDate}');
           print('DEBUG: Should show countdown: ${ageInMonths < 6}');
-
-          if (ageInMonths < 120) {
-            // Temporary: Show for all children to test
+          
+          if (ageInMonths < 120) { // Temporary: Show for all children to test
             // Insert at the beginning of the list to make it the first card
             actions.insert(0, {
               'title': texts['growthCountdown'] ?? 'Growth Countdown',
               'icon': Icons.timer_outlined,
               'color': const Color(0xFFFF6B6B),
               'onTap': () => Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => const PreSixMonthCountdownScreen(),
-                    ),
-                  ),
+                MaterialPageRoute(
+                  builder: (context) => const PreSixMonthCountdownScreen(),
+                ),
+              ),
             });
             print('DEBUG: Growth countdown added to actions'); // Debug info
           }
@@ -882,92 +826,86 @@ class _HomeScreenState extends State<HomeScreen> {
           print('DEBUG: No selected child found'); // Debug info
         }
 
-        return Container(
-          margin: ResponsiveUtils.getResponsivePadding(context),
-          child: GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: ResponsiveUtils.getResponsiveColumnCount(context),
-              crossAxisSpacing: ResponsiveUtils.isMobile(context) ? 12 : 16,
-              mainAxisSpacing: ResponsiveUtils.isMobile(context) ? 12 : 16,
-              childAspectRatio:
-                  ResponsiveUtils.isSmallWidth(context) ? 0.9 : 1.0,
-            ),
-            itemCount: actions.length,
-            itemBuilder: (context, index) {
-              final action = actions[index];
-              return GestureDetector(
-                onTap: action['onTap'] as VoidCallback,
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: const Color(0xFFE5E7EB),
-                      width: 1,
+    return Container(
+      margin: ResponsiveUtils.getResponsivePadding(context),
+      child: GridView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: ResponsiveUtils.getResponsiveColumnCount(context),
+          crossAxisSpacing: ResponsiveUtils.isMobile(context) ? 12 : 16,
+          mainAxisSpacing: ResponsiveUtils.isMobile(context) ? 12 : 16,
+          childAspectRatio: ResponsiveUtils.isSmallWidth(context) ? 0.9 : 1.0,
+        ),
+        itemCount: actions.length,
+        itemBuilder: (context, index) {
+          final action = actions[index];
+          return GestureDetector(
+            onTap: action['onTap'] as VoidCallback,
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: const Color(0xFFE5E7EB),
+                  width: 1,
+                ),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      color: (action['color'] as Color).withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(
+                      action['icon'] as IconData,
+                      color: action['color'] as Color,
+                      size: 24,
                     ),
                   ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        width: 48,
-                        height: 48,
-                        decoration: BoxDecoration(
-                          color:
-                              (action['color'] as Color).withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Icon(
-                          action['icon'] as IconData,
-                          color: action['color'] as Color,
-                          size: 24,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        action['title'] as String,
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: const Color(0xFF374151),
-                          fontFamily: _selectedLanguage == 'si'
-                              ? 'NotoSerifSinhala'
-                              : null,
-                        ),
-                        textAlign: TextAlign.center,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
+                  const SizedBox(height: 12),
+                  Text(
+                    action['title'] as String,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: const Color(0xFF374151),
+                      fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                    ),
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                ),
-              );
-            },
-          ),
-        );
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
       },
     );
   }
 
-  Widget _buildCleanRecentActivity(
-      ChildProvider provider, Map<String, String> texts) {
+  Widget _buildCleanRecentActivity(ChildProvider provider, Map<String, String> texts) {
     final recentRecords = <Map<String, dynamic>>[];
-
+    
     // Add recent growth records
     for (final record in provider.growthRecords.take(3)) {
       recentRecords.add({
         'type': 'measurement',
-        'title':
-            '${texts['weight']}: ${record.weight} ${texts['kg']}, ${texts['height']}: ${record.height} ${texts['cm']}',
+        'title': '${texts['weight']}: ${record.weight} ${texts['kg']}, ${texts['height']}: ${record.height} ${texts['cm']}',
         'date': record.date,
         'icon': Icons.trending_up,
         'color': const Color(0xFF10B981),
       });
     }
-
+    
     // Add recent vaccine records
     for (final record in provider.vaccineRecords.take(2)) {
       try {
@@ -985,12 +923,11 @@ class _HomeScreenState extends State<HomeScreen> {
         continue;
       }
     }
-
+    
     // Sort by date and take last 5
-    recentRecords.sort(
-        (a, b) => (b['date'] as DateTime).compareTo(a['date'] as DateTime));
+    recentRecords.sort((a, b) => (b['date'] as DateTime).compareTo(a['date'] as DateTime));
     final displayRecords = recentRecords.take(5).toList();
-
+    
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       child: Column(
@@ -1022,8 +959,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   texts['noRecentActivity'] ?? 'No recent activity',
                   style: TextStyle(
                     color: const Color(0xFF6B7280),
-                    fontFamily:
-                        _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                   ),
                 ),
               ),
@@ -1056,8 +992,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           width: 32,
                           height: 32,
                           decoration: BoxDecoration(
-                            color: (record['color'] as Color)
-                                .withValues(alpha: 0.1),
+                            color: (record['color'] as Color).withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Icon(
@@ -1077,16 +1012,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                   fontSize: 14,
                                   fontWeight: FontWeight.w500,
                                   color: const Color(0xFF111827),
-                                  fontFamily: _selectedLanguage == 'si'
-                                      ? 'NotoSerifSinhala'
-                                      : null,
+                                  fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                                 ),
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                (record['date'] as DateTime)
-                                    .toString()
-                                    .split(' ')[0],
+                                (record['date'] as DateTime).toString().split(' ')[0],
                                 style: const TextStyle(
                                   fontSize: 12,
                                   color: Color(0xFF6B7280),

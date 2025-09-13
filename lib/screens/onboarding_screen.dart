@@ -15,12 +15,12 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   final PageController _pageController = PageController();
   int _currentPage = 0;
   String _selectedLanguage = 'en';
-
+  
   // Lottie animation controllers for better performance
   late AnimationController _lottieController1;
   late AnimationController _lottieController2;
   late AnimationController _lottieController3;
-
+  
   // No loading states needed as we're using local JSON files
 
   @override
@@ -44,6 +44,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
       vsync: this,
     );
   }
+
 
   Future<void> _loadLanguage() async {
     final prefs = await SharedPreferences.getInstance();
@@ -77,18 +78,15 @@ class _OnboardingScreenState extends State<OnboardingScreen>
         'slides': [
           {
             'title': 'Track Growth',
-            'subtitle':
-                'Monitor your child\'s height, weight and development milestones with easy-to-read charts',
+            'subtitle': 'Monitor your child\'s height, weight and development milestones with easy-to-read charts',
           },
           {
             'title': 'Record Vaccines',
-            'subtitle':
-                'Keep track of immunizations and get timely reminders for upcoming vaccines',
+            'subtitle': 'Keep track of immunizations and get timely reminders for upcoming vaccines',
           },
           {
             'title': 'Learn Nutrition',
-            'subtitle':
-                'Access expert guidance on child nutrition and healthy meal planning',
+            'subtitle': 'Access expert guidance on child nutrition and healthy meal planning',
           },
         ],
       },
@@ -98,18 +96,15 @@ class _OnboardingScreenState extends State<OnboardingScreen>
         'slides': [
           {
             'title': 'වර්ධනය නිරීක්ෂණය',
-            'subtitle':
-                'ඔබේ දරුවාගේ උස, බර සහ වර්ධන සන්ධිස්ථාන පහසුවෙන් කියවිය හැකි ප්‍රස්ථාර සමඟ නිරීක්ෂණය කරන්න',
+            'subtitle': 'ඔබේ දරුවාගේ උස, බර සහ වර්ධන සන්ධිස්ථාන පහසුවෙන් කියවිය හැකි ප්‍රස්ථාර සමඟ නිරීක්ෂණය කරන්න',
           },
           {
             'title': 'එන්නත් වාර්තා',
-            'subtitle':
-                'එන්නත් කිරීම් පිළිබඳව සටහන් තබා ගන්න සහ ඉදිරි එන්නත් සඳහා කාලෝචිත මතක් කිරීම් ලබා ගන්න',
+            'subtitle': 'එන්නත් කිරීම් පිළිබඳව සටහන් තබා ගන්න සහ ඉදිරි එන්නත් සඳහා කාලෝචිත මතක් කිරීම් ලබා ගන්න',
           },
           {
             'title': 'පෝෂණය ඉගෙන ගන්න',
-            'subtitle':
-                'ළමා පෝෂණය සහ සෞඛ්‍ය සම්පන්න ආහාර සැලසුම් පිළිබඳ විශේෂඥ මාර්ගෝපදේශ ලබා ගන්න',
+            'subtitle': 'ළමා පෝෂණය සහ සෞඛ්‍ය සම්පන්න ආහාර සැලසුම් පිළිබඳ විශේෂඥ මාර්ගෝපදේශ ලබා ගන්න',
           },
         ],
       },
@@ -119,18 +114,15 @@ class _OnboardingScreenState extends State<OnboardingScreen>
         'slides': [
           {
             'title': 'வளர்ச்சியைக் கண்காணிக்கவும்',
-            'subtitle':
-                'உங்கள் குழந்தையின் உயரம், எடை மற்றும் வளர்ச்சி மைல்கற்களை எளிதில் படிக்கக்கூடிய விளக்கப்படங்களுடன் கண்காணிக்கவும்',
+            'subtitle': 'உங்கள் குழந்தையின் உயரம், எடை மற்றும் வளர்ச்சி மைல்கற்களை எளிதில் படிக்கக்கூடிய விளக்கப்படங்களுடன் கண்காணிக்கவும்',
           },
           {
             'title': 'தடுப்பூசிகளை பதிவு செய்யுங்கள்',
-            'subtitle':
-                'நோய்த்தடுப்பு மருந்துகளை கண்காணித்து, வரவிருக்கும் தடுப்பூசிகளுக்கான சரியான நேரத்தில் நினைவூட்டல்களைப் பெறுங்கள்',
+            'subtitle': 'நோய்த்தடுப்பு மருந்துகளை கண்காணித்து, வரவிருக்கும் தடுப்பூசிகளுக்கான சரியான நேரத்தில் நினைவூட்டல்களைப் பெறுங்கள்',
           },
           {
             'title': 'ஊட்டச்சத்து கற்றுக்கொள்ளுங்கள்',
-            'subtitle':
-                'குழந்தை ஊட்டச்சத்து மற்றும் ஆரோக்கியமான உணவு திட்டமிடல் குறித்த நிபுணர் வழிகாட்டுதலை அணுகவும்',
+            'subtitle': 'குழந்தை ஊட்டச்சத்து மற்றும் ஆரோக்கியமான உணவு திட்டமிடல் குறித்த நிபுணர் வழிகாட்டுதலை அணுகவும்',
           },
         ],
       },
@@ -161,13 +153,12 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                     color: const Color(0xFF1E90FF),
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
-                    fontFamily:
-                        _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                   ),
                 ),
               ),
             ),
-
+            
             // Page content
             Column(
               children: [
@@ -179,7 +170,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                       setState(() {
                         _currentPage = page;
                       });
-
+                      
                       // Start animation for current page
                       switch (page) {
                         case 0:
@@ -206,7 +197,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                     },
                   ),
                 ),
-
+                
                 // Navigation dots
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 20),
@@ -218,12 +209,11 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                     ),
                   ),
                 ),
-
+                
                 // Get Started button (only on last page)
                 if (_currentPage == slides.length - 1)
                   Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 24, vertical: 20),
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
                     child: SizedBox(
                       width: double.infinity,
                       height: 56,
@@ -242,9 +232,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w600,
-                            fontFamily: _selectedLanguage == 'si'
-                                ? 'NotoSerifSinhala'
-                                : null,
+                            fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                           ),
                         ),
                       ),
@@ -337,7 +325,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
             ),
           ),
           const SizedBox(height: 40),
-
+          
           // Title
           Text(
             title,
@@ -350,7 +338,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 16),
-
+          
           // Subtitle
           Text(
             subtitle,

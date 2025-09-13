@@ -15,8 +15,7 @@ class NutritionCalculatorScreen extends StatefulWidget {
   const NutritionCalculatorScreen({super.key});
 
   @override
-  State<NutritionCalculatorScreen> createState() =>
-      _NutritionCalculatorScreenState();
+  State<NutritionCalculatorScreen> createState() => _NutritionCalculatorScreenState();
 }
 
 class _NutritionCalculatorScreenState extends State<NutritionCalculatorScreen> {
@@ -52,13 +51,11 @@ class _NutritionCalculatorScreenState extends State<NutritionCalculatorScreen> {
   Future<void> _loadNutritionData() async {
     final provider = Provider.of<ChildProvider>(context, listen: false);
     final child = provider.selectedChild;
-
+    
     if (child != null) {
       final ageInMonths = provider.calculateAgeInMonths(child.birthDate);
-      final latestRecord = provider.growthRecords.isNotEmpty
-          ? provider.growthRecords.first
-          : null;
-
+      final latestRecord = provider.growthRecords.isNotEmpty ? provider.growthRecords.first : null;
+      
       setState(() {
         _childAgeMonths = ageInMonths;
         _childWeight = latestRecord?.weight ?? 0;
@@ -126,7 +123,7 @@ class _NutritionCalculatorScreenState extends State<NutritionCalculatorScreen> {
 
   void _generateMealPlan() {
     final calories = _dailyRequirements['calories'] ?? 0;
-
+    
     if (_childAgeMonths < 6) {
       // Breast milk only
       setState(() {
@@ -397,14 +394,14 @@ class _NutritionCalculatorScreenState extends State<NutritionCalculatorScreen> {
         children: [
           // Tab Navigation
           _buildTabNavigation(texts),
-
+          
           // Content
           Expanded(
             child: _selectedTab == 'calculator'
                 ? _buildCalculatorView(texts)
                 : _selectedTab == 'planner'
-                    ? _buildPlannerView(texts)
-                    : _buildGuidelinesView(texts),
+                ? _buildPlannerView(texts)
+                : _buildGuidelinesView(texts),
           ),
         ],
       ),
@@ -413,7 +410,7 @@ class _NutritionCalculatorScreenState extends State<NutritionCalculatorScreen> {
 
   Widget _buildTabNavigation(Map<String, String> texts) {
     final tabs = ['calculator', 'planner', 'guidelines'];
-
+    
     return Container(
       color: Colors.white,
       child: Row(
@@ -429,9 +426,7 @@ class _NutritionCalculatorScreenState extends State<NutritionCalculatorScreen> {
                 decoration: BoxDecoration(
                   border: Border(
                     bottom: BorderSide(
-                      color: isSelected
-                          ? const Color(0xFF0086FF)
-                          : Colors.transparent,
+                      color: isSelected ? const Color(0xFF0086FF) : Colors.transparent,
                       width: 2,
                     ),
                   ),
@@ -440,15 +435,10 @@ class _NutritionCalculatorScreenState extends State<NutritionCalculatorScreen> {
                   texts[tab]!,
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize:
-                        ResponsiveUtils.getResponsiveFontSize(context, 14),
-                    fontWeight:
-                        isSelected ? FontWeight.w600 : FontWeight.normal,
-                    color: isSelected
-                        ? const Color(0xFF0086FF)
-                        : const Color(0xFF6B7280),
-                    fontFamily:
-                        _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
+                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                    color: isSelected ? const Color(0xFF0086FF) : const Color(0xFF6B7280),
+                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                   ),
                 ),
               ),
@@ -467,14 +457,14 @@ class _NutritionCalculatorScreenState extends State<NutritionCalculatorScreen> {
         children: [
           // Activity Level Selector
           _buildActivitySelector(texts),
-
+          
           SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 24)),
-
+          
           // Daily Requirements
           _buildDailyRequirements(texts),
-
+          
           SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 24)),
-
+          
           // Local Food Recommendations
           _buildLocalFoodRecommendations(texts),
         ],
@@ -508,7 +498,9 @@ class _NutritionCalculatorScreenState extends State<NutritionCalculatorScreen> {
               fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
             ),
           ),
+          
           SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 16)),
+          
           Row(
             children: ['low', 'moderate', 'high'].map((level) {
               final isSelected = _activityLevel == level;
@@ -520,31 +512,23 @@ class _NutritionCalculatorScreenState extends State<NutritionCalculatorScreen> {
                   },
                   child: Container(
                     margin: EdgeInsets.symmetric(
-                      horizontal:
-                          ResponsiveUtils.getResponsiveSpacing(context, 4),
+                      horizontal: ResponsiveUtils.getResponsiveSpacing(context, 4),
                     ),
                     padding: EdgeInsets.symmetric(
-                      vertical:
-                          ResponsiveUtils.getResponsiveSpacing(context, 12),
+                      vertical: ResponsiveUtils.getResponsiveSpacing(context, 12),
                     ),
                     decoration: BoxDecoration(
-                      color: isSelected
-                          ? const Color(0xFF0086FF)
-                          : Colors.grey[100],
+                      color: isSelected ? const Color(0xFF0086FF) : Colors.grey[100],
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
                       texts[level]!,
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize:
-                            ResponsiveUtils.getResponsiveFontSize(context, 14),
+                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
                         fontWeight: FontWeight.w500,
-                        color:
-                            isSelected ? Colors.white : const Color(0xFF6B7280),
-                        fontFamily: _selectedLanguage == 'si'
-                            ? 'NotoSerifSinhala'
-                            : null,
+                        color: isSelected ? Colors.white : const Color(0xFF6B7280),
+                        fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                       ),
                     ),
                   ),
@@ -587,30 +571,19 @@ class _NutritionCalculatorScreenState extends State<NutritionCalculatorScreen> {
               fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
             ),
           ),
+          
           SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 16)),
-          ...[
-            'calories',
-            'protein',
-            'carbohydrates',
-            'fat',
-            'calcium',
-            'iron',
-            'vitaminC',
-            'vitaminD'
-          ]
-              .map(
-                (nutrient) => _buildNutrientRow(nutrient, texts),
-              )
-              .toList(),
+          
+          ...['calories', 'protein', 'carbohydrates', 'fat', 'calcium', 'iron', 'vitaminC', 'vitaminD'].map(
+            (nutrient) => _buildNutrientRow(nutrient, texts),
+          ).toList(),
         ],
       ),
     );
   }
 
   Widget _buildNutrientRow(String nutrient, Map<String, String> texts) {
-    final value =
-        _dailyRequirements[nutrient == 'carbohydrates' ? 'carbs' : nutrient] ??
-            0;
+    final value = _dailyRequirements[nutrient == 'carbohydrates' ? 'carbs' : nutrient] ?? 0;
     String unit = '';
     String displayValue = '';
 
@@ -667,10 +640,7 @@ class _NutritionCalculatorScreenState extends State<NutritionCalculatorScreen> {
 
   Widget _buildLocalFoodRecommendations(Map<String, String> texts) {
     final localFoods = [
-      {
-        'name': 'Red rice (කේකුළු හාල්)',
-        'benefit': 'Rich in fiber and nutrients'
-      },
+      {'name': 'Red rice (කේකුළු හාල්)', 'benefit': 'Rich in fiber and nutrients'},
       {'name': 'Jack fruit (කොස්)', 'benefit': 'High in vitamin C and fiber'},
       {'name': 'Curry leaves (කරපින්චා)', 'benefit': 'Rich in antioxidants'},
       {'name': 'Coconut (පොල්)', 'benefit': 'Healthy fats and minerals'},
@@ -703,47 +673,41 @@ class _NutritionCalculatorScreenState extends State<NutritionCalculatorScreen> {
               fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
             ),
           ),
+          
           SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 16)),
-          ...localFoods
-              .map((food) => Container(
-                    margin: EdgeInsets.only(
-                      bottom: ResponsiveUtils.getResponsiveSpacing(context, 12),
-                    ),
-                    padding: ResponsiveUtils.getResponsivePadding(context),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF8F9FA),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          food['name']!,
-                          style: TextStyle(
-                            fontSize: ResponsiveUtils.getResponsiveFontSize(
-                                context, 14),
-                            fontWeight: FontWeight.w600,
-                            color: const Color(0xFF1A1A1A),
-                            fontFamily: _selectedLanguage == 'si'
-                                ? 'NotoSerifSinhala'
-                                : null,
-                          ),
-                        ),
-                        SizedBox(
-                            height: ResponsiveUtils.getResponsiveSpacing(
-                                context, 4)),
-                        Text(
-                          food['benefit']!,
-                          style: TextStyle(
-                            fontSize: ResponsiveUtils.getResponsiveFontSize(
-                                context, 12),
-                            color: const Color(0xFF6B7280),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ))
-              .toList(),
+          
+          ...localFoods.map((food) => Container(
+            margin: EdgeInsets.only(
+              bottom: ResponsiveUtils.getResponsiveSpacing(context, 12),
+            ),
+            padding: ResponsiveUtils.getResponsivePadding(context),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF8F9FA),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  food['name']!,
+                  style: TextStyle(
+                    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
+                    fontWeight: FontWeight.w600,
+                    color: const Color(0xFF1A1A1A),
+                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                  ),
+                ),
+                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 4)),
+                Text(
+                  food['benefit']!,
+                  style: TextStyle(
+                    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 12),
+                    color: const Color(0xFF6B7280),
+                  ),
+                ),
+              ],
+            ),
+          )).toList(),
         ],
       ),
     );
@@ -764,7 +728,9 @@ class _NutritionCalculatorScreenState extends State<NutritionCalculatorScreen> {
               fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
             ),
           ),
+          
           SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 16)),
+          
           ..._mealPlan.map((meal) => _buildMealCard(meal, texts)).toList(),
         ],
       ),
@@ -800,8 +766,7 @@ class _NutritionCalculatorScreenState extends State<NutritionCalculatorScreen> {
                   fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
                   fontWeight: FontWeight.w600,
                   color: const Color(0xFF1A1A1A),
-                  fontFamily:
-                      _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                  fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                 ),
               ),
               Text(
@@ -814,7 +779,9 @@ class _NutritionCalculatorScreenState extends State<NutritionCalculatorScreen> {
               ),
             ],
           ),
+          
           SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 8)),
+          
           Text(
             meal['food'],
             style: TextStyle(
@@ -824,6 +791,7 @@ class _NutritionCalculatorScreenState extends State<NutritionCalculatorScreen> {
               fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
             ),
           ),
+          
           if (meal['description'] != null) ...[
             SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 4)),
             Text(
@@ -831,12 +799,13 @@ class _NutritionCalculatorScreenState extends State<NutritionCalculatorScreen> {
               style: TextStyle(
                 fontSize: ResponsiveUtils.getResponsiveFontSize(context, 12),
                 color: const Color(0xFF6B7280),
-                fontFamily:
-                    _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
               ),
             ),
           ],
+          
           SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 8)),
+          
           Row(
             children: [
               Icon(
@@ -864,12 +833,9 @@ class _NutritionCalculatorScreenState extends State<NutritionCalculatorScreen> {
       padding: ResponsiveUtils.getResponsivePadding(context),
       child: Column(
         children: [
-          _buildGuidelineCard(texts['portions']!,
-              'Serve age-appropriate portion sizes', Icons.restaurant_menu),
-          _buildGuidelineCard(texts['frequency']!,
-              'Feed frequently in small amounts', Icons.schedule),
-          _buildGuidelineCard(texts['tips']!, 'Introduce new foods gradually',
-              Icons.lightbulb_outline),
+          _buildGuidelineCard(texts['portions']!, 'Serve age-appropriate portion sizes', Icons.restaurant_menu),
+          _buildGuidelineCard(texts['frequency']!, 'Feed frequently in small amounts', Icons.schedule),
+          _buildGuidelineCard(texts['tips']!, 'Introduce new foods gradually', Icons.lightbulb_outline),
         ],
       ),
     );
@@ -895,8 +861,7 @@ class _NutritionCalculatorScreenState extends State<NutritionCalculatorScreen> {
       child: Row(
         children: [
           Container(
-            padding: EdgeInsets.all(
-                ResponsiveUtils.getResponsiveSpacing(context, 12)),
+            padding: EdgeInsets.all(ResponsiveUtils.getResponsiveSpacing(context, 12)),
             decoration: BoxDecoration(
               color: const Color(0xFF0086FF).withOpacity(0.1),
               borderRadius: BorderRadius.circular(8),
@@ -915,21 +880,17 @@ class _NutritionCalculatorScreenState extends State<NutritionCalculatorScreen> {
                 Text(
                   title,
                   style: TextStyle(
-                    fontSize:
-                        ResponsiveUtils.getResponsiveFontSize(context, 16),
+                    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
                     fontWeight: FontWeight.w600,
                     color: const Color(0xFF1A1A1A),
-                    fontFamily:
-                        _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                   ),
                 ),
-                SizedBox(
-                    height: ResponsiveUtils.getResponsiveSpacing(context, 4)),
+                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 4)),
                 Text(
                   description,
                   style: TextStyle(
-                    fontSize:
-                        ResponsiveUtils.getResponsiveFontSize(context, 14),
+                    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
                     color: const Color(0xFF6B7280),
                   ),
                 ),

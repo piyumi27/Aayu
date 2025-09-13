@@ -96,105 +96,17 @@ class DatabaseService {
 
   Future<void> _insertDefaultVaccines(Database db) async {
     final vaccines = [
-      {
-        'id': 'bcg',
-        'name': 'BCG',
-        'nameLocal': 'බීසීජී',
-        'description': 'Tuberculosis vaccine',
-        'recommendedAgeMonths': 0,
-        'isMandatory': 1,
-        'category': 'birth'
-      },
-      {
-        'id': 'hepb_birth',
-        'name': 'Hepatitis B',
-        'nameLocal': 'හෙපටයිටිස් බී',
-        'description': 'Hepatitis B vaccine - Birth dose',
-        'recommendedAgeMonths': 0,
-        'isMandatory': 1,
-        'category': 'birth'
-      },
-      {
-        'id': 'opv_0',
-        'name': 'OPV 0',
-        'nameLocal': 'ඕපීවී 0',
-        'description': 'Oral Polio vaccine - Birth dose',
-        'recommendedAgeMonths': 0,
-        'isMandatory': 1,
-        'category': 'birth'
-      },
-      {
-        'id': 'pentavalent_1',
-        'name': 'Pentavalent 1',
-        'nameLocal': 'පංචසංයුජ 1',
-        'description': 'DPT-HepB-Hib vaccine - 1st dose',
-        'recommendedAgeMonths': 2,
-        'isMandatory': 1,
-        'category': '2months'
-      },
-      {
-        'id': 'opv_1',
-        'name': 'OPV 1',
-        'nameLocal': 'ඕපීවී 1',
-        'description': 'Oral Polio vaccine - 1st dose',
-        'recommendedAgeMonths': 2,
-        'isMandatory': 1,
-        'category': '2months'
-      },
-      {
-        'id': 'pentavalent_2',
-        'name': 'Pentavalent 2',
-        'nameLocal': 'පංචසංයුජ 2',
-        'description': 'DPT-HepB-Hib vaccine - 2nd dose',
-        'recommendedAgeMonths': 4,
-        'isMandatory': 1,
-        'category': '4months'
-      },
-      {
-        'id': 'opv_2',
-        'name': 'OPV 2',
-        'nameLocal': 'ඕපීවී 2',
-        'description': 'Oral Polio vaccine - 2nd dose',
-        'recommendedAgeMonths': 4,
-        'isMandatory': 1,
-        'category': '4months'
-      },
-      {
-        'id': 'pentavalent_3',
-        'name': 'Pentavalent 3',
-        'nameLocal': 'පංචසංයුජ 3',
-        'description': 'DPT-HepB-Hib vaccine - 3rd dose',
-        'recommendedAgeMonths': 6,
-        'isMandatory': 1,
-        'category': '6months'
-      },
-      {
-        'id': 'opv_3',
-        'name': 'OPV 3',
-        'nameLocal': 'ඕපීවී 3',
-        'description': 'Oral Polio vaccine - 3rd dose',
-        'recommendedAgeMonths': 6,
-        'isMandatory': 1,
-        'category': '6months'
-      },
-      {
-        'id': 'mmr',
-        'name': 'MMR',
-        'nameLocal': 'එම්එම්ආර්',
-        'description': 'Measles, Mumps, Rubella vaccine',
-        'recommendedAgeMonths': 9,
-        'isMandatory': 1,
-        'category': '9months'
-      },
-      {
-        'id': 'je',
-        'name': 'Japanese Encephalitis',
-        'nameLocal': 'ජපන් මොළ දැවිල්ල',
-        'description': 'Japanese Encephalitis vaccine',
-        'recommendedAgeMonths': 9,
-        'isMandatory': 1,
-        'category': '9months'
-      },
+      {'id': 'bcg', 'name': 'BCG', 'nameLocal': 'බීසීජී', 'description': 'Tuberculosis vaccine', 'recommendedAgeMonths': 0, 'isMandatory': 1, 'category': 'birth'},
+      {'id': 'hepb_birth', 'name': 'Hepatitis B', 'nameLocal': 'හෙපටයිටිස් බී', 'description': 'Hepatitis B vaccine - Birth dose', 'recommendedAgeMonths': 0, 'isMandatory': 1, 'category': 'birth'},
+      {'id': 'opv_0', 'name': 'OPV 0', 'nameLocal': 'ඕපීවී 0', 'description': 'Oral Polio vaccine - Birth dose', 'recommendedAgeMonths': 0, 'isMandatory': 1, 'category': 'birth'},
+      {'id': 'pentavalent_1', 'name': 'Pentavalent 1', 'nameLocal': 'පංචසංයුජ 1', 'description': 'DPT-HepB-Hib vaccine - 1st dose', 'recommendedAgeMonths': 2, 'isMandatory': 1, 'category': '2months'},
+      {'id': 'opv_1', 'name': 'OPV 1', 'nameLocal': 'ඕපීවී 1', 'description': 'Oral Polio vaccine - 1st dose', 'recommendedAgeMonths': 2, 'isMandatory': 1, 'category': '2months'},
+      {'id': 'pentavalent_2', 'name': 'Pentavalent 2', 'nameLocal': 'පංචසංයුජ 2', 'description': 'DPT-HepB-Hib vaccine - 2nd dose', 'recommendedAgeMonths': 4, 'isMandatory': 1, 'category': '4months'},
+      {'id': 'opv_2', 'name': 'OPV 2', 'nameLocal': 'ඕපීවී 2', 'description': 'Oral Polio vaccine - 2nd dose', 'recommendedAgeMonths': 4, 'isMandatory': 1, 'category': '4months'},
+      {'id': 'pentavalent_3', 'name': 'Pentavalent 3', 'nameLocal': 'පංචසංයුජ 3', 'description': 'DPT-HepB-Hib vaccine - 3rd dose', 'recommendedAgeMonths': 6, 'isMandatory': 1, 'category': '6months'},
+      {'id': 'opv_3', 'name': 'OPV 3', 'nameLocal': 'ඕපීවී 3', 'description': 'Oral Polio vaccine - 3rd dose', 'recommendedAgeMonths': 6, 'isMandatory': 1, 'category': '6months'},
+      {'id': 'mmr', 'name': 'MMR', 'nameLocal': 'එම්එම්ආර්', 'description': 'Measles, Mumps, Rubella vaccine', 'recommendedAgeMonths': 9, 'isMandatory': 1, 'category': '9months'},
+      {'id': 'je', 'name': 'Japanese Encephalitis', 'nameLocal': 'ජපන් මොළ දැවිල්ල', 'description': 'Japanese Encephalitis vaccine', 'recommendedAgeMonths': 9, 'isMandatory': 1, 'category': '9months'},
     ];
 
     for (var vaccine in vaccines) {
@@ -453,10 +365,10 @@ class DatabaseService {
 
     // Insert default notification preferences
     await _insertDefaultNotificationPreferences(db);
-
+    
     // Insert default notification templates
     await _insertDefaultNotificationTemplates(db);
-
+    
     // Populate Sri Lankan vaccination schedule
     await _populateVaccines(db);
   }
@@ -600,10 +512,8 @@ class DatabaseService {
   Future<void> _upgradeNotificationHistoryTable(Database db) async {
     try {
       // Add category and priority columns to notification_history table
-      await db
-          .execute('ALTER TABLE notification_history ADD COLUMN category TEXT');
-      await db
-          .execute('ALTER TABLE notification_history ADD COLUMN priority TEXT');
+      await db.execute('ALTER TABLE notification_history ADD COLUMN category TEXT');
+      await db.execute('ALTER TABLE notification_history ADD COLUMN priority TEXT');
 
       // Update existing records with default values based on type
       await db.execute('''
@@ -644,8 +554,7 @@ class DatabaseService {
       print('✅ Added photoPath column to growth_records table');
     } catch (e) {
       // If the column already exists, ignore the error
-      print(
-          'Migration note: photoPath column may already exist in growth_records table');
+      print('Migration note: photoPath column may already exist in growth_records table');
     }
   }
 

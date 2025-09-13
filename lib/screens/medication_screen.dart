@@ -15,8 +15,7 @@ class MedicationScreen extends StatefulWidget {
   State<MedicationScreen> createState() => _MedicationScreenState();
 }
 
-class _MedicationScreenState extends State<MedicationScreen>
-    with SingleTickerProviderStateMixin {
+class _MedicationScreenState extends State<MedicationScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final MedicationService _medicationService = MedicationService();
 
@@ -127,19 +126,15 @@ class _MedicationScreenState extends State<MedicationScreen>
                             const SizedBox(width: 8),
                             Text(
                               'Overdue Medications',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleMedium
-                                  ?.copyWith(
-                                    color: Colors.red,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                color: Colors.red,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ],
                         ),
                         const SizedBox(height: 8),
-                        ...overdueMeds.map(
-                            (med) => _buildOverdueMedicationTile(context, med)),
+                        ...overdueMeds.map((med) => _buildOverdueMedicationTile(context, med)),
                       ],
                     ),
                   ),
@@ -162,19 +157,15 @@ class _MedicationScreenState extends State<MedicationScreen>
                             const SizedBox(width: 8),
                             Text(
                               'Upcoming (Next 2 Hours)',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleMedium
-                                  ?.copyWith(
-                                    color: Colors.orange,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                color: Colors.orange,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ],
                         ),
                         const SizedBox(height: 8),
-                        ...upcomingMeds.map((med) =>
-                            _buildUpcomingMedicationTile(context, med)),
+                        ...upcomingMeds.map((med) => _buildUpcomingMedicationTile(context, med)),
                       ],
                     ),
                   ),
@@ -191,17 +182,15 @@ class _MedicationScreenState extends State<MedicationScreen>
                     children: [
                       Text(
                         'Today\'s Schedule',
-                        style:
-                            Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       const SizedBox(height: 16),
                       if (todaysDoses.isEmpty)
                         const Text('No scheduled doses for today')
                       else
-                        ...todaysDoses
-                            .map((dose) => _buildDoseRecordTile(context, dose)),
+                        ...todaysDoses.map((dose) => _buildDoseRecordTile(context, dose)),
                     ],
                   ),
                 ),
@@ -218,11 +207,8 @@ class _MedicationScreenState extends State<MedicationScreen>
       notifier: _medicationService,
       builder: (context, service, child) {
         final activeMeds = service.getActiveMedicationsForChild(childId);
-        final supplements = activeMeds
-            .where((m) => m.type == MedicationType.supplement)
-            .toList();
-        final medicines =
-            activeMeds.where((m) => m.type == MedicationType.medicine).toList();
+        final supplements = activeMeds.where((m) => m.type == MedicationType.supplement).toList();
+        final medicines = activeMeds.where((m) => m.type == MedicationType.medicine).toList();
 
         return RefreshIndicator(
           onRefresh: () async {
@@ -235,23 +221,25 @@ class _MedicationScreenState extends State<MedicationScreen>
                 Text(
                   'Supplements & Vitamins',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 ...supplements.map((med) => _buildMedicationCard(context, med)),
                 const SizedBox(height: 16),
               ],
+
               if (medicines.isNotEmpty) ...[
                 Text(
                   'Medications',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 ...medicines.map((med) => _buildMedicationCard(context, med)),
               ],
+
               if (activeMeds.isEmpty)
                 const Center(
                   child: Padding(
@@ -271,12 +259,8 @@ class _MedicationScreenState extends State<MedicationScreen>
       notifier: _medicationService,
       builder: (context, service, child) {
         final allMeds = service.getMedicationsForChild(childId);
-        final completedMeds = allMeds
-            .where((m) => m.status == MedicationStatus.completed)
-            .toList();
-        final discontinuedMeds = allMeds
-            .where((m) => m.status == MedicationStatus.discontinued)
-            .toList();
+        final completedMeds = allMeds.where((m) => m.status == MedicationStatus.completed).toList();
+        final discontinuedMeds = allMeds.where((m) => m.status == MedicationStatus.discontinued).toList();
 
         return RefreshIndicator(
           onRefresh: () async {
@@ -289,27 +273,27 @@ class _MedicationScreenState extends State<MedicationScreen>
                 Text(
                   'Completed',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.green,
-                      ),
+                    fontWeight: FontWeight.bold,
+                    color: Colors.green,
+                  ),
                 ),
                 const SizedBox(height: 8),
-                ...completedMeds.map((med) =>
-                    _buildMedicationCard(context, med, isHistory: true)),
+                ...completedMeds.map((med) => _buildMedicationCard(context, med, isHistory: true)),
                 const SizedBox(height: 16),
               ],
+
               if (discontinuedMeds.isNotEmpty) ...[
                 Text(
                   'Discontinued',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.red,
-                      ),
+                    fontWeight: FontWeight.bold,
+                    color: Colors.red,
+                  ),
                 ),
                 const SizedBox(height: 8),
-                ...discontinuedMeds.map((med) =>
-                    _buildMedicationCard(context, med, isHistory: true)),
+                ...discontinuedMeds.map((med) => _buildMedicationCard(context, med, isHistory: true)),
               ],
+
               if (completedMeds.isEmpty && discontinuedMeds.isEmpty)
                 const Center(
                   child: Padding(
@@ -346,10 +330,9 @@ class _MedicationScreenState extends State<MedicationScreen>
                     children: [
                       Text(
                         'Overview',
-                        style:
-                            Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       const SizedBox(height: 16),
                       Row(
@@ -415,14 +398,12 @@ class _MedicationScreenState extends State<MedicationScreen>
                       children: [
                         Text(
                           'Adherence (Last 7 Days)',
-                          style:
-                              Theme.of(context).textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         const SizedBox(height: 16),
-                        ...activeMeds.map((med) =>
-                            _buildAdherenceCard(context, med, service)),
+                        ...activeMeds.map((med) => _buildAdherenceCard(context, med, service)),
                       ],
                     ),
                   ),
@@ -435,8 +416,7 @@ class _MedicationScreenState extends State<MedicationScreen>
     );
   }
 
-  Widget _buildMedicationCard(BuildContext context, Medication medication,
-      {bool isHistory = false}) {
+  Widget _buildMedicationCard(BuildContext context, Medication medication, {bool isHistory = false}) {
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
       child: ListTile(
@@ -460,16 +440,15 @@ class _MedicationScreenState extends State<MedicationScreen>
               Text(
                 medication.indication!,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.grey[600],
-                    ),
+                  color: Colors.grey[600],
+                ),
               ),
           ],
         ),
         trailing: isHistory
             ? null
             : PopupMenuButton<String>(
-                onSelected: (value) =>
-                    _handleMedicationAction(context, medication, value),
+                onSelected: (value) => _handleMedicationAction(context, medication, value),
                 itemBuilder: (context) => [
                   const PopupMenuItem(value: 'edit', child: Text('Edit')),
                   const PopupMenuItem(value: 'pause', child: Text('Pause')),
@@ -482,8 +461,7 @@ class _MedicationScreenState extends State<MedicationScreen>
     );
   }
 
-  Widget _buildOverdueMedicationTile(
-      BuildContext context, Medication medication) {
+  Widget _buildOverdueMedicationTile(BuildContext context, Medication medication) {
     return ListTile(
       leading: const Icon(Icons.warning, color: Colors.red, size: 20),
       title: Text(
@@ -507,8 +485,7 @@ class _MedicationScreenState extends State<MedicationScreen>
     );
   }
 
-  Widget _buildUpcomingMedicationTile(
-      BuildContext context, Medication medication) {
+  Widget _buildUpcomingMedicationTile(BuildContext context, Medication medication) {
     return ListTile(
       leading: const Icon(Icons.schedule, color: Colors.orange, size: 20),
       title: Text(
@@ -553,8 +530,7 @@ class _MedicationScreenState extends State<MedicationScreen>
     );
   }
 
-  Widget _buildStatCard(BuildContext context, String label, String value,
-      IconData icon, Color color) {
+  Widget _buildStatCard(BuildContext context, String label, String value, IconData icon, Color color) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -568,9 +544,9 @@ class _MedicationScreenState extends State<MedicationScreen>
           Text(
             value,
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: color,
-                ),
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
           ),
           Text(
             label,
@@ -581,10 +557,9 @@ class _MedicationScreenState extends State<MedicationScreen>
     );
   }
 
-  Widget _buildAdherenceCard(
-      BuildContext context, Medication medication, MedicationService service) {
+  Widget _buildAdherenceCard(BuildContext context, Medication medication, MedicationService service) {
     final adherence = service.getMedicationAdherence(medication.id);
-
+    
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
       child: Padding(
@@ -679,8 +654,7 @@ class _MedicationScreenState extends State<MedicationScreen>
     );
   }
 
-  void _handleMedicationAction(
-      BuildContext context, Medication medication, String action) {
+  void _handleMedicationAction(BuildContext context, Medication medication, String action) {
     switch (action) {
       case 'edit':
         _showEditMedicationDialog(context, medication);
@@ -710,7 +684,7 @@ class _MedicationScreenState extends State<MedicationScreen>
       status: MedicationStatus.paused,
       updatedAt: DateTime.now(),
     );
-
+    
     final success = await _medicationService.updateMedication(updated);
     if (success && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -725,7 +699,7 @@ class _MedicationScreenState extends State<MedicationScreen>
       endDate: DateTime.now(),
       updatedAt: DateTime.now(),
     );
-
+    
     final success = await _medicationService.updateMedication(updated);
     if (success && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -773,8 +747,7 @@ class _MedicationScreenState extends State<MedicationScreen>
   }
 
   void _skipDose(BuildContext context, Medication medication) async {
-    final success = await _medicationService.recordDoseSkipped(
-        medication.id, 'User skipped');
+    final success = await _medicationService.recordDoseSkipped(medication.id, 'User skipped');
     if (success && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('${medication.name} dose skipped')),
@@ -782,8 +755,7 @@ class _MedicationScreenState extends State<MedicationScreen>
     }
   }
 
-  void _recordDoseFromRecord(
-      BuildContext context, MedicationDoseRecord dose) async {
+  void _recordDoseFromRecord(BuildContext context, MedicationDoseRecord dose) async {
     final success = await _medicationService.recordDoseTaken(dose.medicationId);
     if (success && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -792,10 +764,8 @@ class _MedicationScreenState extends State<MedicationScreen>
     }
   }
 
-  void _skipDoseFromRecord(
-      BuildContext context, MedicationDoseRecord dose) async {
-    final success = await _medicationService.recordDoseSkipped(
-        dose.medicationId, 'User skipped');
+  void _skipDoseFromRecord(BuildContext context, MedicationDoseRecord dose) async {
+    final success = await _medicationService.recordDoseSkipped(dose.medicationId, 'User skipped');
     if (success && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Dose skipped')),
@@ -818,12 +788,10 @@ class ChangeNotifierBuilder<T extends ChangeNotifier> extends StatefulWidget {
   });
 
   @override
-  State<ChangeNotifierBuilder<T>> createState() =>
-      _ChangeNotifierBuilderState<T>();
+  State<ChangeNotifierBuilder<T>> createState() => _ChangeNotifierBuilderState<T>();
 }
 
-class _ChangeNotifierBuilderState<T extends ChangeNotifier>
-    extends State<ChangeNotifierBuilder<T>> {
+class _ChangeNotifierBuilderState<T extends ChangeNotifier> extends State<ChangeNotifierBuilder<T>> {
   @override
   void initState() {
     super.initState();
@@ -864,7 +832,7 @@ class AddMedicationSheet extends StatelessWidget {
 
 class EditMedicationSheet extends StatelessWidget {
   final Medication medication;
-
+  
   const EditMedicationSheet({super.key, required this.medication});
 
   @override
@@ -881,7 +849,7 @@ class EditMedicationSheet extends StatelessWidget {
 
 class MedicationDetailsSheet extends StatelessWidget {
   final Medication medication;
-
+  
   const MedicationDetailsSheet({super.key, required this.medication});
 
   @override

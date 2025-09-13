@@ -17,7 +17,7 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   final LocalAuthService _authService = LocalAuthService();
-
+  
   String _selectedLanguage = 'en';
   UserAccount? _currentUser;
   bool _isLoading = true;
@@ -31,7 +31,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> _loadData() async {
     final prefs = await SharedPreferences.getInstance();
     final user = await _authService.getCurrentUser();
-
+    
     setState(() {
       _selectedLanguage = prefs.getString('language') ?? 'en';
       _currentUser = user;
@@ -108,18 +108,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   String _formatJoinDate(DateTime date) {
     final months = [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December'
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
     ];
     return '${months[date.month - 1]} ${date.day}, ${date.year}';
   }
@@ -190,7 +180,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 20)),
-
+            
             // Profile Header
             Container(
               padding: ResponsiveUtils.getResponsivePadding(context),
@@ -213,117 +203,91 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     height: ResponsiveUtils.getResponsiveIconSize(context, 80),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      gradient: _getUserProfileImage() == null
-                          ? LinearGradient(
-                              colors: [
-                                const Color(0xFF0086FF),
-                                const Color(0xFF0086FF).withValues(alpha: 0.8),
-                              ],
-                            )
-                          : null,
+                      gradient: _getUserProfileImage() == null ? LinearGradient(
+                        colors: [
+                          const Color(0xFF0086FF),
+                          const Color(0xFF0086FF).withValues(alpha: 0.8),
+                        ],
+                      ) : null,
                     ),
                     child: _getUserProfileImage() != null
                         ? ClipRRect(
-                            borderRadius: BorderRadius.circular(
-                                ResponsiveUtils.getResponsiveIconSize(
-                                    context, 40)),
+                            borderRadius: BorderRadius.circular(ResponsiveUtils.getResponsiveIconSize(context, 40)),
                             child: Image(
                               image: _getUserProfileImage()!,
-                              width: ResponsiveUtils.getResponsiveIconSize(
-                                  context, 80),
-                              height: ResponsiveUtils.getResponsiveIconSize(
-                                  context, 80),
+                              width: ResponsiveUtils.getResponsiveIconSize(context, 80),
+                              height: ResponsiveUtils.getResponsiveIconSize(context, 80),
                               fit: BoxFit.cover,
                             ),
                           )
                         : Icon(
                             Icons.person,
                             color: Colors.white,
-                            size: ResponsiveUtils.getResponsiveIconSize(
-                                context, 40),
+                            size: ResponsiveUtils.getResponsiveIconSize(context, 40),
                           ),
                   ),
-
-                  SizedBox(
-                      height:
-                          ResponsiveUtils.getResponsiveSpacing(context, 16)),
-
+                  
+                  SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 16)),
+                  
                   // User Name
                   Text(
                     _currentUser!.fullName,
                     style: TextStyle(
-                      fontSize:
-                          ResponsiveUtils.getResponsiveFontSize(context, 24),
+                      fontSize: ResponsiveUtils.getResponsiveFontSize(context, 24),
                       fontWeight: FontWeight.bold,
                       color: const Color(0xFF1A1A1A),
-                      fontFamily:
-                          _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                      fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                     ),
                     textAlign: TextAlign.center,
                   ),
-
-                  SizedBox(
-                      height: ResponsiveUtils.getResponsiveSpacing(context, 8)),
-
+                  
+                  SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 8)),
+                  
                   // Verification Status
                   Container(
                     padding: EdgeInsets.symmetric(
-                      horizontal:
-                          ResponsiveUtils.getResponsiveSpacing(context, 12),
-                      vertical:
-                          ResponsiveUtils.getResponsiveSpacing(context, 6),
+                      horizontal: ResponsiveUtils.getResponsiveSpacing(context, 12),
+                      vertical: ResponsiveUtils.getResponsiveSpacing(context, 6),
                     ),
                     decoration: BoxDecoration(
-                      color: _currentUser!.isSyncGateOpen
-                          ? const Color(0xFF10B981).withValues(alpha: 0.1)
-                          : const Color(0xFFF59E0B).withValues(alpha: 0.1),
+                      color: _currentUser!.isSyncGateOpen 
+                        ? const Color(0xFF10B981).withValues(alpha: 0.1)
+                        : const Color(0xFFF59E0B).withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
-                        color: _currentUser!.isSyncGateOpen
-                            ? const Color(0xFF10B981).withValues(alpha: 0.3)
-                            : const Color(0xFFF59E0B).withValues(alpha: 0.3),
+                        color: _currentUser!.isSyncGateOpen 
+                          ? const Color(0xFF10B981).withValues(alpha: 0.3)
+                          : const Color(0xFFF59E0B).withValues(alpha: 0.3),
                       ),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(
-                          _currentUser!.isSyncGateOpen
-                              ? Icons.verified
-                              : Icons.warning_outlined,
-                          size: ResponsiveUtils.getResponsiveIconSize(
-                              context, 16),
-                          color: _currentUser!.isSyncGateOpen
+                          _currentUser!.isSyncGateOpen ? Icons.verified : Icons.warning_outlined,
+                          size: ResponsiveUtils.getResponsiveIconSize(context, 16),
+                          color: _currentUser!.isSyncGateOpen 
+                            ? const Color(0xFF10B981)
+                            : const Color(0xFFF59E0B),
+                        ),
+                        SizedBox(width: ResponsiveUtils.getResponsiveSpacing(context, 4)),
+                        Text(
+                          _currentUser!.isSyncGateOpen ? texts['verified']! : texts['unverified']!,
+                          style: TextStyle(
+                            fontSize: ResponsiveUtils.getResponsiveFontSize(context, 12),
+                            fontWeight: FontWeight.w600,
+                            color: _currentUser!.isSyncGateOpen 
                               ? const Color(0xFF10B981)
                               : const Color(0xFFF59E0B),
-                        ),
-                        SizedBox(
-                            width: ResponsiveUtils.getResponsiveSpacing(
-                                context, 4)),
-                        Text(
-                          _currentUser!.isSyncGateOpen
-                              ? texts['verified']!
-                              : texts['unverified']!,
-                          style: TextStyle(
-                            fontSize: ResponsiveUtils.getResponsiveFontSize(
-                                context, 12),
-                            fontWeight: FontWeight.w600,
-                            color: _currentUser!.isSyncGateOpen
-                                ? const Color(0xFF10B981)
-                                : const Color(0xFFF59E0B),
-                            fontFamily: _selectedLanguage == 'si'
-                                ? 'NotoSerifSinhala'
-                                : null,
+                            fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                           ),
                         ),
                       ],
                     ),
                   ),
-
+                  
                   if (!_currentUser!.isSyncGateOpen) ...[
-                    SizedBox(
-                        height:
-                            ResponsiveUtils.getResponsiveSpacing(context, 12)),
+                    SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 12)),
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
@@ -339,12 +303,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         child: Text(
                           texts['verifyNow']!,
                           style: TextStyle(
-                            fontSize: ResponsiveUtils.getResponsiveFontSize(
-                                context, 14),
+                            fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
                             fontWeight: FontWeight.w600,
-                            fontFamily: _selectedLanguage == 'si'
-                                ? 'NotoSerifSinhala'
-                                : null,
+                            fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                           ),
                         ),
                       ),
@@ -353,9 +314,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ],
               ),
             ),
-
+            
             SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 24)),
-
+            
             // Personal Information Section
             _buildInfoSection(
               title: texts['personalInfo']!,
@@ -367,9 +328,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 _InfoItem(
                   label: texts['email']!,
-                  value: _currentUser!.email?.isNotEmpty == true
-                      ? _currentUser!.email!
-                      : texts['notProvided']!,
+                  value: _currentUser!.email?.isNotEmpty == true 
+                    ? _currentUser!.email! 
+                    : texts['notProvided']!,
                   icon: Icons.email_outlined,
                 ),
                 _InfoItem(
@@ -379,9 +340,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ],
             ),
-
+            
             SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 24)),
-
+            
             // Account Information Section
             _buildInfoSection(
               title: texts['accountInfo']!,
@@ -393,18 +354,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 _InfoItem(
                   label: texts['accountStatus']!,
-                  value: _currentUser!.isSyncGateOpen
-                      ? texts['verified']!
-                      : texts['unverified']!,
-                  icon: _currentUser!.isSyncGateOpen
-                      ? Icons.verified
-                      : Icons.warning_outlined,
+                  value: _currentUser!.isSyncGateOpen ? texts['verified']! : texts['unverified']!,
+                  icon: _currentUser!.isSyncGateOpen ? Icons.verified : Icons.warning_outlined,
                 ),
               ],
             ),
-
-            SizedBox(
-                height: ResponsiveUtils.getResponsiveSpacing(context, 100)),
+            
+            SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 100)),
           ],
         ),
       ),
@@ -440,73 +396,59 @@ class _ProfileScreenState extends State<ProfileScreen> {
               fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
             ),
           ),
+          
           SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 16)),
-          ...items
-              .map((item) => Padding(
-                    padding: EdgeInsets.only(
-                      bottom: ResponsiveUtils.getResponsiveSpacing(context, 16),
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: ResponsiveUtils.getResponsiveIconSize(
-                              context, 40),
-                          height: ResponsiveUtils.getResponsiveIconSize(
-                              context, 40),
-                          decoration: BoxDecoration(
-                            color:
-                                const Color(0xFF0086FF).withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Icon(
-                            item.icon,
-                            size: ResponsiveUtils.getResponsiveIconSize(
-                                context, 20),
-                            color: const Color(0xFF0086FF),
-                          ),
+          
+          ...items.map((item) => Padding(
+            padding: EdgeInsets.only(
+              bottom: ResponsiveUtils.getResponsiveSpacing(context, 16),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: ResponsiveUtils.getResponsiveIconSize(context, 40),
+                  height: ResponsiveUtils.getResponsiveIconSize(context, 40),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF0086FF).withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Icon(
+                    item.icon,
+                    size: ResponsiveUtils.getResponsiveIconSize(context, 20),
+                    color: const Color(0xFF0086FF),
+                  ),
+                ),
+                
+                SizedBox(width: ResponsiveUtils.getResponsiveSpacing(context, 12)),
+                
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        item.label,
+                        style: TextStyle(
+                          fontSize: ResponsiveUtils.getResponsiveFontSize(context, 12),
+                          color: const Color(0xFF6B7280),
+                          fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                         ),
-                        SizedBox(
-                            width: ResponsiveUtils.getResponsiveSpacing(
-                                context, 12)),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                item.label,
-                                style: TextStyle(
-                                  fontSize:
-                                      ResponsiveUtils.getResponsiveFontSize(
-                                          context, 12),
-                                  color: const Color(0xFF6B7280),
-                                  fontFamily: _selectedLanguage == 'si'
-                                      ? 'NotoSerifSinhala'
-                                      : null,
-                                ),
-                              ),
-                              SizedBox(
-                                  height: ResponsiveUtils.getResponsiveSpacing(
-                                      context, 2)),
-                              Text(
-                                item.value,
-                                style: TextStyle(
-                                  fontSize:
-                                      ResponsiveUtils.getResponsiveFontSize(
-                                          context, 16),
-                                  fontWeight: FontWeight.w500,
-                                  color: const Color(0xFF1A1A1A),
-                                  fontFamily: _selectedLanguage == 'si'
-                                      ? 'NotoSerifSinhala'
-                                      : null,
-                                ),
-                              ),
-                            ],
-                          ),
+                      ),
+                      SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 2)),
+                      Text(
+                        item.value,
+                        style: TextStyle(
+                          fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
+                          fontWeight: FontWeight.w500,
+                          color: const Color(0xFF1A1A1A),
+                          fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                         ),
-                      ],
-                    ),
-                  ))
-              .toList(),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          )).toList(),
         ],
       ),
     );

@@ -13,28 +13,28 @@ class VaccinationCalendarScreen extends StatefulWidget {
   const VaccinationCalendarScreen({super.key});
 
   @override
-  State<VaccinationCalendarScreen> createState() =>
-      _VaccinationCalendarScreenState();
+  State<VaccinationCalendarScreen> createState() => _VaccinationCalendarScreenState();
 }
 
 class _VaccinationCalendarScreenState extends State<VaccinationCalendarScreen>
     with TickerProviderStateMixin {
+  
   // Core calendar state
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
-
+  
   // App state
   String _selectedLanguage = 'en';
-
+  
   // Animation state
   late ScrollController _scrollController;
   late AnimationController _calendarAnimationController;
   late Animation<double> _calendarAnimation;
-
+  
   // Constants
   static const double _maxScrollDistance = 200.0;
   static const Duration _animationDuration = Duration(milliseconds: 50);
-
+  
   // Sample vaccine events
   final Map<DateTime, List<VaccineEvent>> _events = {};
 
@@ -62,16 +62,16 @@ class _VaccinationCalendarScreenState extends State<VaccinationCalendarScreen>
   /// Initialize smooth scroll animations
   void _initializeAnimations() {
     _scrollController = ScrollController()..addListener(_onScroll);
-
+    
     _calendarAnimationController = AnimationController(
       duration: _animationDuration,
       vsync: this,
       value: 0.0, // Start fully visible
     );
-
+    
     _calendarAnimation = Tween<double>(
       begin: 0.0, // Fully visible
-      end: 1.0, // Fully hidden
+      end: 1.0,   // Fully hidden
     ).animate(CurvedAnimation(
       parent: _calendarAnimationController,
       curve: Curves.linear, // Smooth linear animation
@@ -92,16 +92,13 @@ class _VaccinationCalendarScreenState extends State<VaccinationCalendarScreen>
   void _loadVaccineEvents() {
     final today = DateTime.now();
     _events[DateTime(today.year, today.month, 15)] = [
-      VaccineEvent('MMR', VaccineStatus.scheduled,
-          DateTime(today.year, today.month, 15)),
+      VaccineEvent('MMR', VaccineStatus.scheduled, DateTime(today.year, today.month, 15)),
     ];
     _events[DateTime(today.year, today.month, 20)] = [
-      VaccineEvent(
-          'DTaP', VaccineStatus.overdue, DateTime(today.year, today.month, 20)),
+      VaccineEvent('DTaP', VaccineStatus.overdue, DateTime(today.year, today.month, 20)),
     ];
     _events[DateTime(today.year, today.month, 25)] = [
-      VaccineEvent('Hepatitis B', VaccineStatus.completed,
-          DateTime(today.year, today.month, 25)),
+      VaccineEvent('Hepatitis B', VaccineStatus.completed, DateTime(today.year, today.month, 25)),
     ];
   }
 
@@ -109,13 +106,14 @@ class _VaccinationCalendarScreenState extends State<VaccinationCalendarScreen>
   void _onScroll() {
     final offset = _scrollController.offset.clamp(0.0, _maxScrollDistance);
     final animationValue = offset / _maxScrollDistance;
-
+    
     _calendarAnimationController.animateTo(
       animationValue,
       duration: _animationDuration,
       curve: Curves.linear,
     );
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -128,8 +126,7 @@ class _VaccinationCalendarScreenState extends State<VaccinationCalendarScreen>
         controller: _scrollController,
         headerSliverBuilder: (context, innerBoxIsScrolled) => [
           _buildAppBar(texts),
-          if (provider.children.length > 1)
-            _buildChildSelector(provider, texts),
+          if (provider.children.length > 1) _buildChildSelector(provider, texts),
           _buildAnimatedCalendar(texts),
           _buildLegend(texts),
           _buildVaccinesHeader(texts),
@@ -157,8 +154,7 @@ class _VaccinationCalendarScreenState extends State<VaccinationCalendarScreen>
       ),
       actions: [
         IconButton(
-          icon: const Icon(Icons.notifications_outlined,
-              color: Color(0xFF6B7280)),
+          icon: const Icon(Icons.notifications_outlined, color: Color(0xFF6B7280)),
           onPressed: () {},
         ),
       ],
@@ -170,8 +166,7 @@ class _VaccinationCalendarScreenState extends State<VaccinationCalendarScreen>
   }
 
   /// Build child selector
-  Widget _buildChildSelector(
-      ChildProvider provider, Map<String, String> texts) {
+  Widget _buildChildSelector(ChildProvider provider, Map<String, String> texts) {
     return SliverToBoxAdapter(
       child: Container(
         padding: const EdgeInsets.all(16),
@@ -187,70 +182,59 @@ class _VaccinationCalendarScreenState extends State<VaccinationCalendarScreen>
             isExpanded: true,
             underline: const SizedBox(),
             icon: const Icon(Icons.expand_more, color: Color(0xFF6B7280)),
-            items: provider.children
-                .map((child) => DropdownMenuItem<String>(
-                      value: child.id,
-                      child: Row(
-                        children: [
-                          CircleAvatar(
-                            radius: 16,
-                            backgroundColor:
-                                const Color(0xFF0086FF).withValues(alpha: 0.1),
-                            backgroundImage: child.photoUrl != null &&
-                                    child.photoUrl!.isNotEmpty
-                                ? (child.photoUrl!.startsWith('http')
-                                    ? NetworkImage(child.photoUrl!)
-                                        as ImageProvider
-                                    : FileImage(File(child.photoUrl!)))
-                                : null,
-                            child: child.photoUrl == null ||
-                                    child.photoUrl!.isEmpty
-                                ? Text(
-                                    child.name[0].toUpperCase(),
-                                    style: const TextStyle(
-                                      color: Color(0xFF0086FF),
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 12,
-                                    ),
-                                  )
-                                : null,
-                          ),
-                          const SizedBox(width: 12),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                child.name,
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                  color: const Color(0xFF1A1A1A),
-                                  fontFamily: _selectedLanguage == 'si'
-                                      ? 'NotoSerifSinhala'
-                                      : null,
-                                ),
-                              ),
-                              Text(
-                                provider.getAgeString(child.birthDate),
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: const Color(0xFF6B7280),
-                                  fontFamily: _selectedLanguage == 'si'
-                                      ? 'NotoSerifSinhala'
-                                      : null,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
+            items: provider.children.map((child) => DropdownMenuItem<String>(
+              value: child.id,
+              child: Row(
+                children: [
+                  CircleAvatar(
+                    radius: 16,
+                    backgroundColor: const Color(0xFF0086FF).withValues(alpha: 0.1),
+                    backgroundImage: child.photoUrl != null && child.photoUrl!.isNotEmpty
+                        ? (child.photoUrl!.startsWith('http')
+                            ? NetworkImage(child.photoUrl!) as ImageProvider
+                            : FileImage(File(child.photoUrl!)))
+                        : null,
+                    child: child.photoUrl == null || child.photoUrl!.isEmpty
+                        ? Text(
+                            child.name[0].toUpperCase(),
+                            style: const TextStyle(
+                              color: Color(0xFF0086FF),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                            ),
+                          )
+                        : null,
+                  ),
+                  const SizedBox(width: 12),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        child.name,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xFF1A1A1A),
+                          fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                        ),
                       ),
-                    ))
-                .toList(),
+                      Text(
+                        provider.getAgeString(child.birthDate),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: const Color(0xFF6B7280),
+                          fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            )).toList(),
             onChanged: (String? childId) {
               if (childId != null) {
-                final child =
-                    provider.children.firstWhere((c) => c.id == childId);
+                final child = provider.children.firstWhere((c) => c.id == childId);
                 provider.selectChild(child);
               }
             },
@@ -271,7 +255,7 @@ class _VaccinationCalendarScreenState extends State<VaccinationCalendarScreen>
             final scale = 1.0 - (animValue * 0.3);
             final opacity = 1.0 - (animValue * 0.7);
             final height = _calculateCalendarHeight(animValue);
-
+            
             return Container(
               height: height,
               child: ClipRect(
@@ -280,8 +264,7 @@ class _VaccinationCalendarScreenState extends State<VaccinationCalendarScreen>
                   alignment: Alignment.topCenter,
                   child: SizedBox(
                     width: MediaQuery.of(context).size.width,
-                    height:
-                        415.0, // Fixed height for calendar with additional buffer
+                    height: 415.0, // Fixed height for calendar with additional buffer
                     child: Transform.scale(
                       scale: scale,
                       child: Opacity(
@@ -305,15 +288,13 @@ class _VaccinationCalendarScreenState extends State<VaccinationCalendarScreen>
     return Container(
       color: Colors.white,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(
-            12.0, 12.0, 12.0, 14.0), // Extra bottom padding
+        padding: const EdgeInsets.fromLTRB(12.0, 12.0, 12.0, 14.0), // Extra bottom padding
         child: TableCalendar<VaccineEvent>(
           firstDay: DateTime.utc(2020, 1, 1),
           lastDay: DateTime.utc(2030, 12, 31),
           focusedDay: _focusedDay,
           selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-          calendarFormat:
-              CalendarFormat.month, // Fixed format to prevent dynamic sizing
+          calendarFormat: CalendarFormat.month, // Fixed format to prevent dynamic sizing
           eventLoader: (day) => _events[day] ?? [],
           startingDayOfWeek: StartingDayOfWeek.sunday,
           sixWeekMonthsEnforced: false, // Allow flexible week count
@@ -336,10 +317,8 @@ class _VaccinationCalendarScreenState extends State<VaccinationCalendarScreen>
             ),
             markersMaxCount: 3,
             canMarkersOverflow: false,
-            cellMargin:
-                const EdgeInsets.all(3.0), // Reduced margin to save space
-            cellPadding:
-                const EdgeInsets.all(1.5), // Reduced padding to save space
+            cellMargin: const EdgeInsets.all(3.0), // Reduced margin to save space
+            cellPadding: const EdgeInsets.all(1.5), // Reduced padding to save space
           ),
           headerStyle: HeaderStyle(
             formatButtonVisible: false,
@@ -357,8 +336,7 @@ class _VaccinationCalendarScreenState extends State<VaccinationCalendarScreen>
               Icons.chevron_right,
               color: Color(0xFF6B7280),
             ),
-            headerPadding: const EdgeInsets.symmetric(
-                vertical: 6.0), // Further reduced header padding
+            headerPadding: const EdgeInsets.symmetric(vertical: 6.0), // Further reduced header padding
           ),
           daysOfWeekStyle: const DaysOfWeekStyle(
             weekdayStyle: TextStyle(
@@ -375,7 +353,7 @@ class _VaccinationCalendarScreenState extends State<VaccinationCalendarScreen>
               _selectedDay = selectedDay;
               _focusedDay = focusedDay;
             });
-
+            
             final events = _events[selectedDay];
             if (events != null && events.isNotEmpty) {
               _showDayEventsSheet(selectedDay, events, texts);
@@ -460,8 +438,7 @@ class _VaccinationCalendarScreenState extends State<VaccinationCalendarScreen>
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
                 color: const Color(0xFF1A1A1A),
-                fontFamily:
-                    _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
               ),
             ),
             TextButton(
@@ -471,8 +448,7 @@ class _VaccinationCalendarScreenState extends State<VaccinationCalendarScreen>
                 style: TextStyle(
                   color: const Color(0xFF0086FF),
                   fontWeight: FontWeight.w600,
-                  fontFamily:
-                      _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                  fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                 ),
               ),
             ),
@@ -485,7 +461,7 @@ class _VaccinationCalendarScreenState extends State<VaccinationCalendarScreen>
   /// Build vaccines list
   Widget _buildVaccinesList(ChildProvider provider, Map<String, String> texts) {
     final upcomingVaccines = _getUpcomingVaccines();
-
+    
     if (upcomingVaccines.isEmpty) {
       return Center(
         child: Text(
@@ -497,23 +473,21 @@ class _VaccinationCalendarScreenState extends State<VaccinationCalendarScreen>
         ),
       );
     }
-
+    
     return ListView.builder(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
       itemCount: upcomingVaccines.length,
-      itemBuilder: (context, index) =>
-          _buildVaccineCard(upcomingVaccines[index], texts),
+      itemBuilder: (context, index) => _buildVaccineCard(upcomingVaccines[index], texts),
     );
   }
 
   /// Build vaccine card
-  Widget _buildVaccineCard(
-      Map<String, dynamic> vaccine, Map<String, String> texts) {
+  Widget _buildVaccineCard(Map<String, dynamic> vaccine, Map<String, String> texts) {
     final status = VaccineStatus.values.firstWhere(
       (s) => s.name == vaccine['status'],
       orElse: () => VaccineStatus.scheduled,
     );
-
+    
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
@@ -559,15 +533,12 @@ class _VaccinationCalendarScreenState extends State<VaccinationCalendarScreen>
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                           color: const Color(0xFF1A1A1A),
-                          fontFamily: _selectedLanguage == 'si'
-                              ? 'NotoSerifSinhala'
-                              : null,
+                          fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                         ),
                       ),
                       const SizedBox(width: 4),
                       Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 4),
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                         decoration: BoxDecoration(
                           color: status.backgroundColor,
                           borderRadius: BorderRadius.circular(12),
@@ -578,9 +549,7 @@ class _VaccinationCalendarScreenState extends State<VaccinationCalendarScreen>
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
                             color: status.color,
-                            fontFamily: _selectedLanguage == 'si'
-                                ? 'NotoSerifSinhala'
-                                : null,
+                            fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                           ),
                         ),
                       ),
@@ -598,12 +567,10 @@ class _VaccinationCalendarScreenState extends State<VaccinationCalendarScreen>
               ),
               child: Column(
                 children: [
-                  _buildDetailRow(
-                      Icons.calendar_today, texts['dueOn']!, vaccine['date']),
+                  _buildDetailRow(Icons.calendar_today, texts['dueOn']!, vaccine['date']),
                   if (vaccine['clinic'] != null) ...[
                     const SizedBox(height: 12),
-                    _buildDetailRow(Icons.location_on_outlined, 'Clinic',
-                        vaccine['clinic']),
+                    _buildDetailRow(Icons.location_on_outlined, 'Clinic', vaccine['clinic']),
                   ],
                   const SizedBox(height: 12),
                   _buildDetailRow(Icons.access_time, 'Time', '2:30 PM'),
@@ -650,6 +617,7 @@ class _VaccinationCalendarScreenState extends State<VaccinationCalendarScreen>
     );
   }
 
+
   /// Build floating action button
   Widget _buildFAB(Map<String, String> texts) {
     return FloatingActionButton(
@@ -662,16 +630,13 @@ class _VaccinationCalendarScreenState extends State<VaccinationCalendarScreen>
   /// Calculate calendar height based on animation value
   double _calculateCalendarHeight(double animValue) {
     // Adjusted heights to accommodate table_calendar's internal layout with buffer for overflow
-    const double totalHeight =
-        415.0; // Additional 5px buffer to prevent 2px overflow
-    const double minHeight =
-        90.0; // Increased minimum height for better collapsed state
+    const double totalHeight = 415.0; // Additional 5px buffer to prevent 2px overflow
+    const double minHeight = 90.0;    // Increased minimum height for better collapsed state
     return totalHeight - ((totalHeight - minHeight) * animValue);
   }
 
   /// Show day events bottom sheet
-  void _showDayEventsSheet(
-      DateTime day, List<VaccineEvent> events, Map<String, String> texts) {
+  void _showDayEventsSheet(DateTime day, List<VaccineEvent> events, Map<String, String> texts) {
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -689,26 +654,25 @@ class _VaccinationCalendarScreenState extends State<VaccinationCalendarScreen>
             ),
             const SizedBox(height: 16),
             ...events.map((event) => ListTile(
-                  leading: Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: event.status.backgroundColor,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Icon(event.status.icon,
-                        color: event.status.color, size: 20),
-                  ),
-                  title: Text(event.name),
-                  subtitle: Text(texts[event.status.name] ?? event.status.name),
-                  trailing: TextButton(
-                    onPressed: () {},
-                    child: Text(
-                      texts['details']!,
-                      style: const TextStyle(color: Color(0xFF0086FF)),
-                    ),
-                  ),
-                )),
+              leading: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: event.status.backgroundColor,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(event.status.icon, color: event.status.color, size: 20),
+              ),
+              title: Text(event.name),
+              subtitle: Text(texts[event.status.name] ?? event.status.name),
+              trailing: TextButton(
+                onPressed: () {},
+                child: Text(
+                  texts['details']!,
+                  style: const TextStyle(color: Color(0xFF0086FF)),
+                ),
+              ),
+            )),
           ],
         ),
       ),
@@ -839,8 +803,7 @@ enum VaccineStatus {
   final String name;
 
   /// Get action buttons based on status
-  List<Widget> getActionButtons(
-      Map<String, String> texts, VoidCallback onPressed) {
+  List<Widget> getActionButtons(Map<String, String> texts, VoidCallback onPressed) {
     switch (this) {
       case VaccineStatus.overdue:
         return [
@@ -852,8 +815,7 @@ enum VaccineStatus {
               style: OutlinedButton.styleFrom(
                 foregroundColor: const Color(0xFF0086FF),
                 side: const BorderSide(color: Color(0xFF0086FF)),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8)),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
               ),
             ),
           ),
@@ -865,8 +827,7 @@ enum VaccineStatus {
               label: Text(texts['markComplete']!),
               style: FilledButton.styleFrom(
                 backgroundColor: const Color(0xFF0086FF),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8)),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
               ),
             ),
           ),
@@ -881,8 +842,7 @@ enum VaccineStatus {
               style: OutlinedButton.styleFrom(
                 foregroundColor: const Color(0xFF0086FF),
                 side: const BorderSide(color: Color(0xFF0086FF)),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8)),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
               ),
             ),
           ),
@@ -894,8 +854,7 @@ enum VaccineStatus {
               label: Text(texts['details']!),
               style: FilledButton.styleFrom(
                 backgroundColor: const Color(0xFF0086FF),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8)),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
               ),
             ),
           ),
@@ -909,8 +868,7 @@ enum VaccineStatus {
               label: Text(texts['details']!),
               style: FilledButton.styleFrom(
                 backgroundColor: const Color(0xFF0086FF),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8)),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
               ),
             ),
           ),

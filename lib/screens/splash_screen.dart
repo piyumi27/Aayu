@@ -35,32 +35,26 @@ class _SplashScreenState extends State<SplashScreen>
     _fadeAnimation = Tween<double>(
       begin: 0.0,
       end: 1.0,
-    ).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: const Interval(0.0, 0.65, curve: Curves.easeIn),
-      ),
-    );
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: const Interval(0.0, 0.65, curve: Curves.easeIn),
+    ),);
 
     _scaleAnimation = Tween<double>(
       begin: 0.5,
       end: 1.0,
-    ).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: const Interval(0.0, 0.65, curve: Curves.elasticOut),
-      ),
-    );
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: const Interval(0.0, 0.65, curve: Curves.elasticOut),
+    ),);
 
     _gradientRotation = Tween<double>(
       begin: 0,
       end: 2 * math.pi,
-    ).animate(
-      CurvedAnimation(
-        parent: _gradientController,
-        curve: Curves.linear,
-      ),
-    );
+    ).animate(CurvedAnimation(
+      parent: _gradientController,
+      curve: Curves.linear,
+    ),);
 
     _animationController.forward();
 
@@ -69,9 +63,8 @@ class _SplashScreenState extends State<SplashScreen>
         // Check completion states and navigate appropriately
         final prefs = await SharedPreferences.getInstance();
         final languageSelected = prefs.getBool('language_selected') ?? false;
-        final onboardingCompleted =
-            prefs.getBool('onboarding_completed') ?? false;
-
+        final onboardingCompleted = prefs.getBool('onboarding_completed') ?? false;
+        
         if (!languageSelected) {
           context.go('/language-selection');
         } else if (!onboardingCompleted) {
@@ -164,8 +157,7 @@ class _SplashScreenState extends State<SplashScreen>
                               borderRadius: BorderRadius.circular(30),
                               boxShadow: [
                                 BoxShadow(
-                                  color: const Color(0xFF1E90FF)
-                                      .withValues(alpha: 0.15),
+                                  color: const Color(0xFF1E90FF).withValues(alpha: 0.15),
                                   blurRadius: 40,
                                   spreadRadius: 10,
                                   offset: const Offset(0, 10),

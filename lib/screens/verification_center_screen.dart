@@ -10,61 +10,59 @@ class VerificationCenterScreen extends StatefulWidget {
   const VerificationCenterScreen({super.key});
 
   @override
-  State<VerificationCenterScreen> createState() =>
-      _VerificationCenterScreenState();
+  State<VerificationCenterScreen> createState() => _VerificationCenterScreenState();
 }
 
 class _VerificationCenterScreenState extends State<VerificationCenterScreen> {
   final LocalAuthService _authService = LocalAuthService();
-
+  
   String _selectedLanguage = 'en';
   UserAccount? _currentUser;
   String? _errorMessage;
   String? _successMessage;
-
+  
   // Email verification
   bool _isEmailLoading = false;
   bool _emailSent = false;
-
-  // Phone verification
+  
+  // Phone verification  
   bool _isPhoneLoading = false;
   String _otpCode = '';
   int _resendCountdown = 0;
-
+  
   @override
   void initState() {
     super.initState();
     _loadData();
   }
-
+  
   Future<void> _loadData() async {
     final prefs = await SharedPreferences.getInstance();
     final user = await _authService.getCurrentUser();
-
+    
     setState(() {
       _selectedLanguage = prefs.getString('language') ?? 'en';
       _currentUser = user;
     });
   }
-
+  
   Future<void> _sendEmailVerification() async {
     if (_currentUser?.email == null || _currentUser!.email!.isEmpty) {
       setState(() {
-        _errorMessage =
-            'No email address found. Please update your profile first.';
+        _errorMessage = 'No email address found. Please update your profile first.';
       });
       return;
     }
-
+    
     setState(() {
       _isEmailLoading = true;
       _errorMessage = null;
     });
-
+    
     try {
       // Simulate sending email verification
       await Future.delayed(const Duration(seconds: 1));
-
+      
       setState(() {
         _emailSent = true;
         _successMessage = 'Verification email sent to ${_currentUser!.email}';
@@ -79,22 +77,22 @@ class _VerificationCenterScreenState extends State<VerificationCenterScreen> {
       });
     }
   }
-
+  
   Future<void> _sendPhoneOTP() async {
     setState(() {
       _isPhoneLoading = true;
       _errorMessage = null;
       _resendCountdown = 30;
     });
-
+    
     try {
       // Simulate sending OTP
       await Future.delayed(const Duration(seconds: 1));
-
+      
       setState(() {
         _successMessage = 'OTP sent to ${_currentUser!.phoneNumber}';
       });
-
+      
       _startCountdown();
     } catch (e) {
       setState(() {
@@ -106,7 +104,7 @@ class _VerificationCenterScreenState extends State<VerificationCenterScreen> {
       });
     }
   }
-
+  
   void _startCountdown() {
     Future.delayed(const Duration(seconds: 1), () {
       if (mounted && _resendCountdown > 0) {
@@ -117,7 +115,7 @@ class _VerificationCenterScreenState extends State<VerificationCenterScreen> {
       }
     });
   }
-
+  
   Future<void> _verifyOTP() async {
     if (_otpCode.length != 6) {
       setState(() {
@@ -125,22 +123,22 @@ class _VerificationCenterScreenState extends State<VerificationCenterScreen> {
       });
       return;
     }
-
+    
     setState(() {
       _isPhoneLoading = true;
       _errorMessage = null;
     });
-
+    
     try {
       final isValid = await _authService.verifyOTP(_otpCode);
-
+      
       if (isValid) {
         await _authService.markAsVerified();
-
+        
         setState(() {
           _successMessage = 'Phone number verified successfully!';
         });
-
+        
         // Navigate to main app after successful verification
         Future.delayed(const Duration(seconds: 2), () {
           if (mounted) {
@@ -162,15 +160,14 @@ class _VerificationCenterScreenState extends State<VerificationCenterScreen> {
       });
     }
   }
-
+  
+  
   Map<String, String> _getLocalizedText() {
     final Map<String, Map<String, String>> texts = {
       'en': {
         'title': 'Verify Your Account',
-        'subtitle':
-            'Verify your email or phone to enable cloud sync and backup',
-        'verificationInfo':
-            'You have to verify your account to get full features of the app including data sync and backup.',
+        'subtitle': 'Verify your email or phone to enable cloud sync and backup',
+        'verificationInfo': 'You have to verify your account to get full features of the app including data sync and backup.',
         'emailSection': 'Email Verification',
         'emailHint': 'We\'ll send a verification link to your email',
         'sendEmail': 'Send Verification Email',
@@ -187,15 +184,12 @@ class _VerificationCenterScreenState extends State<VerificationCenterScreen> {
       },
       'si': {
         'title': 'ඔබේ ගිණුම සත්‍යාපනය කරන්න',
-        'subtitle':
-            'ක්ලවුඩ් සමමුහුර්තකරණය සහ උපස්ථකරණය සක්‍රිය කිරීමට ඔබේ විද්‍යුත් තැපෑල හෝ දුරකථනය සත්‍යාපනය කරන්න',
-        'verificationInfo':
-            'දත්ත සමකරණය සහ උපස්ථකරණය ඇතුළු යෙදුමේ සම්පූර්ණ විශේෂාංග ලබා ගැනීමට ඔබේ ගිණුම සත්‍යාපනය කරන්න.',
+        'subtitle': 'ක්ලවුඩ් සමමුහුර්තකරණය සහ උපස්ථකරණය සක්‍රිය කිරීමට ඔබේ විද්‍යුත් තැපෑල හෝ දුරකථනය සත්‍යාපනය කරන්න',
+        'verificationInfo': 'දත්ත සමකරණය සහ උපස්ථකරණය ඇතුළු යෙදුමේ සම්පූර්ණ විශේෂාංග ලබා ගැනීමට ඔබේ ගිණුම සත්‍යාපනය කරන්න.',
         'emailSection': 'විද්‍යුත් තැපෑල සත්‍යාපනය',
         'emailHint': 'අපි ඔබේ විද්‍යුත් තැපෑලට සත්‍යාපන සබැඳියක් යවන්නෙමු',
         'sendEmail': 'සත්‍යාපන තැපෑල යවන්න',
-        'emailSent':
-            'ඔබේ විද්‍යුත් තැපෑල පරීක්ෂා කර සත්‍යාපන සබැඳිය ක්ලික් කරන්න',
+        'emailSent': 'ඔබේ විද්‍යුත් තැපෑල පරීක්ෂා කර සත්‍යාපන සබැඳිය ක්ලික් කරන්න',
         'phoneSection': 'දුරකථන සත්‍යාපනය',
         'phoneHint': 'අපි ඔබේ දුරකථනයට ඉලක්කම් 6ක කේතයක් යවන්නෙමු',
         'sendOTP': 'OTP යවන්න',
@@ -208,15 +202,12 @@ class _VerificationCenterScreenState extends State<VerificationCenterScreen> {
       },
       'ta': {
         'title': 'உங்கள் கணக்கை சரிபார்க்கவும்',
-        'subtitle':
-            'மேகக்கணி ஒத்திசைவு மற்றும் காப்புப்பிரதியை செயல்படுத்த உங்கள் மின்னஞ்சல் அல்லது தொலைபேசியை சரிபார்க்கவும்',
-        'verificationInfo':
-            'தரவு ஒத்திசைவு மற்றும் காப்புப்பிரதி உட்பட பயன்பாட்டின் முழு அம்சங்களைப் பெற உங்கள் கணக்கை சரிபார்க்கவும்.',
+        'subtitle': 'மேகக்கணி ஒத்திசைவு மற்றும் காப்புப்பிரதியை செயல்படுத்த உங்கள் மின்னஞ்சல் அல்லது தொலைபேசியை சரிபார்க்கவும்',
+        'verificationInfo': 'தரவு ஒத்திசைவு மற்றும் காப்புப்பிரதி உட்பட பயன்பாட்டின் முழு அம்சங்களைப் பெற உங்கள் கணக்கை சரிபார்க்கவும்.',
         'emailSection': 'மின்னஞ்சல் சரிபார்ப்பு',
         'emailHint': 'உங்கள் மின்னஞ்சலுக்கு சரிபார்ப்பு இணைப்பை அனுப்புவோம்',
         'sendEmail': 'சரிபார்ப்பு மின்னஞ்சல் அனுப்பு',
-        'emailSent':
-            'உங்கள் மின்னஞ்சலைச் சரிபார்த்து சரிபார்ப்பு இணைப்பைக் கிளிக் செய்யவும்',
+        'emailSent': 'உங்கள் மின்னஞ்சலைச் சரிபார்த்து சரிபார்ப்பு இணைப்பைக் கிளிக் செய்யவும்',
         'phoneSection': 'தொலைபேசி சரிபார்ப்பு',
         'phoneHint': 'உங்கள் தொலைபேசிக்கு 6-இலக்க குறியீட்டை அனுப்புவோம்',
         'sendOTP': 'OTP அனுப்பு',
@@ -230,17 +221,17 @@ class _VerificationCenterScreenState extends State<VerificationCenterScreen> {
     };
     return texts[_selectedLanguage] ?? texts['en']!;
   }
-
+  
   @override
   Widget build(BuildContext context) {
     final texts = _getLocalizedText();
-
+    
     if (_currentUser == null) {
       return Scaffold(
         body: const Center(child: CircularProgressIndicator()),
       );
     }
-
+    
     return Scaffold(
       backgroundColor: const Color(0xFFF3F4F6),
       appBar: AppBar(
@@ -269,23 +260,20 @@ class _VerificationCenterScreenState extends State<VerificationCenterScreen> {
                 style: TextStyle(
                   fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
                   color: const Color(0xFF6B7280),
-                  fontFamily:
-                      _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                  fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                 ),
                 textAlign: TextAlign.center,
               ),
-
-              SizedBox(
-                  height: ResponsiveUtils.getResponsiveSpacing(context, 24)),
-
+              
+              SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 24)),
+              
               // Info message about verification benefits
               Container(
                 padding: ResponsiveUtils.getResponsivePadding(context),
                 decoration: BoxDecoration(
                   color: const Color(0xFFFEF3C7),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                      color: const Color(0xFFF59E0B).withValues(alpha: 0.3)),
+                  border: Border.all(color: const Color(0xFFF59E0B).withValues(alpha: 0.3)),
                 ),
                 child: Row(
                   children: [
@@ -294,115 +282,90 @@ class _VerificationCenterScreenState extends State<VerificationCenterScreen> {
                       color: const Color(0xFFF59E0B),
                       size: ResponsiveUtils.getResponsiveIconSize(context, 20),
                     ),
-                    SizedBox(
-                        width:
-                            ResponsiveUtils.getResponsiveSpacing(context, 8)),
+                    SizedBox(width: ResponsiveUtils.getResponsiveSpacing(context, 8)),
                     Expanded(
                       child: Text(
                         texts['verificationInfo']!,
                         style: TextStyle(
                           color: const Color(0xFF92400E),
-                          fontSize: ResponsiveUtils.getResponsiveFontSize(
-                              context, 14),
-                          fontFamily: _selectedLanguage == 'si'
-                              ? 'NotoSerifSinhala'
-                              : null,
+                          fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
+                          fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                         ),
                       ),
                     ),
                   ],
                 ),
               ),
-
-              SizedBox(
-                  height: ResponsiveUtils.getResponsiveSpacing(context, 24)),
-
+              
+              SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 24)),
+              
               // Success/Error Messages
               if (_errorMessage != null) ...[
                 Container(
-                  padding: ResponsiveUtils.getResponsivePadding(context,
-                      scale: 0.75),
+                  padding: ResponsiveUtils.getResponsivePadding(context, scale: 0.75),
                   decoration: BoxDecoration(
                     color: Colors.red.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
-                    border:
-                        Border.all(color: Colors.red.withValues(alpha: 0.3)),
+                    border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
                   ),
                   child: Row(
                     children: [
                       Icon(
                         Icons.error_outline,
                         color: Colors.red,
-                        size:
-                            ResponsiveUtils.getResponsiveIconSize(context, 20),
+                        size: ResponsiveUtils.getResponsiveIconSize(context, 20),
                       ),
-                      SizedBox(
-                          width:
-                              ResponsiveUtils.getResponsiveSpacing(context, 8)),
+                      SizedBox(width: ResponsiveUtils.getResponsiveSpacing(context, 8)),
                       Expanded(
                         child: Text(
                           _errorMessage!,
                           style: TextStyle(
                             color: Colors.red,
-                            fontSize: ResponsiveUtils.getResponsiveFontSize(
-                                context, 14),
-                            fontFamily: _selectedLanguage == 'si'
-                                ? 'NotoSerifSinhala'
-                                : null,
+                            fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
+                            fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                           ),
                         ),
                       ),
                     ],
                   ),
                 ),
-                SizedBox(
-                    height: ResponsiveUtils.getResponsiveSpacing(context, 16)),
+                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 16)),
               ],
-
+              
               if (_successMessage != null) ...[
                 Container(
-                  padding: ResponsiveUtils.getResponsivePadding(context,
-                      scale: 0.75),
+                  padding: ResponsiveUtils.getResponsivePadding(context, scale: 0.75),
                   decoration: BoxDecoration(
                     color: const Color(0xFF0086FF).withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                        color: const Color(0xFF0086FF).withValues(alpha: 0.3)),
+                    border: Border.all(color: const Color(0xFF0086FF).withValues(alpha: 0.3)),
                   ),
                   child: Row(
                     children: [
                       Icon(
                         Icons.check_circle_outline,
                         color: const Color(0xFF0086FF),
-                        size:
-                            ResponsiveUtils.getResponsiveIconSize(context, 20),
+                        size: ResponsiveUtils.getResponsiveIconSize(context, 20),
                       ),
-                      SizedBox(
-                          width:
-                              ResponsiveUtils.getResponsiveSpacing(context, 8)),
+                      SizedBox(width: ResponsiveUtils.getResponsiveSpacing(context, 8)),
                       Expanded(
                         child: Text(
                           _successMessage!,
                           style: TextStyle(
                             color: const Color(0xFF0086FF),
-                            fontSize: ResponsiveUtils.getResponsiveFontSize(
-                                context, 14),
-                            fontFamily: _selectedLanguage == 'si'
-                                ? 'NotoSerifSinhala'
-                                : null,
+                            fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
+                            fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                           ),
                         ),
                       ),
                     ],
                   ),
                 ),
-                SizedBox(
-                    height: ResponsiveUtils.getResponsiveSpacing(context, 16)),
+                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 16)),
               ],
-
+              
               // Email Verification Section
-              if (_currentUser!.email != null &&
-                  _currentUser!.email!.isNotEmpty) ...[
+              if (_currentUser!.email != null && _currentUser!.email!.isNotEmpty) ...[
                 _buildVerificationCard(
                   icon: Icons.email_outlined,
                   title: texts['emailSection']!,
@@ -411,8 +374,7 @@ class _VerificationCenterScreenState extends State<VerificationCenterScreen> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Container(
-                        padding: ResponsiveUtils.getResponsivePadding(context,
-                            scale: 0.75),
+                        padding: ResponsiveUtils.getResponsivePadding(context, scale: 0.75),
                         decoration: BoxDecoration(
                           color: const Color(0xFFF8F9FA),
                           borderRadius: BorderRadius.circular(8),
@@ -420,23 +382,20 @@ class _VerificationCenterScreenState extends State<VerificationCenterScreen> {
                         child: Text(
                           _currentUser!.email!,
                           style: TextStyle(
-                            fontSize: ResponsiveUtils.getResponsiveFontSize(
-                                context, 16),
+                            fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
                             color: const Color(0xFF1A1A1A),
                             fontWeight: FontWeight.w500,
                           ),
                         ),
                       ),
-                      SizedBox(
-                          height: ResponsiveUtils.getResponsiveSpacing(
-                              context, 16)),
+                      
+                      SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 16)),
+                      
                       if (_emailSent)
                         Container(
-                          padding: ResponsiveUtils.getResponsivePadding(context,
-                              scale: 0.75),
+                          padding: ResponsiveUtils.getResponsivePadding(context, scale: 0.75),
                           decoration: BoxDecoration(
-                            color:
-                                const Color(0xFF0086FF).withValues(alpha: 0.1),
+                            color: const Color(0xFF0086FF).withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Row(
@@ -444,23 +403,16 @@ class _VerificationCenterScreenState extends State<VerificationCenterScreen> {
                               Icon(
                                 Icons.mark_email_read,
                                 color: const Color(0xFF0086FF),
-                                size: ResponsiveUtils.getResponsiveIconSize(
-                                    context, 20),
+                                size: ResponsiveUtils.getResponsiveIconSize(context, 20),
                               ),
-                              SizedBox(
-                                  width: ResponsiveUtils.getResponsiveSpacing(
-                                      context, 8)),
+                              SizedBox(width: ResponsiveUtils.getResponsiveSpacing(context, 8)),
                               Expanded(
                                 child: Text(
                                   texts['emailSent']!,
                                   style: TextStyle(
                                     color: const Color(0xFF0086FF),
-                                    fontSize:
-                                        ResponsiveUtils.getResponsiveFontSize(
-                                            context, 14),
-                                    fontFamily: _selectedLanguage == 'si'
-                                        ? 'NotoSerifSinhala'
-                                        : null,
+                                    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
+                                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                                   ),
                                 ),
                               ),
@@ -469,15 +421,11 @@ class _VerificationCenterScreenState extends State<VerificationCenterScreen> {
                         )
                       else
                         SizedBox(
-                          height:
-                              ResponsiveUtils.getResponsiveSpacing(context, 48),
+                          height: ResponsiveUtils.getResponsiveSpacing(context, 48),
                           child: ElevatedButton(
-                            onPressed:
-                                _isEmailLoading ? null : _sendEmailVerification,
+                            onPressed: _isEmailLoading ? null : _sendEmailVerification,
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: _isEmailLoading
-                                  ? const Color(0xFFE5E7EB)
-                                  : const Color(0xFF0086FF),
+                              backgroundColor: _isEmailLoading ? const Color(0xFFE5E7EB) : const Color(0xFF0086FF),
                               foregroundColor: Colors.white,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8),
@@ -486,12 +434,8 @@ class _VerificationCenterScreenState extends State<VerificationCenterScreen> {
                             ),
                             child: _isEmailLoading
                                 ? SizedBox(
-                                    width:
-                                        ResponsiveUtils.getResponsiveIconSize(
-                                            context, 20),
-                                    height:
-                                        ResponsiveUtils.getResponsiveIconSize(
-                                            context, 20),
+                                    width: ResponsiveUtils.getResponsiveIconSize(context, 20),
+                                    height: ResponsiveUtils.getResponsiveIconSize(context, 20),
                                     child: const CircularProgressIndicator(
                                       color: Color(0xFF6B7280),
                                       strokeWidth: 2,
@@ -500,13 +444,9 @@ class _VerificationCenterScreenState extends State<VerificationCenterScreen> {
                                 : Text(
                                     texts['sendEmail']!,
                                     style: TextStyle(
-                                      fontSize:
-                                          ResponsiveUtils.getResponsiveFontSize(
-                                              context, 16),
+                                      fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
                                       fontWeight: FontWeight.w600,
-                                      fontFamily: _selectedLanguage == 'si'
-                                          ? 'NotoSerifSinhala'
-                                          : null,
+                                      fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                                     ),
                                   ),
                           ),
@@ -514,34 +454,30 @@ class _VerificationCenterScreenState extends State<VerificationCenterScreen> {
                     ],
                   ),
                 ),
-
-                SizedBox(
-                    height: ResponsiveUtils.getResponsiveSpacing(context, 24)),
-
+                
+                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 24)),
+                
                 // OR divider
                 Row(
                   children: [
                     Expanded(child: Divider(color: const Color(0xFFE5E7EB))),
                     Padding(
-                      padding: ResponsiveUtils.getResponsivePadding(context,
-                          scale: 0.5),
+                      padding: ResponsiveUtils.getResponsivePadding(context, scale: 0.5),
                       child: Text(
                         'OR',
                         style: TextStyle(
                           color: const Color(0xFF9CA3AF),
-                          fontSize: ResponsiveUtils.getResponsiveFontSize(
-                              context, 14),
+                          fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
                         ),
                       ),
                     ),
                     Expanded(child: Divider(color: const Color(0xFFE5E7EB))),
                   ],
                 ),
-
-                SizedBox(
-                    height: ResponsiveUtils.getResponsiveSpacing(context, 24)),
+                
+                SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 24)),
               ],
-
+              
               // Phone Verification Section
               _buildVerificationCard(
                 icon: Icons.phone_outlined,
@@ -551,8 +487,7 @@ class _VerificationCenterScreenState extends State<VerificationCenterScreen> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Container(
-                      padding: ResponsiveUtils.getResponsivePadding(context,
-                          scale: 0.75),
+                      padding: ResponsiveUtils.getResponsivePadding(context, scale: 0.75),
                       decoration: BoxDecoration(
                         color: const Color(0xFFF8F9FA),
                         borderRadius: BorderRadius.circular(8),
@@ -560,26 +495,22 @@ class _VerificationCenterScreenState extends State<VerificationCenterScreen> {
                       child: Text(
                         _currentUser!.phoneNumber,
                         style: TextStyle(
-                          fontSize: ResponsiveUtils.getResponsiveFontSize(
-                              context, 16),
+                          fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
                           color: const Color(0xFF1A1A1A),
                           fontWeight: FontWeight.w500,
                         ),
                       ),
                     ),
-
-                    SizedBox(
-                        height:
-                            ResponsiveUtils.getResponsiveSpacing(context, 16)),
-
+                    
+                    SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 16)),
+                    
                     // OTP Input
                     TextFormField(
                       onChanged: (value) => setState(() => _otpCode = value),
                       keyboardType: TextInputType.number,
                       maxLength: 6,
                       style: TextStyle(
-                        fontSize:
-                            ResponsiveUtils.getResponsiveFontSize(context, 18),
+                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 18),
                         fontWeight: FontWeight.w600,
                         letterSpacing: 8,
                       ),
@@ -602,32 +533,22 @@ class _VerificationCenterScreenState extends State<VerificationCenterScreen> {
                             color: const Color(0xFF0086FF),
                           ),
                         ),
-                        contentPadding:
-                            ResponsiveUtils.getResponsivePadding(context),
+                        contentPadding: ResponsiveUtils.getResponsivePadding(context),
                       ),
                     ),
-
-                    SizedBox(
-                        height:
-                            ResponsiveUtils.getResponsiveSpacing(context, 16)),
-
+                    
+                    SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 16)),
+                    
                     // Send OTP / Verify Button
                     Row(
                       children: [
                         Expanded(
                           child: SizedBox(
-                            height: ResponsiveUtils.getResponsiveSpacing(
-                                context, 48),
+                            height: ResponsiveUtils.getResponsiveSpacing(context, 48),
                             child: ElevatedButton(
-                              onPressed: _isPhoneLoading
-                                  ? null
-                                  : (_otpCode.length == 6
-                                      ? _verifyOTP
-                                      : _sendPhoneOTP),
+                              onPressed: _isPhoneLoading ? null : (_otpCode.length == 6 ? _verifyOTP : _sendPhoneOTP),
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: _isPhoneLoading
-                                    ? const Color(0xFFE5E7EB)
-                                    : const Color(0xFF0086FF),
+                                backgroundColor: _isPhoneLoading ? const Color(0xFFE5E7EB) : const Color(0xFF0086FF),
                                 foregroundColor: Colors.white,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8),
@@ -636,28 +557,19 @@ class _VerificationCenterScreenState extends State<VerificationCenterScreen> {
                               ),
                               child: _isPhoneLoading
                                   ? SizedBox(
-                                      width:
-                                          ResponsiveUtils.getResponsiveIconSize(
-                                              context, 20),
-                                      height:
-                                          ResponsiveUtils.getResponsiveIconSize(
-                                              context, 20),
+                                      width: ResponsiveUtils.getResponsiveIconSize(context, 20),
+                                      height: ResponsiveUtils.getResponsiveIconSize(context, 20),
                                       child: const CircularProgressIndicator(
                                         color: Color(0xFF6B7280),
                                         strokeWidth: 2,
                                       ),
                                     )
                                   : Text(
-                                      _otpCode.length == 6
-                                          ? texts['verifyOTP']!
-                                          : texts['sendOTP']!,
+                                      _otpCode.length == 6 ? texts['verifyOTP']! : texts['sendOTP']!,
                                       style: TextStyle(
-                                        fontSize: ResponsiveUtils
-                                            .getResponsiveFontSize(context, 16),
+                                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
                                         fontWeight: FontWeight.w600,
-                                        fontFamily: _selectedLanguage == 'si'
-                                            ? 'NotoSerifSinhala'
-                                            : null,
+                                        fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                                       ),
                                     ),
                             ),
@@ -665,30 +577,22 @@ class _VerificationCenterScreenState extends State<VerificationCenterScreen> {
                         ),
                       ],
                     ),
-
+                    
                     // Resend countdown
                     if (_resendCountdown > 0) ...[
-                      SizedBox(
-                          height: ResponsiveUtils.getResponsiveSpacing(
-                              context, 12)),
+                      SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 12)),
                       Center(
                         child: Text(
                           '${texts['resendIn']!} $_resendCountdown ${texts['seconds']!}',
                           style: TextStyle(
                             color: const Color(0xFF6B7280),
-                            fontSize: ResponsiveUtils.getResponsiveFontSize(
-                                context, 14),
-                            fontFamily: _selectedLanguage == 'si'
-                                ? 'NotoSerifSinhala'
-                                : null,
+                            fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
+                            fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                           ),
                         ),
                       ),
-                    ] else if (_resendCountdown == 0 &&
-                        _otpCode.length < 6) ...[
-                      SizedBox(
-                          height: ResponsiveUtils.getResponsiveSpacing(
-                              context, 12)),
+                    ] else if (_resendCountdown == 0 && _otpCode.length < 6) ...[
+                      SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 12)),
                       Center(
                         child: TextButton(
                           onPressed: _sendPhoneOTP,
@@ -696,12 +600,9 @@ class _VerificationCenterScreenState extends State<VerificationCenterScreen> {
                             texts['resend']!,
                             style: TextStyle(
                               color: const Color(0xFF0086FF),
-                              fontSize: ResponsiveUtils.getResponsiveFontSize(
-                                  context, 14),
+                              fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
                               fontWeight: FontWeight.w600,
-                              fontFamily: _selectedLanguage == 'si'
-                                  ? 'NotoSerifSinhala'
-                                  : null,
+                              fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                             ),
                           ),
                         ),
@@ -710,10 +611,9 @@ class _VerificationCenterScreenState extends State<VerificationCenterScreen> {
                   ],
                 ),
               ),
-
-              SizedBox(
-                  height: ResponsiveUtils.getResponsiveSpacing(context, 32)),
-
+              
+              SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 32)),
+              
               // Continue Online Button
               SizedBox(
                 height: ResponsiveUtils.getResponsiveSpacing(context, 48),
@@ -729,11 +629,9 @@ class _VerificationCenterScreenState extends State<VerificationCenterScreen> {
                     texts['continueOffline']!,
                     style: TextStyle(
                       color: const Color(0xFF0086FF),
-                      fontSize:
-                          ResponsiveUtils.getResponsiveFontSize(context, 16),
+                      fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
                       fontWeight: FontWeight.w600,
-                      fontFamily:
-                          _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                      fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                     ),
                   ),
                 ),
@@ -744,7 +642,7 @@ class _VerificationCenterScreenState extends State<VerificationCenterScreen> {
       ),
     );
   }
-
+  
   Widget _buildVerificationCard({
     required IconData icon,
     required String title,
@@ -783,8 +681,7 @@ class _VerificationCenterScreenState extends State<VerificationCenterScreen> {
                   size: ResponsiveUtils.getResponsiveIconSize(context, 24),
                 ),
               ),
-              SizedBox(
-                  width: ResponsiveUtils.getResponsiveSpacing(context, 12)),
+              SizedBox(width: ResponsiveUtils.getResponsiveSpacing(context, 12)),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -792,27 +689,19 @@ class _VerificationCenterScreenState extends State<VerificationCenterScreen> {
                     Text(
                       title,
                       style: TextStyle(
-                        fontSize:
-                            ResponsiveUtils.getResponsiveFontSize(context, 18),
+                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 18),
                         fontWeight: FontWeight.bold,
                         color: const Color(0xFF1A1A1A),
-                        fontFamily: _selectedLanguage == 'si'
-                            ? 'NotoSerifSinhala'
-                            : null,
+                        fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                       ),
                     ),
-                    SizedBox(
-                        height:
-                            ResponsiveUtils.getResponsiveSpacing(context, 4)),
+                    SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 4)),
                     Text(
                       subtitle,
                       style: TextStyle(
-                        fontSize:
-                            ResponsiveUtils.getResponsiveFontSize(context, 14),
+                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
                         color: const Color(0xFF6B7280),
-                        fontFamily: _selectedLanguage == 'si'
-                            ? 'NotoSerifSinhala'
-                            : null,
+                        fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                       ),
                     ),
                   ],
@@ -820,7 +709,9 @@ class _VerificationCenterScreenState extends State<VerificationCenterScreen> {
               ),
             ],
           ),
+          
           SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 20)),
+          
           child,
         ],
       ),

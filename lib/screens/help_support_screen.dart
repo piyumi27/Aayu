@@ -15,13 +15,13 @@ class HelpSupportScreen extends StatefulWidget {
 class _HelpSupportScreenState extends State<HelpSupportScreen> {
   String _selectedLanguage = 'en';
   final Map<String, bool> _expandedSections = {};
-
+  
   @override
   void initState() {
     super.initState();
     _loadPreferences();
   }
-
+  
   @override
   void dispose() {
     // Clear any pending state updates
@@ -56,27 +56,20 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
             'title': '🍼 Nutrition & Feeding',
             'faqs': [
               {
-                'question':
-                    'When should I start giving solid foods to my baby?',
-                'answer':
-                    'According to Sri Lankan health guidelines, you should start introducing solid foods at 6 months while continuing breastfeeding. Begin with rice porridge (කැඳ), mashed vegetables, and fruits. Start with small amounts and gradually increase.',
+                'question': 'When should I start giving solid foods to my baby?',
+                'answer': 'According to Sri Lankan health guidelines, you should start introducing solid foods at 6 months while continuing breastfeeding. Begin with rice porridge (කැඳ), mashed vegetables, and fruits. Start with small amounts and gradually increase.',
               },
               {
-                'question':
-                    'What traditional Sri Lankan foods are good for babies?',
-                'answer':
-                    'Excellent first foods include:\n• Rice porridge (සහල් කැඳ) with breast milk\n• Mashed papaya (පැපොල්)\n• Mashed avocado (අලිගැට පේර)\n• Soft-cooked red rice\n• Mashed banana (කෙසෙල්)\n• Vegetable broth with lentils (පරිප්පු)\nAlways ensure foods are well-cooked and mashed to prevent choking.',
+                'question': 'What traditional Sri Lankan foods are good for babies?',
+                'answer': 'Excellent first foods include:\n• Rice porridge (සහල් කැඳ) with breast milk\n• Mashed papaya (පැපොල්)\n• Mashed avocado (අලිගැට පේර)\n• Soft-cooked red rice\n• Mashed banana (කෙසෙල්)\n• Vegetable broth with lentils (පරිප්පු)\nAlways ensure foods are well-cooked and mashed to prevent choking.',
               },
               {
                 'question': 'How much water should my child drink daily?',
-                'answer':
-                    'Water needs vary by age:\n• 6-12 months: 120-240ml daily\n• 1-3 years: 900ml-1.3L daily\n• 4-8 years: 1.3L-1.7L daily\nIn hot weather, increase water intake. King coconut water (තැඹිලි) is also excellent for hydration.',
+                'answer': 'Water needs vary by age:\n• 6-12 months: 120-240ml daily\n• 1-3 years: 900ml-1.3L daily\n• 4-8 years: 1.3L-1.7L daily\nIn hot weather, increase water intake. King coconut water (තැඹිලි) is also excellent for hydration.',
               },
               {
-                'question':
-                    'My child is not gaining weight properly. What should I do?',
-                'answer':
-                    'First, track growth using the app\'s measurement feature. Common solutions include:\n• Increase feeding frequency\n• Add energy-dense foods like coconut milk\n• Ensure protein intake (fish, eggs, lentils)\n• Consult your PHM if weight gain doesn\'t improve\n• Rule out underlying health issues',
+                'question': 'My child is not gaining weight properly. What should I do?',
+                'answer': 'First, track growth using the app\'s measurement feature. Common solutions include:\n• Increase feeding frequency\n• Add energy-dense foods like coconut milk\n• Ensure protein intake (fish, eggs, lentils)\n• Consult your PHM if weight gain doesn\'t improve\n• Rule out underlying health issues',
               },
             ],
           },
@@ -84,27 +77,20 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
             'title': '📊 Growth & Development',
             'faqs': [
               {
-                'question':
-                    'How often should I measure my child\'s weight and height?',
-                'answer':
-                    'Recommended measurement frequency:\n• 0-12 months: Monthly\n• 1-2 years: Every 2 months\n• 2-5 years: Every 3 months\n• 5+ years: Every 6 months\nThe app will remind you when measurements are due.',
+                'question': 'How often should I measure my child\'s weight and height?',
+                'answer': 'Recommended measurement frequency:\n• 0-12 months: Monthly\n• 1-2 years: Every 2 months\n• 2-5 years: Every 3 months\n• 5+ years: Every 6 months\nThe app will remind you when measurements are due.',
               },
               {
-                'question':
-                    'What are normal growth rates for Sri Lankan children?',
-                'answer':
-                    'Average growth rates:\n• Birth-6 months: 600-800g weight gain/month\n• 6-12 months: 400-500g/month\n• 1-2 years: 200-300g/month\n• Height increases ~25cm in first year\nUse the app\'s growth charts to track against WHO standards adapted for Sri Lanka.',
+                'question': 'What are normal growth rates for Sri Lankan children?',
+                'answer': 'Average growth rates:\n• Birth-6 months: 600-800g weight gain/month\n• 6-12 months: 400-500g/month\n• 1-2 years: 200-300g/month\n• Height increases ~25cm in first year\nUse the app\'s growth charts to track against WHO standards adapted for Sri Lanka.',
               },
               {
-                'question':
-                    'When should I be concerned about my child\'s development?',
-                'answer':
-                    'Consult your PHM if your child:\n• Hasn\'t doubled birth weight by 5 months\n• Shows no weight gain for 2+ months\n• Falls below growth curve lines\n• Misses developmental milestones\n• Shows signs of malnutrition\nThe app will alert you to concerning patterns.',
+                'question': 'When should I be concerned about my child\'s development?',
+                'answer': 'Consult your PHM if your child:\n• Hasn\'t doubled birth weight by 5 months\n• Shows no weight gain for 2+ months\n• Falls below growth curve lines\n• Misses developmental milestones\n• Shows signs of malnutrition\nThe app will alert you to concerning patterns.',
               },
               {
                 'question': 'How do I use the growth charts in the app?',
-                'answer':
-                    'To use growth charts:\n1. Add measurements regularly\n2. View charts in Growth section\n3. Check position relative to standard curves\n4. Green zone = normal, Yellow = monitor, Red = consult PHM\n5. Export charts for clinic visits',
+                'answer': 'To use growth charts:\n1. Add measurements regularly\n2. View charts in Growth section\n3. Check position relative to standard curves\n4. Green zone = normal, Yellow = monitor, Red = consult PHM\n5. Export charts for clinic visits',
               },
             ],
           },
@@ -113,24 +99,19 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
             'faqs': [
               {
                 'question': 'What is the Sri Lankan vaccination schedule?',
-                'answer':
-                    'Key vaccinations (EPI Schedule):\n• Birth: BCG, Hepatitis B\n• 2 months: Pentavalent, OPV, fIPV\n• 4 months: Pentavalent, OPV\n• 6 months: Pentavalent, OPV\n• 9 months: MMR\n• 12 months: Live JE\n• 18 months: DPT, OPV, MMR\nThe app tracks all vaccinations and sends reminders.',
+                'answer': 'Key vaccinations (EPI Schedule):\n• Birth: BCG, Hepatitis B\n• 2 months: Pentavalent, OPV, fIPV\n• 4 months: Pentavalent, OPV\n• 6 months: Pentavalent, OPV\n• 9 months: MMR\n• 12 months: Live JE\n• 18 months: DPT, OPV, MMR\nThe app tracks all vaccinations and sends reminders.',
               },
               {
-                'question':
-                    'What should I do if my child misses a vaccination?',
-                'answer':
-                    'If a vaccination is missed:\n1. Contact your PHM immediately\n2. Schedule catch-up vaccination\n3. Update the app with new date\n4. Don\'t skip - delayed is better than missing\n5. Bring Child Health Development Record to clinic',
+                'question': 'What should I do if my child misses a vaccination?',
+                'answer': 'If a vaccination is missed:\n1. Contact your PHM immediately\n2. Schedule catch-up vaccination\n3. Update the app with new date\n4. Don\'t skip - delayed is better than missing\n5. Bring Child Health Development Record to clinic',
               },
               {
                 'question': 'How do I handle common childhood illnesses?',
-                'answer':
-                    'For common issues:\n• Fever: Paracetamol as prescribed, lukewarm sponging\n• Diarrhea: Continue breastfeeding, ORS solution, zinc supplements\n• Cough/Cold: Warm fluids, steam inhalation, avoid antibiotics unless prescribed\n• Always consult PHM if symptoms persist >3 days or worsen',
+                'answer': 'For common issues:\n• Fever: Paracetamol as prescribed, lukewarm sponging\n• Diarrhea: Continue breastfeeding, ORS solution, zinc supplements\n• Cough/Cold: Warm fluids, steam inhalation, avoid antibiotics unless prescribed\n• Always consult PHM if symptoms persist >3 days or worsen',
               },
               {
                 'question': 'When should I take my child to the hospital?',
-                'answer':
-                    'Seek immediate medical care if:\n• High fever >39°C not responding to medication\n• Difficulty breathing or blue lips\n• Severe dehydration (no tears, dry mouth)\n• Unconsciousness or seizures\n• Persistent vomiting\n• Severe allergic reactions\nCall 1990 for emergency ambulance',
+                'answer': 'Seek immediate medical care if:\n• High fever >39°C not responding to medication\n• Difficulty breathing or blue lips\n• Severe dehydration (no tears, dry mouth)\n• Unconsciousness or seizures\n• Persistent vomiting\n• Severe allergic reactions\nCall 1990 for emergency ambulance',
               },
             ],
           },
@@ -139,23 +120,19 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
             'faqs': [
               {
                 'question': 'How do I add multiple children to the app?',
-                'answer':
-                    'To add children:\n1. Go to Home screen\n2. Tap the + button\n3. Enter child details\n4. Add photo (optional)\n5. Save profile\n6. Switch between children using dropdown\nNo limit on number of children you can track.',
+                'answer': 'To add children:\n1. Go to Home screen\n2. Tap the + button\n3. Enter child details\n4. Add photo (optional)\n5. Save profile\n6. Switch between children using dropdown\nNo limit on number of children you can track.',
               },
               {
                 'question': 'How do I export data for clinic visits?',
-                'answer':
-                    'To export records:\n1. Go to child\'s profile\n2. Select Export Data\n3. Choose format (PDF/Excel)\n4. Select date range\n5. Share via email or WhatsApp\nPHMs can scan QR code for instant access.',
+                'answer': 'To export records:\n1. Go to child\'s profile\n2. Select Export Data\n3. Choose format (PDF/Excel)\n4. Select date range\n5. Share via email or WhatsApp\nPHMs can scan QR code for instant access.',
               },
               {
                 'question': 'Is my data safe and private?',
-                'answer':
-                    'Your data is protected:\n• Encrypted storage on device\n• Optional cloud backup with encryption\n• No data sharing without consent\n• Complies with health data regulations\n• You can delete all data anytime\n• Only you and authorized PHM can access',
+                'answer': 'Your data is protected:\n• Encrypted storage on device\n• Optional cloud backup with encryption\n• No data sharing without consent\n• Complies with health data regulations\n• You can delete all data anytime\n• Only you and authorized PHM can access',
               },
               {
                 'question': 'How do I change the app language?',
-                'answer':
-                    'To change language:\n1. Go to Settings\n2. Tap Language option\n3. Select Sinhala, Tamil, or English\n4. App updates immediately\n5. All content translates\nYour preference is saved automatically.',
+                'answer': 'To change language:\n1. Go to Settings\n2. Tap Language option\n3. Select Sinhala, Tamil, or English\n4. App updates immediately\n5. All content translates\nYour preference is saved automatically.',
               },
             ],
           },
@@ -164,18 +141,15 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
             'faqs': [
               {
                 'question': 'How do I manage food allergies in my child?',
-                'answer':
-                    'For food allergies:\n• Introduce new foods one at a time\n• Wait 3-5 days between new foods\n• Common allergens: eggs, milk, peanuts, seafood\n• Keep food diary in app notes\n• Carry antihistamine if prescribed\n• Inform PHM and update child profile',
+                'answer': 'For food allergies:\n• Introduce new foods one at a time\n• Wait 3-5 days between new foods\n• Common allergens: eggs, milk, peanuts, seafood\n• Keep food diary in app notes\n• Carry antihistamine if prescribed\n• Inform PHM and update child profile',
               },
               {
                 'question': 'What foods help prevent malnutrition?',
-                'answer':
-                    'Nutrient-rich local foods:\n• Protein: Fish, chicken, eggs, lentils, soy\n• Iron: Liver, red meat, green leaves (කොළ ගෝවා)\n• Vitamin A: Papaya, mango, carrots, sweet potato\n• Calcium: Milk, yogurt, small fish with bones\n• Energy: Coconut, avocado, ghee\nUse app\'s nutrition guide for meal planning.',
+                'answer': 'Nutrient-rich local foods:\n• Protein: Fish, chicken, eggs, lentils, soy\n• Iron: Liver, red meat, green leaves (කොළ ගෝවා)\n• Vitamin A: Papaya, mango, carrots, sweet potato\n• Calcium: Milk, yogurt, small fish with bones\n• Energy: Coconut, avocado, ghee\nUse app\'s nutrition guide for meal planning.',
               },
               {
                 'question': 'How do I encourage a picky eater?',
-                'answer':
-                    'Tips for picky eaters:\n• Offer foods 10-15 times before giving up\n• Make meals colorful and fun\n• Let child help with cooking\n• Don\'t force - create positive associations\n• Mix new foods with favorites\n• Set regular meal times\n• Be a good role model\n• Avoid distractions during meals',
+                'answer': 'Tips for picky eaters:\n• Offer foods 10-15 times before giving up\n• Make meals colorful and fun\n• Let child help with cooking\n• Don\'t force - create positive associations\n• Mix new foods with favorites\n• Set regular meal times\n• Be a good role model\n• Avoid distractions during meals',
               },
             ],
           },
@@ -184,25 +158,21 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
             'faqs': [
               {
                 'question': 'How often should I breastfeed my newborn?',
-                'answer':
-                    'Breastfeeding guidelines:\n• First month: 8-12 times/day (every 2-3 hours)\n• Feed on demand when baby shows hunger cues\n• Each session: 10-15 minutes per breast\n• Night feeding is important\n• Exclusive breastfeeding for 6 months\n• Continue with solids until 2+ years',
+                'answer': 'Breastfeeding guidelines:\n• First month: 8-12 times/day (every 2-3 hours)\n• Feed on demand when baby shows hunger cues\n• Each session: 10-15 minutes per breast\n• Night feeding is important\n• Exclusive breastfeeding for 6 months\n• Continue with solids until 2+ years',
               },
               {
                 'question': 'What are danger signs in newborns?',
-                'answer':
-                    'Seek immediate help if baby:\n• Won\'t feed or feeds poorly\n• Has fever or feels cold\n• Breathing difficulties\n• Yellowing of skin/eyes after day 3\n• Excessive crying or unusually quiet\n• Umbilical cord redness/pus\n• Less than 6 wet diapers/day\nCall PHM or go to hospital immediately.',
+                'answer': 'Seek immediate help if baby:\n• Won\'t feed or feeds poorly\n• Has fever or feels cold\n• Breathing difficulties\n• Yellowing of skin/eyes after day 3\n• Excessive crying or unusually quiet\n• Umbilical cord redness/pus\n• Less than 6 wet diapers/day\nCall PHM or go to hospital immediately.',
               },
               {
                 'question': 'How do I care for the umbilical cord?',
-                'answer':
-                    'Umbilical cord care:\n• Keep dry and clean\n• Fold diaper below cord\n• Clean with cooled boiled water if soiled\n• Don\'t apply anything unless prescribed\n• Falls off naturally in 5-15 days\n• Small bleeding when falls off is normal\n• See PHM if red, swollen, or has discharge',
+                'answer': 'Umbilical cord care:\n• Keep dry and clean\n• Fold diaper below cord\n• Clean with cooled boiled water if soiled\n• Don\'t apply anything unless prescribed\n• Falls off naturally in 5-15 days\n• Small bleeding when falls off is normal\n• See PHM if red, swollen, or has discharge',
               },
             ],
           },
         ],
         'noAnswer': 'Didn\'t find your answer?',
-        'contactSupport':
-            'Contact your nearest PHM office or MOH for personalized assistance.',
+        'contactSupport': 'Contact your nearest PHM office or MOH for personalized assistance.',
       },
       'si': {
         'title': 'උදව් සහ සහාය',
@@ -221,21 +191,17 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
             'faqs': [
               {
                 'question': 'දරුවාට ඝන ආහාර දීම ආරම්භ කළ යුත්තේ කවදාද?',
-                'answer':
-                    'ශ්‍රී ලංකා සෞඛ්‍ය මාර්ගෝපදේශ අනුව, මාස 6 දී ඝන ආහාර හඳුන්වා දීම ආරම්භ කළ යුතු අතර මව්කිරි දීම දිගටම කරගෙන යා යුතුය. සහල් කැඳ, මෙලෙන ලද එළවළු සහ පලතුරු වලින් ආරම්භ කරන්න.',
+                'answer': 'ශ්‍රී ලංකා සෞඛ්‍ය මාර්ගෝපදේශ අනුව, මාස 6 දී ඝන ආහාර හඳුන්වා දීම ආරම්භ කළ යුතු අතර මව්කිරි දීම දිගටම කරගෙන යා යුතුය. සහල් කැඳ, මෙලෙන ලද එළවළු සහ පලතුරු වලින් ආරම්භ කරන්න.',
               },
               {
-                'question':
-                    'ළදරුවන් සඳහා හොඳ සාම්ප්‍රදායික ශ්‍රී ලාංකීය ආහාර මොනවාද?',
-                'answer':
-                    'විශිෂ්ට පළමු ආහාර:\n• මව්කිරි සමඟ සහල් කැඳ\n• මෙලෙන ලද පැපොල්\n• මෙලෙන ලද අලිගැට පේර\n• මෘදු පිසූ රතු සහල්\n• මෙලෙන ලද කෙසෙල්\n• පරිප්පු සමඟ එළවළු සුප්\nආහාර හොඳින් පිසූ සහ මෙලෙන ලද බව සහතික කරගන්න.',
+                'question': 'ළදරුවන් සඳහා හොඳ සාම්ප්‍රදායික ශ්‍රී ලාංකීය ආහාර මොනවාද?',
+                'answer': 'විශිෂ්ට පළමු ආහාර:\n• මව්කිරි සමඟ සහල් කැඳ\n• මෙලෙන ලද පැපොල්\n• මෙලෙන ලද අලිගැට පේර\n• මෘදු පිසූ රතු සහල්\n• මෙලෙන ලද කෙසෙල්\n• පරිප්පු සමඟ එළවළු සුප්\nආහාර හොඳින් පිසූ සහ මෙලෙන ලද බව සහතික කරගන්න.',
               },
             ],
           },
         ],
         'noAnswer': 'ඔබේ පිළිතුර සොයාගත නොහැකිද?',
-        'contactSupport':
-            'පුද්ගලික සහාය සඳහා ඔබේ ළඟම PHM කාර්යාලය හෝ MOH අමතන්න.',
+        'contactSupport': 'පුද්ගලික සහාය සඳහා ඔබේ ළඟම PHM කාර්යාලය හෝ MOH අමතන්න.',
       },
       'ta': {
         'title': 'உதவி மற்றும் ஆதரவு',
@@ -253,23 +219,18 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
             'title': '🍼 ஊட்டச்சத்து மற்றும் உணவு',
             'faqs': [
               {
-                'question':
-                    'எனது குழந்தைக்கு திட உணவுகளை எப்போது தொடங்க வேண்டும்?',
-                'answer':
-                    'இலங்கை சுகாதார வழிகாட்டுதல்களின்படி, 6 மாதங்களில் திட உணவுகளை அறிமுகப்படுத்த தொடங்க வேண்டும். அரிசி கஞ்சி, மசித்த காய்கறிகள் மற்றும் பழங்களுடன் தொடங்குங்கள்.',
+                'question': 'எனது குழந்தைக்கு திட உணவுகளை எப்போது தொடங்க வேண்டும்?',
+                'answer': 'இலங்கை சுகாதார வழிகாட்டுதல்களின்படி, 6 மாதங்களில் திட உணவுகளை அறிமுகப்படுத்த தொடங்க வேண்டும். அரிசி கஞ்சி, மசித்த காய்கறிகள் மற்றும் பழங்களுடன் தொடங்குங்கள்.',
               },
               {
-                'question':
-                    'குழந்தைகளுக்கு நல்ல பாரம்பரிய இலங்கை உணவுகள் என்ன?',
-                'answer':
-                    'சிறந்த முதல் உணவுகள்:\n• தாய்ப்பாலுடன் அரிசி கஞ்சி\n• மசித்த பப்பாளி\n• மசித்த வெண்ணெய் பழம்\n• மென்மையாக சமைத்த சிவப்பு அரிசி\n• மசித்த வாழைப்பழம்\n• பருப்புடன் காய்கறி சூப்',
+                'question': 'குழந்தைகளுக்கு நல்ல பாரம்பரிய இலங்கை உணவுகள் என்ன?',
+                'answer': 'சிறந்த முதல் உணவுகள்:\n• தாய்ப்பாலுடன் அரிசி கஞ்சி\n• மசித்த பப்பாளி\n• மசித்த வெண்ணெய் பழம்\n• மென்மையாக சமைத்த சிவப்பு அரிசி\n• மசித்த வாழைப்பழம்\n• பருப்புடன் காய்கறி சூப்',
               },
             ],
           },
         ],
         'noAnswer': 'உங்கள் பதிலைக் கண்டுபிடிக்க முடியவில்லையா?',
-        'contactSupport':
-            'தனிப்பட்ட உதவிக்கு உங்கள் அருகிலுள்ள PHM அலுவலகம் அல்லது MOH ஐ தொடர்பு கொள்ளுங்கள்.',
+        'contactSupport': 'தனிப்பட்ட உதவிக்கு உங்கள் அருகிலுள்ள PHM அலுவலகம் அல்லது MOH ஐ தொடர்பு கொள்ளுங்கள்.',
       },
     };
     return content[_selectedLanguage] ?? content['en']!;
@@ -278,7 +239,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
   @override
   Widget build(BuildContext context) {
     final content = _getLocalizedContent();
-
+    
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
@@ -312,12 +273,11 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                   fontSize: ResponsiveUtils.getResponsiveFontSize(context, 18),
                   fontWeight: FontWeight.bold,
                   color: const Color(0xFF1A1A1A),
-                  fontFamily:
-                      _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                  fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                 ),
               ),
             ),
-
+            
             // FAQ Categories
             ...List.generate(
               content['categories'].length,
@@ -326,7 +286,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                 categoryIndex,
               ),
             ),
-
+            
             // Didn't find answer section
             Container(
               margin: const EdgeInsets.all(16),
@@ -344,30 +304,26 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                   Text(
                     content['noAnswer'],
                     style: TextStyle(
-                      fontSize:
-                          ResponsiveUtils.getResponsiveFontSize(context, 16),
+                      fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
                       fontWeight: FontWeight.bold,
                       color: const Color(0xFF007BFF),
-                      fontFamily:
-                          _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                      fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     content['contactSupport'],
                     style: TextStyle(
-                      fontSize:
-                          ResponsiveUtils.getResponsiveFontSize(context, 14),
+                      fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
                       color: const Color(0xFF6B7280),
-                      fontFamily:
-                          _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                      fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                       height: 1.5,
                     ),
                   ),
                 ],
               ),
             ),
-
+            
             // Contact Section
             Padding(
               padding: const EdgeInsets.all(16),
@@ -377,97 +333,89 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                   Text(
                     content['contactTitle'],
                     style: TextStyle(
-                      fontSize:
-                          ResponsiveUtils.getResponsiveFontSize(context, 18),
+                      fontSize: ResponsiveUtils.getResponsiveFontSize(context, 18),
                       fontWeight: FontWeight.bold,
                       color: const Color(0xFF1A1A1A),
-                      fontFamily:
-                          _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                      fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                     ),
                   ),
                   const SizedBox(height: 20),
-
+                  
                   // Contact Methods Row
                   ResponsiveUtils.isSmallWidth(context)
-                      ? Column(
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                Expanded(
-                                  child: _buildContactMethod(
-                                    icon: Icons.phone,
-                                    label: content['phoneLabel'],
-                                    value: content['phoneNumber'],
-                                    color: const Color(0xFF007BFF),
-                                    onTap: () =>
-                                        _launchPhone(content['phoneNumber']),
-                                  ),
+                    ? Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Expanded(
+                                child: _buildContactMethod(
+                                  icon: Icons.phone,
+                                  label: content['phoneLabel'],
+                                  value: content['phoneNumber'],
+                                  color: const Color(0xFF007BFF),
+                                  onTap: () => _launchPhone(content['phoneNumber']),
                                 ),
-                                Expanded(
-                                  child: _buildContactMethod(
-                                    icon: Icons.email,
-                                    label: content['emailLabel'],
-                                    value: content['emailAddress'],
-                                    color: const Color(0xFF007BFF),
-                                    onTap: () =>
-                                        _launchEmail(content['emailAddress']),
-                                  ),
+                              ),
+                              Expanded(
+                                child: _buildContactMethod(
+                                  icon: Icons.email,
+                                  label: content['emailLabel'],
+                                  value: content['emailAddress'],
+                                  color: const Color(0xFF007BFF),
+                                  onTap: () => _launchEmail(content['emailAddress']),
                                 ),
-                              ],
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          _buildContactMethod(
+                            icon: Icons.message,
+                            label: content['whatsappLabel'],
+                            value: content['whatsappNumber'],
+                            color: const Color(0xFF28A745),
+                            onTap: () => _launchWhatsApp(content['whatsappNumber']),
+                          ),
+                        ],
+                      )
+                    : Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Expanded(
+                            child: _buildContactMethod(
+                              icon: Icons.phone,
+                              label: content['phoneLabel'],
+                              value: content['phoneNumber'],
+                              color: const Color(0xFF007BFF),
+                              onTap: () => _launchPhone(content['phoneNumber']),
                             ),
-                            const SizedBox(height: 16),
-                            _buildContactMethod(
+                          ),
+                          Expanded(
+                            child: _buildContactMethod(
+                              icon: Icons.email,
+                              label: content['emailLabel'],
+                              value: content['emailAddress'],
+                              color: const Color(0xFF007BFF),
+                              onTap: () => _launchEmail(content['emailAddress']),
+                            ),
+                          ),
+                          Expanded(
+                            child: _buildContactMethod(
                               icon: Icons.message,
                               label: content['whatsappLabel'],
                               value: content['whatsappNumber'],
                               color: const Color(0xFF28A745),
-                              onTap: () =>
-                                  _launchWhatsApp(content['whatsappNumber']),
+                              onTap: () => _launchWhatsApp(content['whatsappNumber']),
                             ),
-                          ],
-                        )
-                      : Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            Expanded(
-                              child: _buildContactMethod(
-                                icon: Icons.phone,
-                                label: content['phoneLabel'],
-                                value: content['phoneNumber'],
-                                color: const Color(0xFF007BFF),
-                                onTap: () =>
-                                    _launchPhone(content['phoneNumber']),
-                              ),
-                            ),
-                            Expanded(
-                              child: _buildContactMethod(
-                                icon: Icons.email,
-                                label: content['emailLabel'],
-                                value: content['emailAddress'],
-                                color: const Color(0xFF007BFF),
-                                onTap: () =>
-                                    _launchEmail(content['emailAddress']),
-                              ),
-                            ),
-                            Expanded(
-                              child: _buildContactMethod(
-                                icon: Icons.message,
-                                label: content['whatsappLabel'],
-                                value: content['whatsappNumber'],
-                                color: const Color(0xFF28A745),
-                                onTap: () =>
-                                    _launchWhatsApp(content['whatsappNumber']),
-                              ),
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
+                      ),
                 ],
               ),
             ),
-
+            
             const SizedBox(height: 32),
-
+            
             // Footer with App Version
             Center(
               child: Column(
@@ -481,8 +429,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                   Text(
                     content['appVersion'],
                     style: TextStyle(
-                      fontSize:
-                          ResponsiveUtils.getResponsiveFontSize(context, 14),
+                      fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
                       color: const Color(0xFF9CA3AF),
                       fontFamily: 'NotoSerifSinhala',
                     ),
@@ -491,8 +438,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                   Text(
                     'Made with ❤️ for Sri Lankan parents',
                     style: TextStyle(
-                      fontSize:
-                          ResponsiveUtils.getResponsiveFontSize(context, 12),
+                      fontSize: ResponsiveUtils.getResponsiveFontSize(context, 12),
                       color: const Color(0xFF9CA3AF),
                     ),
                   ),
@@ -508,7 +454,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
 
   Widget _buildFAQCategory(Map<String, dynamic> category, int categoryIndex) {
     final isExpanded = _expandedSections['category_$categoryIndex'] ?? false;
-
+    
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
@@ -541,13 +487,10 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                     child: Text(
                       category['title'],
                       style: TextStyle(
-                        fontSize:
-                            ResponsiveUtils.getResponsiveFontSize(context, 16),
+                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 16),
                         fontWeight: FontWeight.bold,
                         color: const Color(0xFF007BFF),
-                        fontFamily: _selectedLanguage == 'si'
-                            ? 'NotoSerifSinhala'
-                            : null,
+                        fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                       ),
                     ),
                   ),
@@ -563,6 +506,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
               ),
             ),
           ),
+          
           if (isExpanded) ...[
             const Divider(height: 1, color: Color(0xFFE0E0E0)),
             ...List.generate(
@@ -588,7 +532,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
   ) {
     final key = 'faq_${categoryIndex}_$faqIndex';
     final isExpanded = _expandedSections[key] ?? false;
-
+    
     return Column(
       children: [
         SafeInkWell(
@@ -623,13 +567,10 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                           Text(
                             faq['question']!,
                             style: TextStyle(
-                              fontSize: ResponsiveUtils.getResponsiveFontSize(
-                                  context, 15),
+                              fontSize: ResponsiveUtils.getResponsiveFontSize(context, 15),
                               fontWeight: FontWeight.bold,
                               color: const Color(0xFF1A1A1A),
-                              fontFamily: _selectedLanguage == 'si'
-                                  ? 'NotoSerifSinhala'
-                                  : null,
+                              fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                               height: 1.4,
                             ),
                           ),
@@ -638,12 +579,9 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                             Text(
                               faq['answer']!,
                               style: TextStyle(
-                                fontSize: ResponsiveUtils.getResponsiveFontSize(
-                                    context, 14),
+                                fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
                                 color: const Color(0xFF6B7280),
-                                fontFamily: _selectedLanguage == 'si'
-                                    ? 'NotoSerifSinhala'
-                                    : null,
+                                fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
                                 height: 1.6,
                               ),
                             ),
@@ -652,9 +590,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                       ),
                     ),
                     Icon(
-                      isExpanded
-                          ? Icons.keyboard_arrow_up
-                          : Icons.keyboard_arrow_down,
+                      isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
                       size: 20,
                       color: const Color(0xFF9CA3AF),
                     ),
@@ -711,8 +647,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                 fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
                 fontWeight: FontWeight.w600,
                 color: const Color(0xFF1A1A1A),
-                fontFamily:
-                    _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
               ),
             ),
             const SizedBox(height: 4),
@@ -764,8 +699,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
 
   Future<void> _launchWhatsApp(String phoneNumber) async {
     final cleanNumber = phoneNumber.replaceAll(RegExp(r'[^\d]'), '');
-    final uri = Uri.parse(
-        'https://wa.me/$cleanNumber?text=Hello, I need help with the Aayu app');
+    final uri = Uri.parse('https://wa.me/$cleanNumber?text=Hello, I need help with the Aayu app');
     try {
       if (await canLaunchUrl(uri)) {
         await launchUrl(uri, mode: LaunchMode.externalApplication);

@@ -92,8 +92,7 @@ class FirebaseAuthService {
         smsCode: otp,
       );
 
-      final UserCredential userCredential =
-          await _auth.signInWithCredential(credential);
+      final UserCredential userCredential = await _auth.signInWithCredential(credential);
       return userCredential;
     } on FirebaseAuthException catch (e) {
       String errorMessage;
@@ -123,15 +122,12 @@ class FirebaseAuthService {
     required String fullName,
   }) async {
     try {
-      await _firestore.collection('users').doc(uid).set(
-        {
-          'fullName': fullName,
-          'phoneNumber': phoneNumber,
-          'createdAt': FieldValue.serverTimestamp(),
-          'updatedAt': FieldValue.serverTimestamp(),
-        },
-        SetOptions(merge: true),
-      );
+      await _firestore.collection('users').doc(uid).set({
+        'fullName': fullName,
+        'phoneNumber': phoneNumber,
+        'createdAt': FieldValue.serverTimestamp(),
+        'updatedAt': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true),);
     } catch (e) {
       throw Exception('Failed to save user profile: $e');
     }
@@ -140,8 +136,7 @@ class FirebaseAuthService {
   // Get user profile data from Firestore
   static Future<Map<String, dynamic>?> getUserProfile(String uid) async {
     try {
-      final DocumentSnapshot doc =
-          await _firestore.collection('users').doc(uid).get();
+      final DocumentSnapshot doc = await _firestore.collection('users').doc(uid).get();
       if (doc.exists) {
         return doc.data() as Map<String, dynamic>?;
       }
@@ -154,8 +149,7 @@ class FirebaseAuthService {
   // Check if user profile exists
   static Future<bool> userProfileExists(String uid) async {
     try {
-      final DocumentSnapshot doc =
-          await _firestore.collection('users').doc(uid).get();
+      final DocumentSnapshot doc = await _firestore.collection('users').doc(uid).get();
       return doc.exists;
     } catch (e) {
       return false;
