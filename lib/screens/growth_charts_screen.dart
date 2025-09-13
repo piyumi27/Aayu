@@ -10,6 +10,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/child.dart';
 import '../models/growth_record.dart';
 import '../providers/child_provider.dart';
+import '../utils/responsive_utils.dart';
+import '../widgets/notifications/notification_badge.dart';
 import 'add_measurement_screen.dart';
 import 'nutritional_analysis_screen.dart';
 import 'pre_six_month_countdown_screen.dart';
@@ -159,6 +161,17 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
             onPressed: () => Navigator.of(context).pop(),
           ),
           actions: [
+            SmartNotificationBadge(
+              child: IconButton(
+                onPressed: () => context.push('/notifications'),
+                icon: Icon(
+                  Icons.notifications_outlined,
+                  color: const Color(0xFF6B7280),
+                  size: ResponsiveUtils.getResponsiveIconSize(context, 24),
+                ),
+                tooltip: 'Notifications',
+              ),
+            ),
             IconButton(
               icon: const Icon(Icons.analytics_outlined, color: Color(0xFF3A7AFE)),
               onPressed: () {
@@ -205,6 +218,17 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
           onPressed: () => context.go('/'),
         ),
         actions: [
+          SmartNotificationBadge(
+            child: IconButton(
+              onPressed: () => context.push('/notifications'),
+              icon: Icon(
+                Icons.notifications_outlined,
+                color: const Color(0xFF6B7280),
+                size: ResponsiveUtils.getResponsiveIconSize(context, 24),
+              ),
+              tooltip: 'Notifications',
+            ),
+          ),
           // Growth Countdown for children under 6 months
           if (_shouldShowGrowthCountdown(child))
             IconButton(

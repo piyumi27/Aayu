@@ -14,7 +14,7 @@ void main() {
       test('should create all required notification channels', () async {
         // This would test channel creation in a real implementation
         expect(service.isInitialized, isFalse);
-        
+
         // In a real test, we would verify that createNotificationChannels
         // creates all 9 channels with correct configurations
       });
@@ -78,19 +78,19 @@ void main() {
     group('Notification Management', () {
       test('should cancel notification by ID', () async {
         const notificationId = 12345;
-        
+
         await service.cancelNotification(notificationId);
-        
+
         // Verify notification was cancelled
         expect(true, isTrue); // Placeholder assertion
       });
 
       test('should cancel all notifications for child', () async {
         const childId = 'test-child-cancel';
-        
+
         // Test cancellation would be implemented here
         // await service.cancelAllNotificationsForChild(childId);
-        
+
         // Verify all notifications for child were cancelled
         expect(true, isTrue); // Placeholder assertion
       });
@@ -109,7 +109,8 @@ void main() {
     });
 
     group('Channel Configuration', () {
-      test('should configure critical health alerts channel correctly', () async {
+      test('should configure critical health alerts channel correctly',
+          () async {
         // Test critical health alerts channel configuration
         // - Should have maximum importance
         // - Should bypass Do Not Disturb
@@ -117,7 +118,8 @@ void main() {
         expect(true, isTrue); // Placeholder assertion
       });
 
-      test('should configure vaccination reminders channel correctly', () async {
+      test('should configure vaccination reminders channel correctly',
+          () async {
         // Test vaccination reminders channel configuration
         // - Should have high importance
         // - Should have custom sound

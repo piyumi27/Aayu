@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../models/article.dart';
@@ -6,6 +7,7 @@ import '../services/article_service.dart';
 import '../utils/responsive_utils.dart';
 import '../widgets/article_card.dart';
 import '../widgets/category_grid.dart';
+import '../widgets/notifications/notification_badge.dart';
 import 'article_detail_screen.dart';
 import 'category_articles_screen.dart';
 
@@ -118,6 +120,19 @@ class _LearnScreenState extends State<LearnScreen>
         ),
         elevation: 0,
         backgroundColor: Colors.transparent,
+        actions: [
+          SmartNotificationBadge(
+            child: IconButton(
+              onPressed: () => context.push('/notifications'),
+              icon: Icon(
+                Icons.notifications_outlined,
+                color: theme.colorScheme.onSurface.withOpacity(0.7),
+                size: ResponsiveUtils.getResponsiveIconSize(context, 24),
+              ),
+              tooltip: 'Notifications',
+            ),
+          ),
+        ],
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(
             ResponsiveUtils.getResponsiveSpacing(context, 120),

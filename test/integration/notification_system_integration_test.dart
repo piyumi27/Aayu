@@ -31,10 +31,11 @@ void main() {
         await tester.pumpAndSettle();
 
         // 2. Add a new child
-        await tester.enterText(find.byKey(const Key('child_name_field')), 'Test Child');
+        await tester.enterText(
+            find.byKey(const Key('child_name_field')), 'Test Child');
         await tester.tap(find.byKey(const Key('birth_date_picker')));
         await tester.pumpAndSettle();
-        
+
         // Select birth date (2 months ago for vaccination schedule)
         final twoMonthsAgo = DateTime.now().subtract(const Duration(days: 60));
         await tester.tap(find.text(twoMonthsAgo.day.toString()));
@@ -62,7 +63,7 @@ void main() {
         // 7. Verify notification is marked as read
         await tester.tap(find.text('Unread'));
         await tester.pumpAndSettle();
-        
+
         // Should have one less unread notification
         // Specific verification would depend on UI implementation
       });
@@ -179,7 +180,7 @@ void main() {
         await tester.tap(find.text('OK'));
         await tester.pumpAndSettle();
 
-        // Set quiet hours end time  
+        // Set quiet hours end time
         await tester.tap(find.text('End Time'));
         await tester.pumpAndSettle();
 
@@ -355,7 +356,8 @@ void main() {
     });
 
     group('Performance and Memory', () {
-      testWidgets('notification list performance with many items', (tester) async {
+      testWidgets('notification list performance with many items',
+          (tester) async {
         app.main();
         await tester.pumpAndSettle();
 
@@ -388,7 +390,8 @@ void main() {
     });
 
     group('Error Handling', () {
-      testWidgets('graceful handling of notification service errors', (tester) async {
+      testWidgets('graceful handling of notification service errors',
+          (tester) async {
         app.main();
         await tester.pumpAndSettle();
 
@@ -401,7 +404,8 @@ void main() {
         expect(find.byType(AppBar), findsOneWidget);
       });
 
-      testWidgets('handling of missing notification permissions', (tester) async {
+      testWidgets('handling of missing notification permissions',
+          (tester) async {
         app.main();
         await tester.pumpAndSettle();
 

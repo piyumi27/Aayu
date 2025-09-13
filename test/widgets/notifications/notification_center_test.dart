@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:aayu/widgets/notifications/notification_center.dart';
 import 'package:aayu/widgets/notifications/notification_card.dart';
-import 'package:aayu/widgets/notifications/notification_badge.dart' as NotificationBadgeWidget;
+import 'package:aayu/widgets/notifications/notification_badge.dart'
+    as NotificationBadgeWidget;
 import 'package:aayu/services/database_service.dart';
 import 'package:aayu/models/notification.dart';
 
 void main() {
   group('NotificationCenter Widget Tests', () {
-
     setUp(() {
       // Test setup without mockito dependency
     });
@@ -21,14 +21,15 @@ void main() {
     }
 
     group('Widget Structure', () {
-      testWidgets('should display app bar with correct title and actions', (tester) async {
+      testWidgets('should display app bar with correct title and actions',
+          (tester) async {
         await tester.pumpWidget(createTestWidget());
         await tester.pumpAndSettle();
 
         // Find app bar
         expect(find.byType(AppBar), findsOneWidget);
         expect(find.text('Notifications'), findsOneWidget);
-        
+
         // Find settings button
         expect(find.byIcon(Icons.settings_outlined), findsOneWidget);
       });
@@ -39,7 +40,7 @@ void main() {
 
         // Find tab bar
         expect(find.byType(TabBar), findsOneWidget);
-        
+
         // Find tabs
         expect(find.text('All'), findsOneWidget);
         expect(find.text('Unread'), findsOneWidget);
@@ -60,7 +61,8 @@ void main() {
     });
 
     group('Empty State', () {
-      testWidgets('should show empty state when no notifications', (tester) async {
+      testWidgets('should show empty state when no notifications',
+          (tester) async {
         await tester.pumpWidget(createTestWidget());
         await tester.pumpAndSettle();
 
@@ -69,7 +71,8 @@ void main() {
         expect(find.text('No notifications found'), findsOneWidget);
       });
 
-      testWidgets('should show celebration message for unread tab when empty', (tester) async {
+      testWidgets('should show celebration message for unread tab when empty',
+          (tester) async {
         await tester.pumpWidget(createTestWidget());
         await tester.pumpAndSettle();
 
@@ -83,7 +86,8 @@ void main() {
     });
 
     group('Notification Display', () {
-      testWidgets('should display notification cards when notifications exist', (tester) async {
+      testWidgets('should display notification cards when notifications exist',
+          (tester) async {
         // Mock notifications data
         final mockNotifications = [
           AppNotification.withTitleBody(
@@ -166,7 +170,9 @@ void main() {
     });
 
     group('Actions', () {
-      testWidgets('should show mark all read button when unread notifications exist', (tester) async {
+      testWidgets(
+          'should show mark all read button when unread notifications exist',
+          (tester) async {
         await tester.pumpWidget(createTestWidget());
         await tester.pumpAndSettle();
 
@@ -175,7 +181,8 @@ void main() {
         expect(find.byType(AppBar), findsOneWidget);
       });
 
-      testWidgets('should navigate to settings when settings icon tapped', (tester) async {
+      testWidgets('should navigate to settings when settings icon tapped',
+          (tester) async {
         await tester.pumpWidget(createTestWidget());
         await tester.pumpAndSettle();
 
@@ -210,7 +217,8 @@ void main() {
     });
 
     group('Badge Display', () {
-      testWidgets('should show badge counts on tabs with unread notifications', (tester) async {
+      testWidgets('should show badge counts on tabs with unread notifications',
+          (tester) async {
         await tester.pumpWidget(createTestWidget());
         await tester.pumpAndSettle();
 
@@ -241,14 +249,15 @@ void main() {
     });
 
     group('Loading State', () {
-      testWidgets('should show loading indicator while loading notifications', (tester) async {
+      testWidgets('should show loading indicator while loading notifications',
+          (tester) async {
         await tester.pumpWidget(createTestWidget());
-        
+
         // Find loading indicator during initial load
         expect(find.byType(CircularProgressIndicator), findsOneWidget);
-        
+
         await tester.pumpAndSettle();
-        
+
         // Loading indicator should disappear after load
         expect(find.byType(CircularProgressIndicator), findsNothing);
       });
@@ -256,7 +265,8 @@ void main() {
   });
 
   group('NotificationCard Widget Tests', () {
-    testWidgets('should display notification information correctly', (tester) async {
+    testWidgets('should display notification information correctly',
+        (tester) async {
       final testNotification = AppNotification.withTitleBody(
         id: 'test-1',
         title: 'Test Notification',
@@ -286,7 +296,9 @@ void main() {
       expect(find.text('Vaccination'), findsOneWidget);
     });
 
-    testWidgets('should show priority indicator for high priority notifications', (tester) async {
+    testWidgets(
+        'should show priority indicator for high priority notifications',
+        (tester) async {
       final highPriorityNotification = AppNotification.withTitleBody(
         id: 'test-high',
         title: 'High Priority Notification',
@@ -311,7 +323,8 @@ void main() {
       expect(find.text('URGENT'), findsOneWidget);
     });
 
-    testWidgets('should show unread indicator for unread notifications', (tester) async {
+    testWidgets('should show unread indicator for unread notifications',
+        (tester) async {
       final unreadNotification = AppNotification.withTitleBody(
         id: 'test-unread',
         title: 'Unread Notification',

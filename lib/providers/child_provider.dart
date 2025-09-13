@@ -3,9 +3,11 @@ import '../models/child.dart';
 import '../models/growth_record.dart';
 import '../models/vaccine.dart';
 import '../services/database_service.dart';
+import '../services/notifications/scheduling_engine.dart';
 
 class ChildProvider extends ChangeNotifier {
   final DatabaseService _databaseService = DatabaseService();
+  final NotificationSchedulingEngine _schedulingEngine = NotificationSchedulingEngine();
   
   List<Child> _children = [];
   Child? _selectedChild;
@@ -42,11 +44,35 @@ class ChildProvider extends ChangeNotifier {
   Future<void> addChild(Child child) async {
     await _databaseService.insertChild(child);
     await loadChildren();
+    
+    // Schedule notifications for the new child
+    try {
+      await _schedulingEngine.scheduleNotificationsForChild(child);
+      if (kDebugMode) {
+        print('✅ Notifications scheduled for child: ${child.name}');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('❌ Failed to schedule notifications for ${child.name}: $e');
+      }
+    }
   }
 
   Future<void> updateChild(Child child) async {
     await _databaseService.updateChild(child);
     await loadChildren();
+    
+    // Reschedule notifications for the updated child
+    try {
+      await _schedulingEngine.scheduleNotificationsForChild(child);
+      if (kDebugMode) {
+        print('✅ Notifications rescheduled for child: ${child.name}');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('❌ Failed to reschedule notifications for ${child.name}: $e');
+      }
+    }
   }
 
   Future<void> selectChild(Child child) async {

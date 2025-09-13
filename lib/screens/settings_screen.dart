@@ -288,6 +288,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   onChanged: _saveNotificationPreference,
                   activeThumbColor: const Color(0xFF0086FF),
                 ),
+                hasChevron: true,
+                onTap: () => context.push('/notification-preferences'),
               ),
               _buildDivider(),
               _buildSettingsRow(

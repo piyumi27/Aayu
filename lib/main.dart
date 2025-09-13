@@ -8,6 +8,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'providers/child_provider.dart';
 import 'services/local_auth_service.dart';
+import 'services/notifications/local_notification_service.dart';
+import 'services/notifications/push_notification_service.dart';
+import 'services/notifications/scheduling_engine.dart';
 import 'screens/about_aayu_screen.dart';
 import 'screens/add_child_screen.dart';
 import 'screens/add_health_record_screen.dart';
@@ -21,7 +24,8 @@ import 'screens/language_selection_screen.dart';
 import 'screens/learn_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/measurement_detail_screen.dart';
-import 'screens/notifications_screen.dart';
+import 'widgets/notifications/notification_center.dart';
+import 'screens/notifications/notification_preferences_screen.dart';
 import 'screens/onboarding_screen.dart';
 import 'screens/otp_verification_screen.dart';
 import 'screens/pre_six_month_countdown_screen.dart';
@@ -39,10 +43,34 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   
+  // Initialize notification services
+  await _initializeNotificationServices();
+  
   // Initialize WorkManager for background sync
   await FirebaseSyncService.initialize();
   
   runApp(const AayuApp());
+}
+
+/// Initialize all notification services
+Future<void> _initializeNotificationServices() async {
+  try {
+    // Initialize local notifications
+    final localNotificationService = LocalNotificationService();
+    await localNotificationService.initialize();
+    
+    // Initialize push notifications
+    final pushNotificationService = PushNotificationService();
+    await pushNotificationService.initialize();
+    
+    // Initialize scheduling engine
+    final schedulingEngine = NotificationSchedulingEngine();
+    await schedulingEngine.initialize();
+    
+    print('✅ All notification services initialized successfully');
+  } catch (e) {
+    print('❌ Failed to initialize notification services: $e');
+  }
 }
 
 class AayuApp extends StatelessWidget {
@@ -229,7 +257,7 @@ final _router = GoRouter(
           path: '/notifications',
           pageBuilder: (context, state) => SlideRightTransitionPage(
             key: state.pageKey,
-            child: const NotificationsScreen(),
+            child: const NotificationCenter(),
           ),
         ),
         GoRoute(
@@ -277,6 +305,10 @@ final _router = GoRouter(
     GoRoute(
       path: '/achievements',
       builder: (context, state) => const AchievementsScreen(),
+    ),
+    GoRoute(
+      path: '/notification-preferences',
+      builder: (context, state) => const NotificationPreferencesScreen(),
     ),
   ],
 );

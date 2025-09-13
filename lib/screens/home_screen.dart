@@ -11,6 +11,7 @@ import '../providers/child_provider.dart';
 import '../services/local_auth_service.dart';
 import '../utils/responsive_utils.dart';
 import '../widgets/verification_banner.dart';
+import '../widgets/notifications/notification_badge.dart';
 import 'add_child_screen.dart';
 import 'add_measurement_screen.dart';
 import 'growth_charts_screen.dart';
@@ -339,12 +340,15 @@ class _HomeScreenState extends State<HomeScreen> {
               color: const Color(0xFFF3F4F6),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: IconButton(
-              onPressed: () => context.push('/notifications'),
-              icon: const Icon(
-                Icons.notifications_outlined,
-                color: Color(0xFF6B7280),
-                size: 20,
+            child: SmartNotificationBadge(
+              child: IconButton(
+                onPressed: () => context.push('/notifications'),
+                icon: const Icon(
+                  Icons.notifications_outlined,
+                  color: Color(0xFF6B7280),
+                  size: 20,
+                ),
+                tooltip: 'Notifications',
               ),
             ),
           ),
