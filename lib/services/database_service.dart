@@ -22,7 +22,7 @@ class DatabaseService {
     final path = join(await getDatabasesPath(), 'aayu.db');
     return await openDatabase(
       path,
-      version: 3,
+      version: 4,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
     );
@@ -302,6 +302,8 @@ class DatabaseService {
         type TEXT NOT NULL,
         title TEXT NOT NULL,
         body TEXT NOT NULL,
+        category TEXT,
+        priority TEXT,
         channelId TEXT,
         data TEXT,
         payload TEXT,
@@ -497,6 +499,46 @@ class DatabaseService {
     }
     if (oldVersion < 3) {
       await _createNotificationTables(db);
+    }
+    if (oldVersion < 4) {
+      await _upgradeNotificationHistoryTable(db);
+    }
+  }
+
+  Future<void> _upgradeNotificationHistoryTable(Database db) async {
+    try {
+      // Add category and priority columns to notification_history table
+      await db.execute('ALTER TABLE notification_history ADD COLUMN category TEXT');
+      await db.execute('ALTER TABLE notification_history ADD COLUMN priority TEXT');
+
+      // Update existing records with default values based on type
+      await db.execute('''
+        UPDATE notification_history
+        SET category = CASE
+          WHEN type LIKE '%health%' OR type LIKE '%critical%' THEN 'health_alert'
+          WHEN type LIKE '%vaccination%' OR type LIKE '%vaccine%' THEN 'vaccination'
+          WHEN type LIKE '%growth%' OR type LIKE '%measurement%' THEN 'growth'
+          WHEN type LIKE '%milestone%' THEN 'milestone'
+          WHEN type LIKE '%feeding%' OR type LIKE '%nutrition%' THEN 'feeding'
+          WHEN type LIKE '%medication%' THEN 'medication'
+          ELSE 'general'
+        END
+        WHERE category IS NULL
+      ''');
+
+      await db.execute('''
+        UPDATE notification_history
+        SET priority = CASE
+          WHEN type LIKE '%critical%' OR type LIKE '%urgent%' THEN 'critical'
+          WHEN type LIKE '%important%' OR type LIKE '%alert%' THEN 'high'
+          WHEN type LIKE '%reminder%' THEN 'medium'
+          ELSE 'low'
+        END
+        WHERE priority IS NULL
+      ''');
+    } catch (e) {
+      // If the columns already exist, ignore the error
+      print('Migration note: notification_history columns may already exist');
     }
   }
 
