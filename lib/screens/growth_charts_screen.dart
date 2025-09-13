@@ -340,7 +340,7 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
           centerTitle: true,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back, color: Color(0xFF1A1A1A)),
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () => context.go('/'),
           ),
           actions: [
             SmartNotificationBadge(
@@ -363,10 +363,6 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
                   ),
                 );
               },
-            ),
-            IconButton(
-              icon: const Icon(Icons.share_outlined, color: Color(0xFF3A7AFE)),
-              onPressed: _shareChart,
             ),
             IconButton(
               icon: const Icon(Icons.more_vert, color: Color(0xFF6B7280)),
@@ -422,10 +418,6 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
               ),
               tooltip: texts['growthCountdown'] ?? 'Growth Countdown',
             ),
-          IconButton(
-            icon: const Icon(Icons.share_outlined, color: Color(0xFF3A7AFE)),
-            onPressed: _shareChart,
-          ),
           IconButton(
             icon: const Icon(Icons.more_vert, color: Color(0xFF6B7280)),
             onPressed: () {},
@@ -1620,12 +1612,4 @@ class _GrowthChartsScreenState extends State<GrowthChartsScreen> {
     );
   }
 
-  void _shareChart() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Chart exported'),
-        backgroundColor: Color(0xFF34D399),
-      ),
-    );
-  }
 }
