@@ -21,7 +21,7 @@ class DatabaseService {
     final path = join(await getDatabasesPath(), 'aayu.db');
     return await openDatabase(
       path,
-      version: 2,
+      version: 3,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
     );
@@ -88,6 +88,7 @@ class DatabaseService {
     ''');
 
     await _createStandardsTables(db);
+    await _createNotificationTables(db);
     await _insertDefaultVaccines(db);
   }
 
@@ -243,9 +244,255 @@ class DatabaseService {
     ''');
   }
 
+  Future<void> _createNotificationTables(Database db) async {
+    // Notification tokens table
+    await db.execute('''
+      CREATE TABLE notification_tokens (
+        id TEXT PRIMARY KEY,
+        token TEXT NOT NULL,
+        platform TEXT NOT NULL,
+        createdAt TEXT NOT NULL,
+        isActive INTEGER NOT NULL DEFAULT 1
+      )
+    ''');
+
+    // Notification templates table
+    await db.execute('''
+      CREATE TABLE notification_templates (
+        id TEXT PRIMARY KEY,
+        type TEXT NOT NULL,
+        category TEXT NOT NULL,
+        titleKey TEXT NOT NULL,
+        contentKey TEXT NOT NULL,
+        priority TEXT NOT NULL,
+        channelId TEXT NOT NULL,
+        isActive INTEGER NOT NULL DEFAULT 1,
+        createdAt TEXT NOT NULL,
+        updatedAt TEXT NOT NULL
+      )
+    ''');
+
+    // Scheduled notifications table
+    await db.execute('''
+      CREATE TABLE scheduled_notifications (
+        id TEXT PRIMARY KEY,
+        type TEXT NOT NULL,
+        childId TEXT,
+        title TEXT NOT NULL,
+        body TEXT NOT NULL,
+        channelId TEXT NOT NULL,
+        payload TEXT,
+        scheduledDate TEXT NOT NULL,
+        isRepeating INTEGER NOT NULL DEFAULT 0,
+        repeatInterval TEXT,
+        isActive INTEGER NOT NULL DEFAULT 1,
+        isSent INTEGER NOT NULL DEFAULT 0,
+        sentAt TEXT,
+        createdAt TEXT NOT NULL,
+        cancelledAt TEXT,
+        FOREIGN KEY (childId) REFERENCES children (id)
+      )
+    ''');
+
+    // Notification history table
+    await db.execute('''
+      CREATE TABLE notification_history (
+        id TEXT PRIMARY KEY,
+        type TEXT NOT NULL,
+        title TEXT NOT NULL,
+        body TEXT NOT NULL,
+        channelId TEXT,
+        data TEXT,
+        payload TEXT,
+        receivedState TEXT,
+        receivedAt TEXT NOT NULL,
+        tappedAt TEXT,
+        isProcessed INTEGER NOT NULL DEFAULT 0,
+        isRead INTEGER NOT NULL DEFAULT 0,
+        isShown INTEGER NOT NULL DEFAULT 0,
+        createdAt TEXT NOT NULL
+      )
+    ''');
+
+    // Notification preferences table
+    await db.execute('''
+      CREATE TABLE notification_preferences (
+        id TEXT PRIMARY KEY,
+        userId TEXT,
+        category TEXT NOT NULL,
+        isEnabled INTEGER NOT NULL DEFAULT 1,
+        soundEnabled INTEGER NOT NULL DEFAULT 1,
+        vibrationEnabled INTEGER NOT NULL DEFAULT 1,
+        quietHoursStart TEXT,
+        quietHoursEnd TEXT,
+        allowCriticalDuringQuietHours INTEGER NOT NULL DEFAULT 1,
+        maxNotificationsPerDay INTEGER DEFAULT 10,
+        createdAt TEXT NOT NULL,
+        updatedAt TEXT NOT NULL
+      )
+    ''');
+
+    // Notification analytics table
+    await db.execute('''
+      CREATE TABLE notification_analytics (
+        id TEXT PRIMARY KEY,
+        notificationId TEXT NOT NULL,
+        event TEXT NOT NULL,
+        timestamp TEXT NOT NULL,
+        metadata TEXT,
+        createdAt TEXT NOT NULL
+      )
+    ''');
+
+    // Notification rules table for smart scheduling
+    await db.execute('''
+      CREATE TABLE notification_rules (
+        id TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
+        type TEXT NOT NULL,
+        conditions TEXT NOT NULL,
+        actions TEXT NOT NULL,
+        priority INTEGER NOT NULL DEFAULT 1,
+        isActive INTEGER NOT NULL DEFAULT 1,
+        createdAt TEXT NOT NULL,
+        updatedAt TEXT NOT NULL
+      )
+    ''');
+
+    // Insert default notification preferences
+    await _insertDefaultNotificationPreferences(db);
+    
+    // Insert default notification templates
+    await _insertDefaultNotificationTemplates(db);
+  }
+
+  Future<void> _insertDefaultNotificationPreferences(Database db) async {
+    final defaultPreferences = [
+      {
+        'id': 'health_alerts',
+        'category': 'health_alerts',
+        'isEnabled': 1,
+        'soundEnabled': 1,
+        'vibrationEnabled': 1,
+        'allowCriticalDuringQuietHours': 1,
+        'maxNotificationsPerDay': 5,
+        'createdAt': DateTime.now().toIso8601String(),
+        'updatedAt': DateTime.now().toIso8601String(),
+      },
+      {
+        'id': 'vaccination_reminders',
+        'category': 'vaccination_reminders',
+        'isEnabled': 1,
+        'soundEnabled': 1,
+        'vibrationEnabled': 1,
+        'allowCriticalDuringQuietHours': 1,
+        'maxNotificationsPerDay': 3,
+        'createdAt': DateTime.now().toIso8601String(),
+        'updatedAt': DateTime.now().toIso8601String(),
+      },
+      {
+        'id': 'growth_reminders',
+        'category': 'growth_reminders',
+        'isEnabled': 1,
+        'soundEnabled': 1,
+        'vibrationEnabled': 0,
+        'allowCriticalDuringQuietHours': 0,
+        'maxNotificationsPerDay': 2,
+        'createdAt': DateTime.now().toIso8601String(),
+        'updatedAt': DateTime.now().toIso8601String(),
+      },
+      {
+        'id': 'feeding_reminders',
+        'category': 'feeding_reminders',
+        'isEnabled': 1,
+        'soundEnabled': 0,
+        'vibrationEnabled': 0,
+        'allowCriticalDuringQuietHours': 0,
+        'maxNotificationsPerDay': 8,
+        'createdAt': DateTime.now().toIso8601String(),
+        'updatedAt': DateTime.now().toIso8601String(),
+      },
+      {
+        'id': 'tips_guidance',
+        'category': 'tips_guidance',
+        'isEnabled': 1,
+        'soundEnabled': 0,
+        'vibrationEnabled': 0,
+        'allowCriticalDuringQuietHours': 0,
+        'maxNotificationsPerDay': 1,
+        'createdAt': DateTime.now().toIso8601String(),
+        'updatedAt': DateTime.now().toIso8601String(),
+      },
+    ];
+
+    for (final pref in defaultPreferences) {
+      await db.insert('notification_preferences', pref);
+    }
+  }
+
+  Future<void> _insertDefaultNotificationTemplates(Database db) async {
+    final defaultTemplates = [
+      {
+        'id': 'health_alert_critical',
+        'type': 'health_alert',
+        'category': 'critical_health_alerts',
+        'titleKey': 'notification.health_alert.critical.title',
+        'contentKey': 'notification.health_alert.critical.content',
+        'priority': 'critical',
+        'channelId': 'critical_health_alerts',
+        'isActive': 1,
+        'createdAt': DateTime.now().toIso8601String(),
+        'updatedAt': DateTime.now().toIso8601String(),
+      },
+      {
+        'id': 'vaccination_reminder_due',
+        'type': 'vaccination_reminder',
+        'category': 'vaccination_reminders',
+        'titleKey': 'notification.vaccination.due.title',
+        'contentKey': 'notification.vaccination.due.content',
+        'priority': 'high',
+        'channelId': 'vaccination_reminders',
+        'isActive': 1,
+        'createdAt': DateTime.now().toIso8601String(),
+        'updatedAt': DateTime.now().toIso8601String(),
+      },
+      {
+        'id': 'growth_check_monthly',
+        'type': 'growth_reminder',
+        'category': 'growth_reminders',
+        'titleKey': 'notification.growth.monthly.title',
+        'contentKey': 'notification.growth.monthly.content',
+        'priority': 'medium',
+        'channelId': 'growth_reminders',
+        'isActive': 1,
+        'createdAt': DateTime.now().toIso8601String(),
+        'updatedAt': DateTime.now().toIso8601String(),
+      },
+      {
+        'id': 'milestone_check_reminder',
+        'type': 'milestone_reminder',
+        'category': 'milestone_reminders',
+        'titleKey': 'notification.milestone.check.title',
+        'contentKey': 'notification.milestone.check.content',
+        'priority': 'medium',
+        'channelId': 'milestone_reminders',
+        'isActive': 1,
+        'createdAt': DateTime.now().toIso8601String(),
+        'updatedAt': DateTime.now().toIso8601String(),
+      },
+    ];
+
+    for (final template in defaultTemplates) {
+      await db.insert('notification_templates', template);
+    }
+  }
+
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
     if (oldVersion < 2) {
       await _createStandardsTables(db);
+    }
+    if (oldVersion < 3) {
+      await _createNotificationTables(db);
     }
   }
 

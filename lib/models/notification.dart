@@ -82,6 +82,150 @@ class AppNotification {
     this.actions = const [],
   });
 
+  // Convenience constructor with title/body for backward compatibility
+  AppNotification.withTitleBody({
+    required this.id,
+    required String title,
+    required String body,
+    required String category,
+    required String priority,
+    required this.timestamp,
+    this.isRead = false,
+    this.isStarred = false,
+    this.childId,
+    this.actionData,
+    this.imageUrl,
+    this.actions = const [],
+  }) : titleKey = title,
+       contentKey = body,
+       category = _stringToCategory(category),
+       priority = _stringToPriority(priority),
+       type = _categoryToType(_stringToCategory(category));
+
+  // Helper methods for string conversion
+  static NotificationCategory _stringToCategory(String category) {
+    switch (category) {
+      case 'vaccination':
+      case 'vaccination_reminders':
+        return NotificationCategory.reminders;
+      case 'growth':
+      case 'growth_tracking':
+        return NotificationCategory.reminders;
+      case 'milestone':
+      case 'milestone_tracking':
+        return NotificationCategory.reminders;
+      case 'health_alert':
+      case 'critical_health_alert':
+        return NotificationCategory.healthAlerts;
+      case 'feeding':
+      case 'feeding_reminders':
+        return NotificationCategory.reminders;
+      case 'medication':
+      case 'medication_reminders':
+        return NotificationCategory.reminders;
+      default:
+        return NotificationCategory.all;
+    }
+  }
+
+  static NotificationPriority _stringToPriority(String priority) {
+    switch (priority) {
+      case 'critical':
+        return NotificationPriority.critical;
+      case 'high':
+        return NotificationPriority.high;
+      case 'medium':
+        return NotificationPriority.medium;
+      case 'low':
+        return NotificationPriority.low;
+      default:
+        return NotificationPriority.medium;
+    }
+  }
+
+  static NotificationType _categoryToType(NotificationCategory category) {
+    switch (category) {
+      case NotificationCategory.healthAlerts:
+        return NotificationType.nutritionalConcern;
+      case NotificationCategory.reminders:
+        return NotificationType.measurementDue;
+      case NotificationCategory.tipsGuidance:
+        return NotificationType.nutritionTip;
+      case NotificationCategory.systemUpdates:
+        return NotificationType.dataSync;
+      default:
+        return NotificationType.measurementDue;
+    }
+  }
+
+  // Getters for backward compatibility
+  String get title => titleKey;
+  String get body => contentKey;
+  DateTime get createdAt => timestamp;
+
+  // Factory constructor from Map (database)
+  factory AppNotification.fromMap(Map<String, dynamic> map) {
+    return AppNotification.withTitleBody(
+      id: map['id']?.toString() ?? '',
+      title: map['title']?.toString() ?? '',
+      body: map['body']?.toString() ?? '',
+      category: map['category']?.toString() ?? 'general',
+      priority: map['priority']?.toString() ?? 'medium',
+      timestamp: DateTime.tryParse(map['receivedAt']?.toString() ?? '') ?? DateTime.now(),
+      isRead: (map['isRead'] as int?) == 1,
+      childId: map['childId']?.toString(),
+      actionData: map['data'] != null ? 
+        (map['data'] is String ? 
+          <String, dynamic>{} : 
+          Map<String, dynamic>.from(map['data'])
+        ) : <String, dynamic>{},
+    );
+  }
+
+  // Convert to Map for database storage
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'title': titleKey,
+      'body': contentKey,
+      'category': _categoryToString(category),
+      'priority': _priorityToString(priority),
+      'receivedAt': timestamp.toIso8601String(),
+      'isRead': isRead ? 1 : 0,
+      'childId': childId,
+      'data': actionData ?? <String, dynamic>{},
+      'isProcessed': 1,
+    };
+  }
+
+  String _categoryToString(NotificationCategory category) {
+    switch (category) {
+      case NotificationCategory.healthAlerts:
+        return 'health_alert';
+      case NotificationCategory.reminders:
+        return 'vaccination';
+      case NotificationCategory.tipsGuidance:
+        return 'nutrition_tip';
+      case NotificationCategory.systemUpdates:
+        return 'system_update';
+      default:
+        return 'general';
+    }
+  }
+
+  String _priorityToString(NotificationPriority priority) {
+    switch (priority) {
+      case NotificationPriority.critical:
+        return 'critical';
+      case NotificationPriority.high:
+        return 'high';
+      case NotificationPriority.medium:
+        return 'medium';
+      case NotificationPriority.low:
+        return 'low';
+    }
+  }
+
   /// Get localized title
   String getLocalizedTitle(Map<String, String> texts) {
     return texts[titleKey] ?? titleKey;
