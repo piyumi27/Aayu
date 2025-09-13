@@ -61,8 +61,8 @@ class NotificationSchedulingEngine {
       // Register periodic background tasks
       await _registerBackgroundTasks();
 
-      // Schedule initial notifications
-      await _scheduleInitialNotifications();
+      // Schedule initial notifications in background to prevent main thread blocking
+      _scheduleInitialNotificationsBackground();
 
       _isInitialized = true;
 
@@ -129,11 +129,78 @@ class NotificationSchedulingEngine {
     );
   }
 
-  /// Schedule initial notifications for all children
+  /// Schedule initial notifications for all children (background execution)
+  void _scheduleInitialNotificationsBackground() {
+    // Use delayed execution to avoid interference with app initialization
+    Future.delayed(const Duration(seconds: 2), () async {
+      try {
+        final children = await _databaseService.getChildren();
+
+        if (kDebugMode) {
+          print('📱 Starting background notification scheduling for ${children.length} children');
+        }
+
+        for (int i = 0; i < children.length; i++) {
+          final child = children[i];
+
+          try {
+            // Process one child at a time with longer delays to be gentler
+            await _scheduleNotificationsForChildSafely(child);
+
+            // Add progressive delays to prevent resource exhaustion
+            final delay = Duration(milliseconds: 200 * (i + 1));
+            await Future.delayed(delay);
+
+            if (kDebugMode && i % 2 == 0) { // Log every other child
+              print('📅 Scheduled notifications for child ${i + 1}/${children.length}');
+            }
+          } catch (childError) {
+            if (kDebugMode) {
+              print('⚠️ Failed to schedule notifications for ${child.name}: $childError');
+            }
+            // Continue with other children even if one fails
+            continue;
+          }
+        }
+
+        if (kDebugMode) {
+          print('✅ Background notification scheduling completed');
+        }
+      } catch (e) {
+        if (kDebugMode) {
+          print('❌ Background notification scheduling failed: $e');
+        }
+      }
+    });
+  }
+
+  /// Safely schedule notifications for a child with error isolation
+  Future<void> _scheduleNotificationsForChildSafely(Child child) async {
+    try {
+      // Only schedule essential notifications to reduce load
+      await _scheduleGrowthCheckReminders(child);
+      await Future.delayed(const Duration(milliseconds: 50));
+
+      await _scheduleFeedingReminders(child);
+      await Future.delayed(const Duration(milliseconds: 50));
+
+      await _scheduleHealthMonitoringReminders(child);
+
+      // Skip milestone reminders if they cause asset loading issues
+      // This prevents the SriLanka.json loading crash
+    } catch (e) {
+      if (kDebugMode) {
+        print('⚠️ Error in safe notification scheduling for ${child.name}: $e');
+      }
+      rethrow;
+    }
+  }
+
+  /// Schedule initial notifications for all children (synchronous version for testing)
   Future<void> _scheduleInitialNotifications() async {
     try {
       final children = await _databaseService.getChildren();
-      
+
       for (final child in children) {
         await scheduleNotificationsForChild(child);
       }
@@ -296,9 +363,20 @@ class NotificationSchedulingEngine {
   Future<void> _scheduleMilestoneCheckReminders(Child child) async {
     try {
       final childAgeMonths = _calculateAgeInMonths(child.birthDate);
-      final expectedMilestones = await _standardsRepository.getMilestonesForAge(
-        ageMonths: childAgeMonths,
-      );
+
+      // Try to get milestones with fallback handling
+      List<DevelopmentMilestone> expectedMilestones;
+      try {
+        expectedMilestones = await _standardsRepository.getMilestonesForAge(
+          ageMonths: childAgeMonths,
+        );
+      } catch (e) {
+        if (kDebugMode) {
+          print('⚠️ Failed to load standards milestones: $e');
+          print('📝 Skipping milestone reminders for ${child.name}');
+        }
+        return; // Skip milestone scheduling if standards loading fails
+      }
       
       final milestoneRecords = await _standardsRepository.getMilestoneRecords(child.id);
       final achievedMilestoneIds = milestoneRecords

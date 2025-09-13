@@ -7,6 +7,7 @@ import 'package:confetti/confetti.dart';
 
 import '../models/child.dart';
 import '../providers/child_provider.dart';
+import '../utils/safe_navigation.dart';
 
 class PreSixMonthCountdownScreen extends StatefulWidget {
   const PreSixMonthCountdownScreen({super.key});
@@ -89,7 +90,7 @@ class _PreSixMonthCountdownScreenState extends State<PreSixMonthCountdownScreen>
           // Auto-redirect after celebration
           Future.delayed(const Duration(seconds: 4), () {
             if (mounted) {
-              context.go('/growth');
+              SafeNavigation.safeGo(context, '/growth');
             }
           });
         }
@@ -163,7 +164,7 @@ class _PreSixMonthCountdownScreenState extends State<PreSixMonthCountdownScreen>
               ElevatedButton(
                 onPressed: () {
                   Navigator.of(context).pop();
-                  context.go('/growth');
+                  SafeNavigation.safeGo(context, '/growth');
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
@@ -252,8 +253,22 @@ class _PreSixMonthCountdownScreenState extends State<PreSixMonthCountdownScreen>
 
   @override
   void dispose() {
-    _animationController.dispose();
-    _confettiController.dispose();
+    try {
+      // Safely dispose animation controller
+      if (_animationController.isAnimating) {
+        _animationController.stop();
+      }
+      _animationController.dispose();
+
+      // Safely dispose confetti controller
+      if (_confettiController.state == ConfettiControllerState.playing) {
+        _confettiController.stop();
+      }
+      _confettiController.dispose();
+    } catch (e) {
+      // Ignore disposal errors to prevent cascade failures
+      debugPrint('⚠️ Warning: Controller disposal failed: $e');
+    }
     super.dispose();
   }
 
@@ -351,7 +366,7 @@ class _PreSixMonthCountdownScreenState extends State<PreSixMonthCountdownScreen>
               ),
               child: IconButton(
                 icon: const Icon(Icons.arrow_back, color: Color(0xFF1A1A1A), size: 20),
-                onPressed: () => context.pop(),
+                onPressed: () => SafeNavigation.safePop(context),
               ),
             ),
             title: Text(
@@ -730,7 +745,7 @@ class _PreSixMonthCountdownScreenState extends State<PreSixMonthCountdownScreen>
 
   Widget _buildGoToDashboardButton(Map<String, String> texts) {
     return GestureDetector(
-      onTap: () => context.go('/'),
+      onTap: () => SafeNavigation.safeGo(context, '/'),
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 16),
         child: Row(

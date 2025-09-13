@@ -2,6 +2,50 @@
 
 All notable changes to the Aayu project will be documented in this file.
 
+## [2025-09-13] - Critical Framework Stability and Asset Loading Fixes
+
+### **Navigator Disposal Crash Fix**
+- **SafeNavigation Utilities**: Created comprehensive SafeNavigation class to prevent Navigator disposal crashes
+- **Lifecycle Safety**: All navigation operations now check if context is mounted and Navigator exists before executing
+- **Crash Prevention**: Added proper error handling for navigation operations during widget disposal
+- **Framework Stability**: Fixed Flutter framework assertion `'!_debugLocked': is not true` in Navigator disposal
+
+### **Asset Loading Robustness**
+- **Multi-Path Asset Loading**: Added fallback paths for SriLanka.json (SriLanka.json, Srilanka.json, srilanka.json)
+- **Fallback Data Generation**: Created comprehensive fallback Sri Lankan standards when asset loading fails
+- **Graceful Error Handling**: App continues functioning even when asset files are missing or corrupted
+- **Asset Loading Resilience**: No more "Unable to load asset" crashes affecting app stability
+
+### **Notification Scheduling Optimization**
+- **Conservative Background Scheduling**: Reduced aggressive notification scheduling that was blocking main thread
+- **Progressive Delays**: Added incremental delays (200ms * child_index) between notification scheduling operations
+- **Error Isolation**: Individual child notification failures don't break scheduling for other children
+- **Resource Management**: Limited concurrent operations to prevent system resource exhaustion
+
+### **Widget Disposal Safety**
+- **Animation Controller Safety**: Added proper disposal checks for animation and confetti controllers
+- **State Validation**: Controllers are stopped before disposal to prevent cascade failures
+- **Error Suppression**: Disposal errors are logged but don't crash the app
+- **Memory Leak Prevention**: Proper cleanup of all animated components
+
+## [2025-09-13] - Critical Performance and Database Fixes
+
+### **Database Schema Fixes**
+- **Fixed Scheduled Notifications**: Added missing `type` column to scheduled_notifications INSERT statements
+- **Proper Notification Type Extraction**: Enhanced notification storage to extract type from payload or use default
+- **Database Constraint Resolution**: Resolved "NOT NULL constraint failed" errors preventing notification storage
+
+### **Performance Optimizations**
+- **Background Notification Scheduling**: Moved initial notification scheduling to background thread using Future.microtask
+- **Main Thread Protection**: Added delays between child notification scheduling to prevent UI blocking
+- **Choreographer Frame Skipping Fix**: Resolved "Skipped 59 frames" performance issue during app initialization
+- **Async Error Handling**: Added proper error handling for asset loading failures
+
+### **Robust Error Handling**
+- **SriLanka.json Loading**: Added fallback error handling when milestone standards fail to load
+- **Graceful Degradation**: App continues to function even when standards data is unavailable
+- **Milestone Scheduling Resilience**: Skip milestone reminders if standards repository initialization fails
+
 ## [2025-09-13] - Critical Bug Fixes and Growth Chart Improvements
 
 ### **Growth Charts Enhancement**

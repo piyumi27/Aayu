@@ -658,8 +658,16 @@ class LocalNotificationService {
   Future<void> _storeScheduledNotification(int id, String title, String body, DateTime scheduledDate, String channelId, Map<String, dynamic>? payload, bool repeat) async {
     try {
       final db = await _databaseService.database;
+
+      // Extract notification type from payload or use default
+      String notificationType = 'general';
+      if (payload != null && payload.containsKey('type')) {
+        notificationType = payload['type'].toString();
+      }
+
       await db.insert('scheduled_notifications', {
         'id': id.toString(),
+        'type': notificationType, // Add the missing type field
         'title': title,
         'body': body,
         'channelId': channelId,
