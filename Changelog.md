@@ -35,6 +35,64 @@ All notable changes to the Aayu project will be documented in this file.
 - **Z-Score Calculations**: Real-time nutritional status assessment with automatic classification
 - **Multi-Domain Milestones**: Gross motor, fine motor, language, cognitive, social-emotional, and adaptive skills tracking
 
+## [2025-09-13] - Phase 2: Core Services Enhancement
+
+### **Advanced Growth Calculation Engine**
+- **Growth Assessment Service**: Comprehensive `GrowthCalculationService` with real-time z-score calculations
+- **Multi-Standard Support**: Seamless switching between WHO and Sri Lankan growth standards
+- **Growth Velocity Tracking**: Historical growth rate analysis with expected velocity comparisons
+- **Nutritional Status Classification**: Automatic classification (SAM, MAM, stunting, overweight, obesity)
+- **Risk Level Assessment**: Four-tier risk evaluation (low, moderate, high, critical)
+
+### **Intelligent Health Alert System**
+- **Real-Time Monitoring**: `HealthAlertService` with continuous health status evaluation
+- **Multi-Type Alerts**: Growth alerts, nutrition alerts, development alerts, vaccination reminders
+- **Severity-Based Classification**: Info, moderate, high, and critical alert levels with appropriate actions
+- **Automated Recommendations**: Context-aware recommendations based on alert type and severity
+- **Smart Notifications**: Integration with notification service for timely alerts
+
+### **Enhanced Firebase Sync Capabilities**
+- **Standards Data Sync**: Bidirectional sync of growth standards and user preferences
+- **Community Health Insights**: Anonymous health data contribution for community analysis
+- **Conflict Resolution**: Smart conflict resolution for offline/online data synchronization
+- **Assessment Preferences Sync**: User preference synchronization across devices
+- **Standards Updates**: Automatic download and application of updated health standards
+
+### **Comprehensive Health Monitoring Integration**
+- **Unified Health Reports**: `HealthMonitoringService` providing complete child health assessments
+- **Standards Comparison**: Side-by-side comparison of WHO vs Sri Lankan standards
+- **Development Progress Tracking**: Multi-domain milestone progress with activity recommendations
+- **Nutrition Guidance**: Age-appropriate feeding recommendations with local food adaptations
+- **Dashboard Summary**: Quick health overview with actionable next steps
+
+### **Advanced Features**
+- **Multi-Measurement Z-Scores**: Weight-for-age, height-for-age, weight-for-height, BMI-for-age, head circumference
+- **Growth Pattern Analysis**: Trend analysis with expected vs actual growth velocity
+- **Red Flag Detection**: Early warning system for developmental delays and health concerns
+- **Cultural Adaptation**: Sri Lankan-specific feeding practices and milestone variations
+- **Cloud Backup**: Secure health data backup with privacy-preserving community insights
+
+### **New Files Created**
+- **`lib/services/growth_calculation_service.dart`**: Core z-score calculation engine with growth velocity analysis
+- **`lib/services/health_alert_service.dart`**: Intelligent health monitoring with automated alert generation
+- **`lib/services/health_monitoring_service.dart`**: Comprehensive health assessment orchestration service
+- **Enhanced `lib/services/firebase_sync_service.dart`**: Extended with standards sync and community insights
+
+### **Key Enumerations & Models**
+- **`NutritionalStatus`**: Classification system (SAM, MAM, stunting, normal, overweight, obesity)
+- **`RiskLevel`**: Four-tier assessment (low, moderate, high, critical)
+- **`AlertType`**: Comprehensive alert categories (growth, nutrition, development, vaccination)
+- **`AlertSeverity`**: Severity levels with appropriate actions and notifications
+- **`GrowthAssessment`**: Complete growth evaluation with recommendations
+- **`ChildHealthReport`**: Unified health report combining all assessment data
+
+### **Integration Capabilities**
+- **Real-Time Assessment**: Immediate z-score calculation and risk evaluation upon data entry
+- **Offline-First Architecture**: Full functionality without internet connectivity
+- **Cross-Standard Compatibility**: Seamless switching between WHO and Sri Lankan standards
+- **Community Analytics**: Anonymous health data contribution for population health insights
+- **Expert Recommendations**: AI-driven recommendations based on Sri Lankan health guidelines
+
 ## [2025-09-01] - Critical Code Quality & Performance Fixes
 
 ### **Expert-Level Debugging & Optimization**

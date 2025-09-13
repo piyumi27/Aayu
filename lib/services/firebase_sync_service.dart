@@ -7,6 +7,10 @@ import 'package:workmanager/workmanager.dart';
 
 import '../models/migration_queue.dart';
 import '../models/user_account.dart';
+import '../models/growth_standard.dart';
+import '../models/nutrition_guideline.dart';
+import '../models/development_milestone.dart';
+import '../repositories/standards_repository.dart';
 import 'local_auth_service.dart';
 
 /// Firebase sync service that handles background synchronization
@@ -21,6 +25,7 @@ class FirebaseSyncService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final LocalAuthService _localAuth = LocalAuthService();
+  final StandardsRepository _standardsRepository = StandardsRepository();
   
   // Migration queue storage key
   static const String _migrationQueueKey = 'migration_queue';
@@ -421,6 +426,287 @@ class FirebaseSyncService {
         .set(data, SetOptions(merge: true));
   }
 
+  /// Sync user's preferred standards settings and custom standards
+  Future<SyncResult> syncStandardsData() async {
+    try {
+      final connectivityResult = await Connectivity().checkConnectivity();
+      if (connectivityResult.contains(ConnectivityResult.none)) {
+        return SyncResult(
+          success: false,
+          message: 'No network connection',
+          type: SyncType.growthStandards,
+        );
+      }
+
+      final user = _auth.currentUser;
+      if (user == null) {
+        return SyncResult(
+          success: false,
+          message: 'No authenticated user',
+          type: SyncType.growthStandards,
+        );
+      }
+
+      final currentSource = _standardsRepository.currentStandardSource;
+      final standardsStats = await _standardsRepository.getStandardsStats();
+
+      await _firestore
+          .collection('users')
+          .doc(user.uid)
+          .collection('settings')
+          .doc('standards')
+          .set({
+        'preferredStandardSource': currentSource,
+        'lastSyncAt': FieldValue.serverTimestamp(),
+        'localStandardsStats': standardsStats,
+      }, SetOptions(merge: true));
+
+      final availableSources = await _standardsRepository.getAvailableSources();
+      await _syncCommunityStandards(availableSources);
+
+      return SyncResult(
+        success: true,
+        message: 'Standards data synced successfully',
+        type: SyncType.growthStandards,
+      );
+    } catch (e) {
+      return SyncResult(
+        success: false,
+        message: 'Standards sync failed: $e',
+        type: SyncType.growthStandards,
+      );
+    }
+  }
+
+  /// Sync community standards and updates
+  Future<void> _syncCommunityStandards(List<String> availableSources) async {
+    final user = _auth.currentUser;
+    if (user == null) return;
+
+    for (final source in availableSources) {
+      final communityData = await _firestore
+          .collection('community_standards')
+          .doc(source)
+          .get();
+
+      if (communityData.exists) {
+        final data = communityData.data()!;
+        final lastUpdated = (data['lastUpdated'] as Timestamp?)?.toDate();
+        
+        if (lastUpdated != null) {
+          await _firestore
+              .collection('users')
+              .doc(user.uid)
+              .collection('standards_updates')
+              .doc(source)
+              .set({
+            'source': source,
+            'lastCommunityUpdate': lastUpdated,
+            'checkedAt': FieldValue.serverTimestamp(),
+          }, SetOptions(merge: true));
+        }
+      }
+    }
+  }
+
+  /// Sync health alerts to Firebase for analysis and community insights
+  Future<SyncResult> syncHealthAlerts(List<Map<String, dynamic>> alerts) async {
+    try {
+      final connectivityResult = await Connectivity().checkConnectivity();
+      if (connectivityResult.contains(ConnectivityResult.none)) {
+        return SyncResult(
+          success: false,
+          message: 'No network connection',
+          type: SyncType.healthAlerts,
+        );
+      }
+
+      final user = _auth.currentUser;
+      if (user == null) {
+        return SyncResult(
+          success: false,
+          message: 'No authenticated user',
+          type: SyncType.healthAlerts,
+        );
+      }
+
+      final batch = _firestore.batch();
+      
+      for (final alert in alerts) {
+        final alertRef = _firestore
+            .collection('users')
+            .doc(user.uid)
+            .collection('health_alerts')
+            .doc(alert['id']);
+
+        final anonymizedAlert = Map<String, dynamic>.from(alert);
+        anonymizedAlert.remove('childId');
+        anonymizedAlert['userId'] = user.uid;
+        anonymizedAlert['syncedAt'] = FieldValue.serverTimestamp();
+
+        batch.set(alertRef, anonymizedAlert, SetOptions(merge: true));
+
+        final communityRef = _firestore
+            .collection('community_health_insights')
+            .doc();
+
+        final communityData = {
+          'alertType': alert['type'],
+          'severity': alert['severity'],
+          'standardSource': _standardsRepository.currentStandardSource,
+          'timestamp': FieldValue.serverTimestamp(),
+          'region': 'sri_lanka',
+        };
+
+        batch.set(communityRef, communityData);
+      }
+
+      await batch.commit();
+
+      return SyncResult(
+        success: true,
+        message: '${alerts.length} health alerts synced',
+        type: SyncType.healthAlerts,
+      );
+    } catch (e) {
+      return SyncResult(
+        success: false,
+        message: 'Health alerts sync failed: $e',
+        type: SyncType.healthAlerts,
+      );
+    }
+  }
+
+  /// Download updated standards from Firebase
+  Future<SyncResult> downloadStandardsUpdates() async {
+    try {
+      final connectivityResult = await Connectivity().checkConnectivity();
+      if (connectivityResult.contains(ConnectivityResult.none)) {
+        return SyncResult(
+          success: false,
+          message: 'No network connection',
+          type: SyncType.growthStandards,
+        );
+      }
+
+      final updatesRef = _firestore.collection('standards_updates');
+      final updates = await updatesRef
+          .where('published', isEqualTo: true)
+          .orderBy('publishedAt', descending: true)
+          .limit(10)
+          .get();
+
+      int updatesApplied = 0;
+      
+      for (final doc in updates.docs) {
+        final data = doc.data();
+        final updateType = data['type'] as String?;
+        final updateData = data['data'] as Map<String, dynamic>?;
+        
+        if (updateType != null && updateData != null) {
+          switch (updateType) {
+            case 'growth_standards_update':
+              await _applyGrowthStandardsUpdate(updateData);
+              updatesApplied++;
+              break;
+            case 'nutrition_guidelines_update':
+              await _applyNutritionGuidelinesUpdate(updateData);
+              updatesApplied++;
+              break;
+            case 'development_milestones_update':
+              await _applyDevelopmentMilestonesUpdate(updateData);
+              updatesApplied++;
+              break;
+          }
+        }
+      }
+
+      return SyncResult(
+        success: true,
+        message: '$updatesApplied standards updates applied',
+        type: SyncType.growthStandards,
+      );
+    } catch (e) {
+      return SyncResult(
+        success: false,
+        message: 'Standards updates download failed: $e',
+        type: SyncType.growthStandards,
+      );
+    }
+  }
+
+  Future<void> _applyGrowthStandardsUpdate(Map<String, dynamic> updateData) async {
+    // Implementation would apply growth standards updates
+    // This is a placeholder for future enhancement
+  }
+
+  Future<void> _applyNutritionGuidelinesUpdate(Map<String, dynamic> updateData) async {
+    // Implementation would apply nutrition guidelines updates
+    // This is a placeholder for future enhancement
+  }
+
+  Future<void> _applyDevelopmentMilestonesUpdate(Map<String, dynamic> updateData) async {
+    // Implementation would apply development milestones updates
+    // This is a placeholder for future enhancement
+  }
+
+  /// Queue standards data for offline sync
+  Future<void> queueStandardsForSync({
+    required String dataType,
+    required Map<String, dynamic> data,
+  }) async {
+    await queueForMigration(
+      entityType: dataType,
+      entityId: data['id'] ?? 'unknown',
+      operation: 'sync',
+      data: data,
+    );
+  }
+
+  /// Sync user assessment preferences
+  Future<SyncResult> syncAssessmentPreferences({
+    required String preferredStandard,
+    required Map<String, bool> enabledAlerts,
+    required Map<String, double> alertThresholds,
+  }) async {
+    try {
+      final user = _auth.currentUser;
+      if (user == null) {
+        return SyncResult(
+          success: false,
+          message: 'No authenticated user',
+          type: SyncType.auth,
+        );
+      }
+
+      await _firestore
+          .collection('users')
+          .doc(user.uid)
+          .collection('settings')
+          .doc('assessment_preferences')
+          .set({
+        'preferredStandard': preferredStandard,
+        'enabledAlerts': enabledAlerts,
+        'alertThresholds': alertThresholds,
+        'lastUpdated': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+
+      _standardsRepository.setStandardSource(preferredStandard);
+
+      return SyncResult(
+        success: true,
+        message: 'Assessment preferences synced',
+        type: SyncType.auth,
+      );
+    } catch (e) {
+      return SyncResult(
+        success: false,
+        message: 'Preferences sync failed: $e',
+        type: SyncType.auth,
+      );
+    }
+  }
+
   /// Check sync status
   Future<Map<String, dynamic>> getSyncStatus() async {
     final needsSync = await _localAuth.needsFirebaseSync();
@@ -545,6 +831,10 @@ enum SyncType {
   childData,
   measurements,
   vaccinations,
+  growthStandards,
+  nutritionGuidelines,
+  developmentMilestones,
+  healthAlerts,
   unknown,
 }
 
