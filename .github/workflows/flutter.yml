@@ -1,284 +1,349 @@
-name: Ayu Flutter CI/CD
+name: Ayu CI/CD Pipeline
 
 on:
   push:
     branches: [ "master", "cleanup/git-repository-cleanup" ]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
   pull_request:
     branches: [ "master" ]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+
+env:
+  FLUTTER_VERSION: '3.24.0'
+  JAVA_VERSION: '17'
+  NODE_VERSION: '20'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  test:
-    name: Test and Analyze
+  changes:
+    name: Detect Changes
     runs-on: ubuntu-latest
-
+    outputs:
+      flutter: ${{ steps.changes.outputs.flutter }}
+      android: ${{ steps.changes.outputs.android }}
+      ios: ${{ steps.changes.outputs.ios }}
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Java
-        uses: actions/setup-java@v4
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: changes
         with:
-          distribution: 'zulu'
-          java-version: '17'
+          filters: |
+            flutter:
+              - 'lib/**'
+              - 'test/**'
+              - 'pubspec.yaml'
+              - 'pubspec.lock'
+            android:
+              - 'android/**'
+              - 'lib/**'
+              - 'pubspec.yaml'
+            ios:
+              - 'ios/**'
+              - 'lib/**'
+              - 'pubspec.yaml'
+
+  quality:
+    name: Quality Gate
+    runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.flutter == 'true'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.24.0'
+          flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: 'stable'
           cache: true
+          cache-key: 'flutter-${{ env.FLUTTER_VERSION }}'
 
-      - name: Get Flutter dependencies
-        run: |
-          echo "Installing Flutter dependencies..."
-          if ! flutter pub get; then
-            echo "Initial pub get failed, attempting to resolve conflicts..."
-            flutter pub cache clean
-            flutter pub get
-          fi
-          echo "Dependencies installed successfully"
+      - name: Restore dependencies cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            .dart_tool
+          key: deps-${{ runner.os }}-${{ hashFiles('pubspec.lock') }}
+          restore-keys: |
+            deps-${{ runner.os }}-
 
-      - name: Validate dependency resolution
+      - name: Install dependencies
         run: |
-          echo "Validating dependency tree..."
+          flutter pub get
           flutter pub deps --style=compact
-          
-          # Check for version conflicts
-          if flutter pub deps 2>&1 | grep -i "conflict\|error\|failed"; then
-            echo "WARNING: Potential dependency conflicts detected"
-            echo "Consider reviewing pubspec.yaml for version constraints"
-          else
-            echo "No dependency conflicts detected"
-          fi
-          
-          # Specific check for common intl package conflicts
-          if flutter pub deps 2>&1 | grep -i "intl.*pinned"; then
-            echo "INFO: intl package version is pinned by Flutter SDK"
-            echo "This is normal and expected for Flutter applications"
-          fi
 
-      - name: Verify formatting (Dart & Flutter files)
-        run: dart format --output=none --set-exit-if-changed .
-
-      - name: Analyze project source (with fatal-infos)
+      - name: Static analysis
         run: flutter analyze --fatal-infos
 
-      - name: Run unit tests with coverage
+      - name: Run tests with coverage
         run: |
-          if [ -d "test" ]; then
-            echo "Running tests from test/ directory with subfolders..."
-            flutter test --coverage test/
-            echo "Unit tests completed successfully"
-          else
-            echo "No tests found in test/ directory"
+          flutter test --coverage --test-randomize-ordering-seed=random
+          
+      - name: Upload coverage
+        uses: codecov/codecov-action@v4
+        with:
+          file: coverage/lcov.info
+          fail_ci_if_error: false
+
+      - name: Security scan
+        run: |
+          # Check for secrets in code
+          if grep -r --include="*.dart" --include="*.yaml" -E "(api_key|password|secret|token)" . --exclude-dir=.git --quiet; then
+            echo "ERROR: Potential secrets found in code"
             exit 1
           fi
-
-      - name: Run integration tests
-        run: |
-          if [ -d "integration_test" ]; then
-            flutter test integration_test/
-            echo "Integration tests completed successfully"
-          elif [ -d "test/integration" ]; then
-            echo "Running integration tests from test/integration/..."
-            flutter test test/integration/
-            echo "Integration tests completed successfully"
-          else
-            echo "No integration tests found"
+          
+          # Check for debug code in production
+          if grep -r --include="*.dart" -E "print\(|debugPrint\(" lib/ | grep -v "kDebugMode" | head -1; then
+            echo "WARNING: Debug prints found in production code"
           fi
 
-      - name: Check code generation (if needed)
-        run: |
-          if grep -q "build_runner" pubspec.yaml; then
-            echo "Running code generation..."
-            flutter pub run build_runner build --delete-conflicting-outputs
-          else
-            echo "No code generation needed"
-          fi
-
-      - name: Test coverage report
-        run: |
-          if [ -f "coverage/lcov.info" ]; then
-            echo "Coverage report generated"
-            echo "Coverage file size: $(stat -f%z coverage/lcov.info 2>/dev/null || stat -c%s coverage/lcov.info)"
-          else
-            echo "No coverage report found"
-          fi
-
-  build_android:
-    name: Build Android APK
+  build-android:
+    name: Build Android
     runs-on: ubuntu-latest
-    needs: test
-
+    needs: [changes, quality]
+    if: needs.changes.outputs.android == 'true'
+    strategy:
+      matrix:
+        build-type: [debug, release]
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
-          distribution: 'zulu'
-          java-version: '17'
+          distribution: 'temurin'
+          java-version: ${{ env.JAVA_VERSION }}
+          cache: 'gradle'
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.24.0'
+          flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: 'stable'
           cache: true
 
-      - name: Get Flutter dependencies
+      - name: Restore dependencies cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            .dart_tool
+          key: deps-${{ runner.os }}-${{ hashFiles('pubspec.lock') }}
+
+      - name: Install dependencies
         run: flutter pub get
 
-      - name: Build Android APK (Release)
+      - name: Build APK
         run: |
-          echo "Building Android APK for Ayu..."
-          flutter build apk --release --target-platform android-arm64
-          echo "Android APK build completed"
+          if [ "${{ matrix.build-type }}" = "release" ]; then
+            flutter build apk --release --split-per-abi
+            flutter build appbundle --release
+          else
+            flutter build apk --debug
+          fi
 
-      - name: Upload Android APK
+      - name: Upload APK artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ayu-android-apk-${{ github.sha }}
-          path: build/app/outputs/flutter-apk/app-release.apk
-          retention-days: 30
+          name: android-${{ matrix.build-type }}-${{ github.sha }}
+          path: |
+            build/app/outputs/flutter-apk/*.apk
+            build/app/outputs/bundle/release/*.aab
+          retention-days: 14
+          compression-level: 6
 
-      - name: Build Android App Bundle (AAB)
-        run: |
-          echo "Building Android App Bundle..."
-          flutter build appbundle --release --target-platform android-arm64
-          echo "Android AAB build completed"
-
-      - name: Upload Android AAB
-        uses: actions/upload-artifact@v4
-        with:
-          name: ayu-android-aab-${{ github.sha }}
-          path: build/app/outputs/bundle/release/app-release.aab
-          retention-days: 30
-
-  build_ios:
-    name: Build iOS App
-    runs-on: macos-latest
-    needs: test
-
+  build-ios:
+    name: Build iOS
+    runs-on: macos-14
+    needs: [changes, quality]
+    if: needs.changes.outputs.ios == 'true'
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.24.0'
+          flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: 'stable'
           cache: true
 
-      - name: Get Flutter dependencies
+      - name: Restore dependencies cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            .dart_tool
+          key: deps-${{ runner.os }}-${{ hashFiles('pubspec.lock') }}
+
+      - name: Install dependencies
         run: flutter pub get
 
-      - name: Build iOS app (Release, no code signing)
+      - name: Build iOS
         run: |
-          echo "Building iOS app for Ayu..."
           flutter build ios --release --no-codesign
-          echo "iOS build completed (unsigned)"
-
-      - name: Archive iOS build
-        run: |
           cd build/ios/iphoneos
-          tar -czf Runner.app.tar.gz Runner.app
-          echo "iOS app archived successfully"
+          zip -r Runner.app.zip Runner.app
 
-      - name: Upload iOS build artifact
+      - name: Upload iOS artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ayu-ios-build-${{ github.sha }}
-          path: build/ios/iphoneos/Runner.app.tar.gz
-          retention-days: 30
+          name: ios-release-${{ github.sha }}
+          path: build/ios/iphoneos/Runner.app.zip
+          retention-days: 14
 
-  security_check:
-    name: Security & Quality Check
+  deploy-preview:
+    name: Deploy Preview
     runs-on: ubuntu-latest
+    needs: [build-android]
     if: github.event_name == 'pull_request'
-
     steps:
-      - name: Checkout repository
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: android-release-${{ github.sha }}
+          path: ./artifacts
+
+      - name: Create deployment comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = './artifacts';
+            const files = fs.readdirSync(path);
+            
+            let comment = '## 📱 Preview Build Ready\n\n';
+            comment += '| Platform | Type | Download |\n';
+            comment += '|----------|------|----------|\n';
+            
+            files.forEach(file => {
+              if (file.endsWith('.apk')) {
+                const type = file.includes('arm64') ? 'ARM64' : 'Universal';
+                comment += `| Android | ${type} APK | [Download](${context.payload.pull_request.html_url}) |\n`;
+              }
+              if (file.endsWith('.aab')) {
+                comment += `| Android | App Bundle | [Download](${context.payload.pull_request.html_url}) |\n`;
+              }
+            });
+            
+            comment += '\n> Builds are available for 14 days';
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+
+  performance-test:
+    name: Performance Test
+    runs-on: ubuntu-latest
+    needs: quality
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.24.0'
+          flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: 'stable'
           cache: true
 
-      - name: Get Flutter dependencies
+      - name: Install dependencies
         run: flutter pub get
 
-      - name: Check for sensitive data in code
+      - name: Build size analysis
         run: |
-          echo "Scanning for potential security issues..."
+          flutter build apk --analyze-size --target-platform android-arm64
           
-          # Check for hardcoded secrets/keys
-          if grep -r --include="*.dart" --include="*.yaml" -E "(api_key|password|secret|token|firebase_api_key)" . --exclude-dir=.git; then
-            echo "ERROR: Potential hardcoded secrets found!"
-            exit 1
-          else
-            echo "No hardcoded secrets detected"
-          fi
-          
-          # Check for debug prints in production code (except debug builds)
-          if grep -r --include="*.dart" -E "print\(|debugPrint\(" lib/ | grep -v "if (kDebugMode)"; then
-            echo "WARNING: Debug prints found that may leak information in production"
-          else
-            echo "No unsafe debug prints found"
-          fi
+      - name: Bundle analysis
+        run: |
+          flutter build appbundle --analyze-size
+          echo "App bundle size analysis completed"
 
-      - name: Check dependencies for vulnerabilities
-        run: |
-          echo "Checking dependencies..."
-          flutter pub deps --style=compact
-          
-          # Check for outdated packages
-          flutter pub outdated || echo "Some packages may be outdated"
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    needs: [build-android, build-ios]
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Verify project structure follows guidelines
+      - name: Extract version
+        id: version
         run: |
-          echo "Verifying project structure..."
-          
-          # Check if CLAUDE.md exists and is up to date
-          if [ ! -f "CLAUDE.md" ]; then
-            echo "ERROR: CLAUDE.md file missing!"
-            exit 1
-          else
-            echo "CLAUDE.md found"
-          fi
-          
-          # Check directory structure
-          directories=("lib/models" "lib/services" "lib/providers" "lib/screens" "lib/widgets" "lib/utils")
-          for dir in "${directories[@]}"; do
-            if [ -d "$dir" ]; then
-              echo "PASS: $dir directory exists"
-            else
-              echo "WARNING: $dir directory missing"
-            fi
-          done
-          
-          # Check test structure
-          test_dirs=("test/services" "test/widgets" "test/integration")
-          for dir in "${test_dirs[@]}"; do
-            if [ -d "$dir" ]; then
-              echo "PASS: $dir directory exists"
-            else
-              echo "INFO: $dir directory not found"
-            fi
-          done
+          VERSION=$(grep 'version:' pubspec.yaml | cut -d ' ' -f 2 | tr -d '\r')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "tag=v$VERSION" >> $GITHUB_OUTPUT
 
-      - name: Check responsive design compliance
-        run: |
-          echo "Checking responsive design compliance..."
-          
-          # Look for hardcoded values that should use ResponsiveUtils
-          if grep -r --include="*.dart" -E "EdgeInsets\.(all|symmetric|only)\([0-9]|fontSize: [0-9]" lib/ | head -5; then
-            echo "WARNING: Found potential hardcoded UI values - consider using ResponsiveUtils"
-          else
-            echo "No obvious responsive design violations found"
-          fi
+      - name: Download Android artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: android-release-${{ github.sha }}
+          path: ./android-release
+
+      - name: Download iOS artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: ios-release-${{ github.sha }}
+          path: ./ios-release
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: Ayu ${{ steps.version.outputs.version }}
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+          files: |
+            android-release/*.apk
+            android-release/*.aab
+            ios-release/*.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  cleanup:
+    name: Cleanup
+    runs-on: ubuntu-latest
+    needs: [build-android, build-ios]
+    if: always()
+    steps:
+      - name: Delete old artifacts
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const artifacts = await github.rest.actions.listArtifactsForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              per_page: 100
+            });
+            
+            const cutoff = new Date();
+            cutoff.setDate(cutoff.getDate() - 7);
+            
+            for (const artifact of artifacts.data.artifacts) {
+              if (new Date(artifact.created_at) < cutoff) {
+                await github.rest.actions.deleteArtifact({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  artifact_id: artifact.id
+                });
+              }
+            }
