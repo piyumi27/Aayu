@@ -19,13 +19,23 @@ class DatabaseService {
   }
 
   Future<Database> _initDatabase() async {
-    final path = join(await getDatabasesPath(), 'aayu.db');
-    return await openDatabase(
-      path,
-      version: 5,
-      onCreate: _onCreate,
-      onUpgrade: _onUpgrade,
-    );
+    try {
+      final path = join(await getDatabasesPath(), 'aayu.db');
+      return await openDatabase(
+        path,
+        version: 5,
+        onCreate: _onCreate,
+        onUpgrade: _onUpgrade,
+        onOpen: (db) async {
+          // Verify database integrity on open
+          await db.execute('PRAGMA foreign_keys = ON');
+          print('✅ Database opened successfully');
+        },
+      );
+    } catch (e) {
+      print('❌ Database initialization failed: $e');
+      rethrow;
+    }
   }
 
   Future<void> _onCreate(Database db, int version) async {
@@ -95,9 +105,17 @@ class DatabaseService {
   }
 
   Future<void> _insertDefaultVaccines(Database db) async {
-    final vaccines = [
-      {'id': 'bcg', 'name': 'BCG', 'nameLocal': 'බීසීජී', 'description': 'Tuberculosis vaccine', 'recommendedAgeMonths': 0, 'isMandatory': 1, 'category': 'birth'},
-      {'id': 'hepb_birth', 'name': 'Hepatitis B', 'nameLocal': 'හෙපටයිටිස් බී', 'description': 'Hepatitis B vaccine - Birth dose', 'recommendedAgeMonths': 0, 'isMandatory': 1, 'category': 'birth'},
+    try {
+      // Check if vaccines table already has data
+      final existingVaccines = await db.query('vaccines', limit: 1);
+      if (existingVaccines.isNotEmpty) {
+        print('✅ Default vaccines already exist, skipping insertion');
+        return;
+      }
+
+      final vaccines = [
+        {'id': 'bcg', 'name': 'BCG', 'nameLocal': 'බීසීජී', 'description': 'Tuberculosis vaccine', 'recommendedAgeMonths': 0, 'isMandatory': 1, 'category': 'birth'},
+        {'id': 'hepb_birth', 'name': 'Hepatitis B', 'nameLocal': 'හෙපටයිටිස් බී', 'description': 'Hepatitis B vaccine - Birth dose', 'recommendedAgeMonths': 0, 'isMandatory': 1, 'category': 'birth'},
       {'id': 'opv_0', 'name': 'OPV 0', 'nameLocal': 'ඕපීවී 0', 'description': 'Oral Polio vaccine - Birth dose', 'recommendedAgeMonths': 0, 'isMandatory': 1, 'category': 'birth'},
       {'id': 'pentavalent_1', 'name': 'Pentavalent 1', 'nameLocal': 'පංචසංයුජ 1', 'description': 'DPT-HepB-Hib vaccine - 1st dose', 'recommendedAgeMonths': 2, 'isMandatory': 1, 'category': '2months'},
       {'id': 'opv_1', 'name': 'OPV 1', 'nameLocal': 'ඕපීවී 1', 'description': 'Oral Polio vaccine - 1st dose', 'recommendedAgeMonths': 2, 'isMandatory': 1, 'category': '2months'},
@@ -109,8 +127,26 @@ class DatabaseService {
       {'id': 'je', 'name': 'Japanese Encephalitis', 'nameLocal': 'ජපන් මොළ දැවිල්ල', 'description': 'Japanese Encephalitis vaccine', 'recommendedAgeMonths': 9, 'isMandatory': 1, 'category': '9months'},
     ];
 
-    for (var vaccine in vaccines) {
-      await db.insert('vaccines', vaccine);
+      await db.transaction((txn) async {
+        for (var vaccine in vaccines) {
+          await txn.rawInsert(
+            'INSERT OR IGNORE INTO vaccines (id, name, nameLocal, description, recommendedAgeMonths, isMandatory, category) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            [
+              vaccine['id'],
+              vaccine['name'],
+              vaccine['nameLocal'],
+              vaccine['description'],
+              vaccine['recommendedAgeMonths'],
+              vaccine['isMandatory'],
+              vaccine['category'],
+            ],
+          );
+        }
+      });
+      print('✅ Default vaccines inserted successfully');
+    } catch (e) {
+      print('⚠️ Error inserting default vaccines (non-critical): $e');
+      // Don't throw - this is non-critical for app operation
     }
   }
 
@@ -369,8 +405,8 @@ class DatabaseService {
     // Insert default notification templates
     await _insertDefaultNotificationTemplates(db);
     
-    // Populate Sri Lankan vaccination schedule
-    await _populateVaccines(db);
+    // Vaccines are already populated in _onCreate via _insertDefaultVaccines
+    // No need to populate again here
   }
 
   Future<void> _insertDefaultNotificationPreferences(Database db) async {
@@ -640,14 +676,4 @@ class DatabaseService {
     return maps.map((map) => VaccineRecord.fromMap(map)).toList();
   }
 
-  Future<void> _populateVaccines(Database db) async {
-    final vaccines = SriLankanVaccinationSchedule.vaccines;
-    for (final vaccine in vaccines) {
-      await db.insert(
-        'vaccines',
-        vaccine.toMap(),
-        conflictAlgorithm: ConflictAlgorithm.replace,
-      );
-    }
-  }
 }

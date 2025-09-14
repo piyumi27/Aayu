@@ -1,13 +1,17 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:uuid/uuid.dart';
 
+import '../models/vaccine.dart';
 import '../providers/child_provider.dart';
 import '../utils/responsive_utils.dart';
-import '../utils/navigation_manager.dart';
+import '../services/database_service.dart';
 
 /// Professional Add Health Record screen for vaccines, supplements, and medications
 class AddHealthRecordScreen extends StatefulWidget {
@@ -82,10 +86,16 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
 
   @override
   void dispose() {
-    _nameController.dispose();
-    _dueDateController.dispose();
-    _notesController.dispose();
-    _reminderTimeController.dispose();
+    // Dispose controllers safely
+    try {
+      _nameController.dispose();
+      _dueDateController.dispose();
+      _notesController.dispose();
+      _reminderTimeController.dispose();
+    } catch (e) {
+      // Ignore disposal errors to prevent crashes
+      print('Controller disposal error: $e');
+    }
     super.dispose();
   }
 
@@ -188,32 +198,62 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
     }
   }
 
-  /// Save health record
+  /// Save health record with proper error handling
   Future<void> _saveRecord() async {
+    // Validate required fields
     if (_nameController.text.trim().isEmpty || _selectedDueDate == null) {
-      _showSnackBar('Please fill in all required fields', isError: true);
+      _showMessage('Please fill in all required fields', isError: true);
       return;
     }
-    
+
+    // Prevent multiple saves
+    if (_isLoading) return;
+
+    // Check if widget is still mounted
+    if (!mounted) return;
+
+    // Set loading state
     setState(() {
       _isLoading = true;
     });
-    
+
     try {
-      // Here you would save to your database/provider
-      // For now, we'll just simulate saving
-      await Future.delayed(const Duration(milliseconds: 1500));
-      
-      _showSnackBar('Health record saved successfully!');
-      
-      // Navigate back after a short delay
-      await Future.delayed(const Duration(milliseconds: 500));
-      if (mounted) {
-        Navigator.of(context).pop();
+      final provider = Provider.of<ChildProvider>(context, listen: false);
+      final selectedChild = provider.selectedChild;
+
+      if (selectedChild == null) {
+        if (mounted) {
+          _showMessage('No child selected. Please select a child first.', isError: true);
+        }
+        return;
       }
+
+      // Save based on record type
+      switch (_selectedType) {
+        case HealthRecordType.vaccine:
+          await _saveVaccineRecord(provider, selectedChild.id);
+          break;
+        case HealthRecordType.supplement:
+          await _saveSupplementRecord(provider, selectedChild.id);
+          break;
+        case HealthRecordType.medicine:
+          await _saveMedicineRecord(provider, selectedChild.id);
+          break;
+      }
+
+      // Double-check mounted state after async operation
+      if (!mounted) return;
+
+      // Show success message and navigate back
+      _showMessageAndNavigateBack('Health record saved successfully!', isError: false);
+
     } catch (e) {
-      _showSnackBar('Error saving record. Please try again.', isError: true);
+      // Handle any errors
+      if (mounted) {
+        _showMessage('Failed to save record. Please try again.', isError: true);
+      }
     } finally {
+      // Reset loading state
       if (mounted) {
         setState(() {
           _isLoading = false;
@@ -222,30 +262,178 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
     }
   }
 
-  /// Show snackbar message
-  void _showSnackBar(String message, {bool isError = false}) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: isError ? Colors.red : Colors.green,
-        behavior: SnackBarBehavior.floating,
-      ),
+  /// Save vaccine record to database
+  Future<void> _saveVaccineRecord(ChildProvider provider, String childId) async {
+    const uuid = Uuid();
+
+    // Load vaccines to find matching vaccine
+    await provider.loadVaccines();
+    final vaccines = provider.vaccines;
+
+    // Find vaccine by name (match with autocomplete options)
+    final vaccineName = _nameController.text.trim();
+    Vaccine? matchedVaccine;
+
+    // Try to find exact match or partial match
+    for (final vaccine in vaccines) {
+      if (vaccine.name.toLowerCase().contains(vaccineName.toLowerCase()) ||
+          vaccineName.toLowerCase().contains(vaccine.name.toLowerCase())) {
+        matchedVaccine = vaccine;
+        break;
+      }
+    }
+
+    // If no match found, create a default vaccine entry
+    String vaccineId = matchedVaccine?.id ?? 'custom_${uuid.v4()}';
+
+    final record = VaccineRecord(
+      id: uuid.v4(),
+      childId: childId,
+      vaccineId: vaccineId,
+      givenDate: _selectedDueDate!,
+      notes: _notesController.text.trim().isNotEmpty ? _notesController.text.trim() : null,
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
     );
+
+    await provider.addVaccineRecord(record);
   }
+
+  /// Save supplement record (for now, we'll use notes to track supplements)
+  Future<void> _saveSupplementRecord(ChildProvider provider, String childId) async {
+    const uuid = Uuid();
+
+    // Since there's no specific supplement model, we could use a general approach
+    // For now, let's create a custom vaccine record with supplement category
+    final record = VaccineRecord(
+      id: uuid.v4(),
+      childId: childId,
+      vaccineId: 'supplement_${_nameController.text.trim().toLowerCase().replaceAll(' ', '_')}',
+      givenDate: _selectedDueDate!,
+      notes: 'Supplement: ${_nameController.text.trim()}${_notesController.text.trim().isNotEmpty ? ' - ${_notesController.text.trim()}' : ''}',
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+    );
+
+    await provider.addVaccineRecord(record);
+  }
+
+  /// Save medicine record (similar to supplement)
+  Future<void> _saveMedicineRecord(ChildProvider provider, String childId) async {
+    const uuid = Uuid();
+
+    // Since there's no specific medicine model, we'll use the same approach
+    final record = VaccineRecord(
+      id: uuid.v4(),
+      childId: childId,
+      vaccineId: 'medicine_${_nameController.text.trim().toLowerCase().replaceAll(' ', '_')}',
+      givenDate: _selectedDueDate!,
+      notes: 'Medicine: ${_nameController.text.trim()}${_notesController.text.trim().isNotEmpty ? ' - ${_notesController.text.trim()}' : ''}',
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+    );
+
+    await provider.addVaccineRecord(record);
+  }
+
+  /// Show message using SnackBar
+  void _showMessage(String message, {required bool isError}) {
+    if (!mounted) return;
+
+    try {
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            message,
+            style: const TextStyle(color: Colors.white),
+          ),
+          backgroundColor: isError ? Colors.red[600] : Colors.green[600],
+          behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 2),
+          margin: const EdgeInsets.all(16),
+        ),
+      );
+    } catch (e) {
+      // If SnackBar fails, just print to console
+      print('Message: $message');
+    }
+  }
+
+  /// Show success message and navigate back
+  void _showMessageAndNavigateBack(String message, {required bool isError}) {
+    if (!mounted) return;
+
+    // Show message first
+    _showMessage(message, isError: isError);
+
+    // Small delay to ensure snackbar is shown, then navigate
+    Future.delayed(const Duration(milliseconds: 500), () {
+      if (mounted) {
+        _navigateBack();
+      }
+    });
+  }
+
+  void _navigateBack() {
+    if (!mounted) return;
+
+    try {
+      // Check if we can pop with GoRouter first
+      if (GoRouter.of(context).canPop()) {
+        context.pop();
+        return;
+      }
+
+      // If GoRouter can't pop, check Navigator
+      if (Navigator.of(context).canPop()) {
+        Navigator.of(context).pop();
+        return;
+      }
+
+      // If neither can pop, navigate to home using go
+      context.go('/');
+    } catch (e) {
+      // Final fallback - use go to navigate to home
+      try {
+        if (mounted) {
+          context.go('/');
+        }
+      } catch (finalError) {
+        // Log error but don't crash
+        if (kDebugMode) {
+          print('Navigation fallback failed: $finalError');
+        }
+      }
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
     final texts = _getLocalizedTexts();
     final provider = Provider.of<ChildProvider>(context);
 
-    return Scaffold(
+    return PopScope(
+      canPop: !_isLoading,
+      onPopInvoked: (didPop) {
+        if (!didPop && _isLoading) {
+          // Prevent back navigation while saving
+          _showMessage('Please wait while saving...', isError: false);
+        }
+      },
+      child: Scaffold(
       backgroundColor: const Color(0xFFF8F9FA),
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Color(0xFF1A1A1A)),
-          onPressed: () => NavigationManager.safePop(context),
+          onPressed: _isLoading ? null : () {
+            if (!_isLoading) {
+              _navigateBack();
+            }
+          },
         ),
         title: Text(
           texts['title']!,
@@ -282,6 +470,7 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
           ],
         ),
       ),
+    ),
     );
   }
 
@@ -443,7 +632,7 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
     );
   }
 
-  /// Build type selector
+  /// Build type selector with inline chips
   Widget _buildTypeSelector(Map<String, String> texts) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -458,98 +647,70 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
           ),
         ),
         const SizedBox(height: 12),
-        ResponsiveUtils.isSmallWidth(context)
-            ? Column(
-                children: HealthRecordType.values.map((type) {
-                  final isSelected = _selectedType == type;
-                  return Container(
-                    width: double.infinity,
-                    height: 64,
-                    margin: const EdgeInsets.only(bottom: 12),
-                    child: GestureDetector(
-                      onTap: () => setState(() => _selectedType = type),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: isSelected ? const Color(0xFF0086FF).withValues(alpha: 0.1) : Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: isSelected ? const Color(0xFF0086FF) : const Color(0xFFE5E7EB),
-                            width: isSelected ? 2 : 1,
-                          ),
+        // Always show inline horizontal layout
+        Row(
+          children: HealthRecordType.values.map((type) {
+            final isSelected = _selectedType == type;
+            return Expanded(
+              child: Padding(
+                padding: EdgeInsets.only(
+                  right: type != HealthRecordType.values.last ? 8 : 0,
+                ),
+                child: GestureDetector(
+                  onTap: () {
+                    if (mounted) {
+                      setState(() => _selectedType = type);
+                    }
+                  },
+                  child: Container(
+                      height: 56,
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? const Color(0xFF0086FF).withValues(alpha: 0.1)
+                            : Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: isSelected
+                              ? const Color(0xFF0086FF)
+                              : const Color(0xFFE5E7EB),
+                          width: isSelected ? 2 : 1,
                         ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              type.icon,
-                              color: isSelected ? const Color(0xFF0086FF) : const Color(0xFF6B7280),
-                              size: 20,
-                            ),
-                            const SizedBox(width: 12),
-                            Text(
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            type.icon,
+                            color: isSelected
+                                ? const Color(0xFF0086FF)
+                                : const Color(0xFF6B7280),
+                            size: 20,
+                          ),
+                          const SizedBox(width: 6),
+                          Flexible(
+                            child: Text(
                               texts[type.name]!,
                               style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                                color: isSelected ? const Color(0xFF0086FF) : const Color(0xFF6B7280),
-                                fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: isSelected
+                                    ? const Color(0xFF0086FF)
+                                    : const Color(0xFF6B7280),
+                                fontFamily: _selectedLanguage == 'si'
+                                    ? 'NotoSerifSinhala'
+                                    : null,
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
-                }).toList(),
-              )
-            : Row(
-                children: HealthRecordType.values.map((type) {
-                  final isSelected = _selectedType == type;
-                  return Expanded(
-                    child: Padding(
-                      padding: EdgeInsets.only(
-                        right: type != HealthRecordType.values.last 
-                            ? (ResponsiveUtils.isMobile(context) ? 8 : 12) 
-                            : 0,
-                      ),
-                      child: GestureDetector(
-                        onTap: () => setState(() => _selectedType = type),
-                        child: Container(
-                          height: ResponsiveUtils.isSmallHeight(context) ? 70 : 80,
-                          decoration: BoxDecoration(
-                            color: isSelected ? const Color(0xFF0086FF).withValues(alpha: 0.1) : Colors.white,
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: isSelected ? const Color(0xFF0086FF) : const Color(0xFFE5E7EB),
-                              width: isSelected ? 2 : 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                type.icon,
-                                color: isSelected ? const Color(0xFF0086FF) : const Color(0xFF6B7280),
-                                size: ResponsiveUtils.isSmallHeight(context) ? 20 : 24,
-                              ),
-                              SizedBox(height: ResponsiveUtils.isSmallHeight(context) ? 4 : 8),
-                              Text(
-                                texts[type.name]!,
-                                style: TextStyle(
-                                  fontSize: ResponsiveUtils.isSmallHeight(context) ? 12 : 14,
-                                  fontWeight: FontWeight.w500,
-                                  color: isSelected ? const Color(0xFF0086FF) : const Color(0xFF6B7280),
-                                  fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                        ],
                       ),
                     ),
-                  );
-                }).toList(),
+                ),
               ),
+            );
+          }).toList(),
+        ),
       ],
     );
   }
@@ -945,7 +1106,15 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
       children: [
         Expanded(
           child: OutlinedButton(
-            onPressed: _isLoading ? null : () => Navigator.of(context).pop(),
+            onPressed: _isLoading ? null : () {
+              if (mounted) {
+                try {
+                  Navigator.of(context).pop();
+                } catch (e) {
+                  context.pop();
+                }
+              }
+            },
             style: OutlinedButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 16),
               side: const BorderSide(color: Color(0xFFE5E7EB)),

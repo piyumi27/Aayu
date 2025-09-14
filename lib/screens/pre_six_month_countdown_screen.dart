@@ -290,7 +290,14 @@ class _PreSixMonthCountdownScreenState extends State<PreSixMonthCountdownScreen>
               ),
               child: IconButton(
                 icon: const Icon(Icons.arrow_back, color: Color(0xFF1A1A1A), size: 20),
-                onPressed: () => SafeNavigation.safePop(context),
+                onPressed: () {
+                  // Check if we can pop, otherwise go to home
+                  if (Navigator.of(context).canPop()) {
+                    SafeNavigation.safePop(context);
+                  } else {
+                    SafeNavigation.safeGo(context, '/');
+                  }
+                },
               ),
             ),
             title: Text(

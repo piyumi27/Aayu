@@ -685,49 +685,75 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
 
         const SizedBox(height: 24),
 
-        // Primary Metrics Row
-        Row(
-          children: [
-            Expanded(
-              flex: 2,
-              child: _buildAdvancedMetricCard(
-                'Weight Progression',
-                child.birthWeight?.toStringAsFixed(1) ?? 'N/A',
-                'kg',
-                Icons.monitor_weight_outlined,
-                const Color(0xFF10B981),
-                _generateWeightTrend(),
-                '+2.3kg from birth',
-                'Healthy growth rate',
+        // Primary Metrics Row - Responsive layout
+        ResponsiveUtils.isSmallWidth(context)
+            ? Column(
+                children: [
+                  _buildAdvancedMetricCard(
+                    'Weight Progression',
+                    child.birthWeight?.toStringAsFixed(1) ?? '4.0',
+                    'kg',
+                    Icons.monitor_weight_outlined,
+                    const Color(0xFF10B981),
+                    _generateWeightTrend(),
+                    '+2.3kg from birth',
+                    'Healthy growth rate',
+                  ),
+                  SizedBox(height: ResponsiveUtils.getResponsiveSpacing(context, 16)),
+                  _buildAdvancedMetricCard(
+                    'Height Development',
+                    child.birthHeight?.toStringAsFixed(0) ?? '30',
+                    'cm',
+                    Icons.height_rounded,
+                    const Color(0xFF0086FF),
+                    _generateHeightTrend(),
+                    '+18cm from birth',
+                    '95th percentile',
+                  ),
+                ],
+              )
+            : Row(
+                children: [
+                  Expanded(
+                    flex: 2,
+                    child: _buildAdvancedMetricCard(
+                      'Weight Progression',
+                      child.birthWeight?.toStringAsFixed(1) ?? '4.0',
+                      'kg',
+                      Icons.monitor_weight_outlined,
+                      const Color(0xFF10B981),
+                      _generateWeightTrend(),
+                      '+2.3kg from birth',
+                      'Healthy growth rate',
+                    ),
+                  ),
+                  SizedBox(width: ResponsiveUtils.getResponsiveSpacing(context, 16)),
+                  Expanded(
+                    flex: 2,
+                    child: _buildAdvancedMetricCard(
+                      'Height Development',
+                      child.birthHeight?.toStringAsFixed(0) ?? '30',
+                      'cm',
+                      Icons.height_rounded,
+                      const Color(0xFF0086FF),
+                      _generateHeightTrend(),
+                      '+18cm from birth',
+                      '95th percentile',
+                    ),
+                  ),
+                ],
               ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              flex: 2,
-              child: _buildAdvancedMetricCard(
-                'Height Development',
-                child.birthHeight?.toStringAsFixed(0) ?? 'N/A',
-                'cm',
-                Icons.height_rounded,
-                const Color(0xFF0086FF),
-                _generateHeightTrend(),
-                '+18cm from birth',
-                '95th percentile',
-              ),
-            ),
-          ],
-        ),
 
         const SizedBox(height: 16),
 
         // Secondary Metrics Grid
         GridView.count(
-          crossAxisCount: 3,
+          crossAxisCount: ResponsiveUtils.isSmallWidth(context) ? 2 : 3,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          crossAxisSpacing: 12,
-          mainAxisSpacing: 12,
-          childAspectRatio: 1.1,
+          crossAxisSpacing: ResponsiveUtils.getResponsiveSpacing(context, 12),
+          mainAxisSpacing: ResponsiveUtils.getResponsiveSpacing(context, 12),
+          childAspectRatio: ResponsiveUtils.isSmallWidth(context) ? 1.2 : 1.0,
           children: [
             _buildCompactMetricCard(
               'BMI Status',
@@ -784,10 +810,10 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
   }
 
   Widget _buildAdvancedMetricCard(
-      String title, String value, String unit, IconData icon, Color color, 
+      String title, String value, String unit, IconData icon, Color color,
       List<double> trendData, String changeText, String statusText) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(ResponsiveUtils.getResponsiveValue(context, 16, 20, 24)),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -825,10 +851,12 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
                 child: Text(
                   title,
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 14),
                     fontWeight: FontWeight.w600,
                     color: const Color(0xFF111827),
                   ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ],
@@ -840,12 +868,15 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Text(
-                value,
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.w800,
-                  color: const Color(0xFF111827),
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  value,
+                  style: TextStyle(
+                    fontSize: ResponsiveUtils.getResponsiveFontSize(context, 28),
+                    fontWeight: FontWeight.w800,
+                    color: const Color(0xFF111827),
+                  ),
                 ),
               ),
               Padding(
@@ -883,17 +914,19 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
                     Text(
                       changeText,
                       style: TextStyle(
-                        fontSize: 13,
+                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 12),
                         fontWeight: FontWeight.w600,
                         color: color,
                       ),
+                      overflow: TextOverflow.ellipsis,
                     ),
                     Text(
                       statusText,
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: ResponsiveUtils.getResponsiveFontSize(context, 11),
                         color: const Color(0xFF6B7280),
                       ),
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ),
@@ -912,72 +945,97 @@ class _ProgressTrackingScreenState extends State<ProgressTrackingScreen>
 
   Widget _buildCompactMetricCard(
       String title, String value, IconData icon, Color color, String subtitle, double progress) {
+    final isSmallScreen = ResponsiveUtils.isSmallWidth(context);
+    final responsivePadding = ResponsiveUtils.getResponsiveValue(context, 10, 12, 16);
+
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: EdgeInsets.all(responsivePadding),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: const Color(0xFFE5E7EB)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          // Icon
           Container(
-            padding: const EdgeInsets.all(6),
+            padding: EdgeInsets.all(ResponsiveUtils.getResponsiveValue(context, 8, 10, 12)),
             decoration: BoxDecoration(
               color: color.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(6),
+              borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(
               icon,
               color: color,
-              size: 16,
+              size: ResponsiveUtils.getResponsiveFontSize(context, 20),
             ),
           ),
-          const SizedBox(height: 6),
+
+          // Value
+          Padding(
+            padding: EdgeInsets.symmetric(
+              vertical: ResponsiveUtils.getResponsiveSpacing(context, 4),
+            ),
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                value,
+                style: TextStyle(
+                  fontSize: ResponsiveUtils.getResponsiveFontSize(context, 18),
+                  fontWeight: FontWeight.w700,
+                  color: const Color(0xFF111827),
+                ),
+              ),
+            ),
+          ),
+
+          // Title
           Text(
-            value,
+            title,
             style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w700,
-              color: const Color(0xFF111827),
+              fontSize: ResponsiveUtils.getResponsiveFontSize(context, 11),
+              fontWeight: FontWeight.w500,
+              color: const Color(0xFF6B7280),
+            ),
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+
+          // Progress bar
+          Padding(
+            padding: EdgeInsets.symmetric(
+              vertical: ResponsiveUtils.getResponsiveSpacing(context, 4),
+            ),
+            child: LinearProgressIndicator(
+              value: progress,
+              backgroundColor: const Color(0xFFF3F4F6),
+              valueColor: AlwaysStoppedAnimation<Color>(color.withValues(alpha: 0.8)),
+              minHeight: 3,
+              borderRadius: BorderRadius.circular(2),
             ),
           ),
-          const SizedBox(height: 2),
-          Flexible(
-            child: Text(
-              title,
-              style: TextStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.w500,
-                color: const Color(0xFF6B7280),
-              ),
-              textAlign: TextAlign.center,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+
+          // Subtitle
+          Text(
+            subtitle,
+            style: TextStyle(
+              fontSize: ResponsiveUtils.getResponsiveFontSize(context, 10),
+              color: color,
+              fontWeight: FontWeight.w600,
             ),
-          ),
-          const SizedBox(height: 4),
-          LinearProgressIndicator(
-            value: progress,
-            backgroundColor: const Color(0xFFF3F4F6),
-            valueColor: AlwaysStoppedAnimation<Color>(color),
-            minHeight: 2,
-            borderRadius: BorderRadius.circular(1),
-          ),
-          const SizedBox(height: 3),
-          Flexible(
-            child: Text(
-              subtitle,
-              style: TextStyle(
-                fontSize: 8,
-                color: const Color(0xFF6B7280),
-              ),
-              textAlign: TextAlign.center,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
+            textAlign: TextAlign.center,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),

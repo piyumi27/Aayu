@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/user_account.dart';
+import '../providers/child_provider.dart';
 import '../services/local_auth_service.dart' as auth;
 import '../utils/responsive_utils.dart';
 import '../widgets/safe_ink_well.dart';
@@ -663,6 +665,64 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
+  Future<void> _performLogout() async {
+    // Show loading indicator
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      },
+    );
+
+    try {
+      // Clear user session
+      await _authService.logout();
+
+      // Clear child provider data
+      if (mounted) {
+        final childProvider = Provider.of<ChildProvider>(context, listen: false);
+        await childProvider.clearAllData();
+      }
+
+      // Clear all preferences except language
+      final prefs = await SharedPreferences.getInstance();
+      final savedLanguage = prefs.getString('language');
+
+      // Clear all data
+      await prefs.clear();
+
+      // Restore language preference
+      if (savedLanguage != null) {
+        await prefs.setString('language', savedLanguage);
+      }
+
+      // Navigate to login screen
+      if (mounted) {
+        Navigator.of(context).pop(); // Close loading dialog
+
+        // Navigate to onboarding/login screen and clear navigation stack
+        context.go('/onboarding');
+      }
+    } catch (e) {
+      // Close loading dialog
+      if (mounted) {
+        Navigator.of(context).pop();
+
+        // Show error message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error logging out: ${e.toString()}'),
+            backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    }
+  }
+
   void _showLogoutDialog(BuildContext context, Map<String, String> texts) {
     showDialog(
       context: context,
@@ -698,10 +758,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
           ),
           TextButton(
-            onPressed: () {
+            onPressed: () async {
               Navigator.of(context).pop();
-              // TODO: Implement logout functionality
-              _showComingSoonDialog(context, texts);
+              await _performLogout();
             },
             child: Text(
               texts['logoutButton']!,

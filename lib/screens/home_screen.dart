@@ -907,21 +907,46 @@ class _HomeScreenState extends State<HomeScreen> {
     }
     
     // Add recent vaccine records
-    for (final record in provider.vaccineRecords.take(2)) {
+    for (final record in provider.vaccineRecords.take(5)) {
+      String title = '';
+      IconData icon = Icons.vaccines;
+      Color color = const Color(0xFFF59E0B);
+
       try {
         final vaccine = provider.vaccines.firstWhere(
           (v) => v.id == record.vaccineId,
         );
-        recentRecords.add({
-          'type': 'vaccine',
-          'title': vaccine.name,
-          'date': record.givenDate,
-          'icon': Icons.vaccines,
-          'color': const Color(0xFFF59E0B),
-        });
+        title = vaccine.name;
       } catch (e) {
-        continue;
+        // Handle custom records (supplements, medicines) by using notes
+        if (record.notes != null) {
+          if (record.notes!.startsWith('Supplement:')) {
+            title = record.notes!.replaceFirst('Supplement:', '').split(' - ').first.trim();
+            icon = Icons.medication;
+            color = const Color(0xFF8B5CF6);
+          } else if (record.notes!.startsWith('Medicine:')) {
+            title = record.notes!.replaceFirst('Medicine:', '').split(' - ').first.trim();
+            icon = Icons.local_pharmacy;
+            color = const Color(0xFFEF4444);
+          } else {
+            // Generic health record
+            title = record.notes!.length > 30
+                ? '${record.notes!.substring(0, 30)}...'
+                : record.notes!;
+          }
+        } else {
+          // Skip if no identifiable information
+          continue;
+        }
       }
+
+      recentRecords.add({
+        'type': 'health_record',
+        'title': title,
+        'date': record.givenDate,
+        'icon': icon,
+        'color': color,
+      });
     }
     
     // Sort by date and take last 5

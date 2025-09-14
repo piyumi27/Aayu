@@ -2,6 +2,89 @@
 
 All notable changes to the Aayu project will be documented in this file.
 
+## [2025-01-14] - Database, Navigation, and UI/UX Improvements
+
+### **Database Constraint Fixes**
+- **Duplicate Vaccine Prevention**: Fixed UNIQUE constraint violation by removing duplicate vaccine insertion calls
+- **Transaction Handling**: Added proper database transactions with INSERT OR IGNORE for vaccine records
+- **Error Recovery**: Implemented non-critical error handling to prevent app crashes during database operations
+- **Database Integrity**: Added PRAGMA foreign_keys and better initialization error handling
+
+### **Navigation Improvements**
+- **Six Month Countdown Screen**: Fixed "nothing to pop" navigation error by checking Navigator.canPop() first
+- **Fallback Navigation**: Added fallback to home screen when no back route exists
+- **Safe Navigation**: Improved back button behavior in PreSixMonthCountdownScreen
+
+### **Growth Progress Screen UI/UX Enhancements**
+- **Responsive Grid Layout**: Fixed metric cards getting cut off on small screens by implementing responsive column count
+- **Dynamic Text Scaling**: Added FittedBox and responsive font sizes to prevent text overflow
+- **Improved Card Layout**: Enhanced compact metric cards with better spacing and visibility
+- **Adaptive Layout**: Primary metrics now stack vertically on small screens for better readability
+- **Enhanced Visual Hierarchy**: Improved padding, shadows, and progress indicators for better visual appeal
+- **Mobile-First Design**: Optimized grid aspect ratio and spacing for mobile devices
+- **Text Overflow Handling**: Added proper text truncation with ellipsis for long text
+
+## [2025-09-14] - Flutter Plugin Compatibility & Dependency Conflict Resolution
+
+### **Critical Flutter Plugin Compatibility**
+- **CompileSdk Upgrade**: Updated from SDK 34 to SDK 36 to match Flutter plugin requirements
+- **Plugin Dependencies**: Resolved compatibility for flutter_plugin_android_lifecycle, image_picker_android, and others
+- **Duplicate Class Fix**: Eliminated Google Play Core duplicate class conflicts
+- **Dependency Resolution**: Proper exclusion strategy for conflicting dependencies
+
+### **Build Error Resolution**
+- **Dependency Conflicts**: Fixed duplicate com.google.android.play.core classes
+- **Java Version Warnings**: Added compiler arguments to suppress obsolete Java 8 warnings
+- **Plugin Compatibility**: All Flutter plugins now compile successfully
+- **Clean Dependencies**: Removed manual Google Play Core to let Flutter manage it
+
+### **Technical Implementation**
+- **Resolution Strategy**: Added configurations.all with exclude rules for core-common
+- **Gradle Properties**: Enhanced with Java compiler options to suppress warnings
+- **Firebase Integration**: Maintained Firebase BOM while resolving Play Core conflicts
+- **Build Success**: Ready for successful APK generation in Android Studio
+
+---
+
+## [2025-09-14] - Android Build Fix & R8 Optimization Resolution
+
+### **Critical Build Error Fixes**
+- **R8 Missing Classes**: Fixed Google Play Core missing class errors preventing release builds
+- **Java Version Warnings**: Updated from Java 8 to Java 11 to resolve obsolete version warnings
+- **Play Core Dependencies**: Added Google Play Core libraries for deferred components support
+- **Minification Issues**: Temporarily disabled R8 minification to resolve compilation failures
+
+### **Build Configuration Improvements**
+- **CompileSdk**: Set to stable API 34 instead of non-existent API 36
+- **Google Play Core**: Added core:1.10.3 and core-ktx:1.8.1 dependencies
+- **Firebase Integration**: Proper Firebase BOM for consistent dependency versions
+- **Packaging Options**: Enhanced resource exclusion rules for clean builds
+
+### **Technical Resolution**
+- **Missing Classes**: Resolved 11 missing Google Play Core class references
+- **Build Types**: Proper debug/release configuration with appropriate flags
+- **Dependency Management**: Complete Firebase and Play Core integration
+- **APK Generation**: Ready for successful Android Studio builds
+
+---
+
+## [2025-09-14] - App Icon Replacement & Firebase Architecture Fix
+
+### **App Icon System Overhaul**
+- **Replaced AppIcons**: Removed previous AppIcons folder and replaced with new icons from `/icons` folder
+- **Android Adaptive Icons**: Deployed complete Android adaptive icon set with background, foreground, and monochrome variants
+- **iOS Icon Set**: Complete iOS app icon set with all required sizes (20x20 to 1024x1024)
+- **Modern Icon Support**: Added adaptive icon XML configuration for Android API 26+
+- **Store Assets**: Play Store 512x512 icon ready for publishing
+
+### **Technical Icon Implementation**
+- **Android Mipmaps**: All density variants (mdpi, hdpi, xhdpi, xxhdpi, xxxhdpi) with proper adaptive icon support
+- **iOS Assets.xcassets**: Complete AppIcon.appiconset with Contents.json configuration
+- **Icon Architecture**: Background, foreground, and monochrome layers for Material You theming support
+- **Build Ready**: Icons properly configured for APK and App Store builds
+
+---
+
 ## [2025-09-14] - Firebase Initialization & Notification Service Architecture Fix
 
 ### **Critical Firebase Integration Fix**

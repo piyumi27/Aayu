@@ -121,12 +121,34 @@ class ResponsiveUtils {
   }
   
   /// Get responsive column count for grid layouts
-  static int getResponsiveColumnCount(BuildContext context) {
+  static int getResponsiveColumnCount(BuildContext context, {int baseColumns = 2}) {
     final width = MediaQuery.of(context).size.width;
-    if (width >= desktopBreakpoint) return 4;
-    if (width >= tabletBreakpoint) return 3;
-    if (width >= 500) return 2;
-    return 2; // Minimum 2 columns even on small screens
+    if (baseColumns == 3) {
+      // For 3-column base layout
+      if (width >= desktopBreakpoint) return 3;
+      if (width >= tabletBreakpoint) return 3;
+      if (width >= 500) return 2;
+      return 2; // Minimum 2 columns on small screens
+    } else {
+      // Default 2-column base layout
+      if (width >= desktopBreakpoint) return 4;
+      if (width >= tabletBreakpoint) return 3;
+      if (width >= 500) return 2;
+      return 2;
+    }
+  }
+
+  /// Get responsive value based on screen type
+  static double getResponsiveValue(BuildContext context, double mobile, double tablet, double desktop) {
+    final screenType = getScreenType(context);
+    switch (screenType) {
+      case ScreenType.mobile:
+        return mobile;
+      case ScreenType.tablet:
+        return tablet;
+      case ScreenType.desktop:
+        return desktop;
+    }
   }
   
   /// Get responsive aspect ratio
@@ -194,7 +216,7 @@ class ResponsiveUtils {
   
   /// Check if screen has small width (for compact layouts)
   static bool isSmallWidth(BuildContext context) {
-    return MediaQuery.of(context).size.width < 360;
+    return MediaQuery.of(context).size.width < 500;
   }
   
   /// Check if screen has small height (for compact layouts)

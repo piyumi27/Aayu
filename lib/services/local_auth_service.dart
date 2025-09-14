@@ -30,10 +30,27 @@ class LocalAuthService {
       // Check if user already exists
       final existingUser = await _getStoredUser();
       if (existingUser != null) {
-        return AuthResult(
-          success: false,
-          message: 'User already registered. Please login instead.',
-        );
+        // If the user exists with the same phone number and password, log them in
+        if (existingUser.phoneNumber == phoneNumber &&
+            existingUser.passwordHash == _hashPassword(password)) {
+          // Update last login and log them in
+          final updatedUser = existingUser.copyWith(
+            lastLoginAt: DateTime.now(),
+            updatedAt: DateTime.now(),
+          );
+          await _storeUser(updatedUser);
+
+          return AuthResult(
+            success: true,
+            message: 'Welcome back! You are now logged in.',
+            user: updatedUser,
+          );
+        } else {
+          return AuthResult(
+            success: false,
+            message: 'User already registered. Please login instead.',
+          );
+        }
       }
       
       // Create local user
@@ -122,22 +139,23 @@ class LocalAuthService {
 
   /// Check if user is logged in
   Future<bool> isLoggedIn() async {
-    final user = await _getStoredUser();
-    return user != null;
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('user_logged_in') ?? false;
   }
 
   /// Logout user
   Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
-    
+
     // Clear session-based dismissals so verification banner reappears on next login
     final keys = prefs.getKeys();
     final dismissalKeys = keys.where((key) => key.startsWith('verification_banner_dismissed_')).toList();
     for (final key in dismissalKeys) {
       await prefs.remove(key);
     }
-    
-    await prefs.remove(_keyCurrentUser);
+
+    // Don't remove user data, just clear the logged-in flag
+    // User data should persist for future logins
     await prefs.setBool('user_logged_in', false);
   }
 

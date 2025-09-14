@@ -184,4 +184,15 @@ class ChildProvider extends ChangeNotifier {
         (med.indication?.toLowerCase().contains(lowerQuery) ?? false) ||
         med.description.toLowerCase().contains(lowerQuery)).toList();
   }
+
+  /// Clear all data on logout
+  Future<void> clearAllData() async {
+    _children.clear();
+    _selectedChild = null;
+    _growthRecords.clear();
+    _medications.clear();
+    _vaccines.clear();
+    _vaccineRecords.clear();
+    notifyListeners();
+  }
 }

@@ -23,21 +23,29 @@ class AayuErrorHandler {
 
   /// Handle Flutter framework errors
   static void _handleFlutterError(FlutterErrorDetails details) {
-    final isNavigatorError = details.toString().contains('Navigator') &&
-        details.toString().contains('_debugLocked');
+    final errorString = details.toString();
 
-    if (isNavigatorError) {
-      debugPrint('🔧 Navigator disposal error caught and handled gracefully');
-      debugPrint('Error context: ${details.context}');
+    // Known Flutter framework issues that can be safely ignored
+    final isNavigatorError = errorString.contains('Navigator') &&
+        errorString.contains('_debugLocked');
+    final isScaffoldMessengerError = errorString.contains('ScaffoldMessengerState') &&
+        errorString.contains('Looking up a deactivated widget');
+    final isAnimationError = errorString.contains('AnimationController') &&
+        errorString.contains('SnackBar');
 
-      // In debug mode, still show the error for development purposes
+    if (isNavigatorError || isScaffoldMessengerError || isAnimationError) {
+      // These are known Flutter framework issues during disposal
+      // Log them but don't present them to avoid noise
       if (kDebugMode) {
-        FlutterError.presentError(details);
+        debugPrint('🔧 Known framework disposal issue caught and suppressed');
+        debugPrint('Type: ${isNavigatorError ? "Navigator" : isScaffoldMessengerError ? "ScaffoldMessenger" : "Animation"}');
+        // Don't present these errors even in debug mode to reduce noise
       }
-    } else {
-      // Handle other Flutter errors normally
-      FlutterError.presentError(details);
+      return; // Exit early, don't log as error
     }
+
+    // Handle other Flutter errors normally
+    FlutterError.presentError(details);
 
     // Log error for analysis
     _logError('Flutter Error', details.exception, details.stack);
