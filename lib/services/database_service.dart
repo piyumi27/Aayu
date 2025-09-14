@@ -594,6 +594,7 @@ class DatabaseService {
     }
   }
 
+
   Future<String> insertChild(Child child) async {
     final db = await database;
     await db.insert('children', child.toMap());
@@ -657,6 +658,12 @@ class DatabaseService {
     final db = await database;
     final maps = await db.query('vaccines', orderBy: 'recommendedAgeMonths');
     return maps.map((map) => Vaccine.fromMap(map)).toList();
+  }
+
+  Future<String> insertVaccine(Vaccine vaccine) async {
+    final db = await database;
+    await db.insert('vaccines', vaccine.toMap());
+    return vaccine.id;
   }
 
   Future<String> insertVaccineRecord(VaccineRecord record) async {

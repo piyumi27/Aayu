@@ -2,6 +2,70 @@
 
 All notable changes to the Aayu project will be documented in this file.
 
+## [2025-09-14] - Actionable Vaccination Notification System
+
+### **Vaccination Notification System Implementation**
+- **VaccinationNotificationService**: Created comprehensive service to manage vaccination notifications with priority levels and status tracking
+- **VaccinationNotification Model**: New model with complete notification lifecycle support (active, dismissed, completed, expired)
+- **Database Integration**: Added vaccination_notifications table with foreign key relationships to children and vaccines tables
+- **Priority System**: Implemented priority levels (low, medium, high, critical) based on due dates and overdue status
+- **Dismissal Tracking**: Added dismissal reasons and timestamp tracking for notification history
+
+### **Interactive Notification UI Components**
+- **VaccinationNotificationCard**: Created responsive notification cards with priority-based styling and interactive buttons
+- **VaccinationNotificationList**: Built comprehensive list widget with loading states, empty states, and automatic refresh
+- **Responsive Design**: All components follow project responsive design guidelines using ResponsiveUtils
+- **Material 3 Compliance**: UI components follow Material 3 design system with proper theming
+
+### **Home Screen Integration**
+- **Replaced Vaccination Recommendations**: Replaced static vaccination recommendations with actionable notification system
+- **Real-time Updates**: Notifications automatically update when child selection changes or records are added
+- **Clean Architecture**: Integrated with existing ChildProvider and DatabaseService without breaking changes
+
+### **Enhanced Add Health Record Integration**
+- **Pre-populated Forms**: Added support for preselected vaccine types, names, and IDs from notifications
+- **Success Handling**: Modified navigation to return success status for notification completion tracking
+- **Notification Completion**: Automatic notification completion when matching health records are added
+- **Form Validation**: Enhanced form initialization with notification context
+
+### **Features Added**
+- Direct navigation from notifications to Add Health Record screen with pre-filled vaccine information
+- Dismissal dialog with selectable reasons (illness, doctor advice, vaccine unavailable, etc.)
+- Automatic notification removal when vaccines are completed via health records
+- Success feedback with SnackBar notifications for completed actions
+- Priority-based visual indicators (colors, icons) for urgent notifications
+- Empty state handling with encouraging "All Caught Up!" message
+
+## [2025-01-15] - Health Record Saving and Vaccination Calendar System Fixes
+
+### **Critical Database Issues Fixed**
+- **Health Record Saving Error**: Fixed SQLiteLog error "table vaccine_records has no column named sideEffectsNoted" that prevented saving health records
+- **Model-Database Compatibility**: Updated VaccineRecord.toMap() to exclude unsupported columns from database operations
+- **Database Schema Alignment**: Ensured model definitions match actual database table schema
+
+### **Vaccination Calendar System Overhaul**
+- **Asset Loading Issues**: Fixed "Unable to load asset: assets/data/SriLanka.json" errors by switching to existing database-based vaccination system
+- **Phase 1 Integration**: Properly integrated with existing Phase 1: Data Integration & Standards System instead of creating redundant services
+- **Sri Lankan Schedule**: Utilized existing `SriLankanVaccinationSchedule` data that was already populated in the database
+- **Calendar Display**: Updated vaccination calendar to show real age-based vaccine schedules from database instead of sample data
+
+### **System Architecture Improvements**
+- **Service Cleanup**: Removed redundant `VaccinationScheduleService` and used existing `ChildProvider` methods
+- **Data Source Consistency**: Ensured all vaccination data comes from the established database system via `_insertDefaultVaccines`
+- **Error Prevention**: Eliminated asset loading attempts for vaccination data since it's already in database
+
+### **UI/UX Enhancements**
+- **Home Screen Recommendations**: Added vaccination recommendations section showing upcoming and overdue vaccines
+- **Age-Based Display**: Improved vaccine recommendation display with proper age formatting (e.g., "2 months", "1 year 6 months")
+- **Visual Status Indicators**: Added color-coded alerts for overdue (red) and upcoming (blue) vaccines
+- **Navigation Integration**: Connected vaccination recommendations to full calendar view
+
+### **Code Quality and Maintenance**
+- **Import Cleanup**: Removed unused imports and redundant service dependencies
+- **Method Consolidation**: Streamlined vaccination data access through existing ChildProvider methods
+- **File Organization**: Removed unnecessary vaccination service file and maintained clean architecture
+- **Database Version Management**: Properly managed database versioning without breaking existing installations
+
 ## [2025-01-14] - Database, Navigation, and UI/UX Improvements
 
 ### **Database Constraint Fixes**

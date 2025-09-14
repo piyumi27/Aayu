@@ -43,7 +43,11 @@ class _VaccinationCalendarScreenState extends State<VaccinationCalendarScreen>
     super.initState();
     _initializeState();
     _initializeAnimations();
-    _loadVaccineEvents();
+
+    // Load events after the first frame
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadVaccineEvents();
+    });
   }
 
   @override
@@ -90,16 +94,84 @@ class _VaccinationCalendarScreenState extends State<VaccinationCalendarScreen>
 
   /// Load sample vaccine events
   void _loadVaccineEvents() {
-    final today = DateTime.now();
-    _events[DateTime(today.year, today.month, 15)] = [
-      VaccineEvent('MMR', VaccineStatus.scheduled, DateTime(today.year, today.month, 15)),
-    ];
-    _events[DateTime(today.year, today.month, 20)] = [
-      VaccineEvent('DTaP', VaccineStatus.overdue, DateTime(today.year, today.month, 20)),
-    ];
-    _events[DateTime(today.year, today.month, 25)] = [
-      VaccineEvent('Hepatitis B', VaccineStatus.completed, DateTime(today.year, today.month, 25)),
-    ];
+    final provider = context.read<ChildProvider>();
+    final selectedChild = provider.selectedChild;
+
+    if (selectedChild == null) return;
+
+    // Clear existing events
+    _events.clear();
+
+    // Get vaccines from database and child age
+    final vaccines = provider.vaccines;
+    final childAge = provider.calculateAgeInMonths(selectedChild.birthDate);
+    final vaccineRecords = provider.vaccineRecords;
+    final givenVaccineIds = vaccineRecords.map((r) => r.vaccineId).toSet();
+
+    // Filter vaccines to show only mandatory ones and relevant age range (birth to 5 years)
+    final relevantVaccines = vaccines.where((vaccine) =>
+      vaccine.isMandatory && vaccine.recommendedAgeMonths <= 60
+    ).toList();
+
+    for (final vaccine in relevantVaccines) {
+      // Calculate the target date for the vaccine based on recommended age
+      final targetDate = _calculateVaccineDate(selectedChild.birthDate, vaccine.recommendedAgeMonths);
+
+      // Only show events within reasonable range (past 2 years to future 1 year)
+      final now = DateTime.now();
+      if (targetDate.isBefore(now.subtract(const Duration(days: 730))) ||
+          targetDate.isAfter(now.add(const Duration(days: 365)))) {
+        continue;
+      }
+
+      // Determine status based on current age and given vaccines
+      VaccineStatus status;
+
+      if (givenVaccineIds.contains(vaccine.id)) {
+        status = VaccineStatus.completed;
+      } else if (vaccine.recommendedAgeMonths < childAge - 1) {
+        status = VaccineStatus.overdue;
+      } else if (vaccine.recommendedAgeMonths <= childAge + 1) {
+        status = VaccineStatus.scheduled;
+      } else {
+        status = VaccineStatus.scheduled;
+      }
+
+      final event = VaccineEvent(vaccine.name, status, targetDate);
+
+      // Group events by date
+      final dateKey = DateTime(targetDate.year, targetDate.month, targetDate.day);
+      if (_events[dateKey] == null) {
+        _events[dateKey] = [];
+      }
+      _events[dateKey]!.add(event);
+    }
+
+    // Notify listeners to rebuild calendar
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  /// Calculate the target date for a vaccine based on child's birth date and vaccine age
+  DateTime _calculateVaccineDate(DateTime birthDate, int ageInMonths) {
+    if (ageInMonths == 0) {
+      return birthDate; // Birth vaccines
+    }
+
+    // Add months to birth date
+    DateTime targetDate = DateTime(
+      birthDate.year,
+      birthDate.month + ageInMonths,
+      birthDate.day,
+    );
+
+    // Handle month overflow
+    while (targetDate.month > 12) {
+      targetDate = DateTime(targetDate.year + 1, targetDate.month - 12, targetDate.day);
+    }
+
+    return targetDate;
   }
 
   /// Smooth scroll-based animation handler

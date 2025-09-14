@@ -79,7 +79,7 @@ class VaccineRecord {
       'doctorName': doctorName,
       'batchNumber': batchNumber,
       'notes': notes,
-      'sideEffectsNoted': sideEffectsNoted,
+      // 'sideEffectsNoted': sideEffectsNoted, // Excluded - not in database schema
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
     };
@@ -95,7 +95,7 @@ class VaccineRecord {
       doctorName: map['doctorName'],
       batchNumber: map['batchNumber'],
       notes: map['notes'],
-      sideEffectsNoted: map['sideEffectsNoted'],
+      sideEffectsNoted: map['sideEffectsNoted'], // Will be null since not in DB
       createdAt: DateTime.parse(map['createdAt']),
       updatedAt: DateTime.parse(map['updatedAt']),
     );

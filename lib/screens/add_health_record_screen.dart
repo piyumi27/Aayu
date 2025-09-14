@@ -15,7 +15,16 @@ import '../services/database_service.dart';
 
 /// Professional Add Health Record screen for vaccines, supplements, and medications
 class AddHealthRecordScreen extends StatefulWidget {
-  const AddHealthRecordScreen({super.key});
+  final HealthRecordType? initialRecordType;
+  final String? preselectedVaccineName;
+  final String? preselectedVaccineId;
+
+  const AddHealthRecordScreen({
+    super.key,
+    this.initialRecordType,
+    this.preselectedVaccineName,
+    this.preselectedVaccineId,
+  });
 
   @override
   State<AddHealthRecordScreen> createState() => _AddHealthRecordScreenState();
@@ -82,6 +91,15 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
     _loadLanguage();
     _reminderTimeController.text = '09:00 AM';
     _reminderTime = const TimeOfDay(hour: 9, minute: 0);
+
+    // Initialize with preselected values if provided
+    if (widget.initialRecordType != null) {
+      _selectedType = widget.initialRecordType!;
+    }
+
+    if (widget.preselectedVaccineName != null) {
+      _nameController.text = widget.preselectedVaccineName!;
+    }
   }
 
   @override
@@ -250,7 +268,11 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
     } catch (e) {
       // Handle any errors
       if (mounted) {
-        _showMessage('Failed to save record. Please try again.', isError: true);
+        // Show actual error for debugging
+        if (kDebugMode) {
+          print('❌ Health record save error: $e');
+        }
+        _showMessage('Failed to save record: ${e.toString()}', isError: true);
       }
     } finally {
       // Reset loading state
@@ -265,6 +287,7 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
   /// Save vaccine record to database
   Future<void> _saveVaccineRecord(ChildProvider provider, String childId) async {
     const uuid = Uuid();
+    final databaseService = DatabaseService();
 
     // Load vaccines to find matching vaccine
     await provider.loadVaccines();
@@ -283,8 +306,30 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
       }
     }
 
-    // If no match found, create a default vaccine entry
-    String vaccineId = matchedVaccine?.id ?? 'custom_${uuid.v4()}';
+    String vaccineId;
+
+    // Use preselected vaccine ID if available (from notification)
+    if (widget.preselectedVaccineId != null) {
+      vaccineId = widget.preselectedVaccineId!;
+    } else if (matchedVaccine == null) {
+      // If no match found, create a custom vaccine entry
+      vaccineId = 'custom_${uuid.v4()}';
+
+      // Create custom vaccine entry in database
+      final customVaccine = Vaccine(
+        id: vaccineId,
+        name: vaccineName,
+        nameLocal: vaccineName, // Use same name for local
+        description: 'Custom vaccine: $vaccineName',
+        recommendedAgeMonths: provider.calculateAgeInMonths(provider.selectedChild!.birthDate),
+        isMandatory: false,
+        category: 'Custom',
+      );
+
+      await databaseService.insertVaccine(customVaccine);
+    } else {
+      vaccineId = matchedVaccine.id;
+    }
 
     final record = VaccineRecord(
       id: uuid.v4(),
@@ -294,6 +339,7 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
       notes: _notesController.text.trim().isNotEmpty ? _notesController.text.trim() : null,
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
+      sideEffectsNoted: null,
     );
 
     await provider.addVaccineRecord(record);
@@ -302,17 +348,33 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
   /// Save supplement record (for now, we'll use notes to track supplements)
   Future<void> _saveSupplementRecord(ChildProvider provider, String childId) async {
     const uuid = Uuid();
+    final databaseService = DatabaseService();
 
-    // Since there's no specific supplement model, we could use a general approach
-    // For now, let's create a custom vaccine record with supplement category
+    final supplementName = _nameController.text.trim();
+    final vaccineId = 'supplement_${uuid.v4()}';
+
+    // Create supplement vaccine entry in database
+    final supplementVaccine = Vaccine(
+      id: vaccineId,
+      name: supplementName,
+      nameLocal: supplementName,
+      description: 'Supplement: $supplementName',
+      recommendedAgeMonths: provider.calculateAgeInMonths(provider.selectedChild!.birthDate),
+      isMandatory: false,
+      category: 'Supplement',
+    );
+
+    await databaseService.insertVaccine(supplementVaccine);
+
     final record = VaccineRecord(
       id: uuid.v4(),
       childId: childId,
-      vaccineId: 'supplement_${_nameController.text.trim().toLowerCase().replaceAll(' ', '_')}',
+      vaccineId: vaccineId,
       givenDate: _selectedDueDate!,
-      notes: 'Supplement: ${_nameController.text.trim()}${_notesController.text.trim().isNotEmpty ? ' - ${_notesController.text.trim()}' : ''}',
+      notes: 'Supplement: $supplementName${_notesController.text.trim().isNotEmpty ? ' - ${_notesController.text.trim()}' : ''}',
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
+      sideEffectsNoted: null,
     );
 
     await provider.addVaccineRecord(record);
@@ -321,16 +383,33 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
   /// Save medicine record (similar to supplement)
   Future<void> _saveMedicineRecord(ChildProvider provider, String childId) async {
     const uuid = Uuid();
+    final databaseService = DatabaseService();
 
-    // Since there's no specific medicine model, we'll use the same approach
+    final medicineName = _nameController.text.trim();
+    final vaccineId = 'medicine_${uuid.v4()}';
+
+    // Create medicine vaccine entry in database
+    final medicineVaccine = Vaccine(
+      id: vaccineId,
+      name: medicineName,
+      nameLocal: medicineName,
+      description: 'Medicine: $medicineName',
+      recommendedAgeMonths: provider.calculateAgeInMonths(provider.selectedChild!.birthDate),
+      isMandatory: false,
+      category: 'Medicine',
+    );
+
+    await databaseService.insertVaccine(medicineVaccine);
+
     final record = VaccineRecord(
       id: uuid.v4(),
       childId: childId,
-      vaccineId: 'medicine_${_nameController.text.trim().toLowerCase().replaceAll(' ', '_')}',
+      vaccineId: vaccineId,
       givenDate: _selectedDueDate!,
-      notes: 'Medicine: ${_nameController.text.trim()}${_notesController.text.trim().isNotEmpty ? ' - ${_notesController.text.trim()}' : ''}',
+      notes: 'Medicine: $medicineName${_notesController.text.trim().isNotEmpty ? ' - ${_notesController.text.trim()}' : ''}',
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
+      sideEffectsNoted: null,
     );
 
     await provider.addVaccineRecord(record);
@@ -381,13 +460,13 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
     try {
       // Check if we can pop with GoRouter first
       if (GoRouter.of(context).canPop()) {
-        context.pop();
+        context.pop(true); // Return success result
         return;
       }
 
       // If GoRouter can't pop, check Navigator
       if (Navigator.of(context).canPop()) {
-        Navigator.of(context).pop();
+        Navigator.of(context).pop(true); // Return success result
         return;
       }
 

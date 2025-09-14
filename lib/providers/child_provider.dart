@@ -58,6 +58,7 @@ class ChildProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+
   Future<void> addChild(Child child) async {
     await _databaseService.insertChild(child);
     await loadChildren();
@@ -136,12 +137,13 @@ class ChildProvider extends ChangeNotifier {
     }
   }
 
+
   List<Vaccine> getUpcomingVaccines() {
     if (_selectedChild == null) return [];
-    
+
     final ageInMonths = calculateAgeInMonths(_selectedChild!.birthDate);
     final givenVaccineIds = _vaccineRecords.map((r) => r.vaccineId).toSet();
-    
+
     return _vaccines.where((vaccine) {
       return !givenVaccineIds.contains(vaccine.id) &&
              vaccine.recommendedAgeMonths <= ageInMonths + 3;
