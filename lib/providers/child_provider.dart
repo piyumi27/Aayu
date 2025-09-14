@@ -60,19 +60,29 @@ class ChildProvider extends ChangeNotifier {
 
 
   Future<void> addChild(Child child) async {
+    // Insert child to database first
     await _databaseService.insertChild(child);
-    await loadChildren();
-    
-    // Schedule notifications for the new child
-    try {
-      await schedulingEngine.scheduleNotificationsForChild(child);
-      if (kDebugMode) {
-        print('✅ Notifications scheduled for child: ${child.name}');
-      }
-    } catch (e) {
+
+    // Add child to local list for immediate UI update (performance optimization)
+    _children.add(child);
+
+    // Set as selected child if it's the first one or no child is selected
+    if (_children.length == 1 || _selectedChild == null) {
+      _selectedChild = child;
+    }
+
+    // Notify listeners immediately for fast UI response
+    notifyListeners();
+
+    // Schedule notifications asynchronously in background to avoid blocking UI
+    schedulingEngine.scheduleNotificationsForChild(child).catchError((e) {
       if (kDebugMode) {
         print('❌ Failed to schedule notifications for ${child.name}: $e');
       }
+    });
+
+    if (kDebugMode) {
+      print('✅ Child added successfully: ${child.name}');
     }
   }
 

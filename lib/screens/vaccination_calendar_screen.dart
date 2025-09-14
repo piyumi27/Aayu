@@ -6,6 +6,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import '../providers/child_provider.dart';
+import '../models/notification.dart';
+import '../services/vaccination_notification_service.dart';
 import 'add_health_record_screen.dart';
 
 /// Professional vaccination calendar screen with smooth scroll animations
@@ -38,6 +40,9 @@ class _VaccinationCalendarScreenState extends State<VaccinationCalendarScreen>
   // Sample vaccine events
   final Map<DateTime, List<VaccineEvent>> _events = {};
 
+  // Vaccination notification service
+  final VaccinationNotificationService _notificationService = VaccinationNotificationService();
+
   @override
   void initState() {
     super.initState();
@@ -47,6 +52,7 @@ class _VaccinationCalendarScreenState extends State<VaccinationCalendarScreen>
     // Load events after the first frame
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadVaccineEvents();
+      _initializeNotificationService();
     });
   }
 
@@ -89,6 +95,16 @@ class _VaccinationCalendarScreenState extends State<VaccinationCalendarScreen>
       setState(() {
         _selectedLanguage = prefs.getString('selected_language') ?? 'en';
       });
+    }
+  }
+
+  /// Initialize vaccination notification service
+  Future<void> _initializeNotificationService() async {
+    try {
+      await _notificationService.initialize();
+    } catch (e) {
+      // Handle initialization errors gracefully
+      debugPrint('Failed to initialize notification service: $e');
     }
   }
 
@@ -201,12 +217,518 @@ class _VaccinationCalendarScreenState extends State<VaccinationCalendarScreen>
           if (provider.children.length > 1) _buildChildSelector(provider, texts),
           _buildAnimatedCalendar(texts),
           _buildLegend(texts),
-          _buildVaccinesHeader(texts),
+          _buildUnifiedVaccinationsHeader(provider, texts),
         ],
-        body: _buildVaccinesList(provider, texts),
+        body: _buildUnifiedVaccinesList(provider, texts),
       ),
       floatingActionButton: _buildFAB(texts),
     );
+  }
+
+  /// Build unified vaccinations header with reminders and schedule
+  Widget _buildUnifiedVaccinationsHeader(ChildProvider provider, Map<String, String> texts) {
+    if (provider.selectedChild == null) {
+      return const SliverToBoxAdapter(child: SizedBox.shrink());
+    }
+
+    return SliverToBoxAdapter(
+      child: FutureBuilder<List<dynamic>>(
+        future: _getVaccinationReminders(provider.selectedChild!),
+        builder: (context, snapshot) {
+          final reminders = snapshot.hasData ? snapshot.data! : <dynamic>[];
+          final upcomingVaccines = _getUpcomingVaccines();
+          final totalCount = reminders.length + upcomingVaccines.length;
+
+          return Container(
+            color: const Color(0xFFF8F9FA),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Unified header
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 20, 16, 8),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.vaccines_outlined,
+                        color: const Color(0xFF0086FF),
+                        size: 24,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Vaccinations',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: const Color(0xFF1A1A1A),
+                          fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                        ),
+                      ),
+                      if (totalCount > 0) ...[
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF0086FF),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            totalCount.toString(),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+                // Reminders section (if any)
+                if (reminders.isNotEmpty) ...[
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 4,
+                          height: 20,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFEF4444),
+                            borderRadius: BorderRadius.circular(2),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Text(
+                          'Action Required',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: const Color(0xFFEF4444),
+                            fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFFEE2E2),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            reminders.length.toString(),
+                            style: const TextStyle(
+                              color: Color(0xFFEF4444),
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  ...reminders.map((reminder) => _buildVaccinationReminderCard(reminder, texts)),
+                ],
+                // Upcoming vaccines section (if any)
+                if (upcomingVaccines.isNotEmpty) ...[
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(16, reminders.isNotEmpty ? 16 : 8, 16, 8),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 4,
+                          height: 20,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF0086FF),
+                            borderRadius: BorderRadius.circular(2),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Text(
+                          'Upcoming Schedule',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: const Color(0xFF0086FF),
+                            fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFE0F2FF),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            upcomingVaccines.length.toString(),
+                            style: const TextStyle(
+                              color: Color(0xFF0086FF),
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+                const SizedBox(height: 12),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  /// Build upcoming vaccination reminders section (deprecated - kept for reference)
+  Widget _buildUpcomingRemindersSection(ChildProvider provider, Map<String, String> texts) {
+    if (provider.selectedChild == null) {
+      return const SliverToBoxAdapter(child: SizedBox.shrink());
+    }
+
+    return SliverToBoxAdapter(
+      child: FutureBuilder<List<dynamic>>(
+        future: _getVaccinationReminders(provider.selectedChild!),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const SizedBox.shrink();
+          }
+
+          final reminders = snapshot.data!;
+
+          return Container(
+            color: const Color(0xFFF8F9FA),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 20, 16, 8),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.notifications_outlined,
+                        color: const Color(0xFF0086FF),
+                        size: 24,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Vaccination Reminders',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: const Color(0xFF1A1A1A),
+                          fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                        ),
+                      ),
+                      if (reminders.isNotEmpty) ...[
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF0086FF),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            reminders.length.toString(),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+                ...reminders.map((reminder) => _buildVaccinationReminderCard(reminder, texts)),
+                const SizedBox(height: 12),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  /// Build vaccination reminder card using existing vaccine card styling
+  Widget _buildVaccinationReminderCard(dynamic reminder, Map<String, String> texts) {
+    // Map notification priority to vaccine status for consistent styling
+    final NotificationPriority priority = reminder.priority as NotificationPriority;
+    final VaccineStatus status = switch (priority) {
+      NotificationPriority.critical => VaccineStatus.overdue,
+      NotificationPriority.high => VaccineStatus.overdue,
+      NotificationPriority.medium => VaccineStatus.scheduled,
+      NotificationPriority.low => VaccineStatus.scheduled,
+    };
+
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: status.color.withValues(alpha: 0.3), width: 2),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: status.backgroundColor,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    status.icon,
+                    color: status.color,
+                    size: 24,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        reminder.vaccineName,
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: const Color(0xFF1A1A1A),
+                          fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: status.backgroundColor,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          _getPriorityText(priority),
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: status.color,
+                            fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            IntrinsicHeight(
+              child: Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: () => _navigateToAddRecord(reminder),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF0086FF),
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        minimumSize: const Size(0, 44),
+                      ),
+                      icon: const Icon(Icons.add_outlined, size: 18),
+                      label: const Text(
+                        'Add Health Record',
+                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: () => _showDismissDialog(reminder),
+                      style: OutlinedButton.styleFrom(
+                        side: const BorderSide(color: Color(0xFF6B7280)),
+                        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        minimumSize: const Size(0, 44),
+                      ),
+                      icon: const Icon(Icons.schedule_outlined, size: 18),
+                      label: const Text(
+                        'Remind Later',
+                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Get vaccination reminders for the selected child
+  Future<List<dynamic>> _getVaccinationReminders(dynamic child) async {
+    try {
+      await _notificationService.generateNotificationsForChild(child);
+      return await _notificationService.getActiveNotifications(child.id);
+    } catch (e) {
+      debugPrint('Error loading vaccination reminders: $e');
+      return [];
+    }
+  }
+
+  /// Navigate to add health record screen with pre-filled information
+  void _navigateToAddRecord(dynamic reminder) async {
+    final result = await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => AddHealthRecordScreen(
+          initialRecordType: HealthRecordType.vaccine,
+          preselectedVaccineName: reminder.vaccineName,
+          preselectedVaccineId: reminder.vaccineId,
+        ),
+      ),
+    );
+
+    if (result == true && mounted) {
+      // Mark notification as completed and refresh
+      await _notificationService.completeNotification(
+        reminder.vaccineId,
+        reminder.childId,
+      );
+      setState(() {}); // Refresh the reminders
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('${reminder.vaccineName} health record added successfully'),
+          backgroundColor: Colors.green,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
+  }
+
+  /// Show dismissal dialog
+  void _showDismissDialog(dynamic reminder) {
+    final reasons = [
+      'Vaccine already given at clinic',
+      'Postponed due to illness',
+      'Doctor advised to wait',
+      'Child refused vaccination',
+      'Vaccine not available',
+      'Other reason',
+    ];
+
+    String selectedReason = reasons.first;
+
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          title: const Text('Dismiss Reminder'),
+          content: SizedBox(
+            width: MediaQuery.of(context).size.width * 0.8,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Why are you dismissing this vaccination reminder for ${reminder.vaccineName}?',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+                const SizedBox(height: 16),
+                ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxWidth: MediaQuery.of(context).size.width * 0.7,
+                  ),
+                  child: DropdownButtonFormField<String>(
+                    initialValue: selectedReason,
+                    decoration: const InputDecoration(
+                      labelText: 'Reason',
+                      border: OutlineInputBorder(),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    ),
+                    items: reasons.map((reason) {
+                      return DropdownMenuItem(
+                        value: reason,
+                        child: Text(
+                          reason,
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 2,
+                        ),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      if (value != null) {
+                        setState(() {
+                          selectedReason = value;
+                        });
+                      }
+                    },
+                    isExpanded: true,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                await _notificationService.dismissNotification(
+                  reminder.id,
+                  selectedReason,
+                );
+                if (context.mounted) {
+                  Navigator.of(context).pop();
+                  this.setState(() {}); // Refresh the reminders
+                }
+              },
+              child: const Text('Dismiss'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Get priority text for display
+  String _getPriorityText(NotificationPriority priority) {
+    switch (priority) {
+      case NotificationPriority.critical:
+        return 'Seriously Overdue';
+      case NotificationPriority.high:
+        return 'Overdue';
+      case NotificationPriority.medium:
+        return 'Due Soon';
+      case NotificationPriority.low:
+        return 'Upcoming';
+    }
   }
 
   /// Build app bar with notification button
@@ -531,26 +1053,55 @@ class _VaccinationCalendarScreenState extends State<VaccinationCalendarScreen>
   }
 
   /// Build vaccines list
-  Widget _buildVaccinesList(ChildProvider provider, Map<String, String> texts) {
+  /// Build unified vaccines list showing upcoming vaccines as cards
+  Widget _buildUnifiedVaccinesList(ChildProvider provider, Map<String, String> texts) {
     final upcomingVaccines = _getUpcomingVaccines();
-    
+
     if (upcomingVaccines.isEmpty) {
       return Center(
-        child: Text(
-          texts['noVaccines']!,
-          style: TextStyle(
-            color: const Color(0xFF6B7280),
-            fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-          ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.check_circle_outline,
+              size: 64,
+              color: const Color(0xFF10B981),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'All vaccinations up to date!',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: const Color(0xFF1A1A1A),
+                fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'No upcoming vaccination schedule at this time.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: const Color(0xFF6B7280),
+                fontSize: 16,
+                fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+              ),
+            ),
+          ],
         ),
       );
     }
-    
+
     return ListView.builder(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
       itemCount: upcomingVaccines.length,
       itemBuilder: (context, index) => _buildVaccineCard(upcomingVaccines[index], texts),
     );
+  }
+
+  /// Build vaccines list (deprecated - kept for compatibility)
+  Widget _buildVaccinesList(ChildProvider provider, Map<String, String> texts) {
+    return _buildUnifiedVaccinesList(provider, texts);
   }
 
   /// Build vaccine card

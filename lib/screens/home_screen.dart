@@ -12,7 +12,6 @@ import '../services/local_auth_service.dart';
 import '../utils/responsive_utils.dart';
 import '../widgets/verification_banner.dart';
 import '../widgets/notifications/notification_badge.dart';
-import '../widgets/vaccination_notification_list.dart';
 import 'add_child_screen.dart';
 import 'add_measurement_screen.dart';
 import 'growth_charts_screen.dart';
@@ -208,9 +207,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               if (provider.selectedChild != null)
                                 _buildCleanRecentActivity(provider, texts),
 
-                              // Vaccination Notifications
-                              if (provider.selectedChild != null)
-                                const VaccinationNotificationList(),
+                              // Vaccination recommendations removed - now in Vaccination Calendar
 
                               const SizedBox(height: 100), // Space for bottom navigation
                             ],
@@ -1070,193 +1067,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   /// Build vaccination recommendations section
   Widget _buildVaccinationRecommendations(ChildProvider provider, Map<String, String> texts) {
-    final upcomingVaccines = provider.getUpcomingVaccines();
-    final overdueVaccines = provider.getOverdueVaccines();
-
-    if (upcomingVaccines.isEmpty && overdueVaccines.isEmpty) {
-      return const SizedBox.shrink();
-    }
-
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(
-                Icons.vaccines,
-                size: 20,
-                color: overdueVaccines.isNotEmpty ? const Color(0xFFEF4444) : const Color(0xFF0086FF),
-              ),
-              const SizedBox(width: 8),
-              Text(
-                overdueVaccines.isNotEmpty
-                    ? 'Vaccination Alert'
-                    : 'Upcoming Vaccines',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: const Color(0xFF111827),
-                  fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-                ),
-              ),
-              const Spacer(),
-              GestureDetector(
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => const VaccinationCalendarScreen(),
-                    ),
-                  );
-                },
-                child: Text(
-                  'View All',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: const Color(0xFF0086FF),
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-
-          // Show overdue vaccines first (if any)
-          if (overdueVaccines.isNotEmpty) ...[
-            for (final vaccine in overdueVaccines.take(3))
-              Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFEF4444).withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: const Color(0xFFEF4444).withValues(alpha: 0.2),
-                      width: 1,
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.warning,
-                        size: 16,
-                        color: const Color(0xFFEF4444),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              vaccine.name,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                                color: Color(0xFF111827),
-                              ),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              'Overdue • Due at ${_formatAge(vaccine.recommendedAgeMonths)}',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: const Color(0xFFEF4444),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-          ],
-
-          // Show upcoming vaccines
-          if (upcomingVaccines.isNotEmpty) ...[
-            for (final vaccine in upcomingVaccines.take(overdueVaccines.isEmpty ? 3 : 2))
-              Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF0086FF).withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: const Color(0xFF0086FF).withValues(alpha: 0.2),
-                      width: 1,
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.schedule,
-                        size: 16,
-                        color: const Color(0xFF0086FF),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              vaccine.name,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                                color: Color(0xFF111827),
-                              ),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              'Due at ${_formatAge(vaccine.recommendedAgeMonths)}',
-                              style: const TextStyle(
-                                fontSize: 12,
-                                color: Color(0xFF6B7280),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-          ],
-
-          if (overdueVaccines.isEmpty && upcomingVaccines.isEmpty)
-            Container(
-              padding: const EdgeInsets.all(16),
-              child: Center(
-                child: Text(
-                  'All vaccinations up to date! 🎉',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: const Color(0xFF10B981),
-                    fontWeight: FontWeight.w500,
-                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
-                  ),
-                ),
-              ),
-            ),
-        ],
-      ),
-    );
+    // Vaccination recommendations moved to Vaccination Calendar screen
+    return const SizedBox.shrink();
   }
 
   /// Format age in months to display string

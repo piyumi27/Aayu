@@ -671,11 +671,37 @@ class _AddChildScreenState extends State<AddChildScreen> {
         updatedAt: now,
       );
 
-      // Save to local database and sync with Firebase
-      await context.read<ChildProvider>().addChild(child);
-      
+      // Show loading indicator
       if (mounted) {
-        // Show success toast
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                const SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  'Saving child profile...',
+                  style: TextStyle(
+                    fontFamily: _selectedLanguage == 'si' ? 'NotoSerifSinhala' : null,
+                  ),
+                ),
+              ],
+            ),
+            duration: const Duration(seconds: 10), // Long duration for loading
+          ),
+        );
+      }
+
+      // Save to local database (optimized for performance)
+      await context.read<ChildProvider>().addChild(child);
+
+      if (mounted) {
+        // Clear loading snackbar and show success
+        ScaffoldMessenger.of(context).clearSnackBars();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
@@ -685,7 +711,7 @@ class _AddChildScreenState extends State<AddChildScreen> {
               ),
             ),
             backgroundColor: Colors.green,
-            duration: const Duration(seconds: 3),
+            duration: const Duration(seconds: 2),
           ),
         );
         

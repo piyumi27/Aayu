@@ -110,8 +110,23 @@ class _PreSixMonthCountdownScreenState extends State<PreSixMonthCountdownScreen>
 
   int _calculateDaysSinceBirth(Child child) {
     final now = DateTime.now();
-    final difference = now.difference(child.birthDate);
-    return difference.inDays;
+    final birthDate = child.birthDate;
+
+    // Calculate difference properly by comparing dates only (not time)
+    final currentDate = DateTime(now.year, now.month, now.day);
+    final birthDateOnly = DateTime(birthDate.year, birthDate.month, birthDate.day);
+
+    final difference = currentDate.difference(birthDateOnly);
+    final daysSince = difference.inDays;
+
+    // Debug information for troubleshooting
+    debugPrint('📅 Age Calculation Debug:');
+    debugPrint('   Birth Date: ${birthDateOnly.toString().split(' ')[0]}');
+    debugPrint('   Current Date: ${currentDate.toString().split(' ')[0]}');
+    debugPrint('   Days Since Birth: $daysSince');
+
+    // Ensure we never show negative days
+    return daysSince < 0 ? 0 : daysSince;
   }
 
   double _calculateProgress(int daysSinceBirth) {

@@ -28,13 +28,20 @@ All notable changes to the Aayu project will be documented in this file.
 - **Notification Completion**: Automatic notification completion when matching health records are added
 - **Form Validation**: Enhanced form initialization with notification context
 
+### **Vaccination Calendar Integration**
+- **Removed from Home Screen**: Moved vaccination notifications from dashboard to proper location in vaccination calendar
+- **Calendar Integration**: Integrated notification system into vaccination calendar screen as "Vaccination Reminders" section
+- **Consistent Styling**: Matched existing vaccination calendar card design and color scheme
+- **Priority Mapping**: Mapped notification priorities (critical/high/medium/low) to existing vaccine status styles (overdue/scheduled)
+- **Expert UX Design**: Positioned reminders above general vaccine list for priority visibility
+
 ### **Features Added**
 - Direct navigation from notifications to Add Health Record screen with pre-filled vaccine information
 - Dismissal dialog with selectable reasons (illness, doctor advice, vaccine unavailable, etc.)
 - Automatic notification removal when vaccines are completed via health records
 - Success feedback with SnackBar notifications for completed actions
-- Priority-based visual indicators (colors, icons) for urgent notifications
-- Empty state handling with encouraging "All Caught Up!" message
+- Priority-based visual indicators using existing vaccination calendar styling
+- Section header with notification count badge for quick overview
 
 ## [2025-01-15] - Health Record Saving and Vaccination Calendar System Fixes
 
